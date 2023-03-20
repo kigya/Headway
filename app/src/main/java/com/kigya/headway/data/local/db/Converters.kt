@@ -1,17 +1,14 @@
 package com.kigya.headway.data.local.db
 
 import androidx.room.TypeConverter
-import com.kigya.headway.data.dto.Source
+import com.kigya.headway.data.dto.SourceDto
+import com.kigya.headway.data.model.SourceDomainModel
 
 class Converters {
 
     @TypeConverter
-    fun fromSource(source: Source): String {
-        return source.name ?: "null"
-    }
+    fun fromSource(source: SourceDomainModel): String = source.name ?: "null"
 
     @TypeConverter
-    fun toSource(name: String): Source {
-        return Source(name, name)
-    }
+    fun toSource(name: String): SourceDomainModel = SourceDomainModel(name, name)
 }

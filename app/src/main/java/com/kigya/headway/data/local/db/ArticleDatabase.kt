@@ -3,7 +3,8 @@ package com.kigya.headway.data.local.db
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.kigya.headway.data.dto.Article
+import com.kigya.headway.data.dto.ArticleDto
+import com.kigya.headway.data.model.Article
 
 @Database(
     entities = [Article::class],

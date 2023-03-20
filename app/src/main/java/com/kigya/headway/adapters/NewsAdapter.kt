@@ -10,20 +10,16 @@ import androidx.recyclerview.widget.RecyclerView
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.bumptech.glide.Glide
 import com.kigya.headway.R
-import com.kigya.headway.data.dto.Article
+import com.kigya.headway.data.dto.ArticleDto
+import com.kigya.headway.data.model.Article
 import com.kigya.headway.databinding.ItemArticlePreviewBinding
 
 typealias ArticleClickListener = (Article) -> Unit
 
 class NewsAdapter(
     private val activityContext: Context,
+    private val articleClickListener: ArticleClickListener,
 ) : RecyclerView.Adapter<NewsAdapter.ArticleViewHolder>() {
-
-    private var onItemClickListener: ArticleClickListener? = null
-
-    fun setOnItemClickListener(listener: ArticleClickListener) {
-        onItemClickListener = listener
-    }
 
     override fun onCreateViewHolder(parent: ViewGroup, viewType: Int): ArticleViewHolder =
         ArticleViewHolder(
@@ -39,18 +35,14 @@ class NewsAdapter(
         holder.bind(article)
     }
 
-    override fun getItemCount(): Int {
-        return differ.currentList.size
-    }
+    override fun getItemCount(): Int = differ.currentList.size
 
     private val diffCallback = object : DiffUtil.ItemCallback<Article>() {
-        override fun areItemsTheSame(oldItem: Article, newItem: Article): Boolean {
-            return oldItem.url == newItem.url
-        }
+        override fun areItemsTheSame(oldItem: Article, newItem: Article): Boolean =
+            oldItem.url == newItem.url
 
-        override fun areContentsTheSame(oldItem: Article, newItem: Article): Boolean {
-            return oldItem == newItem
-        }
+        override fun areContentsTheSame(oldItem: Article, newItem: Article): Boolean =
+            oldItem == newItem
     }
 
     val differ = AsyncListDiffer(this, diffCallback)
@@ -71,7 +63,7 @@ class NewsAdapter(
 
                 tvTitle.text = article.title
                 tvPublishedAt.text = article.publishedAt?.substring(0, 10) ?: String()
-                root.setOnClickListener { onItemClickListener?.let { it(article) } }
+                root.setOnClickListener { articleClickListener(article) }
             }
         }
     }

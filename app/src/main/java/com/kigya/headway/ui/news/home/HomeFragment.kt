@@ -1,22 +1,19 @@
 package com.kigya.headway.ui.news.home
 
 import android.os.Bundle
-import android.util.Log
 import android.view.View
-import androidx.fragment.app.activityViewModels
+import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.findNavController
 import androidx.recyclerview.widget.LinearLayoutManager
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.kigya.headway.R
 import com.kigya.headway.adapters.NewsAdapter
-import com.kigya.headway.data.dto.Article
-import com.kigya.headway.data.dto.NewsResponse
+import com.kigya.headway.data.model.Article
+import com.kigya.headway.data.model.NewsResponseDomainModel
 import com.kigya.headway.databinding.FragmentHomeBinding
 import com.kigya.headway.ui.base.BaseFragment
-import com.kigya.headway.ui.news.NewsViewModel
 import com.kigya.headway.ui.news.detail.ArticleDetailFragment
 import com.kigya.headway.utils.Resource
-import com.kigya.headway.utils.extensions.TAG
 import com.kigya.headway.utils.extensions.collectLatestLifecycleFlow
 import com.kigya.headway.utils.extensions.showToast
 import dagger.hilt.android.AndroidEntryPoint
@@ -25,14 +22,13 @@ import kotlin.properties.Delegates
 @AndroidEntryPoint
 class HomeFragment : BaseFragment(R.layout.fragment_home) {
 
-    override val viewModel: NewsViewModel by activityViewModels()
+    override val viewModel: HomeViewModel by viewModels()
     private val viewBinding by viewBinding(FragmentHomeBinding::bind)
     private var newsAdapter by Delegates.notNull<NewsAdapter>()
 
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
         setupRecyclerViewAdapter()
-        setOnAdapterItemClickListener()
         collectFlow()
     }
 
@@ -45,10 +41,7 @@ class HomeFragment : BaseFragment(R.layout.fragment_home) {
             }
         }
 
-    private fun setOnAdapterItemClickListener() =
-        newsAdapter.setOnItemClickListener(this::navigateUp)
-
-    private fun navigateUp(it: Article) {
+    private fun navigateToArticleDetailFragment(it: Article) {
         val bundle = Bundle().apply { putParcelable(ArticleDetailFragment.ARTICLE_TAG, it) }
         findNavController().navigate(
             resId = R.id.action_breakingNewsFragment_to_articleFragment,
@@ -56,7 +49,7 @@ class HomeFragment : BaseFragment(R.layout.fragment_home) {
         )
     }
 
-    private fun handleSuccessfulResponse(response: Resource.Success<NewsResponse>) {
+    private fun handleSuccessfulResponse(response: Resource.Success<NewsResponseDomainModel>) {
         hideProgressBar()
         response.data?.let {
             newsAdapter.differ.submitList(it.articles)
@@ -83,7 +76,7 @@ class HomeFragment : BaseFragment(R.layout.fragment_home) {
     }
 
     private fun setupRecyclerViewAdapter() {
-        newsAdapter = NewsAdapter(requireContext())
+        newsAdapter = NewsAdapter(requireContext(), this::navigateToArticleDetailFragment)
         viewBinding.rvBreakingNews.apply {
             adapter = newsAdapter
             layoutManager = LinearLayoutManager(activity)
