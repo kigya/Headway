@@ -1,0 +1,83 @@
+<?xml version="1.0" encoding="utf-8"?>
+<androidx.constraintlayout.widget.ConstraintLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:paddingBottom="@dimen/margin_s">
+
+    <ImageView
+        android:id="@+id/ivArticleImage"
+        style="@style/HeadwayArticleImageViewStyle"
+        android:contentDescription="@string/article_image"
+        app:layout_constraintStart_toStartOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        tools:background="?attr/colorOnPrimary" />
+
+    <TextView
+        android:id="@+id/tvTitle"
+        style="@style/HeadwayTextTitleStyle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginStart="20dp"
+        android:layout_marginTop="@dimen/margin_s"
+        app:layout_constraintBottom_toTopOf="@id/tvAuthor"
+        app:layout_constraintLeft_toRightOf="@+id/ivArticleImage"
+        app:layout_constraintRight_toRightOf="parent"
+        app:layout_constraintTop_toTopOf="parent"
+        app:layout_constraintVertical_chainStyle="spread_inside"
+        tools:text="Crunch time for Credit Suisse talks as UBS seeks Swiss assurances - CNBC" />
+
+    <TextView
+        android:id="@+id/tvAuthor"
+        style="@style/HeadwayTextSubtitleStyle"
+        android:layout_width="0dp"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="@dimen/margin_xs"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="@+id/tvTitle"
+        app:layout_constraintTop_toBottomOf="@id/tvTitle"
+        tools:text="By Bob Nightengale" />
+
+    <TextView
+        android:id="@+id/tvSource"
+        style="@style/HeadwayTextSubtitleStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_marginBottom="@dimen/margin_s"
+        android:maxLines="1"
+        android:textColor="?attr/colorOnSecondary"
+        app:layout_constraintBottom_toBottomOf="parent"
+        app:layout_constraintEnd_toStartOf="@id/ivDelimiterDescription"
+        app:layout_constraintHorizontal_chainStyle="packed"
+        app:layout_constraintStart_toStartOf="@id/tvTitle"
+        tools:text="BBC News" />
+
+    <ImageView
+        android:id="@+id/ivDelimiterDescription"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:importantForAccessibility="no"
+        android:paddingStart="@dimen/margin_xs"
+        android:paddingEnd="@dimen/margin_xs"
+        android:src="@drawable/ic_ellipse"
+        app:layout_constraintBottom_toBottomOf="@id/tvSource"
+        app:layout_constraintEnd_toStartOf="@id/tvPublishedAt"
+        app:layout_constraintStart_toEndOf="@id/tvSource"
+        app:layout_constraintTop_toTopOf="@id/tvSource"
+        tools:viewBindingIgnore="true" />
+
+
+    <TextView
+        android:id="@+id/tvPublishedAt"
+        style="@style/HeadwayTextSubtitleStyle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:fontFamily="@font/source_sans_pro"
+        android:textAppearance="@style/TextAppearance.MaterialComponents.Caption"
+        app:layout_constraintBottom_toBottomOf="@id/tvSource"
+        app:layout_constraintStart_toEndOf="@id/ivDelimiterDescription"
+        app:layout_constraintTop_toTopOf="@id/tvSource"
+        tools:text="2023-07-21" />
+
+</androidx.constraintlayout.widget.ConstraintLayout>
