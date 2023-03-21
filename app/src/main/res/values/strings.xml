@@ -1,3 +1,12 @@
 <resources>
     <string name="app_name">Headway</string>
+    <string name="home_logo">Home logo</string>
+    <string name="article_saved">Saved!</string>
+    <string name="article_removed">Removed!</string>
+    <string name="home">Home</string>
+    <string name="favorites">Favorites</string>
+    <string name="add_to_bookmarks">Add to bookmarks</string>
+    <string name="article_author">By %1$s</string>
+    <string name="anonymous_author">Anonymous</string>
+    <string name="article_image">Article image</string>
 </resources>

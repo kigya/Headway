@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <style name="HeadwayBottomNavigationViewStyle" parent="Widget.MaterialComponents.BottomNavigationView">
+        <item name="elevation">0dp</item>
+        <item name="itemIconTint">?attr/colorSecondary</item>
+        <item name="itemRippleColor">?attr/colorPrimaryVariant</item>
+        <item name="labelVisibilityMode">unlabeled</item>
+    </style>
+
+    <style name="HeadwayFloatingActionButtonStyle" parent="Widget.MaterialComponents.FloatingActionButton">
+        <item name="android:layout_width">wrap_content</item>
+        <item name="android:layout_height">wrap_content</item>
+        <item name="android:layout_marginEnd">@dimen/margin_m</item>
+        <item name="android:layout_marginBottom">@dimen/margin_m</item>
+        <item name="backgroundTint">?attr/colorSecondary</item>
+        <item name="fabSize">normal</item>
+        <item name="tint">?attr/colorPrimary</item>
+    </style>
+
+    <style name="HeadwayArticleImageViewStyle">
+        <item name="android:layout_width">150dp</item>
+        <item name="android:layout_height">150dp</item>
+        <item name="android:scaleType">centerCrop</item>
+        <item name="layout_constraintDimensionRatio">1:1</item>
+    </style>
+
+    <style name="HeadwayTextTitleStyle" parent="Widget.AppCompat.TextView">
+        <item name="android:ellipsize">end</item>
+        <item name="android:fontFamily">@font/source_sans_pro_semibold</item>
+        <item name="android:maxLines">4</item>
+        <item name="android:textAppearance">@style/TextAppearance.MaterialComponents.Body1</item>
+    </style>
+
+    <style name="HeadwayTextSubtitleStyle" parent="Widget.AppCompat.TextView">
+        <item name="android:ellipsize">end</item>
+        <item name="android:fontFamily">@font/source_sans_pro</item>
+        <item name="android:maxLines">2</item>
+        <item name="android:textAppearance">@style/TextAppearance.MaterialComponents.Subtitle2</item>
+    </style>
+</resources>
