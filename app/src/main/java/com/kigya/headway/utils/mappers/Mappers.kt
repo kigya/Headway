@@ -3,14 +3,13 @@ package com.kigya.headway.utils.mappers
 import com.kigya.headway.data.dto.ArticleDto
 import com.kigya.headway.data.dto.NewsResponseDto
 import com.kigya.headway.data.dto.SourceDto
-import com.kigya.headway.data.model.Article
+import com.kigya.headway.data.model.ArticleDomainModel
 import com.kigya.headway.data.model.NewsResponseDomainModel
 import com.kigya.headway.data.model.SourceDomainModel
-import com.kigya.headway.utils.logger.LogCatLogger.log
 import retrofit2.Response
 
-fun ArticleDto.mapToArticle(): Article =
-    Article(
+fun ArticleDto.mapToArticleDomainModel(): ArticleDomainModel =
+    ArticleDomainModel(
         author = author,
         publishedAt = publishedAt,
         source = source?.toSourceDomainModel(),
@@ -19,7 +18,8 @@ fun ArticleDto.mapToArticle(): Article =
         urlToImage = urlToImage,
     )
 
-fun List<ArticleDto>.toListOfArticles(): List<Article> = map { it.mapToArticle() }
+fun List<ArticleDto>.toMutableArticlesList(): MutableList<ArticleDomainModel> =
+    map { articleDtoItem -> articleDtoItem.mapToArticleDomainModel() }.toMutableList()
 
 fun SourceDto.toSourceDomainModel(): SourceDomainModel =
     SourceDomainModel(
@@ -27,11 +27,11 @@ fun SourceDto.toSourceDomainModel(): SourceDomainModel =
         name = name,
     )
 
-fun Response<NewsResponseDto>.asResponseDomainModel(): Response<NewsResponseDomainModel> =
+fun Response<NewsResponseDto>.toResponseDomainModel(): Response<NewsResponseDomainModel> =
     if (isSuccessful) {
         Response.success(
             NewsResponseDomainModel(
-                articles = body()?.articles?.toListOfArticles() ?: emptyList(),
+                articles = body()?.articles?.toMutableArticlesList() ?: mutableListOf(),
                 status = body()?.status ?: "",
                 totalResults = body()?.totalResults ?: 0,
             )

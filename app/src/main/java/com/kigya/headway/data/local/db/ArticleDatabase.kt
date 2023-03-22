@@ -3,12 +3,12 @@ package com.kigya.headway.data.local.db
 import androidx.room.Database
 import androidx.room.RoomDatabase
 import androidx.room.TypeConverters
-import com.kigya.headway.data.dto.ArticleDto
-import com.kigya.headway.data.model.Article
+import com.kigya.headway.data.model.ArticleDomainModel
 
 @Database(
-    entities = [Article::class],
+    entities = [ArticleDomainModel::class],
     version = 1,
+    exportSchema = false,
 )
 @TypeConverters(Converters::class)
 abstract class ArticleDatabase : RoomDatabase() {

@@ -1,17 +1,14 @@
 package com.kigya.headway.data.model
 
-import android.os.Parcelable
 import androidx.room.Entity
 import androidx.room.PrimaryKey
-import com.kigya.headway.data.dto.SourceDto
-import com.kigya.headway.data.model.Article.Companion.TABLE_NAME
-import kotlinx.parcelize.Parcelize
+import com.kigya.headway.data.model.ArticleDomainModel.Companion.TABLE_NAME
+import java.io.Serializable
 
 @Entity(
     tableName = TABLE_NAME,
 )
-@Parcelize
-data class Article(
+data class ArticleDomainModel(
     @PrimaryKey(autoGenerate = true)
     val id: Int? = null,
     val author: String? = null,
@@ -20,7 +17,7 @@ data class Article(
     val title: String? = null,
     val url: String? = null,
     val urlToImage: String? = null,
-) : Parcelable {
+) : Serializable {
     companion object {
         const val TABLE_NAME = "articles"
     }

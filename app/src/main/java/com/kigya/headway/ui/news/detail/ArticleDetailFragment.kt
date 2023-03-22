@@ -23,12 +23,10 @@ class ArticleDetailFragment : BaseFragment(R.layout.fragment_article) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
         with(viewBinding) {
             setupWebView()
             setOnFabClickListener()
         }
-
     }
 
     private fun setOnFabClickListener() {
@@ -43,7 +41,7 @@ class ArticleDetailFragment : BaseFragment(R.layout.fragment_article) {
     private fun FragmentArticleBinding.setupWebView() {
         webView.apply {
             webViewClient = WebViewClient()
-            args.article.url?.let { loadUrl(it) }
+            args.article.url?.let { url -> loadUrl(url) }
         }
     }
 

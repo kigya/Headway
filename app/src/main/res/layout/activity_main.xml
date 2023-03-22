@@ -43,4 +43,16 @@
         app:layout_constraintStart_toEndOf="@id/guidelineStart"
         app:menu="@menu/bottom_navigation_menu" />
 
+    <com.kigya.headway.ui.views.ResourceView
+        android:id="@+id/resourceView"
+        android:layout_width="0dp"
+        app:cardElevation="0dp"
+        android:layout_height="wrap_content"
+        android:layout="@layout/item_resource_state"
+        android:visibility="visible"
+        app:layout_constraintBottom_toTopOf="@id/bottomNavigationView"
+        app:layout_constraintEnd_toEndOf="parent"
+        app:layout_constraintStart_toStartOf="parent" />
+
+
 </androidx.constraintlayout.widget.ConstraintLayout>
