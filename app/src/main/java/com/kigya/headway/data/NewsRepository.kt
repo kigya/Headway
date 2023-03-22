@@ -1,8 +1,6 @@
 package com.kigya.headway.data
 
-import com.kigya.headway.data.dto.ArticleDto
-import com.kigya.headway.data.dto.NewsResponseDto
-import com.kigya.headway.data.model.Article
+import com.kigya.headway.data.model.ArticleDomainModel
 import com.kigya.headway.data.model.NewsResponseDomainModel
 import kotlinx.coroutines.flow.Flow
 import retrofit2.Response
@@ -13,6 +11,6 @@ interface NewsRepository {
         pageNumber: Int
     ): Response<NewsResponseDomainModel>
 
-    suspend fun upsertArticle(article: Article): Long
-    fun getSavedNews(): Flow<List<Article>>
+    suspend fun upsertArticle(article: ArticleDomainModel): Long
+    fun getSavedNews(): Flow<List<ArticleDomainModel>>
 }

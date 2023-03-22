@@ -1,7 +1,7 @@
 package com.kigya.headway.ui.news.detail
 
 import androidx.lifecycle.viewModelScope
-import com.kigya.headway.data.model.Article
+import com.kigya.headway.data.model.ArticleDomainModel
 import com.kigya.headway.di.IoDispatcher
 import com.kigya.headway.ui.base.BaseViewModel
 import com.kigya.headway.usecase.SaveDatabaseNewsUseCase
@@ -18,7 +18,7 @@ class ArticleDetailViewModel @Inject constructor(
     private val saveDatabaseNewsUseCase: SaveDatabaseNewsUseCase,
 ) : BaseViewModel(dispatcher, logger) {
 
-    fun saveArticle(article: Article) {
+    fun saveArticle(article: ArticleDomainModel) {
         viewModelScope.launch(dispatcher) {
             saveDatabaseNewsUseCase(article)
         }

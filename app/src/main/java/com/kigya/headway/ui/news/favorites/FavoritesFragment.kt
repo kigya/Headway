@@ -8,7 +8,7 @@ import androidx.recyclerview.widget.LinearLayoutManager
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.kigya.headway.R
 import com.kigya.headway.adapters.NewsAdapter
-import com.kigya.headway.data.model.Article
+import com.kigya.headway.data.model.ArticleDomainModel
 import com.kigya.headway.databinding.FragmentFavoritesBinding
 import com.kigya.headway.ui.base.BaseFragment
 import com.kigya.headway.ui.news.detail.ArticleDetailFragment
@@ -34,9 +34,9 @@ class FavoritesFragment : BaseFragment(R.layout.fragment_favorites) {
             newsAdapter.differ.submitList(articles)
         }
 
-    private fun navigateToArticleDetailFragment(it: Article) {
+    private fun navigateToArticleDetailFragment(it: ArticleDomainModel) {
         val bundle = Bundle().apply {
-            putParcelable(ArticleDetailFragment.ARTICLE_TAG, it)
+            putSerializable(ArticleDetailFragment.ARTICLE_TAG, it)
         }
         findNavController().navigate(
             R.id.action_savedNewsFragment_to_articleFragment,

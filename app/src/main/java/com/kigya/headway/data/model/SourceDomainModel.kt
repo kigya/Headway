@@ -1,10 +1,8 @@
 package com.kigya.headway.data.model
 
-import android.os.Parcelable
-import kotlinx.parcelize.Parcelize
+import java.io.Serializable
 
-@Parcelize
 data class SourceDomainModel(
     val id: String? = null,
     val name: String? = null,
-) : Parcelable
+) : Serializable

@@ -10,11 +10,10 @@ import androidx.recyclerview.widget.RecyclerView
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.bumptech.glide.Glide
 import com.kigya.headway.R
-import com.kigya.headway.data.dto.ArticleDto
-import com.kigya.headway.data.model.Article
+import com.kigya.headway.data.model.ArticleDomainModel
 import com.kigya.headway.databinding.ItemArticlePreviewBinding
 
-typealias ArticleClickListener = (Article) -> Unit
+typealias ArticleClickListener = (ArticleDomainModel) -> Unit
 
 class NewsAdapter(
     private val activityContext: Context,
@@ -37,11 +36,17 @@ class NewsAdapter(
 
     override fun getItemCount(): Int = differ.currentList.size
 
-    private val diffCallback = object : DiffUtil.ItemCallback<Article>() {
-        override fun areItemsTheSame(oldItem: Article, newItem: Article): Boolean =
+    private val diffCallback = object : DiffUtil.ItemCallback<ArticleDomainModel>() {
+        override fun areItemsTheSame(
+            oldItem: ArticleDomainModel,
+            newItem: ArticleDomainModel
+        ): Boolean =
             oldItem.url == newItem.url
 
-        override fun areContentsTheSame(oldItem: Article, newItem: Article): Boolean =
+        override fun areContentsTheSame(
+            oldItem: ArticleDomainModel,
+            newItem: ArticleDomainModel
+        ): Boolean =
             oldItem == newItem
     }
 
@@ -51,9 +56,13 @@ class NewsAdapter(
 
         private val viewBinding by viewBinding(ItemArticlePreviewBinding::bind)
 
-        fun bind(article: Article) {
+        fun bind(article: ArticleDomainModel) {
             viewBinding.apply {
-                Glide.with(root.context).load(article.urlToImage).into(ivArticleImage)
+                Glide.with(root.context)
+                    .load(article.urlToImage)
+                    .placeholder(R.drawable.image_loading_placeholder)
+                    .into(ivArticleImage)
+
                 tvSource.text = article.source?.name
 
                 tvAuthor.text = activityContext.getString(

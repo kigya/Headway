@@ -9,4 +9,8 @@
     <string name="article_author">By %1$s</string>
     <string name="anonymous_author">Anonymous</string>
     <string name="article_image">Article image</string>
+    <string name="failed_to_connect">Failed to connect</string>
+    <string name="retry">Retry</string>
+    <string name="internet_connection_is_unstable">Internet connection is unstable</string>
+    <string name="internet_connection_is_lost">Internet connection is lost</string>
 </resources>
