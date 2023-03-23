@@ -13,4 +13,8 @@
     <string name="retry">Retry</string>
     <string name="internet_connection_is_unstable">Internet connection is unstable</string>
     <string name="internet_connection_is_lost">Internet connection is lost</string>
+
+    <string name="search">Search</string>
+    <string name="filters">Filters</string>
+    <string name="language">Language</string>
 </resources>

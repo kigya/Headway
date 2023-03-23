@@ -38,4 +38,9 @@
         <item name="android:maxLines">2</item>
         <item name="android:textAppearance">@style/TextAppearance.MaterialComponents.Subtitle2</item>
     </style>
+
+    <style name="AppTheme.AppBarOverlay" parent="ThemeOverlay.AppCompat.Dark.ActionBar">
+        <item name="android:textColorPrimary">?attr/colorSecondary</item>
+        <item name="fontFamily">@font/source_sans_pro_semibold</item>
+    </style>
 </resources>

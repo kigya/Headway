@@ -1,8 +1,10 @@
 package com.kigya.headway.ui.news.detail
 
 import android.os.Bundle
+import android.util.Log
 import android.view.View
 import android.webkit.WebViewClient
+import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.viewModels
 import androidx.navigation.fragment.navArgs
 import by.kirich1409.viewbindingdelegate.viewBinding
@@ -23,11 +25,13 @@ class ArticleDetailFragment : BaseFragment(R.layout.fragment_article) {
     override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
         super.onViewCreated(view, savedInstanceState)
 
-
         with(viewBinding) {
             setupWebView()
             setOnFabClickListener()
         }
+
+        Log.d("ArticleDetailFragment", "onViewCreated: ${args.article.title}")
+        (requireActivity() as AppCompatActivity).supportActionBar?.title = arguments?.getString(ARTICLE_TAG)
 
     }
 

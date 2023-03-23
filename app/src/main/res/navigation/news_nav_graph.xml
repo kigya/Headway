@@ -7,7 +7,7 @@
     <fragment
         android:id="@+id/homeFragment"
         android:name="com.kigya.headway.ui.news.home.HomeFragment"
-        android:label="HomeFragment">
+        android:label="@string/home">
         <action
             android:id="@+id/action_breakingNewsFragment_to_articleFragment"
             app:destination="@id/articleFragment"
@@ -19,7 +19,7 @@
     <fragment
         android:id="@+id/savedNewsFragment"
         android:name="com.kigya.headway.ui.news.favorites.FavoritesFragment"
-        android:label="FavoritesFragment">
+        android:label="@string/favorites">
         <action
             android:id="@+id/action_savedNewsFragment_to_articleFragment"
             app:destination="@id/articleFragment"
@@ -32,7 +32,7 @@
     <fragment
         android:id="@+id/articleFragment"
         android:name="com.kigya.headway.ui.news.detail.ArticleDetailFragment"
-        android:label="ArticleFragment">
+        android:label="Article">
         <argument
             android:name="article"
             app:argType="com.kigya.headway.data.model.ArticleDomainModel" />
