@@ -35,6 +35,6 @@
         android:label="ArticleFragment">
         <argument
             android:name="article"
-            app:argType="com.kigya.headway.data.model.Article" />
+            app:argType="com.kigya.headway.data.model.ArticleDomainModel" />
     </fragment>
 </navigation>

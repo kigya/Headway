@@ -3,16 +3,15 @@ package com.kigya.headway.data.local.db
 import androidx.room.Dao
 import androidx.room.Query
 import androidx.room.Upsert
-import com.kigya.headway.data.dto.ArticleDto
-import com.kigya.headway.data.model.Article
+import com.kigya.headway.data.model.ArticleDomainModel
 import kotlinx.coroutines.flow.Flow
 
 @Dao
 interface ArticleDao {
 
     @Upsert
-    suspend fun upsertArticle(article: Article): Long
+    suspend fun upsertArticle(article: ArticleDomainModel): Long
 
     @Query("SELECT * FROM articles")
-    fun getAllArticles(): Flow<List<Article>>
+    fun getAllArticles(): Flow<List<ArticleDomainModel>>
 }

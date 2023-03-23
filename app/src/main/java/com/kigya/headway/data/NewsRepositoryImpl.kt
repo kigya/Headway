@@ -1,10 +1,9 @@
 package com.kigya.headway.data
 
-import com.kigya.headway.data.dto.ArticleDto
 import com.kigya.headway.data.local.db.ArticleDao
-import com.kigya.headway.data.model.Article
+import com.kigya.headway.data.model.ArticleDomainModel
 import com.kigya.headway.data.remote.NewsAPI
-import com.kigya.headway.utils.mappers.asResponseDomainModel
+import com.kigya.headway.utils.mappers.toResponseDomainModel
 import javax.inject.Inject
 
 class NewsRepositoryImpl @Inject constructor(
@@ -13,10 +12,11 @@ class NewsRepositoryImpl @Inject constructor(
 ) : NewsRepository {
 
     override suspend fun getBreakingNews(countryCode: String, pageNumber: Int) =
-        newsApi.getBreakingNews(countryCode, pageNumber).asResponseDomainModel()
+        newsApi.getBreakingNews(countryCode, pageNumber).toResponseDomainModel()
 
-    override suspend fun upsertArticle(article: Article) =
+    override suspend fun upsertArticle(article: ArticleDomainModel) =
         newsDao.upsertArticle(article)
 
     override fun getSavedNews() = newsDao.getAllArticles()
+
 }
