@@ -4,7 +4,8 @@ import androidx.lifecycle.viewModelScope
 import com.kigya.headway.data.model.NewsResponseDomainModel
 import com.kigya.headway.di.IoDispatcher
 import com.kigya.headway.ui.base.BaseViewModel
-import com.kigya.headway.usecase.FetchNetworkNewsUseCase
+import com.kigya.headway.usecase.network.FetchNetworkNewsUseCase
+import com.kigya.headway.usecase.network.SearchNewsUseCase
 import com.kigya.headway.utils.Resource
 import com.kigya.headway.utils.extensions.handleResponse
 import com.kigya.headway.utils.logger.Logger
@@ -23,7 +24,8 @@ typealias NewsResourceFlow = MutableStateFlow<Resource<NewsResponseDomainModel>>
 class HomeViewModel @Inject constructor(
     @IoDispatcher private val dispatcher: CoroutineDispatcher,
     logger: Logger,
-    private val fetchNetworkNewsUseCase: FetchNetworkNewsUseCase
+    private val fetchNetworkNewsUseCase: FetchNetworkNewsUseCase,
+    private val searchNewsUseCase: SearchNewsUseCase,
 ) : BaseViewModel(dispatcher, logger) {
 
     private val _news: NewsResourceFlow =
@@ -31,6 +33,8 @@ class HomeViewModel @Inject constructor(
     val news = _news.asStateFlow()
 
     var pagingHelpersWrapper by Delegates.notNull<PagingHelpersWrapper>()
+
+    private var isSearchMode: Boolean = false
 
     init {
         initPagingWrapper()
@@ -48,6 +52,18 @@ class HomeViewModel @Inject constructor(
         viewModelScope.launch(dispatcher) {
             _news.value = Resource.Loading()
             val response = fetchNetworkNewsUseCase(countryCode, pagingHelpersWrapper.page)
+            _news.value = response.handleResponse(pagingHelpersWrapper)
+        }
+    }
+
+    fun searchForNews(searchQuery: String) {
+        viewModelScope.launch(dispatcher) {
+            _news.value = Resource.Loading()
+            if (isSearchMode.not()) {
+                pagingHelpersWrapper.response = null
+                isSearchMode = true
+            }
+            val response = searchNewsUseCase(searchQuery, pagingHelpersWrapper.page)
             _news.value = response.handleResponse(pagingHelpersWrapper)
         }
     }

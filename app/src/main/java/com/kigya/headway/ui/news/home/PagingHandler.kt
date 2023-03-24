@@ -37,7 +37,7 @@ class PagingHandler(
             val lastVisibleItemPosition = layoutManager.findLastVisibleItemPosition()
 
             if (lastVisibleItemPosition == totalItemCount - 1) {
-                resourceView?.height?.let { recyclerView.setPadding(0, 0, 0, it) }
+                resourceView?.height?.let { height -> recyclerView.setPadding(0, 0, 0, height) }
             } else {
                 recyclerView.setPadding(0, 0, 0, defaultPadding)
             }

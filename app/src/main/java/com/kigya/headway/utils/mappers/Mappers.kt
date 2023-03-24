@@ -8,7 +8,7 @@ import com.kigya.headway.data.model.NewsResponseDomainModel
 import com.kigya.headway.data.model.SourceDomainModel
 import retrofit2.Response
 
-fun ArticleDto.mapToArticle(): ArticleDomainModel =
+fun ArticleDto.mapToArticleDomainModel(): ArticleDomainModel =
     ArticleDomainModel(
         author = author,
         publishedAt = publishedAt,
@@ -19,7 +19,7 @@ fun ArticleDto.mapToArticle(): ArticleDomainModel =
     )
 
 fun List<ArticleDto>.toMutableArticlesList(): MutableList<ArticleDomainModel> =
-    map { it.mapToArticle() }.toMutableList()
+    map { articleDtoItem -> articleDtoItem.mapToArticleDomainModel() }.toMutableList()
 
 fun SourceDto.toSourceDomainModel(): SourceDomainModel =
     SourceDomainModel(

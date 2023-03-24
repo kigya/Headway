@@ -37,7 +37,7 @@
         android:layout_width="0dp"
         android:layout_height="56dp"
         android:layout_marginBottom="@dimen/margin_s"
-        android:background="@drawable/nav_background_curved"
+        android:background="@drawable/rounded_rectangle"
         app:layout_constraintBottom_toBottomOf="parent"
         app:layout_constraintEnd_toStartOf="@id/guidelineEnd"
         app:layout_constraintStart_toEndOf="@id/guidelineStart"

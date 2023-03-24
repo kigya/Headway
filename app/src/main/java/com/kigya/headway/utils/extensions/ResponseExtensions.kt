@@ -2,6 +2,8 @@ package com.kigya.headway.utils.extensions
 
 import com.kigya.headway.data.model.NewsResponseDomainModel
 import com.kigya.headway.utils.Resource
+import com.kigya.headway.utils.constants.API_SUBSCRIPTION_ERROR_CODE
+import com.kigya.headway.utils.constants.INTERNET_CONNECTION_ERROR_CODE
 import com.kigya.headway.utils.paging.PagingHelpersWrapper
 import retrofit2.Response
 
@@ -21,10 +23,10 @@ fun Response<NewsResponseDomainModel>.handleResponse(pagingHelpersWrapper: Pagin
             return Resource.Success(pagingHelpersWrapper.response ?: body)
         }
     } else {
-        return if (this.code() == 400) {
-            Resource.Error("No Internet Connection")
-        } else {
-            Resource.Error("Error: ${this.code()}")
+        return when (code()) {
+            INTERNET_CONNECTION_ERROR_CODE -> Resource.Error("No Internet Connection")
+            API_SUBSCRIPTION_ERROR_CODE -> Resource.Error("API Subscription Expired")
+            else -> Resource.Error("Error ${code()}")
         }
     }
     return Resource.Error(message())

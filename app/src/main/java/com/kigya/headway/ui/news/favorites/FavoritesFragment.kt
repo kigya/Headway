@@ -11,7 +11,7 @@ import com.kigya.headway.adapters.NewsAdapter
 import com.kigya.headway.data.model.ArticleDomainModel
 import com.kigya.headway.databinding.FragmentFavoritesBinding
 import com.kigya.headway.ui.base.BaseFragment
-import com.kigya.headway.ui.news.detail.ArticleDetailFragment
+import com.kigya.headway.ui.news.detail.ArticleDetailBaseFragment
 import com.kigya.headway.utils.extensions.collectLatestLifecycleFlow
 import dagger.hilt.android.AndroidEntryPoint
 import kotlin.properties.Delegates
@@ -34,12 +34,12 @@ class FavoritesFragment : BaseFragment(R.layout.fragment_favorites) {
             newsAdapter.differ.submitList(articles)
         }
 
-    private fun navigateToArticleDetailFragment(it: ArticleDomainModel) {
+    private fun navigateToArticleDetailFragment(domainModel: ArticleDomainModel) {
         val bundle = Bundle().apply {
-            putSerializable(ArticleDetailFragment.ARTICLE_TAG, it)
+            putSerializable(ArticleDetailBaseFragment.ARTICLE_TAG, domainModel)
         }
         findNavController().navigate(
-            R.id.action_savedNewsFragment_to_articleFragment,
+            R.id.action_savedNewsFragment_to_favoritesArticleDetailFragment,
             bundle,
         )
     }
