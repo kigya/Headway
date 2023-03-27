@@ -17,6 +17,7 @@ data class ArticleDomainModel(
     val title: String? = null,
     val url: String? = null,
     val urlToImage: String? = null,
+    val position: Int = 0,
 ) : Serializable {
     companion object {
         const val TABLE_NAME = "articles"

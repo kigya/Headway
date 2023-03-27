@@ -16,19 +16,22 @@ class NewsRepositoryImpl @Inject constructor(
     override suspend fun getBreakingNews(countryCode: String, pageNumber: Int) =
         newsApi.getBreakingNews(countryCode, pageNumber).toResponseDomainModel()
 
-    override suspend fun upsertArticle(article: ArticleDomainModel) =
-        newsDao.upsertArticle(article)
-
-    override fun getSavedNews() = newsDao.getAllArticles()
-
-    override suspend fun deleteArticle(article: ArticleDomainModel) =
-        newsDao.deleteArticle(article)
-
     override suspend fun searchForNews(
         searchQuery: String,
         pageNumber: Int
     ): Response<NewsResponseDomainModel> {
         return newsApi.searchForNews(searchQuery, pageNumber).toResponseDomainModel()
     }
+
+    override suspend fun upsertArticleWithPosition(article: ArticleDomainModel) =
+        newsDao.upsertArticleWithPosition(article)
+
+    override suspend fun updateArticlesPositions(articleList: List<ArticleDomainModel>) =
+        newsDao.updateArticlesPositions(articleList)
+
+    override suspend fun deleteArticle(article: ArticleDomainModel) =
+        newsDao.deleteArticle(article)
+
+    override fun getSavedNews() = newsDao.getAllArticles()
 
 }
