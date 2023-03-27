@@ -2,12 +2,7 @@ package com.kigya.headway.ui.views
 
 import android.content.Context
 import android.util.AttributeSet
-import android.view.Gravity
-import android.view.animation.AnimationUtils
-import android.widget.ProgressBar
-import android.widget.RelativeLayout
 import androidx.cardview.widget.CardView
-import androidx.core.view.isVisible
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.kigya.headway.R
 import com.kigya.headway.databinding.ItemResourceStateBinding

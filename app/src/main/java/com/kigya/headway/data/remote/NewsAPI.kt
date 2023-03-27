@@ -12,4 +12,11 @@ interface NewsAPI {
         @Query("country") countryCode: String = "us",
         @Query("page") page: Int = 1,
     ): Response<NewsResponseDto>
+
+    @GET("v2/everything")
+    suspend fun searchForNews(
+        @Query("q") searchQuery: String,
+        @Query("page") pageNumber: Int = 1,
+        @Query("pageSize") pageSize: Int = 20,
+    ): Response<NewsResponseDto>
 }

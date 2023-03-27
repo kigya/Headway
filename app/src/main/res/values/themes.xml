@@ -14,5 +14,9 @@
         <!-- Status bar color. -->
         <item name="android:windowBackground">?attr/colorPrimary</item>
         <!-- Customize your theme here. -->
+        <item name="actionBarTheme">@style/AppTheme.AppBarOverlay</item>
+        <item name="android:windowLightStatusBar">true</item>
+        <item name="actionOverflowButtonStyle">@style/HeadwayOverflowButtonStyle</item>
     </style>
+
 </resources>

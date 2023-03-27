@@ -1,6 +1,7 @@
 package com.kigya.headway.data.local.db
 
 import androidx.room.Dao
+import androidx.room.Delete
 import androidx.room.Query
 import androidx.room.Upsert
 import com.kigya.headway.data.model.ArticleDomainModel
@@ -14,4 +15,7 @@ interface ArticleDao {
 
     @Query("SELECT * FROM articles")
     fun getAllArticles(): Flow<List<ArticleDomainModel>>
+
+    @Delete
+    suspend fun deleteArticle(article: ArticleDomainModel)
 }

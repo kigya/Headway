@@ -20,5 +20,6 @@ data class ArticleDomainModel(
 ) : Serializable {
     companion object {
         const val TABLE_NAME = "articles"
+        const val serialVersionUID = 1L
     }
 }

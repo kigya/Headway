@@ -9,6 +9,8 @@ import androidx.recyclerview.widget.DiffUtil
 import androidx.recyclerview.widget.RecyclerView
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.bumptech.glide.Glide
+import com.bumptech.glide.load.resource.bitmap.CenterCrop
+import com.bumptech.glide.load.resource.bitmap.RoundedCorners
 import com.kigya.headway.R
 import com.kigya.headway.data.model.ArticleDomainModel
 import com.kigya.headway.databinding.ItemArticlePreviewBinding
@@ -60,6 +62,7 @@ class NewsAdapter(
             viewBinding.apply {
                 Glide.with(root.context)
                     .load(article.urlToImage)
+                    .transform(CenterCrop(), RoundedCorners(ROUNDED_CORNERS_RADIUS))
                     .placeholder(R.drawable.image_loading_placeholder)
                     .into(ivArticleImage)
 
@@ -75,5 +78,9 @@ class NewsAdapter(
                 root.setOnClickListener { articleClickListener(article) }
             }
         }
+    }
+
+    companion object {
+        private const val ROUNDED_CORNERS_RADIUS = 10
     }
 }

@@ -1,38 +1,60 @@
 <?xml version="1.0" encoding="utf-8"?>
 <navigation xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
+    xmlns:tools="http://schemas.android.com/tools"
     android:id="@+id/news_nav_graph"
     app:startDestination="@id/homeFragment">
 
     <fragment
         android:id="@+id/homeFragment"
         android:name="com.kigya.headway.ui.news.home.HomeFragment"
-        android:label="HomeFragment">
+        android:label="@string/home"
+        app:enterAnim="@anim/fade_in"
+        app:exitAnim="@anim/fade_out"
+        app:popEnterAnim="@anim/fade_in"
+        app:popExitAnim="@anim/fade_out"
+        tools:layout="@layout/fragment_home">
         <action
-            android:id="@+id/action_breakingNewsFragment_to_articleFragment"
-            app:destination="@id/articleFragment"
-            app:enterAnim="@anim/fade_in"
-            app:exitAnim="@anim/fade_out"
-            app:popEnterAnim="@anim/fade_in"
-            app:popExitAnim="@anim/fade_out" />
-    </fragment>
-    <fragment
-        android:id="@+id/savedNewsFragment"
-        android:name="com.kigya.headway.ui.news.favorites.FavoritesFragment"
-        android:label="FavoritesFragment">
-        <action
-            android:id="@+id/action_savedNewsFragment_to_articleFragment"
-            app:destination="@id/articleFragment"
-            app:enterAnim="@anim/fade_in"
-            app:exitAnim="@anim/fade_out"
-            app:popEnterAnim="@anim/fade_in"
-            app:popExitAnim="@anim/fade_out" />
+            android:id="@+id/action_homeFragment_to_homeArticleDetailFragment"
+            app:destination="@id/homeArticleDetailFragment" />
     </fragment>
 
     <fragment
-        android:id="@+id/articleFragment"
-        android:name="com.kigya.headway.ui.news.detail.ArticleDetailFragment"
-        android:label="ArticleFragment">
+        android:id="@+id/favoritesFragment"
+        android:name="com.kigya.headway.ui.news.favorites.FavoritesFragment"
+        android:label="@string/favorites"
+        app:enterAnim="@anim/fade_in"
+        app:exitAnim="@anim/fade_out"
+        app:popEnterAnim="@anim/fade_in"
+        app:popExitAnim="@anim/fade_out"
+        tools:layout="@layout/fragment_favorites">
+        <action
+            android:id="@+id/action_savedNewsFragment_to_favoritesArticleDetailFragment"
+            app:destination="@id/favoritesArticleDetailFragment" />
+    </fragment>
+
+    <fragment
+        android:id="@+id/favoritesArticleDetailFragment"
+        android:name="com.kigya.headway.ui.news.detail.FavoritesArticleDetailFragment"
+        android:label=""
+        app:enterAnim="@anim/fade_in"
+        app:exitAnim="@anim/fade_out"
+        app:popEnterAnim="@anim/fade_in"
+        app:popExitAnim="@anim/fade_out"
+        tools:layout="@layout/fragment_article">
+        <argument
+            android:name="article"
+            app:argType="com.kigya.headway.data.model.ArticleDomainModel" />
+    </fragment>
+    <fragment
+        android:id="@+id/homeArticleDetailFragment"
+        android:name="com.kigya.headway.ui.news.detail.HomeArticleDetailFragment"
+        android:label=""
+        app:enterAnim="@anim/fade_in"
+        app:exitAnim="@anim/fade_out"
+        app:popEnterAnim="@anim/fade_in"
+        app:popExitAnim="@anim/fade_out"
+        tools:layout="@layout/fragment_article">
         <argument
             android:name="article"
             app:argType="com.kigya.headway.data.model.ArticleDomainModel" />

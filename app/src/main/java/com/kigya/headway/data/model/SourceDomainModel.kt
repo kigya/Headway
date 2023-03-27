@@ -5,4 +5,8 @@ import java.io.Serializable
 data class SourceDomainModel(
     val id: String? = null,
     val name: String? = null,
-) : Serializable
+) : Serializable {
+    companion object {
+        const val serialVersionUID = 2L
+    }
+}

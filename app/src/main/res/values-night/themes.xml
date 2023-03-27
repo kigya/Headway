@@ -14,5 +14,6 @@
         <!-- Status bar color. -->
         <item name="android:windowBackground">?attr/colorPrimary</item>
         <!-- Customize your theme here. -->
+        <item name="actionBarTheme">@style/AppTheme.AppBarOverlay</item>
     </style>
 </resources>
