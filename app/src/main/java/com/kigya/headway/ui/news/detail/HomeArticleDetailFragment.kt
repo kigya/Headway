@@ -9,10 +9,8 @@ import com.kigya.headway.data.model.ArticleDomainModel
 class HomeArticleDetailFragment : ArticleDetailBaseFragment() {
     private val args: HomeArticleDetailFragmentArgs by navArgs()
 
-    override val argHolder = object : ArticleArgHolder {
-        override val article: ArticleDomainModel
-            get() = args.article
-    }
+    override val article: ArticleDomainModel
+        get() = args.article
 
     override val internalBottomMenuResource: Int
         get() = R.id.homeFragment

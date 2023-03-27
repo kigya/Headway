@@ -10,10 +10,9 @@ class FavoritesArticleDetailFragment : ArticleDetailBaseFragment() {
 
     private val args: FavoritesArticleDetailFragmentArgs by navArgs()
 
-    override val argHolder = object : ArticleArgHolder {
-        override val article: ArticleDomainModel
-            get() = args.article
-    }
+    override val article: ArticleDomainModel
+        get() = args.article
+
     override val internalBottomMenuResource: Int
         get() = R.id.favoritesFragment
     override val externalBottomMenuResource: Int

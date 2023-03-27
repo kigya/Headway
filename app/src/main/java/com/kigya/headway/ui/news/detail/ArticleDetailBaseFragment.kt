@@ -12,9 +12,9 @@ import androidx.navigation.fragment.findNavController
 import by.kirich1409.viewbindingdelegate.viewBinding
 import com.google.android.material.bottomnavigation.BottomNavigationView
 import com.kigya.headway.R
+import com.kigya.headway.data.model.ArticleDomainModel
 import com.kigya.headway.databinding.FragmentArticleBinding
 import com.kigya.headway.ui.base.BaseFragment
-import com.kigya.headway.utils.extensions.setOnSidesSwipeTouchListener
 import com.kigya.headway.utils.extensions.showToast
 import dagger.hilt.android.AndroidEntryPoint
 
@@ -23,7 +23,7 @@ abstract class ArticleDetailBaseFragment : BaseFragment(R.layout.fragment_articl
 
     override val viewModel: ArticleDetailViewModel by viewModels()
     private val viewBinding by viewBinding(FragmentArticleBinding::bind)
-    abstract val argHolder: ArticleArgHolder
+    abstract val article: ArticleDomainModel
     private var isBackPressedCalled: Boolean = false
 
     /**
@@ -107,7 +107,7 @@ abstract class ArticleDetailBaseFragment : BaseFragment(R.layout.fragment_articl
 
     private fun setActionBarTitle() {
         (requireActivity() as AppCompatActivity).supportActionBar?.title =
-            argHolder.article.source?.name
+            article.source?.name
     }
 
     private fun setOnFabClickListener(fabAction: () -> Unit = {}) {
@@ -126,19 +126,19 @@ abstract class ArticleDetailBaseFragment : BaseFragment(R.layout.fragment_articl
     }
 
     private fun addToFavorites() {
-        viewModel.saveArticle(argHolder.article)
+        viewModel.saveArticle(article)
         showToast(getString(R.string.article_saved))
     }
 
     private fun removeFromFavorites() {
-        viewModel.deleteArticle(argHolder.article)
+        viewModel.deleteArticle(article)
         showToast(getString(R.string.article_removed))
     }
 
     private fun setupWebView() {
         viewBinding.webView.apply {
             webViewClient = WebViewClient()
-            argHolder.article.url?.let { url -> loadUrl(url) }
+            article.url?.let { url -> loadUrl(url) }
         }
     }
 
