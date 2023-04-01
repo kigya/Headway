@@ -11,11 +11,17 @@ interface NewsRepository {
         pageNumber: Int
     ): Response<NewsResponseDomainModel>
 
-    suspend fun upsertArticle(article: ArticleDomainModel): Long
+    suspend fun searchForNews(
+        searchQuery: String,
+        pageNumber: Int
+    ): Response<NewsResponseDomainModel>
+
+    suspend fun upsertArticleWithPosition(article: ArticleDomainModel)
+
+    suspend fun updateArticlesPositions(articleList: List<ArticleDomainModel>)
 
     suspend fun deleteArticle(article: ArticleDomainModel)
 
     fun getSavedNews(): Flow<List<ArticleDomainModel>>
 
-    suspend fun searchForNews(searchQuery: String, pageNumber: Int): Response<NewsResponseDomainModel>
 }

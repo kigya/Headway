@@ -5,6 +5,7 @@ import android.content.Context
 import android.view.GestureDetector
 import android.view.MotionEvent
 import android.view.View
+import com.kigya.headway.utils.logger.LogCatLogger.log
 import kotlin.math.abs
 
 internal open class OnSwipeTouchListener(ctx: Context) : View.OnTouchListener {
@@ -13,7 +14,6 @@ internal open class OnSwipeTouchListener(ctx: Context) : View.OnTouchListener {
     init {
         gestureDetector = GestureDetector(ctx, GestureListener())
     }
-
 
     @SuppressLint("ClickableViewAccessibility")
     override fun onTouch(v: View, event: MotionEvent): Boolean {
@@ -52,7 +52,7 @@ internal open class OnSwipeTouchListener(ctx: Context) : View.OnTouchListener {
                     result = true
                 }
             } catch (exception: Exception) {
-                exception.printStackTrace()
+                log("OnSwipeTouchListener", "Exception: $exception")
             }
             return result
         }

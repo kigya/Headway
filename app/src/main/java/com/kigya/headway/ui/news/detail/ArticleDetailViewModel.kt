@@ -4,8 +4,8 @@ import androidx.lifecycle.viewModelScope
 import com.kigya.headway.data.model.ArticleDomainModel
 import com.kigya.headway.di.IoDispatcher
 import com.kigya.headway.ui.base.BaseViewModel
-import com.kigya.headway.usecase.db.DeleteDatabaseNewsUseCase
-import com.kigya.headway.usecase.db.SaveDatabaseNewsUseCase
+import com.kigya.headway.usecase.db.DeleteDatabaseArticleUseCase
+import com.kigya.headway.usecase.db.SaveDatabaseArticleUseCase
 import com.kigya.headway.utils.logger.Logger
 import dagger.hilt.android.lifecycle.HiltViewModel
 import kotlinx.coroutines.CoroutineDispatcher
@@ -16,19 +16,19 @@ import javax.inject.Inject
 class ArticleDetailViewModel @Inject constructor(
     @IoDispatcher private val dispatcher: CoroutineDispatcher,
     logger: Logger,
-    private val saveDatabaseNewsUseCase: SaveDatabaseNewsUseCase,
-    private val deleteDatabaseNewsUseCase: DeleteDatabaseNewsUseCase,
+    private val saveDatabaseArticleUseCase: SaveDatabaseArticleUseCase,
+    private val deleteDatabaseArticleUseCase: DeleteDatabaseArticleUseCase,
 ) : BaseViewModel(dispatcher, logger) {
 
     fun saveArticle(article: ArticleDomainModel) {
         viewModelScope.launch(dispatcher) {
-            saveDatabaseNewsUseCase(article)
+            saveDatabaseArticleUseCase(article)
         }
     }
 
     fun deleteArticle(article: ArticleDomainModel) {
         viewModelScope.launch(dispatcher) {
-            deleteDatabaseNewsUseCase(article)
+            deleteDatabaseArticleUseCase(article)
         }
     }
 }

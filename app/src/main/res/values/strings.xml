@@ -17,4 +17,6 @@
     <string name="search">Search</string>
     <string name="filters">Filters</string>
     <string name="language">Language</string>
+    <string name="article_deleted">Article deleted</string>
+    <string name="undo">Undo</string>
 </resources>

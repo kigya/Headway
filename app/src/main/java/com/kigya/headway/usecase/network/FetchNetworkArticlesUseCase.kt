@@ -8,7 +8,7 @@ import okhttp3.ResponseBody.Companion.toResponseBody
 import retrofit2.Response
 import javax.inject.Inject
 
-class FetchNetworkNewsUseCase @Inject constructor(
+class FetchNetworkArticlesUseCase @Inject constructor(
     private val newsRepository: NewsRepository,
     private val connectivityObserver: NetworkConnectivityObserver,
 ) {

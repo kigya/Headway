@@ -4,8 +4,8 @@ import androidx.lifecycle.viewModelScope
 import com.kigya.headway.data.model.NewsResponseDomainModel
 import com.kigya.headway.di.IoDispatcher
 import com.kigya.headway.ui.base.BaseViewModel
-import com.kigya.headway.usecase.network.FetchNetworkNewsUseCase
-import com.kigya.headway.usecase.network.SearchNewsUseCase
+import com.kigya.headway.usecase.network.FetchNetworkArticlesUseCase
+import com.kigya.headway.usecase.network.SearchNetworkArticlesUseCase
 import com.kigya.headway.utils.Resource
 import com.kigya.headway.utils.extensions.handleResponse
 import com.kigya.headway.utils.logger.Logger
@@ -24,8 +24,8 @@ typealias NewsResourceFlow = MutableStateFlow<Resource<NewsResponseDomainModel>>
 class HomeViewModel @Inject constructor(
     @IoDispatcher private val dispatcher: CoroutineDispatcher,
     logger: Logger,
-    private val fetchNetworkNewsUseCase: FetchNetworkNewsUseCase,
-    private val searchNewsUseCase: SearchNewsUseCase,
+    private val fetchNetworkArticlesUseCase: FetchNetworkArticlesUseCase,
+    private val searchNetworkArticlesUseCase: SearchNetworkArticlesUseCase,
 ) : BaseViewModel(dispatcher, logger) {
 
     private val _news: NewsResourceFlow =
@@ -51,7 +51,7 @@ class HomeViewModel @Inject constructor(
     fun getBreakingNews(countryCode: String) {
         viewModelScope.launch(dispatcher) {
             _news.value = Resource.Loading()
-            val response = fetchNetworkNewsUseCase(countryCode, pagingHelpersWrapper.page)
+            val response = fetchNetworkArticlesUseCase(countryCode, pagingHelpersWrapper.page)
             _news.value = response.handleResponse(pagingHelpersWrapper)
         }
     }
@@ -63,7 +63,7 @@ class HomeViewModel @Inject constructor(
                 pagingHelpersWrapper.response = null
                 isSearchMode = true
             }
-            val response = searchNewsUseCase(searchQuery, pagingHelpersWrapper.page)
+            val response = searchNetworkArticlesUseCase(searchQuery, pagingHelpersWrapper.page)
             _news.value = response.handleResponse(pagingHelpersWrapper)
         }
     }
