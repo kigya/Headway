@@ -3,21 +3,29 @@ import com.android.build.gradle.BaseExtension
 import extension.configureIfExists
 import extension.getInt
 import extension.libs
+import org.gradle.kotlin.dsl.configure
+import org.gradle.kotlin.dsl.withType
+import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
 /**
  * Before using this plugin, ensure that necessary Android configurations have been applied.
  * Note: This script does not configure the Kotlin JVM version.
  */
 configure<BaseExtension> {
-    val projectNameFormatted = project.path.drop(1).replace(Regex("[-:]"), ".")
-    println("Namespace: ${project.path} -> $projectNameFormatted")
-    namespace = "dev.kigya.headway.$projectNameFormatted"
+    val projectNameFormatted = project.path
+        .drop(1)
+        .replace(Regex("[-:]"), ".")
+    val rawNamespace = "dev.kigya.headway.$projectNameFormatted"
+    namespace = rawNamespace.trimEnd('.')
+    println("Namespace: ${project.path} -> $namespace")
 
-    compileSdkVersion(libs.versions.compileSdk.getInt())
+    compileSdkVersion(rootProject.libs.versions.compileSdk.getInt())
 
     defaultConfig {
-        minSdk = libs.versions.minSdk.getInt()
-        targetSdk = libs.versions.targetSdk.getInt()
+        minSdk = rootProject.libs.versions.minSdk.getInt()
+        targetSdk = rootProject.libs.versions.targetSdk.getInt()
 
         resourceConfigurations += listOf("ru", "en")
 
@@ -28,8 +36,8 @@ configure<BaseExtension> {
     }
 
     compileOptions {
-        sourceCompatibility(project.libs.versions.java.get())
-        targetCompatibility(project.libs.versions.java.get())
+        sourceCompatibility(rootProject.libs.versions.java.get())
+        targetCompatibility(rootProject.libs.versions.java.get())
     }
 
     packagingOptions {
@@ -52,6 +60,16 @@ configure<BaseExtension> {
 configureIfExists(CommonExtension::class.java) {
     lint {
         htmlReport = false
-        baseline = file("${project.projectDir}/lint-baseline.xml")
+        baseline = file("${rootProject.projectDir}/lint-baseline.xml")
+    }
+}
+
+configure<KotlinMultiplatformExtension> {
+    androidTarget {
+        tasks.withType<KotlinJvmCompile>().configureEach {
+            compilerOptions {
+                jvmTarget.set(JvmTarget.fromTarget(rootProject.libs.versions.java.get()))
+            }
+        }
     }
 }

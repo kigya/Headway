@@ -16,15 +16,15 @@ configure<KotlinMultiplatformExtension> {
     androidTarget {
         tasks.withType<KotlinJvmCompile>().configureEach {
             compilerOptions {
-                jvmTarget.set(JvmTarget.fromTarget(libs.versions.java.get()))
+                jvmTarget.set(JvmTarget.fromTarget(rootProject.libs.versions.java.get()))
             }
         }
     }
 
-    jvm("desktop") { // This defines a JVM target named "desktop"
+    jvm("desktop") {
         tasks.withType<KotlinJvmCompile>().configureEach {
             compilerOptions {
-                jvmTarget.set(JvmTarget.fromTarget(libs.versions.java.get()))
+                jvmTarget.set(JvmTarget.fromTarget(rootProject.libs.versions.java.get()))
             }
         }
     }

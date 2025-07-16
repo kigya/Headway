@@ -28,4 +28,5 @@ include(
     "component",
     "config",
     "gradle-ext",
+    "base",
 )

@@ -238,6 +238,8 @@ serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref 
 room = { id = "androidx.room", version.ref = "room" }
 buildkonfig = { id = "com.codingfeline.buildkonfig", version.ref = "buildkonfig" }
 
+convention-base-androidApplication = "base.androidApplication:1.0"
+
 convention-build-feature-buildConfig = "build-feature.build-config:1.0"
 convention-build-feature-resValues = "build-feature.res-values:1.0"
 convention-build-feature-compose = "build-feature.compose:1.0"
@@ -255,7 +257,6 @@ convention-component-room = "component.room:1.0"
 convention-bundle-android-ui-screen-compose = "bundle.android.ui.screen.compose:1.0"
 convention-bundle-shared-ui-screen-compose = "bundle.shared.ui.screen.compose:1.0"
 
-convention-config-android = "config.android:1.0"
 convention-config-android-library = "config.android.library:1.0"
 convention-config-kotlin-library = "config.kotlin.library:1.0"
 convention-config-shared-library = "config.shared.library:1.0"
