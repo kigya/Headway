@@ -1,36 +1,45 @@
+@file:Suppress("UnstableApiUsage")
+
+import java.util.Properties
+
 rootProject.name = "Headway"
+
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {
     repositories {
-        google {
-            mavenContent {
-                includeGroupAndSubgroups("androidx")
-                includeGroupAndSubgroups("com.android")
-                includeGroupAndSubgroups("com.google")
-            }
-        }
-        mavenCentral()
+        google()
         gradlePluginPortal()
+        mavenCentral()
     }
+}
+
+val localProperties: Properties = Properties().apply {
+    rootDir
+        .resolve("local.properties")
+        .takeIf { it.exists() }
+        ?.inputStream()
+        ?.use { load(it) }
 }
 
 dependencyResolutionManagement {
     repositories {
-        google {
-            mavenContent {
-                includeGroupAndSubgroups("androidx")
-                includeGroupAndSubgroups("com.android")
-                includeGroupAndSubgroups("com.google")
+        google()
+        mavenLocal()
+        mavenCentral()
+        maven {
+            url = uri("https://maven.pkg.github.com/kigya/Outcome")
+            credentials {
+                username = localProperties.getProperty("gpr.user")
+                    ?: System.getenv("GITHUB_ACTOR")
+                password = localProperties.getProperty("gpr.key")
+                    ?: System.getenv("GITHUB_TOKEN")
             }
         }
-        mavenCentral()
     }
 }
 
-plugins {
-    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
-}
+includeBuild("build-logic")
 
 include(":composeApp")
 include(":server")
