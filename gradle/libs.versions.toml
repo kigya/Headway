@@ -239,10 +239,7 @@ room = { id = "androidx.room", version.ref = "room" }
 buildkonfig = { id = "com.codingfeline.buildkonfig", version.ref = "buildkonfig" }
 
 convention-base-androidApplication = "base.androidApplication:1.0"
-
-convention-build-feature-buildConfig = "build-feature.build-config:1.0"
-convention-build-feature-resValues = "build-feature.res-values:1.0"
-convention-build-feature-compose = "build-feature.compose:1.0"
+convention-base-desktopApplication = "base.desktopApplication:1.0"
 
 convention-component-android-compose = "component.android.compose:1.0"
 convention-component-compose = "component.compose:1.0"

@@ -7,6 +7,7 @@ dependencies {
         with(gradle) {
             implementation(kotlin)
             implementation(kotlin.multiplatform)
+            implementation(compose.compiler)
             implementation(android)
             implementation(detekt)
             implementation(ksp)
@@ -15,6 +16,5 @@ dependencies {
 
     with(projects) {
         implementation(gradleExt)
-        implementation(config)
     }
 }

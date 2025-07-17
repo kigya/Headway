@@ -24,9 +24,7 @@ dependencyResolutionManagement {
 
 rootProject.name = "build-logic"
 include(
-    "build-feature",
     "component",
-    "config",
-    "gradle-ext",
     "base",
+    "gradle-ext",
 )

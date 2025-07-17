@@ -17,7 +17,6 @@ dependencies {
     }
 
     with(projects) {
-        implementation(buildFeature)
         implementation(gradleExt)
     }
 }

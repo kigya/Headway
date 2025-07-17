@@ -1,3 +1,4 @@
+import base.AndroidApplicationConventionParams
 import com.android.build.api.dsl.CommonExtension
 import com.android.build.gradle.BaseExtension
 import extension.configureIfExists
@@ -9,16 +10,23 @@ import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
 
+val androidExtension = project.extensions.create(
+    "configureAndroidApplication",
+    AndroidApplicationConventionParams::class.java
+)
+
 /**
  * Before using this plugin, ensure that necessary Android configurations have been applied.
  * Note: This script does not configure the Kotlin JVM version.
  */
 configure<BaseExtension> {
-    val projectNameFormatted = project.path
-        .drop(1)
-        .replace(Regex("[-:]"), ".")
-    val rawNamespace = "dev.kigya.headway.$projectNameFormatted"
-    namespace = rawNamespace.trimEnd('.')
+    namespace = androidExtension.namespace ?: run {
+        val projectNameFormatted = project.path
+            .drop(1)
+            .replace(Regex("[-:]"), ".")
+        val rawNamespace = "dev.kigya.headway.$projectNameFormatted"
+        rawNamespace.trimEnd('.')
+    }
     println("Namespace: ${project.path} -> $namespace")
 
     compileSdkVersion(rootProject.libs.versions.compileSdk.getInt())
@@ -26,8 +34,9 @@ configure<BaseExtension> {
     defaultConfig {
         minSdk = rootProject.libs.versions.minSdk.getInt()
         targetSdk = rootProject.libs.versions.targetSdk.getInt()
-
-        resourceConfigurations += listOf("ru", "en")
+        versionCode = androidExtension.versionCode ?: 1
+        versionName = androidExtension.versionName ?: "1.0.0"
+        resourceConfigurations += androidExtension.resourceConfigurations
 
         testOptions.unitTests.apply {
             isIncludeAndroidResources = true

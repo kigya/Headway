@@ -1,9 +1,16 @@
+import com.android.build.api.dsl.CommonExtension
+import com.android.tools.r8.internal.ui
+import extension.configureIfExists
 import extension.libs
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import kotlin.jvm.java
 
 plugins {
     id("org.jetbrains.compose")
-    id("build-feature.compose")
+}
+
+configureIfExists(CommonExtension::class.java) {
+    buildFeatures.compose = true
 }
 
 configure<KotlinMultiplatformExtension> {

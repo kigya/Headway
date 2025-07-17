@@ -12,10 +12,10 @@ plugins {
             alias(jvm) apply false
         }
 
+        alias(compose) apply false
         alias(compose.compiler) apply false
 
         alias(ksp) apply false
-        alias(compose) apply false
 
         alias(detekt) apply false
         alias(google.services) apply false
