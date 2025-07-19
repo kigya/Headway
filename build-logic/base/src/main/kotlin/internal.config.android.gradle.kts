@@ -4,8 +4,6 @@ import com.android.build.gradle.BaseExtension
 import extension.configureIfExists
 import extension.getInt
 import extension.libs
-import org.gradle.kotlin.dsl.configure
-import org.gradle.kotlin.dsl.withType
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile

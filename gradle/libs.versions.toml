@@ -22,7 +22,7 @@ composeTest = { strictly = "1.8.0-beta02" }
 composeNavigation = { require = "2.9.0-alpha15" }
 composeShimmer = { require = "1.3.2" }
 composeAdaptive = { require = "1.1.0-beta01" }
-composeHotReload = "1.0.0-beta03"
+composeHotReload = "1.0.0-beta01"
 
 # Lifecycle
 lifecycle = { require = "2.9.0-alpha07" }
@@ -208,6 +208,7 @@ gradle-ksp = { module = "com.google.devtools.ksp:com.google.devtools.ksp.gradle.
 gradle-android = { module = "com.android.tools.build:gradle", version.ref = "agp" }
 gradle-compose = { module = "org.jetbrains.compose:org.jetbrains.compose.gradle.plugin", version.ref = "composeMultiplatform" }
 gradle-compose-compiler = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
+gradle-compose-hotReload = { module = "org.jetbrains.compose.hot-reload:gradle-plugin", version.ref = "composeHotReload" }
 gradle-koin = { module = "io.insert-koin:koin-gradle-plugin", version.ref = "koin" }
 gradle-detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
 gradle-room = { module = "androidx.room:room-gradle-plugin", version.ref = "room" }
@@ -240,6 +241,7 @@ buildkonfig = { id = "com.codingfeline.buildkonfig", version.ref = "buildkonfig"
 
 convention-base-androidApplication = "base.androidApplication:1.0"
 convention-base-desktopApplication = "base.desktopApplication:1.0"
+convention-base-sharedLibrary = "base.sharedLibrary:1.0"
 
 convention-component-android-compose = "component.android.compose:1.0"
 convention-component-compose = "component.compose:1.0"
@@ -250,10 +252,3 @@ convention-component-ui-test = "component.ui.test:1.0"
 convention-component-unit-test = "component.unit.test:1.0"
 convention-component-serialization = "component.serialization:1.0"
 convention-component-room = "component.room:1.0"
-
-convention-bundle-android-ui-screen-compose = "bundle.android.ui.screen.compose:1.0"
-convention-bundle-shared-ui-screen-compose = "bundle.shared.ui.screen.compose:1.0"
-
-convention-config-android-library = "config.android.library:1.0"
-convention-config-kotlin-library = "config.kotlin.library:1.0"
-convention-config-shared-library = "config.shared.library:1.0"

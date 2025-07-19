@@ -6,8 +6,13 @@
 	objectVersion = 77;
 	objects = {
 
+/* Begin PBXBuildFile section */
+		F3063ADE2E2C0237002C4EE7 /* GoogleService-Info.plist in Resources */ = {isa = PBXBuildFile; fileRef = F3063ADD2E2C0237002C4EE7 /* GoogleService-Info.plist */; };
+/* End PBXBuildFile section */
+
 /* Begin PBXFileReference section */
 		B9DA97B12DC1472C00A4DA20 /* Headway.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = Headway.app; sourceTree = BUILT_PRODUCTS_DIR; };
+		F3063ADD2E2C0237002C4EE7 /* GoogleService-Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = "GoogleService-Info.plist"; sourceTree = "<group>"; };
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
@@ -50,6 +55,7 @@
 		B9DA97A82DC1472C00A4DA20 = {
 			isa = PBXGroup;
 			children = (
+				F3063ADD2E2C0237002C4EE7 /* GoogleService-Info.plist */,
 				B9DA98002DC14AA900A4DA20 /* Configuration */,
 				B9DA97B32DC1472C00A4DA20 /* iosApp */,
 				B9DA97B22DC1472C00A4DA20 /* Products */,
@@ -129,6 +135,7 @@
 			isa = PBXResourcesBuildPhase;
 			buildActionMask = 2147483647;
 			files = (
+				F3063ADE2E2C0237002C4EE7 /* GoogleService-Info.plist in Resources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

@@ -1,16 +1,15 @@
+import org.gradle.kotlin.dsl.getting
+import org.gradle.platform.base.internal.DefaultBinaryNamingScheme.component
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import kotlin.collections.listOf
 
 plugins {
-    alias(libs.plugins.convention.base.androidApplication)
-    alias(libs.plugins.convention.base.desktopApplication)
+    with(libs.plugins.convention) {
+        alias(base.androidApplication)
+        alias(base.desktopApplication)
 
-    alias(libs.plugins.compose)
-    alias(libs.plugins.compose.compiler)
-    alias(libs.plugins.kotlin.multiplatform)
-    alias(libs.plugins.composeHotReload)
-
-    alias(libs.plugins.convention.bundle.shared.ui.screen.compose)
-    alias(libs.plugins.convention.bundle.android.ui.screen.compose)
+        alias(component.compose)
+    }
 }
 
 configureAndroidApplication {
@@ -32,7 +31,7 @@ configureDesktopApplication {
 kotlin {
     listOf(iosX64(), iosArm64(), iosSimulatorArm64()).forEach {
         it.binaries.framework {
-            baseName = "composeApp"
+            baseName = "shared"
             isStatic = true
         }
     }
@@ -41,17 +40,6 @@ kotlin {
         val commonMain by getting {
             dependencies {
                 implementation(projects.shared)
-            }
-        }
-        val androidMain by getting {
-            dependencies {
-                // сюда подтянутся все из bundle-android-ui-screen-compose
-            }
-        }
-        val desktopMain by getting {
-            dependencies {
-                implementation(compose.desktop.currentOs)
-                implementation(libs.kotlinx.coroutinesSwing)
             }
         }
     }

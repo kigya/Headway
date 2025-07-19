@@ -15,6 +15,13 @@ configure<DetektExtension> {
     parallel = true
     allRules = true
     debug = true
+
+    source.from(
+        "src/androidMain/kotlin",
+        "src/commonMain/kotlin",
+        "src/iosMain/kotlin",
+        "src/desktopMain/kotlin",
+    )
 }
 
 tasks.withType<Detekt>().configureEach {

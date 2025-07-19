@@ -1,5 +1,5 @@
 import extension.libs
-import org.gradle.kotlin.dsl.provideDelegate
+import org.gradle.kotlin.dsl.getting
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
@@ -8,7 +8,8 @@ plugins {
     id("org.jetbrains.kotlin.multiplatform")
     id("com.android.library")
     id("internal.config.android")
-    id("internal.config.shared.detekt")
+    id("internal.config.desktop")
+    id("internal.config.detekt")
     id("internal.config.shared.outcome")
 }
 
@@ -29,16 +30,18 @@ configure<KotlinMultiplatformExtension> {
         }
     }
 
-    arrayOf(
-        iosArm64(),
-        iosX64(),
-        iosSimulatorArm64(),
-    ).forEach {
-        it.binaries.framework {
-            baseName = "shared"
-            isStatic = true
+    kotlin {
+        iosArm64()
+        iosX64()
+        iosSimulatorArm64()
+        jvm("desktop")
+
+        sourceSets {
+            val desktopMain by getting {
+                dependencies {
+                    implementation(libs.kotlinx.coroutinesSwing)
+                }
+            }
         }
     }
 }
-
-tasks.register("testClasses")
