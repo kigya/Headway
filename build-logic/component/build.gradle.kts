@@ -4,23 +4,24 @@ import org.gradle.kotlin.dsl.projects
 
 plugins {
     `kotlin-dsl`
+    kotlin("jvm").version(libs.versions.kotlin.get())
 }
 
 dependencies {
-    with(libs) {
+    libs {
         with(gradle) {
             implementation(kotlin)
-            implementation(kotlinx.serialization)
+            implementation(serialization)
             implementation(ksp)
             implementation(android)
             implementation(detekt)
             implementation(koin)
-            implementation(compose.compiler)
+            implementation(composeCompiler)
             implementation(room)
         }
     }
 
-    with(projects) {
+    projects {
         implementation(gradleExt)
     }
 }

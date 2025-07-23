@@ -1,5 +1,5 @@
+import extension.desktopMainDependencies
 import extension.libs
-import org.gradle.kotlin.dsl.getting
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
@@ -35,13 +35,9 @@ configure<KotlinMultiplatformExtension> {
         iosX64()
         iosSimulatorArm64()
         jvm("desktop")
-
-        sourceSets {
-            val desktopMain by getting {
-                dependencies {
-                    implementation(libs.kotlinx.coroutinesSwing)
-                }
-            }
-        }
     }
+}
+
+desktopMainDependencies {
+    implementation(libs.coroutines.swing)
 }

@@ -12,6 +12,7 @@ pluginManagement {
         gradlePluginPortal()
         mavenCentral()
     }
+    includeBuild("build-logic")
 }
 
 val localProperties: Properties = Properties().apply {
@@ -27,6 +28,7 @@ dependencyResolutionManagement {
         google()
         mavenLocal()
         mavenCentral()
+        maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
         maven {
             url = uri("https://maven.pkg.github.com/kigya/Outcome")
             credentials {

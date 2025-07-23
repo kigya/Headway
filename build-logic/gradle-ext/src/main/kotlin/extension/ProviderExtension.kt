@@ -4,4 +4,4 @@ package extension
 
 import org.gradle.api.provider.Provider
 
-inline fun Provider<String>.getInt(): Int = get().toInt()
+public inline fun Provider<String>.getInt(): Int = get().toInt()

@@ -1,6 +1,4 @@
 plugins {
-    with(libs.plugins.convention) {
-        alias(base.sharedLibrary)
-        alias(component.compose)
-    }
+    alias(libs.plugins.convention.base.sharedLibrary)
+    alias(libs.plugins.convention.component.compose)
 }

@@ -1,31 +1,27 @@
-import org.gradle.kotlin.dsl.getting
-import org.gradle.platform.base.internal.DefaultBinaryNamingScheme.component
+import base.formats
+import extension.commonMainDependencies
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import kotlin.collections.listOf
 
 plugins {
-    with(libs.plugins.convention) {
-        alias(base.androidApplication)
-        alias(base.desktopApplication)
+    alias(libs.plugins.convention.base.androidApplication)
+    alias(libs.plugins.convention.base.desktopApplication)
 
-        alias(component.compose)
-    }
+    alias(libs.plugins.convention.component.compose)
 }
 
 configureAndroidApplication {
-    namespace = "dev.kigya.headway"
-    versionCode = 1
-    versionName = "1.0.0"
-    resourceConfigurations += listOf("en", "ru")
+    namespace.set("dev.kigya.headway")
+    versionCode.set(1)
+    versionName.set("1.0.0")
+    resourceConfigurations.addAll(listOf("en", "ru"))
 }
 
 configureDesktopApplication {
-    mainClass = "dev.kigya.headway.MainKt"
-    packageName = "dev.kigya.headway"
-    packageVersion = "1.0.0"
-    targetFormats += TargetFormat.Dmg
-    targetFormats += TargetFormat.Msi
-    targetFormats += TargetFormat.Deb
+    mainClass.set("dev.kigya.headway.MainKt")
+    packageName.set("dev.kigya.headway")
+    packageVersion.set("1.0.0")
+    formats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
 }
 
 kotlin {
@@ -35,12 +31,8 @@ kotlin {
             isStatic = true
         }
     }
+}
 
-    sourceSets {
-        val commonMain by getting {
-            dependencies {
-                implementation(projects.shared)
-            }
-        }
-    }
+commonMainDependencies {
+    implementation(projects.shared)
 }

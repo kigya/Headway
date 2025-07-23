@@ -40,7 +40,5 @@ tasks.withType<DetektCreateBaselineTask>().configureEach {
 }
 
 dependencies {
-    with(libs.detekt.plugins) {
-        detektPlugins(formatting)
-    }
+    detektPlugins(libs.detekt.formatting)
 }

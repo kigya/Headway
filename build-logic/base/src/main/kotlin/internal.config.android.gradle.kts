@@ -13,28 +13,31 @@ val androidExtension = project.extensions.create(
     AndroidApplicationConventionParams::class.java
 )
 
+androidExtension.namespace.convention(
+    project.provider {
+        val projectNameFormatted = project.path
+            .drop(1)
+            .replace(Regex("[-:]"), ".")
+        "dev.kigya.headway.$projectNameFormatted"
+    }
+)
+
 /**
  * Before using this plugin, ensure that necessary Android configurations have been applied.
  * Note: This script does not configure the Kotlin JVM version.
  */
 configure<BaseExtension> {
-    namespace = androidExtension.namespace ?: run {
-        val projectNameFormatted = project.path
-            .drop(1)
-            .replace(Regex("[-:]"), ".")
-        val rawNamespace = "dev.kigya.headway.$projectNameFormatted"
-        rawNamespace.trimEnd('.')
-    }
-    println("Namespace: ${project.path} -> $namespace")
-
     compileSdkVersion(rootProject.libs.versions.compileSdk.getInt())
 
     defaultConfig {
+        namespace = androidExtension.namespace.get()
+        println("Namespace: ${project.path} -> $namespace")
+
         minSdk = rootProject.libs.versions.minSdk.getInt()
         targetSdk = rootProject.libs.versions.targetSdk.getInt()
-        versionCode = androidExtension.versionCode ?: 1
-        versionName = androidExtension.versionName ?: "1.0.0"
-        resourceConfigurations += androidExtension.resourceConfigurations
+        versionCode = androidExtension.versionCode.get()
+        versionName = androidExtension.versionName.get()
+        resourceConfigurations += androidExtension.resourceConfigurations.get()
 
         testOptions.unitTests.apply {
             isIncludeAndroidResources = true

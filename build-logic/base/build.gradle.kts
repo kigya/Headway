@@ -1,20 +1,19 @@
 plugins {
     `kotlin-dsl`
+    kotlin("jvm").version(libs.versions.kotlin.get())
 }
 
 dependencies {
-    with(libs) {
-        with(gradle) {
-            implementation(kotlin)
-            implementation(kotlin.multiplatform)
-            implementation(compose.compiler)
-            implementation(android)
-            implementation(detekt)
-            implementation(ksp)
-        }
+    libs {
+        implementation(gradle.kotlin)
+        implementation(gradle.kotlinMultiplatform)
+        implementation(gradle.composeCompiler)
+        implementation(gradle.android)
+        implementation(gradle.detekt)
+        implementation(gradle.ksp)
     }
 
-    with(projects) {
+    projects {
         implementation(gradleExt)
     }
 }

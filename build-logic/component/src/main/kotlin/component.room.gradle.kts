@@ -1,19 +1,15 @@
+import extension.commonMainDependencies
 import extension.ksp
 import extension.libs
-import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 plugins {
     id("com.google.devtools.ksp")
     id("androidx.room")
 }
 
-configure<KotlinMultiplatformExtension> {
-    sourceSets {
-        commonMain.dependencies {
-            with(libs) {
-                implementation(bundles.room)
-            }
-        }
+commonMainDependencies {
+    libs {
+        implementation(bundles.room)
     }
 }
 
