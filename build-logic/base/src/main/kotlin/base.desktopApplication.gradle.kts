@@ -7,6 +7,7 @@ plugins {
     id("org.jetbrains.kotlin.multiplatform")
     id("org.jetbrains.compose")
     id("internal.config.desktop")
+    id("internal.config.detekt")
 }
 
 val desktopExtension = project.extensions.create(

@@ -8,6 +8,7 @@ import extension.configureIfExists
 import io.gitlab.arturbosch.detekt.extensions.DetektExtension
 import org.gradle.kotlin.dsl.configure
 import org.jetbrains.compose.ComposePlugin.CommonComponentsDependencies.uiToolingPreview
+import org.jetbrains.compose.android.AndroidExtension
 
 plugins {
     id("org.jetbrains.compose")
@@ -39,9 +40,11 @@ commonMainDependencies {
     }
 }
 
-androidMainDependencies {
-    composePlugin {
-        implementation(preview)
-        implementation(uiTooling)
+configureIfExists(AndroidExtension::class.java) {
+    androidMainDependencies {
+        composePlugin {
+            implementation(preview)
+            implementation(uiTooling)
+        }
     }
 }

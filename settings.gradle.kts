@@ -43,6 +43,7 @@ dependencyResolutionManagement {
 
 includeBuild("build-logic")
 
-include(":composeApp")
+include(":app:headwayAndroid")
+include(":app:headwayDesktop")
 include(":server")
 include(":shared")
