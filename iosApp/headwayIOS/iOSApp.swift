@@ -4,7 +4,7 @@ import shared
 import Firebase
 
 @main
-struct iOSApp: App {
+struct HeadwayIOS: App {
     
     @UIApplicationDelegateAdaptor(AppDelegate.self) var delegate
     

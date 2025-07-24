@@ -1,6 +1,5 @@
 //
 //  AppDelegate.swift
-//  iosApp
 //
 //  Created by Kirill Borichevskiy on 19/07/2025.
 //

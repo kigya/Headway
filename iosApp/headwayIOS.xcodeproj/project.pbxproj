@@ -19,22 +19,22 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		B99700CA2DC9B8D800C7335B /* Exceptions for "iosApp" folder in "iosApp" target */ = {
+		B99700CA2DC9B8D800C7335B /* Exceptions for "headwayIOS" folder in "headwayIOS" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
 			);
-			target = B9DA97B02DC1472C00A4DA20 /* iosApp */;
+			target = B9DA97B02DC1472C00A4DA20 /* headwayIOS */;
 		};
 /* End PBXFileSystemSynchronizedBuildFileExceptionSet section */
 
 /* Begin PBXFileSystemSynchronizedRootGroup section */
-		B9DA97B32DC1472C00A4DA20 /* iosApp */ = {
+		B9DA97B32DC1472C00A4DA20 /* headwayIOS */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				B99700CA2DC9B8D800C7335B /* Exceptions for "iosApp" folder in "iosApp" target */,
+				B99700CA2DC9B8D800C7335B /* Exceptions for "headwayIOS" folder in "headwayIOS" target */,
 			);
-			path = iosApp;
+			path = headwayIOS;
 			sourceTree = "<group>";
 		};
 		B9DA98002DC14AA900A4DA20 /* Configuration */ = {
@@ -63,7 +63,7 @@
 			children = (
 				F3063ADD2E2C0237002C4EE7 /* GoogleService-Info.plist */,
 				B9DA98002DC14AA900A4DA20 /* Configuration */,
-				B9DA97B32DC1472C00A4DA20 /* iosApp */,
+				B9DA97B32DC1472C00A4DA20 /* headwayIOS */,
 				B9DA97B22DC1472C00A4DA20 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -79,9 +79,9 @@
 /* End PBXGroup section */
 
 /* Begin PBXNativeTarget section */
-		B9DA97B02DC1472C00A4DA20 /* iosApp */ = {
+		B9DA97B02DC1472C00A4DA20 /* headwayIOS */ = {
 			isa = PBXNativeTarget;
-			buildConfigurationList = B9DA97BF2DC1472D00A4DA20 /* Build configuration list for PBXNativeTarget "iosApp" */;
+			buildConfigurationList = B9DA97BF2DC1472D00A4DA20 /* Build configuration list for PBXNativeTarget "headwayIOS" */;
 			buildPhases = (
 				B9DA97F42DC1497100A4DA20 /* Compile Kotlin Framework */,
 				B9DA97AD2DC1472C00A4DA20 /* Sources */,
@@ -93,15 +93,15 @@
 			dependencies = (
 			);
 			fileSystemSynchronizedGroups = (
-				B9DA97B32DC1472C00A4DA20 /* iosApp */,
+				B9DA97B32DC1472C00A4DA20 /* headwayIOS */,
 			);
-			name = iosApp;
+			name = headwayIOS;
 			packageProductDependencies = (
 				F3063AE02E2C09B3002C4EE7 /* FirebaseAnalytics */,
 				F3063AE72E3141DF002C4EE7 /* GoogleSignIn */,
 				F3063AE92E3141DF002C4EE7 /* GoogleSignInSwift */,
 			);
-			productName = iosApp;
+			productName = headwayIOS;
 			productReference = B9DA97B12DC1472C00A4DA20 /* Headway.app */;
 			productType = "com.apple.product-type.application";
 		};
@@ -120,7 +120,7 @@
 					};
 				};
 			};
-			buildConfigurationList = B9DA97AC2DC1472C00A4DA20 /* Build configuration list for PBXProject "iosApp" */;
+			buildConfigurationList = B9DA97AC2DC1472C00A4DA20 /* Build configuration list for PBXProject "headwayIOS" */;
 			developmentRegion = en;
 			hasScannedForEncodings = 0;
 			knownRegions = (
@@ -138,7 +138,7 @@
 			projectDirPath = "";
 			projectRoot = "";
 			targets = (
-				B9DA97B02DC1472C00A4DA20 /* iosApp */,
+				B9DA97B02DC1472C00A4DA20 /* headwayIOS */,
 			);
 		};
 /* End PBXProject section */
@@ -316,7 +316,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_ASSET_PATHS = "\"iosApp/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"headwayIOS/Preview Content\"";
 				DEVELOPMENT_TEAM = KR26V7338X;
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -325,7 +325,7 @@
 					"$(SRCROOT)/../shared/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)",
 				);
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = iosApp/Info.plist;
+				INFOPLIST_FILE = headwayIOS/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Headway;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -352,7 +352,7 @@
 				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
 				CODE_SIGN_IDENTITY = "Apple Development";
 				CODE_SIGN_STYLE = Automatic;
-				DEVELOPMENT_ASSET_PATHS = "\"iosApp/Preview Content\"";
+				DEVELOPMENT_ASSET_PATHS = "\"headwayIOS/Preview Content\"";
 				DEVELOPMENT_TEAM = KR26V7338X;
 				ENABLE_PREVIEWS = YES;
 				FRAMEWORK_SEARCH_PATHS = (
@@ -360,7 +360,7 @@
 					"$(SRCROOT)/../shared/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)\n$(SRCROOT)/../shared/build/xcode-frameworks/$(CONFIGURATION)/$(SDK_NAME)",
 				);
 				GENERATE_INFOPLIST_FILE = YES;
-				INFOPLIST_FILE = iosApp/Info.plist;
+				INFOPLIST_FILE = headwayIOS/Info.plist;
 				INFOPLIST_KEY_CFBundleDisplayName = Headway;
 				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
 				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
@@ -381,7 +381,7 @@
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
-		B9DA97AC2DC1472C00A4DA20 /* Build configuration list for PBXProject "iosApp" */ = {
+		B9DA97AC2DC1472C00A4DA20 /* Build configuration list for PBXProject "headwayIOS" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				B9DA97BD2DC1472D00A4DA20 /* Debug */,
@@ -390,7 +390,7 @@
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
 		};
-		B9DA97BF2DC1472D00A4DA20 /* Build configuration list for PBXNativeTarget "iosApp" */ = {
+		B9DA97BF2DC1472D00A4DA20 /* Build configuration list for PBXNativeTarget "headwayIOS" */ = {
 			isa = XCConfigurationList;
 			buildConfigurations = (
 				B9DA97C02DC1472D00A4DA20 /* Debug */,
