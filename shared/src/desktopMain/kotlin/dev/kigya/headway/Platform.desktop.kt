@@ -1,8 +1,6 @@
 package dev.kigya.headway
 
-class DPlatform: Platform {
+class DPlatform : Platform {
     override val name: String = "ssm"
 }
-actual fun getPlatform(): dev.kigya.headway.Platform {
-    return DPlatform()
-}
+actual fun getPlatform(): dev.kigya.headway.Platform = DPlatform()

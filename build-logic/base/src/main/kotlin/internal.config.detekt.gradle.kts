@@ -10,7 +10,10 @@ plugins {
 }
 
 configure<DetektExtension> {
-    config.from(rootProject.file(DetektConfigs.MAIN))
+    config.from(
+        rootProject.file(DetektConfigs.MAIN),
+        rootProject.file(DetektConfigs.COMPOSE)
+    )
     autoCorrect = System.getProperty("DETEKT_AUTOCORRECT")?.toBooleanStrictOrNull() ?: true
     parallel = true
     allRules = true
@@ -27,7 +30,7 @@ configure<DetektExtension> {
 tasks.withType<Detekt>().configureEach {
     jvmTarget = libs.versions.java.get()
     reports {
-        html.required.set(false)
+        html.required.set(true)
         xml.required.set(false)
         txt.required.set(false)
         sarif.required.set(false)
@@ -41,4 +44,6 @@ tasks.withType<DetektCreateBaselineTask>().configureEach {
 
 dependencies {
     detektPlugins(libs.detekt.formatting)
+    detektPlugins(libs.detekt.composePluginLopez)
+    detektPlugins(libs.detekt.composePluginKode)
 }

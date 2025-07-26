@@ -42,7 +42,8 @@ coroutines = { require = "1.10.2" }
 
 # Detekt
 detekt = { require = "1.23.8" }
-detektPlugin = { require = "0.4.22" }
+detektComposeLopez = { require = "0.4.26" }
+detektComposeKode = { require = "1.4.0" }
 
 # Auth
 kmpAuth = { require = "2.3.1" }
@@ -123,7 +124,8 @@ coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", 
 
 # Detekt Libraries
 detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
-detekt-composePlugin = { module = "io.nlopez.compose.rules:detekt", version.ref = "detektPlugin" }
+detekt-composePluginLopez = { module = "io.nlopez.compose.rules:detekt", version.ref = "detektComposeLopez" }
+detekt-composePluginKode = { module = "ru.kode:detekt-rules-compose", version.ref = "detektComposeKode" }
 
 # Auth
 kmpAuth-google = { module = "io.github.mirzemehdi:kmpauth-google", version.ref = "kmpAuth" }
