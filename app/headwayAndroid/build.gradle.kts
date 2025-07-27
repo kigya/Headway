@@ -3,6 +3,8 @@ import extension.androidMainDependencies
 plugins {
     alias(libs.plugins.convention.base.androidApplication)
     alias(libs.plugins.convention.component.compose)
+
+    alias(libs.plugins.convention.component.koin)
 }
 
 configureAndroidApplication {

@@ -46,6 +46,17 @@ includeBuild("build-logic")
 include(
     ":app:headwayAndroid",
     ":app:headwayDesktop",
+
+    ":feature:splash:api",
+    ":feature:splash:internal",
+
+    ":navigation:api",
+    ":navigation:internal",
+
+    ":di:api",
+
+    ":core:annotation",
+
     ":server",
     ":shared",
 )

@@ -9,7 +9,8 @@ plugins {
 
 commonMainDependencies {
     libs {
-        implementation(bundles.room)
+        implementation(room.runtime)
+        implementation(sqlite.bundled)
     }
 }
 

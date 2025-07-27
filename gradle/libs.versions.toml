@@ -17,8 +17,9 @@ kotlinxSerialization = { require = "1.9.0" }
 
 # Compose
 composeActivity = { require = "1.10.1" }
-composeMultiplatform = { require = "1.9.0-alpha03" }
+composeMultiplatform = { require = "1.9.0-beta01" }
 composeAdaptive = { require = "1.1.2" }
+composeNavigation = { require = "2.9.0-beta04" }
 
 # Lifecycle
 lifecycle = { require = "2.9.1" }
@@ -39,6 +40,9 @@ sqlite = { strictly = "2.5.2" }
 
 # Coroutines
 coroutines = { require = "1.10.2" }
+
+# MVIKotlin
+mviKotlin = { prefer = "4.3.0" }
 
 # Detekt
 detekt = { require = "1.23.8" }
@@ -85,6 +89,7 @@ serializationJson = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json
 compose-activity = { module = "androidx.activity:activity-compose", version.ref = "composeActivity" }
 compose-adaptive = { module = "org.jetbrains.compose.material3.adaptive:adaptive", version.ref = "composeAdaptive" }
 compose-backhandler = { module = "org.jetbrains.compose.ui:ui-backhandler", version.ref = "composeMultiplatform" }
+compose-navigation = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "composeNavigation" }
 
 # Lifecycle
 lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel", version.ref = "lifecycle" }
@@ -121,6 +126,13 @@ sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sql
 # Coroutines
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "coroutines" }
+
+# MVIKotlin
+mviKotlin-core = { module = "com.arkivanov.mvikotlin:mvikotlin", version.ref = "mviKotlin" }
+mviKotlin-main = { module = "com.arkivanov.mvikotlin:mvikotlin-main", version.ref = "mviKotlin" }
+mviKotlin-logging = { module = "com.arkivanov.mvikotlin:mvikotlin-logging", version.ref = "mviKotlin" }
+mviKotlin-timetravel = { module = "com.arkivanov.mvikotlin:mvikotlin-timetravel", version.ref = "mviKotlin" }
+mviKotlin-extensionsCoroutines = { module = "com.arkivanov.mvikotlin:mvikotlin-extensions-coroutines", version.ref = "mviKotlin" }
 
 # Detekt Libraries
 detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
@@ -173,13 +185,6 @@ gradle-koin = { module = "io.insert-koin:koin-gradle-plugin", version.ref = "koi
 gradle-detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
 gradle-room = { module = "androidx.room:room-gradle-plugin", version.ref = "room" }
 
-[bundles]
-# Bundles Grouping Related Libraries
-dataStore = ["dataStore-core", "dataStore-preferences", "dataStore-preferencesCore"]
-coilCommon = ["coil-compose", "coil-composeCore", "coil-multiplatform", "coil-networkKtor", "ktor-clientCore"]
-room = ["room-runtime", "sqlite-bundled"]
-ktor = ["ktor-clientCore", "ktor-clientContentNegotiation"]
-
 [plugins]
 # Plugin Configurations
 androidApplication = { id = "com.android.application", version.ref = "agp" }
@@ -202,5 +207,8 @@ convention-base-desktopApplication = "base.desktopApplication:1.0"
 convention-base-sharedLibrary = "base.sharedLibrary:1.0"
 
 convention-component-compose = "component.compose:1.0"
+convention-component-composeNavigation = "component.composeNavigation:1.0"
+convention-component-mvi = "component.mvi:1.0"
+convention-component-koin = "component.koin:1.0"
 convention-component-serialization = "component.serialization:1.0"
 convention-component-room = "component.room:1.0"
