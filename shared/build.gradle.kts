@@ -21,6 +21,7 @@ commonMainDependencies {
     projects {
         implementation(di.api)
         implementation(navigation.api)
+        implementation(core.designSystem)
         implementation(feature.splash.api)
     }
 }

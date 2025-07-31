@@ -5,6 +5,6 @@ import kotlinx.serialization.Serializable
 
 interface ScreenRouteHolderContract {
     @Serializable
-    val screenRouteTypeKey: ScreenRouteTypeKey
+    val key: ScreenRouteTypeKey
     val content: @Composable () -> Unit
 }

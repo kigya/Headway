@@ -35,6 +35,14 @@ configure<KotlinMultiplatformExtension> {
         iosX64()
         iosSimulatorArm64()
         jvm("desktop")
+
+        compilerOptions.freeCompilerArgs.add("-Xcontext-parameters")
+
+        sourceSets.configureEach {
+            languageSettings {
+                enableLanguageFeature("ContextParameters")
+            }
+        }
     }
 }
 

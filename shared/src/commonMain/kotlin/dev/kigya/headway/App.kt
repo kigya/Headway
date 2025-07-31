@@ -3,6 +3,7 @@ package dev.kigya.headway
 import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
+import dev.kigya.headway.core.designSystem.theme.FreudTheme
 import dev.kigya.headway.di.api.appModules
 import dev.kigya.headway.feature.splash.api.SplashScreenRouteHolderContract
 import dev.kigya.headway.navigation.api.extension.animatedComposable
@@ -14,9 +15,9 @@ import org.koin.dsl.KoinConfiguration
 
 @OptIn(KoinExperimentalAPI::class)
 @Composable
-fun App() {
-    KoinMultiplatformApplication(
-        config = KoinConfiguration { modules(appModules) }) {
+fun App() = KoinMultiplatformApplication(
+    config = KoinConfiguration { modules(appModules) }) {
+    FreudTheme {
         AppNavigationHost()
     }
 }
@@ -30,7 +31,7 @@ private fun AppNavigationHost() {
 
     NavHost(
         navController = rememberNavController(),
-        startDestination = splashRoute.screenRouteTypeKey,
+        startDestination = splashRoute.key,
     ) {
         animatedComposable(splashRoute) { content() }
     }

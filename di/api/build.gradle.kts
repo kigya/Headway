@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.convention.component.compose)
 
     alias(libs.plugins.convention.component.koin)
+    alias(libs.plugins.convention.component.mvi)
 }
 
 commonMainDependencies {

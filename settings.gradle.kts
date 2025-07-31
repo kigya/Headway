@@ -56,6 +56,7 @@ include(
     ":di:api",
 
     ":core:annotation",
+    ":core:design-system",
 
     ":server",
     ":shared",

@@ -15,7 +15,7 @@ inline fun <reified T : ScreenRouteHolderContract> NavGraphBuilder.animatedCompo
     crossinline screen: @Composable ScreenRouteHolderContract.() -> Unit,
 ) {
     composable(
-        route = route.screenRouteTypeKey::class,
+        route = route.key::class,
         enterTransition = { fadeIn() },
         exitTransition = { fadeOut() },
         typeMap = typeMap,

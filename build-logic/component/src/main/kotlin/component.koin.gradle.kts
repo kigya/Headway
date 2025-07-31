@@ -6,6 +6,7 @@ commonMainDependencies {
     libs {
         implementation(koin.core)
         implementation(koin.compose)
+        implementation(koin.composeViewModel)
     }
 }
 
