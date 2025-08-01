@@ -1,9 +1,3 @@
-//
-//  AppDelegate.swift
-//
-//  Created by Kirill Borichevskiy on 19/07/2025.
-//
-
 import SwiftUI
 import GoogleSignIn
 

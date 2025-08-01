@@ -4,6 +4,7 @@ import androidx.compose.runtime.Composable
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.rememberNavController
 import dev.kigya.headway.core.designSystem.theme.FreudTheme
+import dev.kigya.headway.core.designSystem.util.SystemBarsColor
 import dev.kigya.headway.di.api.appModules
 import dev.kigya.headway.feature.splash.api.SplashScreenRouteHolderContract
 import dev.kigya.headway.navigation.api.extension.animatedComposable
@@ -33,6 +34,9 @@ private fun AppNavigationHost() {
         navController = rememberNavController(),
         startDestination = splashRoute.key,
     ) {
-        animatedComposable(splashRoute) { content() }
+        animatedComposable(splashRoute) {
+            SystemBarsColor(SystemBarsColor.AUTO)
+            content()
+        }
     }
 }

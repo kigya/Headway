@@ -1,3 +1,4 @@
+import extension.androidMainDependencies
 import extension.commonMainDependencies
 
 plugins {
@@ -13,5 +14,11 @@ commonMainDependencies {
     }
     projects {
         implementation(navigation.api)
+    }
+}
+
+androidMainDependencies {
+    libs {
+        implementation(compose.activity)
     }
 }
