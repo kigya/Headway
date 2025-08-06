@@ -6,6 +6,7 @@ import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import java.io.File
 
 /**
  * Holds all configurable parameters for the Desktop Application convention plugin.
@@ -16,6 +17,7 @@ import org.jetbrains.compose.desktop.application.dsl.TargetFormat
  *   mainClass.set("dev.kigya.headway.MainKt")
  *   packageName.set("com.example.desktop")
  *   packageVersion.set("1.2.3")
+ *   iconFile.set("File("logo/Windows/appIcon.ico")
  *   formats(TargetFormat.Dmg, TargetFormat.Msi)
  * }
  * ```
@@ -29,6 +31,9 @@ import org.jetbrains.compose.desktop.application.dsl.TargetFormat
  *
  * @property packageVersion
  *   Version string for your native distributions (default = `"1.0.0"`).
+ *
+ * @property iconFile
+ *   Icon file for your native distributions (default is an empty file string).
  *
  * @property targetFormats
  *   List of native distribution formats to build
@@ -50,10 +55,22 @@ public abstract class DesktopApplicationConventionParams @Inject constructor(
     @get:Input
     public abstract val targetFormats: ListProperty<TargetFormat>
 
+    @get:Input
+    public abstract val iconDir: Property<File>
+
+    @get:Input
+    public abstract val iconBaseName: Property<String>
+
+    @get:Input
+    public abstract val dockName: Property<String>
+
     init {
         mainClass.convention("MainKt")
         packageName.convention("com.example.desktop")
         packageVersion.convention("1.0.0")
+        iconDir.convention(File("src/desktopMain/composeResources/drawable"))
+        iconBaseName.convention("")
+        dockName.convention("")
         targetFormats.convention(emptyList())
     }
 }

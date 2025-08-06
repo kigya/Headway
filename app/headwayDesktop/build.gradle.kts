@@ -11,6 +11,9 @@ configureDesktopApplication {
     mainClass.set("dev.kigya.headway.MainKt")
     packageName.set("dev.kigya.headway")
     packageVersion.set("1.0.0")
+    iconDir.set(file("src/desktopMain/composeResources/drawable"))
+    iconBaseName.set("ic_headway")
+    dockName.set("Headway")
     formats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
 }
 

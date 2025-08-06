@@ -17,13 +17,27 @@ val desktopExtension = project.extensions.create(
 
 project.afterEvaluate {
     configure<ComposeExtension> {
-        desktop {
+        compose.desktop {
             application {
                 mainClass = desktopExtension.mainClass.get()
                 nativeDistributions {
-                    targetFormats(*(desktopExtension.targetFormats.get().toTypedArray()))
                     packageName = desktopExtension.packageName.get()
                     packageVersion = desktopExtension.packageVersion.get()
+                    targetFormats(*(desktopExtension.targetFormats.get().toTypedArray()))
+
+                    val dir = desktopExtension.iconDir.get()
+                    val baseName = desktopExtension.iconBaseName.get()
+
+                    windows {
+                        iconFile.set(project.file("$dir/$baseName.ico"))
+                    }
+                    macOS {
+                        dockName = desktopExtension.dockName.get()
+                        iconFile.set(project.file("$dir/$baseName.icns"))
+                    }
+                    linux {
+                        iconFile.set(project.file("$dir/$baseName.png"))
+                    }
                 }
             }
         }
