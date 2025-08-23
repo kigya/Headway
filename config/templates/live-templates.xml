@@ -1,0 +1,19 @@
+<templateSet group="Headway">
+    <template name="fs" description="Insert FreudSpacer" toReformat="false" toShortenFQNames="true"
+        value="FreudSpacer(size = $CODE_COMPLETION$)">
+        <context>
+            <option name="KOTLIN" value="true" />
+        </context>
+    </template>
+    <template name="fl" description="Insert FreudLottie" toReformat="false" toShortenFQNames="true"
+        value="FreudLottie(reader = $CODE_COMPLETION$)">
+        <context>
+            <option name="KOTLIN" value="true" />
+        </context>
+    </template>
+    <template name="ft" description="Insert FreudText" toReformat="false" toShortenFQNames="true" value="FreudText()">
+        <context>
+            <option name="KOTLIN" value="true" />
+        </context>
+    </template>
+</templateSet>

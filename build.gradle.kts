@@ -23,6 +23,7 @@ plugins {
 
 apply {
     from("config/git/hooks/installer.gradle.kts")
+    from("config/templates/installer.gradle.kts")
 }
 
 /**
