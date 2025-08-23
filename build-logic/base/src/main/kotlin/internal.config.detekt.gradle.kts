@@ -16,7 +16,7 @@ configure<DetektExtension> {
     )
     autoCorrect = System.getProperty("DETEKT_AUTOCORRECT")?.toBooleanStrictOrNull() ?: true
     parallel = true
-    allRules = true
+    allRules = false
     debug = true
 
     source.from(

@@ -1,7 +1,7 @@
 package dev.kigya.headway.navigation.internal
 
-import dev.kigya.headway.navigation.api.contract.ScreenRouteTypeKey
 import dev.kigya.headway.navigation.api.contract.NavigatorContract
+import dev.kigya.headway.navigation.api.contract.ScreenRouteTypeKey
 import dev.kigya.headway.navigation.api.intent.NavigationIntent
 import kotlinx.coroutines.channels.BufferOverflow
 import kotlinx.coroutines.channels.Channel

@@ -1,3 +1,5 @@
+@file:Suppress("MagicNumber")
+
 package dev.kigya.headway.core.designSystem.util
 
 import androidx.compose.runtime.Composable

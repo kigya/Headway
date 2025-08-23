@@ -6,6 +6,8 @@ import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import io.github.alexzhirkevich.compottie.LottieCompositionSpec
@@ -24,8 +26,10 @@ fun FreudLottie(
     contentScale: ContentScale = ContentScale.FillBounds,
     onFinish: () -> Unit = {},
 ) {
+    val currentReader by rememberUpdatedState(reader)
+    val currentOnFinish by rememberUpdatedState(onFinish)
     val json by produceState<String?>(initialValue = null) {
-        value = reader().decodeToString()
+        value = currentReader().decodeToString()
     }
     val composition by rememberLottieComposition(json) { LottieCompositionSpec.JsonString(json.orEmpty()) }
     val progress by animateLottieCompositionAsState(
@@ -35,9 +39,11 @@ fun FreudLottie(
         speed = speed,
         iterations = iterations,
     )
-    val isAnimationComplete by derivedStateOf { progress == 1f }
+    val isAnimationComplete by remember(progress) {
+        derivedStateOf { progress == 1f }
+    }
 
-    LaunchedEffect(isAnimationComplete) { if (isAnimationComplete) onFinish() }
+    LaunchedEffect(isAnimationComplete) { if (isAnimationComplete) currentOnFinish() }
 
     Image(
         painter = rememberLottiePainter(

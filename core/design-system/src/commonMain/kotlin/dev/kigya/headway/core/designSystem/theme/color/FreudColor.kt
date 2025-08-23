@@ -1,3 +1,5 @@
+@file:Suppress("MagicNumber")
+
 package dev.kigya.headway.core.designSystem.theme.color
 
 import androidx.compose.runtime.Immutable
@@ -18,7 +20,6 @@ data class FreudColor internal constructor(
     val brown30: FreudDsToken<Color> = FreudDsToken(Color(0xFFD5C2B9)),
     val brown20: FreudDsToken<Color> = FreudDsToken(Color(0xFFE8DDD9)),
     val brown10: FreudDsToken<Color> = FreudDsToken(Color(0xFFF7F4F2)),
-
     // — Optimistic Gray
     val gray100: FreudDsToken<Color> = FreudDsToken(Color(0xFF121619)),
     val gray90: FreudDsToken<Color> = FreudDsToken(Color(0xFF21262A)),
@@ -30,7 +31,6 @@ data class FreudColor internal constructor(
     val gray30: FreudDsToken<Color> = FreudDsToken(Color(0xFFC1C6CD)),
     val gray20: FreudDsToken<Color> = FreudDsToken(Color(0xFFDDE1E6)),
     val gray10: FreudDsToken<Color> = FreudDsToken(Color(0xFFF2F5F8)),
-
     // — Serenity Green
     val green100: FreudDsToken<Color> = FreudDsToken(Color(0xFF191E10)),
     val green90: FreudDsToken<Color> = FreudDsToken(Color(0xFF29321A)),
@@ -42,7 +42,6 @@ data class FreudColor internal constructor(
     val green30: FreudDsToken<Color> = FreudDsToken(Color(0xFFCFD9B5)),
     val green20: FreudDsToken<Color> = FreudDsToken(Color(0xFFE5EAD7)),
     val green10: FreudDsToken<Color> = FreudDsToken(Color(0xFFF2F5EB)),
-
     // — Empathy Orange
     val orange100: FreudDsToken<Color> = FreudDsToken(Color(0xFF2E1200)),
     val orange90: FreudDsToken<Color> = FreudDsToken(Color(0xFF4C1D00)),
@@ -54,7 +53,6 @@ data class FreudColor internal constructor(
     val orange30: FreudDsToken<Color> = FreudDsToken(Color(0xFFFEAF8F)),
     val orange20: FreudDsToken<Color> = FreudDsToken(Color(0xFFFFD2C2)),
     val orange10: FreudDsToken<Color> = FreudDsToken(Color(0xFFFFF0EB)),
-
     // — Zen Yellow
     val yellow100: FreudDsToken<Color> = FreudDsToken(Color(0xFF2E2500)),
     val yellow90: FreudDsToken<Color> = FreudDsToken(Color(0xFF4D3C00)),
@@ -66,7 +64,6 @@ data class FreudColor internal constructor(
     val yellow30: FreudDsToken<Color> = FreudDsToken(Color(0xFFFFDB8F)),
     val yellow20: FreudDsToken<Color> = FreudDsToken(Color(0xFFFFEBC2)),
     val yellow10: FreudDsToken<Color> = FreudDsToken(Color(0xFFFFF4E0)),
-
     // — Gentle Purple
     val purple100: FreudDsToken<Color> = FreudDsToken(Color(0xFF0D002E)),
     val purple90: FreudDsToken<Color> = FreudDsToken(Color(0xFF14004D)),
@@ -77,5 +74,5 @@ data class FreudColor internal constructor(
     val purple40: FreudDsToken<Color> = FreudDsToken(Color(0xFF7152FF)),
     val purple30: FreudDsToken<Color> = FreudDsToken(Color(0xFFA18FFF)),
     val purple20: FreudDsToken<Color> = FreudDsToken(Color(0xFFCBC2FF)),
-    val purple10: FreudDsToken<Color> = FreudDsToken(Color(0xFFEDEBFF))
+    val purple10: FreudDsToken<Color> = FreudDsToken(Color(0xFFEDEBFF)),
 )

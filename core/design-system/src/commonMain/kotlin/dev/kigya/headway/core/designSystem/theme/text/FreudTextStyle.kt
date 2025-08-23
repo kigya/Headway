@@ -17,13 +17,11 @@ data class FreudTextStyle(
 )
 
 @Composable
-infix fun FreudTypography.provides(
-    style: FreudTextStyle,
-): FreudDsToken<TextStyle> = FreudDsToken(
+infix fun FreudTypography.provides(style: FreudTextStyle): FreudDsToken<TextStyle> = FreudDsToken(
     TextStyle(
         fontSize = style.fontSize.value,
         fontWeight = style.fontWeight.value,
         fontFamily = style.fontFamily.value,
         lineHeight = style.lineHeight.value,
-    )
+    ),
 )

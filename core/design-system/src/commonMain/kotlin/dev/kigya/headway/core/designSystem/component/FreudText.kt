@@ -18,13 +18,15 @@ fun FreudText(
     align: TextAlign = TextAlign.Center,
     maxLines: Int = Int.MAX_VALUE,
     minLines: Int = 1,
-) = Text(
-    text = value,
-    modifier = modifier,
-    color = color.value,
-    style = typography.value,
-    maxLines = maxLines,
-    minLines = minLines,
-    textAlign = align,
-    overflow = TextOverflow.Ellipsis,
-)
+) {
+    Text(
+        text = value,
+        modifier = modifier,
+        color = color.value,
+        style = typography.value,
+        maxLines = maxLines,
+        minLines = minLines,
+        textAlign = align,
+        overflow = TextOverflow.Ellipsis,
+    )
+}

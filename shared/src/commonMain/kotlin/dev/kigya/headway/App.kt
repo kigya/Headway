@@ -16,10 +16,13 @@ import org.koin.dsl.KoinConfiguration
 
 @OptIn(KoinExperimentalAPI::class)
 @Composable
-fun App() = KoinMultiplatformApplication(
-    config = KoinConfiguration { modules(appModules) }) {
-    FreudTheme {
-        AppNavigationHost()
+fun App() {
+    KoinMultiplatformApplication(
+        config = KoinConfiguration { modules(appModules) },
+    ) {
+        FreudTheme {
+            AppNavigationHost()
+        }
     }
 }
 

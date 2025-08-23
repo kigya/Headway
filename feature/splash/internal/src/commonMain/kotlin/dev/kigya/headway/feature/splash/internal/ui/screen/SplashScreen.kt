@@ -34,9 +34,7 @@ internal fun SplashScreen() {
 }
 
 @Composable
-private fun SplashScreenContent(
-    state: State<SplashStore.State>,
-) {
+private fun SplashScreenContent(state: State<SplashStore.State>) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -46,7 +44,7 @@ private fun SplashScreenContent(
     ) {
         FreudLottie(
             modifier = Modifier.size(SplashTheme.dimension.dp72.value),
-            reader = { Res.readBytes("files/lottie_brand_logo.json") }
+            reader = { Res.readBytes("files/lottie_brand_logo.json") },
         )
         AnimatedVisibility(
             visible = state.value.shouldDisplayText,

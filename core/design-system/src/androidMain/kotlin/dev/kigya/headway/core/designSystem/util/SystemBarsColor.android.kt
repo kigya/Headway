@@ -3,9 +3,9 @@ package dev.kigya.headway.core.designSystem.util
 import android.graphics.Color
 import androidx.activity.ComponentActivity
 import androidx.activity.SystemBarStyle
+import androidx.activity.compose.LocalActivity
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.runtime.Composable
-import androidx.activity.compose.LocalActivity
 
 @Composable
 actual fun SystemBarsColor(color: SystemBarsColor) {

@@ -12,7 +12,7 @@ object FreudTypography {
     val displayLgExtraBold
         get() = this provides
             FreudTextStyle(
-                fontSize   = FreudTextSize.sp180,
+                fontSize = FreudTextSize.sp180,
                 fontWeight = FreudFontWeight.extraBold,
                 fontFamily = FreudFont.extraBold,
             )
@@ -21,7 +21,7 @@ object FreudTypography {
     val displayLgBold
         get() = this provides
             FreudTextStyle(
-                fontSize   = FreudTextSize.sp180,
+                fontSize = FreudTextSize.sp180,
                 fontWeight = FreudFontWeight.bold,
                 fontFamily = FreudFont.bold,
             )
@@ -30,7 +30,7 @@ object FreudTypography {
     val displayMdExtraBold
         get() = this provides
             FreudTextStyle(
-                fontSize   = FreudTextSize.sp128,
+                fontSize = FreudTextSize.sp128,
                 fontWeight = FreudFontWeight.extraBold,
                 fontFamily = FreudFont.extraBold,
             )
@@ -39,7 +39,7 @@ object FreudTypography {
     val displayMdBold
         get() = this provides
             FreudTextStyle(
-                fontSize   = FreudTextSize.sp128,
+                fontSize = FreudTextSize.sp128,
                 fontWeight = FreudFontWeight.bold,
                 fontFamily = FreudFont.bold,
             )
@@ -48,7 +48,7 @@ object FreudTypography {
     val displaySmExtraBold
         get() = this provides
             FreudTextStyle(
-                fontSize   = FreudTextSize.sp96,
+                fontSize = FreudTextSize.sp96,
                 fontWeight = FreudFontWeight.extraBold,
                 fontFamily = FreudFont.extraBold,
             )
@@ -57,7 +57,7 @@ object FreudTypography {
     val displaySmBold
         get() = this provides
             FreudTextStyle(
-                fontSize   = FreudTextSize.sp96,
+                fontSize = FreudTextSize.sp96,
                 fontWeight = FreudFontWeight.bold,
                 fontFamily = FreudFont.bold,
             )
@@ -66,7 +66,7 @@ object FreudTypography {
     val heading2xlExtraBold
         get() = this provides
             FreudTextStyle(
-                fontSize   = FreudTextSize.sp72,
+                fontSize = FreudTextSize.sp72,
                 fontWeight = FreudFontWeight.extraBold,
                 fontFamily = FreudFont.extraBold,
             )
@@ -75,7 +75,7 @@ object FreudTypography {
     val heading2xlBold
         get() = this provides
             FreudTextStyle(
-                fontSize   = FreudTextSize.sp72,
+                fontSize = FreudTextSize.sp72,
                 fontWeight = FreudFontWeight.bold,
                 fontFamily = FreudFont.bold,
             )
@@ -84,7 +84,7 @@ object FreudTypography {
     val heading2xlSemiBold
         get() = this provides
             FreudTextStyle(
-                fontSize   = FreudTextSize.sp72,
+                fontSize = FreudTextSize.sp72,
                 fontWeight = FreudFontWeight.semiBold,
                 fontFamily = FreudFont.semiBold,
             )
@@ -93,7 +93,7 @@ object FreudTypography {
     val headingXlExtraBold
         get() = this provides
             FreudTextStyle(
-                fontSize   = FreudTextSize.sp60,
+                fontSize = FreudTextSize.sp60,
                 fontWeight = FreudFontWeight.extraBold,
                 fontFamily = FreudFont.extraBold,
             )
@@ -102,7 +102,7 @@ object FreudTypography {
     val headingXlBold
         get() = this provides
             FreudTextStyle(
-                fontSize   = FreudTextSize.sp60,
+                fontSize = FreudTextSize.sp60,
                 fontWeight = FreudFontWeight.bold,
                 fontFamily = FreudFont.bold,
             )
@@ -111,7 +111,7 @@ object FreudTypography {
     val headingXlSemiBold
         get() = this provides
             FreudTextStyle(
-                fontSize   = FreudTextSize.sp60,
+                fontSize = FreudTextSize.sp60,
                 fontWeight = FreudFontWeight.semiBold,
                 fontFamily = FreudFont.semiBold,
             )
@@ -120,7 +120,7 @@ object FreudTypography {
     val headingLgExtraBold
         get() = this provides
             FreudTextStyle(
-                fontSize   = FreudTextSize.sp48,
+                fontSize = FreudTextSize.sp48,
                 fontWeight = FreudFontWeight.extraBold,
                 fontFamily = FreudFont.extraBold,
             )
@@ -129,7 +129,7 @@ object FreudTypography {
     val headingLgBold
         get() = this provides
             FreudTextStyle(
-                fontSize   = FreudTextSize.sp48,
+                fontSize = FreudTextSize.sp48,
                 fontWeight = FreudFontWeight.bold,
                 fontFamily = FreudFont.bold,
             )
@@ -138,7 +138,7 @@ object FreudTypography {
     val headingLgSemiBold
         get() = this provides
             FreudTextStyle(
-                fontSize   = FreudTextSize.sp48,
+                fontSize = FreudTextSize.sp48,
                 fontWeight = FreudFontWeight.semiBold,
                 fontFamily = FreudFont.semiBold,
             )
@@ -147,7 +147,7 @@ object FreudTypography {
     val headingMdExtraBold
         get() = this provides
             FreudTextStyle(
-                fontSize   = FreudTextSize.sp36,
+                fontSize = FreudTextSize.sp36,
                 fontWeight = FreudFontWeight.extraBold,
                 fontFamily = FreudFont.extraBold,
             )
@@ -156,7 +156,7 @@ object FreudTypography {
     val headingMdBold
         get() = this provides
             FreudTextStyle(
-                fontSize   = FreudTextSize.sp36,
+                fontSize = FreudTextSize.sp36,
                 fontWeight = FreudFontWeight.bold,
                 fontFamily = FreudFont.bold,
             )
@@ -165,7 +165,7 @@ object FreudTypography {
     val headingMdSemiBold
         get() = this provides
             FreudTextStyle(
-                fontSize   = FreudTextSize.sp36,
+                fontSize = FreudTextSize.sp36,
                 fontWeight = FreudFontWeight.semiBold,
                 fontFamily = FreudFont.semiBold,
             )
@@ -174,7 +174,7 @@ object FreudTypography {
     val headingSmExtraBold
         get() = this provides
             FreudTextStyle(
-                fontSize   = FreudTextSize.sp30,
+                fontSize = FreudTextSize.sp30,
                 fontWeight = FreudFontWeight.extraBold,
                 fontFamily = FreudFont.extraBold,
             )
@@ -183,7 +183,7 @@ object FreudTypography {
     val headingSmBold
         get() = this provides
             FreudTextStyle(
-                fontSize   = FreudTextSize.sp30,
+                fontSize = FreudTextSize.sp30,
                 fontWeight = FreudFontWeight.bold,
                 fontFamily = FreudFont.bold,
             )
@@ -192,7 +192,7 @@ object FreudTypography {
     val headingSmSemiBold
         get() = this provides
             FreudTextStyle(
-                fontSize   = FreudTextSize.sp30,
+                fontSize = FreudTextSize.sp30,
                 fontWeight = FreudFontWeight.semiBold,
                 fontFamily = FreudFont.semiBold,
             )
@@ -201,7 +201,7 @@ object FreudTypography {
     val headingXsExtraBold
         get() = this provides
             FreudTextStyle(
-                fontSize   = FreudTextSize.sp24,
+                fontSize = FreudTextSize.sp24,
                 fontWeight = FreudFontWeight.extraBold,
                 fontFamily = FreudFont.extraBold,
             )
@@ -210,7 +210,7 @@ object FreudTypography {
     val headingXsBold
         get() = this provides
             FreudTextStyle(
-                fontSize   = FreudTextSize.sp24,
+                fontSize = FreudTextSize.sp24,
                 fontWeight = FreudFontWeight.bold,
                 fontFamily = FreudFont.bold,
             )
@@ -219,7 +219,7 @@ object FreudTypography {
     val headingXsSemiBold
         get() = this provides
             FreudTextStyle(
-                fontSize   = FreudTextSize.sp24,
+                fontSize = FreudTextSize.sp24,
                 fontWeight = FreudFontWeight.semiBold,
                 fontFamily = FreudFont.semiBold,
             )
@@ -228,7 +228,7 @@ object FreudTypography {
     val text2xlExtraBold
         get() = this provides
             FreudTextStyle(
-                fontSize   = FreudTextSize.sp24,
+                fontSize = FreudTextSize.sp24,
                 fontWeight = FreudFontWeight.extraBold,
                 fontFamily = FreudFont.extraBold,
             )
@@ -237,7 +237,7 @@ object FreudTypography {
     val text2xlBold
         get() = this provides
             FreudTextStyle(
-                fontSize   = FreudTextSize.sp24,
+                fontSize = FreudTextSize.sp24,
                 fontWeight = FreudFontWeight.bold,
                 fontFamily = FreudFont.bold,
             )
@@ -246,7 +246,7 @@ object FreudTypography {
     val text2xlSemiBold
         get() = this provides
             FreudTextStyle(
-                fontSize   = FreudTextSize.sp24,
+                fontSize = FreudTextSize.sp24,
                 fontWeight = FreudFontWeight.semiBold,
                 fontFamily = FreudFont.semiBold,
             )
@@ -255,7 +255,7 @@ object FreudTypography {
     val textXlExtraBold
         get() = this provides
             FreudTextStyle(
-                fontSize   = FreudTextSize.sp20,
+                fontSize = FreudTextSize.sp20,
                 fontWeight = FreudFontWeight.extraBold,
                 fontFamily = FreudFont.extraBold,
             )
@@ -264,7 +264,7 @@ object FreudTypography {
     val textXlBold
         get() = this provides
             FreudTextStyle(
-                fontSize   = FreudTextSize.sp20,
+                fontSize = FreudTextSize.sp20,
                 fontWeight = FreudFontWeight.bold,
                 fontFamily = FreudFont.bold,
             )
@@ -273,7 +273,7 @@ object FreudTypography {
     val textXlSemiBold
         get() = this provides
             FreudTextStyle(
-                fontSize   = FreudTextSize.sp20,
+                fontSize = FreudTextSize.sp20,
                 fontWeight = FreudFontWeight.semiBold,
                 fontFamily = FreudFont.semiBold,
             )
@@ -282,7 +282,7 @@ object FreudTypography {
     val textLgExtraBold
         get() = this provides
             FreudTextStyle(
-                fontSize   = FreudTextSize.sp18,
+                fontSize = FreudTextSize.sp18,
                 fontWeight = FreudFontWeight.extraBold,
                 fontFamily = FreudFont.extraBold,
             )
@@ -291,7 +291,7 @@ object FreudTypography {
     val textLgBold
         get() = this provides
             FreudTextStyle(
-                fontSize   = FreudTextSize.sp18,
+                fontSize = FreudTextSize.sp18,
                 fontWeight = FreudFontWeight.bold,
                 fontFamily = FreudFont.bold,
             )
@@ -300,7 +300,7 @@ object FreudTypography {
     val textLgSemiBold
         get() = this provides
             FreudTextStyle(
-                fontSize   = FreudTextSize.sp18,
+                fontSize = FreudTextSize.sp18,
                 fontWeight = FreudFontWeight.semiBold,
                 fontFamily = FreudFont.semiBold,
             )
@@ -309,7 +309,7 @@ object FreudTypography {
     val textMdExtraBold
         get() = this provides
             FreudTextStyle(
-                fontSize   = FreudTextSize.sp16,
+                fontSize = FreudTextSize.sp16,
                 fontWeight = FreudFontWeight.extraBold,
                 fontFamily = FreudFont.extraBold,
             )
@@ -318,7 +318,7 @@ object FreudTypography {
     val textMdBold
         get() = this provides
             FreudTextStyle(
-                fontSize   = FreudTextSize.sp16,
+                fontSize = FreudTextSize.sp16,
                 fontWeight = FreudFontWeight.bold,
                 fontFamily = FreudFont.bold,
             )
@@ -327,7 +327,7 @@ object FreudTypography {
     val textMdSemiBold
         get() = this provides
             FreudTextStyle(
-                fontSize   = FreudTextSize.sp16,
+                fontSize = FreudTextSize.sp16,
                 fontWeight = FreudFontWeight.semiBold,
                 fontFamily = FreudFont.semiBold,
             )
@@ -336,7 +336,7 @@ object FreudTypography {
     val textSmExtraBold
         get() = this provides
             FreudTextStyle(
-                fontSize   = FreudTextSize.sp14,
+                fontSize = FreudTextSize.sp14,
                 fontWeight = FreudFontWeight.extraBold,
                 fontFamily = FreudFont.extraBold,
             )
@@ -345,7 +345,7 @@ object FreudTypography {
     val textSmBold
         get() = this provides
             FreudTextStyle(
-                fontSize   = FreudTextSize.sp14,
+                fontSize = FreudTextSize.sp14,
                 fontWeight = FreudFontWeight.bold,
                 fontFamily = FreudFont.bold,
             )
@@ -354,7 +354,7 @@ object FreudTypography {
     val textSmSemiBold
         get() = this provides
             FreudTextStyle(
-                fontSize   = FreudTextSize.sp14,
+                fontSize = FreudTextSize.sp14,
                 fontWeight = FreudFontWeight.semiBold,
                 fontFamily = FreudFont.semiBold,
             )
@@ -363,7 +363,7 @@ object FreudTypography {
     val textXsExtraBold
         get() = this provides
             FreudTextStyle(
-                fontSize   = FreudTextSize.sp12,
+                fontSize = FreudTextSize.sp12,
                 fontWeight = FreudFontWeight.extraBold,
                 fontFamily = FreudFont.extraBold,
             )
@@ -372,7 +372,7 @@ object FreudTypography {
     val textXsBold
         get() = this provides
             FreudTextStyle(
-                fontSize   = FreudTextSize.sp12,
+                fontSize = FreudTextSize.sp12,
                 fontWeight = FreudFontWeight.bold,
                 fontFamily = FreudFont.bold,
             )
@@ -381,7 +381,7 @@ object FreudTypography {
     val textXsSemiBold
         get() = this provides
             FreudTextStyle(
-                fontSize   = FreudTextSize.sp12,
+                fontSize = FreudTextSize.sp12,
                 fontWeight = FreudFontWeight.semiBold,
                 fontFamily = FreudFont.semiBold,
             )
@@ -390,7 +390,7 @@ object FreudTypography {
     val text2xsExtraBold
         get() = this provides
             FreudTextStyle(
-                fontSize   = FreudTextSize.sp10,
+                fontSize = FreudTextSize.sp10,
                 fontWeight = FreudFontWeight.extraBold,
                 fontFamily = FreudFont.extraBold,
             )
@@ -399,7 +399,7 @@ object FreudTypography {
     val text2xsBold
         get() = this provides
             FreudTextStyle(
-                fontSize   = FreudTextSize.sp10,
+                fontSize = FreudTextSize.sp10,
                 fontWeight = FreudFontWeight.bold,
                 fontFamily = FreudFont.bold,
             )
@@ -408,7 +408,7 @@ object FreudTypography {
     val text2xsSemiBold
         get() = this provides
             FreudTextStyle(
-                fontSize   = FreudTextSize.sp10,
+                fontSize = FreudTextSize.sp10,
                 fontWeight = FreudFontWeight.semiBold,
                 fontFamily = FreudFont.semiBold,
             )
@@ -417,7 +417,7 @@ object FreudTypography {
     val paragraph2xl
         get() = this provides
             FreudTextStyle(
-                fontSize   = FreudTextSize.sp24,
+                fontSize = FreudTextSize.sp24,
                 fontWeight = FreudFontWeight.semiBold,
                 fontFamily = FreudFont.semiBold,
                 lineHeight = FreudDsToken(160.sp),
@@ -427,7 +427,7 @@ object FreudTypography {
     val paragraphXl
         get() = this provides
             FreudTextStyle(
-                fontSize   = FreudTextSize.sp20,
+                fontSize = FreudTextSize.sp20,
                 fontWeight = FreudFontWeight.semiBold,
                 fontFamily = FreudFont.semiBold,
                 lineHeight = FreudDsToken(160.sp),
@@ -437,7 +437,7 @@ object FreudTypography {
     val paragraphLg
         get() = this provides
             FreudTextStyle(
-                fontSize   = FreudTextSize.sp18,
+                fontSize = FreudTextSize.sp18,
                 fontWeight = FreudFontWeight.semiBold,
                 fontFamily = FreudFont.semiBold,
                 lineHeight = FreudDsToken(160.sp),
@@ -447,7 +447,7 @@ object FreudTypography {
     val paragraphMd
         get() = this provides
             FreudTextStyle(
-                fontSize   = FreudTextSize.sp16,
+                fontSize = FreudTextSize.sp16,
                 fontWeight = FreudFontWeight.semiBold,
                 fontFamily = FreudFont.semiBold,
                 lineHeight = FreudDsToken(160.sp),
@@ -457,7 +457,7 @@ object FreudTypography {
     val paragraphSm
         get() = this provides
             FreudTextStyle(
-                fontSize   = FreudTextSize.sp14,
+                fontSize = FreudTextSize.sp14,
                 fontWeight = FreudFontWeight.semiBold,
                 fontFamily = FreudFont.semiBold,
                 lineHeight = FreudDsToken(160.sp),
@@ -467,7 +467,7 @@ object FreudTypography {
     val paragraphXs
         get() = this provides
             FreudTextStyle(
-                fontSize   = FreudTextSize.sp12,
+                fontSize = FreudTextSize.sp12,
                 fontWeight = FreudFontWeight.semiBold,
                 fontFamily = FreudFont.semiBold,
                 lineHeight = FreudDsToken(160.sp),
@@ -477,7 +477,7 @@ object FreudTypography {
     val label2xl
         get() = this provides
             FreudTextStyle(
-                fontSize   = FreudTextSize.sp20,
+                fontSize = FreudTextSize.sp20,
                 fontWeight = FreudFontWeight.semiBold,
                 fontFamily = FreudFont.semiBold,
             )
@@ -486,7 +486,7 @@ object FreudTypography {
     val labelXl
         get() = this provides
             FreudTextStyle(
-                fontSize   = FreudTextSize.sp18,
+                fontSize = FreudTextSize.sp18,
                 fontWeight = FreudFontWeight.semiBold,
                 fontFamily = FreudFont.semiBold,
             )
@@ -495,7 +495,7 @@ object FreudTypography {
     val labelLg
         get() = this provides
             FreudTextStyle(
-                fontSize   = FreudTextSize.sp16,
+                fontSize = FreudTextSize.sp16,
                 fontWeight = FreudFontWeight.semiBold,
                 fontFamily = FreudFont.semiBold,
             )
@@ -504,7 +504,7 @@ object FreudTypography {
     val labelMd
         get() = this provides
             FreudTextStyle(
-                fontSize   = FreudTextSize.sp14,
+                fontSize = FreudTextSize.sp14,
                 fontWeight = FreudFontWeight.semiBold,
                 fontFamily = FreudFont.semiBold,
             )
@@ -513,7 +513,7 @@ object FreudTypography {
     val labelSm
         get() = this provides
             FreudTextStyle(
-                fontSize   = FreudTextSize.sp12,
+                fontSize = FreudTextSize.sp12,
                 fontWeight = FreudFontWeight.semiBold,
                 fontFamily = FreudFont.semiBold,
             )
@@ -522,7 +522,7 @@ object FreudTypography {
     val labelXs
         get() = this provides
             FreudTextStyle(
-                fontSize   = FreudTextSize.sp10,
+                fontSize = FreudTextSize.sp10,
                 fontWeight = FreudFontWeight.semiBold,
                 fontFamily = FreudFont.semiBold,
             )

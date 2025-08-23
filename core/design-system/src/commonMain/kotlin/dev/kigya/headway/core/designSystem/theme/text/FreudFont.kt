@@ -20,10 +20,10 @@ data object FreudFont {
             FontFamily(
                 Font(
                     resource = Res.font.urbanist_extrabold,
-                    weight   = FontWeight.ExtraBold,
-                    style    = FontStyle.Normal
-                )
-            )
+                    weight = FontWeight.ExtraBold,
+                    style = FontStyle.Normal,
+                ),
+            ),
         )
 
     val bold: FreudDsToken<FontFamily>
@@ -31,10 +31,10 @@ data object FreudFont {
             FontFamily(
                 Font(
                     resource = Res.font.urbanist_bold,
-                    weight   = FontWeight.Bold,
-                    style    = FontStyle.Normal
-                )
-            )
+                    weight = FontWeight.Bold,
+                    style = FontStyle.Normal,
+                ),
+            ),
         )
 
     val semiBold: FreudDsToken<FontFamily>
@@ -42,9 +42,9 @@ data object FreudFont {
             FontFamily(
                 Font(
                     resource = Res.font.urbanist_semibold,
-                    weight   = FontWeight.SemiBold,
-                    style    = FontStyle.Normal
-                )
-            )
+                    weight = FontWeight.SemiBold,
+                    style = FontStyle.Normal,
+                ),
+            ),
         )
 }

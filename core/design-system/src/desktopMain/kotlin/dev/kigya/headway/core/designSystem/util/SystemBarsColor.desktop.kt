@@ -1,4 +1,7 @@
 package dev.kigya.headway.core.designSystem.util
 
-@androidx.compose.runtime.Composable
+import androidx.compose.runtime.Composable
+
+@Composable
+@Suppress("EmptyFunctionBlock")
 actual fun SystemBarsColor(color: SystemBarsColor) { }

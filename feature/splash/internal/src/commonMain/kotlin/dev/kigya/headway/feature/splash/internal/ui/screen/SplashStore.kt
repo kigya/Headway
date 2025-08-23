@@ -23,30 +23,28 @@ internal interface SplashStore : Store<SplashStore.Intent, SplashStore.State, Sp
 internal class SplashStoreFactory(
     private val storeFactory: StoreFactory,
 ) {
-    fun create(executorCoroutineScope: CoroutineScope): SplashStore =
-        object : SplashStore, Store<SplashStore.Intent, SplashStore.State, SplashStore.Label>
+    fun create(executorCoroutineScope: CoroutineScope): SplashStore = object :
+        SplashStore,
+        Store<SplashStore.Intent, SplashStore.State, SplashStore.Label>
         by storeFactory.create<SplashStore.Intent, Action, Message, SplashStore.State, SplashStore.Label>(
             name = this::class.simpleName,
             initialState = SplashStore.State(),
-
             bootstrapper = coroutineBootstrapper {
                 launch {
                     delay(showTextDelay)
                     dispatch(Action.ShowText)
                 }
             },
-
             executorFactory = coroutineExecutorFactory(executorCoroutineScope.coroutineContext) {
                 onAction<Action.ShowText> {
                     dispatch(Message.ShowText)
                 }
             },
-
             reducer = Reducer { message ->
                 when (message) {
                     Message.ShowText -> copy(shouldDisplayText = true)
                 }
-            }
+            },
         ) {}
 
     private sealed interface Action {

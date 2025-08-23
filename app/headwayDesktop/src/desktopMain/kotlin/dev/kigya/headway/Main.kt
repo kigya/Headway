@@ -18,7 +18,7 @@ fun main() = application {
                 text = stringResource(Res.string.tray_quit_app),
                 onClick = ::exitApplication,
             )
-        }
+        },
     )
 
     Window(
