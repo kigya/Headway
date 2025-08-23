@@ -1,47 +1,216 @@
 [versions]
-agp = "8.7.3"
-android-compileSdk = "35"
-android-minSdk = "24"
-android-targetSdk = "35"
-androidx-activity = "1.10.1"
-androidx-appcompat = "1.7.1"
-androidx-constraintlayout = "2.2.1"
-androidx-core = "1.16.0"
-androidx-espresso = "3.6.1"
-androidx-lifecycle = "2.9.1"
-androidx-testExt = "1.2.1"
-composeHotReload = "1.0.0-alpha11"
-composeMultiplatform = "1.8.2"
-junit = "4.13.2"
-kotlin = "2.2.0"
-kotlinx-coroutines = "1.10.2"
-ktor = "3.2.0"
+# Basic Environment Setup
+java = { strictly = "17" }
+minSdk = { strictly = "28" }
+compileSdk = { strictly = "36" }
+targetSdk = { strictly = "36" }
+
+# Gradle
+agp = { require = "8.10.0" }
+
+# Kotlin
+kotlin = { strictly = "2.2.0" }
+ksp = { strictly = "2.2.0-2.0.2" }
+
+# Serialization
+kotlinxSerialization = { require = "1.9.0" }
+
+# Compose
+composeActivity = { require = "1.10.1" }
+composeMultiplatform = { require = "1.9.0-beta01" }
+composeAdaptive = { require = "1.1.2" }
+composeNavigation = { require = "2.9.0-beta04" }
+
+# Lifecycle
+lifecycle = { require = "2.9.1" }
+
+# Compottie
+compottie = { require = "2.0.0-rc04" }
+
+# DI
+koin = { strictly = "4.1.0" }
+
+# Network
+ktor = { require = "3.2.2" }
+
+# Local Storage
+dataStore = { require = "1.1.7" }
+room = { strictly = "2.7.2" }
+sqlite = { strictly = "2.5.2" }
+
+# Coroutines
+coroutines = { require = "1.10.2" }
+
+# MVIKotlin
+mviKotlin = { prefer = "4.3.0" }
+
+# Detekt
+detekt = { require = "1.23.8" }
+detektComposeLopez = { require = "0.4.26" }
+detektComposeKode = { require = "1.4.0" }
+
+# Auth
+kmpAuth = { require = "2.3.1" }
+
+# Connectivity
+connectivity = { require = "2.1.0" }
+
+# Annotation
+annotation = { strictly = "1.9.1" }
+
+# Firebase
+googleServices = { require = "4.4.3" }
+firebaseExtension = { require = "21.0.0" }
+gitlive = { require = "2.1.0" }
+
+# Image
+coil = { prefer = "3.2.0" }
+
+# Time
+kotlinxDatetime = { prefer = "0.7.1" }
+
+# Immutable Collections
+kotlinxCollectionsImmutable = { require = "0.4.0" }
+
+# Outcome
+outcome = "0.3.0"
+
+# Buildkonfig
+buildkonfig = "0.17.1"
+
+# Server
 logback = "1.5.18"
 
 [libraries]
-kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
-kotlin-testJunit = { module = "org.jetbrains.kotlin:kotlin-test-junit", version.ref = "kotlin" }
-junit = { module = "junit:junit", version.ref = "junit" }
-androidx-core-ktx = { module = "androidx.core:core-ktx", version.ref = "androidx-core" }
-androidx-testExt-junit = { module = "androidx.test.ext:junit", version.ref = "androidx-testExt" }
-androidx-espresso-core = { module = "androidx.test.espresso:espresso-core", version.ref = "androidx-espresso" }
-androidx-appcompat = { module = "androidx.appcompat:appcompat", version.ref = "androidx-appcompat" }
-androidx-constraintlayout = { module = "androidx.constraintlayout:constraintlayout", version.ref = "androidx-constraintlayout" }
-androidx-activity-compose = { module = "androidx.activity:activity-compose", version.ref = "androidx-activity" }
-androidx-lifecycle-viewmodel = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel", version.ref = "androidx-lifecycle" }
-androidx-lifecycle-runtimeCompose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "androidx-lifecycle" }
-kotlinx-coroutinesSwing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "kotlinx-coroutines" }
-logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
+# Serialization
+serializationJson = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
+
+# Compose
+compose-activity = { module = "androidx.activity:activity-compose", version.ref = "composeActivity" }
+compose-adaptive = { module = "org.jetbrains.compose.material3.adaptive:adaptive", version.ref = "composeAdaptive" }
+compose-backhandler = { module = "org.jetbrains.compose.ui:ui-backhandler", version.ref = "composeMultiplatform" }
+compose-navigation = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "composeNavigation" }
+
+# Lifecycle
+lifecycle-viewmodel = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel", version.ref = "lifecycle" }
+lifecycle-runtimeCompose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle" }
+
+# Compottie
+compottie = { module = "io.github.alexzhirkevich:compottie", version.ref = "compottie" }
+
+# DI
+koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
+koin-android = { module = "io.insert-koin:koin-android", version.ref = "koin" }
+koin-androidxCompose = { module = "io.insert-koin:koin-androidx-compose", version.ref = "koin" }
+koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koin" }
+koin-composeViewModel = { module = "io.insert-koin:koin-compose-viewmodel", version.ref = "koin" }
+
+# Network
+ktor-clientCore = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
+ktor-clientContentNegotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
+ktor-clientDarwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
+ktor-clientLogging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
+ktor-clientAndroid = { module = "io.ktor:ktor-client-android", version.ref = "ktor" }
+ktor-serialization = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 ktor-serverCore = { module = "io.ktor:ktor-server-core-jvm", version.ref = "ktor" }
 ktor-serverNetty = { module = "io.ktor:ktor-server-netty-jvm", version.ref = "ktor" }
 ktor-serverTestHost = { module = "io.ktor:ktor-server-test-host-jvm", version.ref = "ktor" }
 
+# Local Storage
+dataStore-core = { module = "androidx.datastore:datastore-core", version.ref = "dataStore" }
+dataStore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "dataStore" }
+dataStore-preferencesCore = { module = "androidx.datastore:datastore-preferences-core", version.ref = "dataStore" }
+room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
+room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
+sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
+
+# Coroutines
+coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
+coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "coroutines" }
+
+# MVIKotlin
+mviKotlin-core = { module = "com.arkivanov.mvikotlin:mvikotlin", version.ref = "mviKotlin" }
+mviKotlin-main = { module = "com.arkivanov.mvikotlin:mvikotlin-main", version.ref = "mviKotlin" }
+mviKotlin-logging = { module = "com.arkivanov.mvikotlin:mvikotlin-logging", version.ref = "mviKotlin" }
+mviKotlin-timetravel = { module = "com.arkivanov.mvikotlin:mvikotlin-timetravel", version.ref = "mviKotlin" }
+mviKotlin-extensionsCoroutines = { module = "com.arkivanov.mvikotlin:mvikotlin-extensions-coroutines", version.ref = "mviKotlin" }
+
+# Detekt Libraries
+detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
+detekt-composePluginLopez = { module = "io.nlopez.compose.rules:detekt", version.ref = "detektComposeLopez" }
+detekt-composePluginKode = { module = "ru.kode:detekt-rules-compose", version.ref = "detektComposeKode" }
+
+# Auth
+kmpAuth-google = { module = "io.github.mirzemehdi:kmpauth-google", version.ref = "kmpAuth" }
+
+# Connectivity
+connectivity-core = { module = "dev.jordond.connectivity:connectivity-core", version.ref = "connectivity" }
+connectivity-device = { module = "dev.jordond.connectivity:connectivity-device", version.ref = "connectivity" }
+
+# Annotation
+annotation = { module = "androidx.annotation:annotation", version.ref = "annotation" }
+
+# Firebase
+firebase-commonKtx = { module = "com.google.firebase:firebase-common-ktx", version.ref = "firebaseExtension" }
+firebase-firestore = { module = "dev.gitlive:firebase-firestore", version.ref = "gitlive" }
+firebase-common = { module = "dev.gitlive:firebase-common", version.ref = "gitlive" }
+
+# Image
+coil-compose = { module = "io.coil-kt.coil3:coil-compose", version.ref = "coil" }
+coil-composeCore = { module = "io.coil-kt.coil3:coil-compose-core", version.ref = "coil" }
+coil-networkKtor = { module = "io.coil-kt.coil3:coil-network-ktor3", version.ref = "coil" }
+coil-networkOkHttp = { module = "io.coil-kt.coil3:coil-network-okhttp", version.ref = "coil" }
+coil-multiplatform = { module = "io.coil-kt.coil3:coil", version.ref = "coil" }
+
+# Time
+kotlinxDatetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
+
+# Immutable Collections
+immutableCollections = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinxCollectionsImmutable" }
+
+# Outcome
+outcome = { module = "dev.kigya.outcome:core", version.ref = "outcome" }
+
+# Logger
+logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
+
+# Gradle Plugins
+gradle-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
+gradle-kotlinMultiplatform = { module = "org.jetbrains.kotlin.multiplatform:org.jetbrains.kotlin.multiplatform.gradle.plugin", version.ref = "kotlin" }
+gradle-serialization = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlin" }
+gradle-ksp = { module = "com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
+gradle-android = { module = "com.android.tools.build:gradle", version.ref = "agp" }
+gradle-compose = { module = "org.jetbrains.compose:org.jetbrains.compose.gradle.plugin", version.ref = "composeMultiplatform" }
+gradle-composeCompiler = { module = "org.jetbrains.kotlin:compose-compiler-gradle-plugin", version.ref = "kotlin" }
+gradle-koin = { module = "io.insert-koin:koin-gradle-plugin", version.ref = "koin" }
+gradle-detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
+gradle-room = { module = "androidx.room:room-gradle-plugin", version.ref = "room" }
+
 [plugins]
+# Plugin Configurations
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
-composeHotReload = { id = "org.jetbrains.compose.hot-reload", version.ref = "composeHotReload" }
-composeMultiplatform = { id = "org.jetbrains.compose", version.ref = "composeMultiplatform" }
-composeCompiler = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
-ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }
+compose = { id = "org.jetbrains.compose", version.ref = "composeMultiplatform" }
+composeKotlin = { id = "org.jetbrains.kotlin.plugin.compose", version.ref = "kotlin" }
+ksp = { id = "com.google.devtools.ksp", version.ref = "ksp" }
+ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
+detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
+googleServices = { id = "com.google.gms.google-services", version.ref = "googleServices" }
+serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
+room = { id = "androidx.room", version.ref = "room" }
+buildkonfig = { id = "com.codingfeline.buildkonfig", version.ref = "buildkonfig" }
+
+convention-base-androidApplication = "base.androidApplication:1.0"
+convention-base-desktopApplication = "base.desktopApplication:1.0"
+convention-base-webApplication = "base.webApplication:1.0"
+convention-base-sharedLibrary = "base.sharedLibrary:1.0"
+
+convention-component-compose = "component.compose:1.0"
+convention-component-composeNavigation = "component.composeNavigation:1.0"
+convention-component-mvi = "component.mvi:1.0"
+convention-component-koin = "component.koin:1.0"
+convention-component-serialization = "component.serialization:1.0"
+convention-component-room = "component.room:1.0"

@@ -1,0 +1,24 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="128"
+    android:viewportHeight="128">
+    <group
+        android:scaleX="0.36"
+        android:scaleY="0.36"
+        android:translateX="40.96"
+        android:translateY="40.96">
+        <path
+            android:fillColor="@color/mindful_brown_60"
+            android:pathData="M64,53.33C75.78,53.33 85.33,43.78 85.33,32C85.33,20.22 75.78,10.67 64,10.67C52.22,10.67 42.67,20.22 42.67,32C42.67,43.78 52.22,53.33 64,53.33Z" />
+        <path
+            android:fillColor="@color/mindful_brown_60"
+            android:pathData="M64,117.33C75.78,117.33 85.33,107.78 85.33,96C85.33,84.22 75.78,74.67 64,74.67C52.22,74.67 42.67,84.22 42.67,96C42.67,107.78 52.22,117.33 64,117.33Z" />
+        <path
+            android:fillColor="@color/mindful_brown_60"
+            android:pathData="M96,85.33C84.22,85.33 74.67,75.78 74.67,64C74.67,52.22 84.22,42.67 96,42.67C107.78,42.67 117.33,52.22 117.33,64C117.33,75.78 107.78,85.33 96,85.33Z" />
+        <path
+            android:fillColor="@color/mindful_brown_60"
+            android:pathData="M10.67,64C10.67,75.78 20.22,85.33 32,85.33C43.78,85.33 53.33,75.78 53.33,64C53.33,52.22 43.78,42.67 32,42.67C20.22,42.67 10.67,52.22 10.67,64Z" />
+    </group>
+</vector>

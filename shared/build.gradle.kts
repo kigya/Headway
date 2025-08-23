@@ -1,43 +1,27 @@
-import org.jetbrains.kotlin.gradle.ExperimentalKotlinGradlePluginApi
-import org.jetbrains.kotlin.gradle.dsl.JvmTarget
+import extension.commonMainDependencies
 
 plugins {
-    alias(libs.plugins.kotlinMultiplatform)
-    alias(libs.plugins.androidLibrary)
+    alias(libs.plugins.convention.base.sharedLibrary)
+    alias(libs.plugins.convention.component.compose)
+
+    alias(libs.plugins.convention.component.koin)
+    alias(libs.plugins.convention.component.composeNavigation)
 }
 
 kotlin {
-    androidTarget {
-        @OptIn(ExperimentalKotlinGradlePluginApi::class)
-        compilerOptions {
-            jvmTarget.set(JvmTarget.JVM_11)
-        }
-    }
-    
-    iosX64()
-    iosArm64()
-    iosSimulatorArm64()
-    
-    jvm()
-    
-    sourceSets {
-        commonMain.dependencies {
-            // put your Multiplatform dependencies here
-        }
-        commonTest.dependencies {
-            implementation(libs.kotlin.test)
+    listOf(iosX64(), iosArm64(), iosSimulatorArm64()).forEach {
+        it.binaries.framework {
+            baseName = "shared"
+            isStatic = true
         }
     }
 }
 
-android {
-    namespace = "dev.kigya.headway.shared"
-    compileSdk = libs.versions.android.compileSdk.get().toInt()
-    compileOptions {
-        sourceCompatibility = JavaVersion.VERSION_11
-        targetCompatibility = JavaVersion.VERSION_11
-    }
-    defaultConfig {
-        minSdk = libs.versions.android.minSdk.get().toInt()
+commonMainDependencies {
+    projects {
+        implementation(di.api)
+        implementation(navigation.api)
+        implementation(core.designSystem)
+        implementation(feature.splash.api)
     }
 }

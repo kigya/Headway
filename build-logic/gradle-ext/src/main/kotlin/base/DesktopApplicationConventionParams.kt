@@ -1,0 +1,92 @@
+package base
+
+import javax.inject.Inject
+import org.gradle.api.model.ObjectFactory
+import org.gradle.api.provider.ListProperty
+import org.gradle.api.provider.Property
+import org.gradle.api.tasks.Input
+import org.jetbrains.compose.desktop.application.dsl.TargetFormat
+import java.io.File
+
+/**
+ * Holds all configurable parameters for the Desktop Application convention plugin.
+ *
+ * Your `build.gradle.kts` can call:
+ * ```
+ * desktopApplication {
+ *   mainClass.set("dev.kigya.headway.MainKt")
+ *   packageName.set("com.example.desktop")
+ *   packageVersion.set("1.2.3")
+ *   iconFile.set("File("logo/Windows/appIcon.ico")
+ *   formats(TargetFormat.Dmg, TargetFormat.Msi)
+ * }
+ * ```
+ *
+ * @property mainClass
+ *   Fully qualified name of the desktop application’s entry point class
+ *   (default = `"MainKt"`).
+ *
+ * @property packageName
+ *   Base package to use for your native distributions (default = `"com.example.desktop"`).
+ *
+ * @property packageVersion
+ *   Version string for your native distributions (default = `"1.0.0"`).
+ *
+ * @property iconFile
+ *   Icon file for your native distributions (default is an empty file string).
+ *
+ * @property targetFormats
+ *   List of native distribution formats to build
+ *   (e.g. `TargetFormat.Dmg`, `TargetFormat.Deb`).
+ *   Defaults to an empty list.
+ */
+public abstract class DesktopApplicationConventionParams @Inject constructor(
+    objects: ObjectFactory
+) {
+    @get:Input
+    public abstract val mainClass: Property<String>
+
+    @get:Input
+    public abstract val packageName: Property<String>
+
+    @get:Input
+    public abstract val packageVersion: Property<String>
+
+    @get:Input
+    public abstract val targetFormats: ListProperty<TargetFormat>
+
+    @get:Input
+    public abstract val iconDir: Property<File>
+
+    @get:Input
+    public abstract val iconBaseName: Property<String>
+
+    @get:Input
+    public abstract val dockName: Property<String>
+
+    init {
+        mainClass.convention("MainKt")
+        packageName.convention("com.example.desktop")
+        packageVersion.convention("1.0.0")
+        iconDir.convention(File("src/desktopMain/composeResources/drawable"))
+        iconBaseName.convention("")
+        dockName.convention("")
+        targetFormats.convention(emptyList())
+    }
+}
+
+/**
+ * DSL helper to set one or more native distribution formats in a single call.
+ *
+ * Usage:
+ * ```
+ * desktopApplication {
+ *   formats(TargetFormat.Dmg, TargetFormat.Msi, TargetFormat.Deb)
+ * }
+ * ```
+ *
+ * @receiver the convention parameters holder for desktop applications.
+ * @param formats one or more [TargetFormat] values to apply.
+ */
+public fun DesktopApplicationConventionParams.formats(vararg formats: TargetFormat): Unit =
+    targetFormats.set(formats.toList())

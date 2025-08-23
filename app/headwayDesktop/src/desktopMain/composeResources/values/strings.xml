@@ -1,0 +1,4 @@
+<resources>
+    <string name="app_name" translatable="false">Headway</string>
+    <string name="tray_quit_app">Quit Headway</string>
+</resources>
