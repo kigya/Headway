@@ -46,6 +46,7 @@ includeBuild("build-logic")
 include(
     ":app:headwayAndroid",
     ":app:headwayDesktop",
+    ":app:headwayWeb",
 
     ":feature:splash:api",
     ":feature:splash:internal",

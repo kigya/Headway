@@ -2,10 +2,7 @@ package extension
 
 import org.gradle.accessors.dm.LibrariesForLibs
 import org.gradle.api.Project
-import org.gradle.api.artifacts.dsl.DependencyHandler
 import org.gradle.api.plugins.ExtensionAware
-import org.jetbrains.compose.ComposeExtension
-import org.jetbrains.compose.ComposePlugin
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.plugin.KotlinDependencyHandler
 
@@ -103,6 +100,19 @@ public fun Project.iosMainDependencies(
 }
 
 /**
+ * Adds dependencies to the `jsMain` source set.
+ */
+public fun Project.wasmMainDependencies(
+    configure: KotlinDependencyHandler.() -> Unit,
+) {
+    kmp.sourceSets
+        .named("wasmJsMain")
+        .configure {
+            dependencies(configure)
+        }
+}
+
+/**
  * Adds dependencies to the `commonTest` source set.
  */
 public fun Project.commonTestDependencies(
@@ -149,6 +159,19 @@ public fun Project.iosTestDependencies(
 ) {
     kmp.sourceSets
         .named("iosTest")
+        .configure {
+            dependencies(configure)
+        }
+}
+
+/**
+ * Adds dependencies to the `jsTest` source set.
+ */
+public fun Project.wasmTestDependencies(
+    configure: KotlinDependencyHandler.() -> Unit,
+) {
+    kmp.sourceSets
+        .named("wasmJsTest")
         .configure {
             dependencies(configure)
         }

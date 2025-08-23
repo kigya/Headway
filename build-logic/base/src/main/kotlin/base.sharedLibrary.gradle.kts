@@ -1,5 +1,8 @@
+@file:OptIn(ExperimentalWasmDsl::class)
+
 import extension.desktopMainDependencies
 import extension.libs
+import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
@@ -35,6 +38,10 @@ configure<KotlinMultiplatformExtension> {
         iosX64()
         iosSimulatorArm64()
         jvm("desktop")
+        wasmJs {
+            browser()
+            binaries.executable()
+        }
 
         compilerOptions.freeCompilerArgs.add("-Xcontext-parameters")
 

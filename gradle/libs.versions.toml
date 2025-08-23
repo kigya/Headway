@@ -73,7 +73,7 @@ kotlinxDatetime = { prefer = "0.7.1" }
 kotlinxCollectionsImmutable = { require = "0.4.0" }
 
 # Outcome
-outcome = "0.2.0"
+outcome = "0.3.0"
 
 # Buildkonfig
 buildkonfig = "0.17.1"
@@ -92,7 +92,7 @@ compose-backhandler = { module = "org.jetbrains.compose.ui:ui-backhandler", vers
 compose-navigation = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "composeNavigation" }
 
 # Lifecycle
-lifecycle-viewmodel = { module = "androidx.lifecycle:lifecycle-viewmodel", version.ref = "lifecycle" }
+lifecycle-viewmodel = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel", version.ref = "lifecycle" }
 lifecycle-runtimeCompose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle" }
 
 # Compottie
@@ -205,6 +205,7 @@ buildkonfig = { id = "com.codingfeline.buildkonfig", version.ref = "buildkonfig"
 
 convention-base-androidApplication = "base.androidApplication:1.0"
 convention-base-desktopApplication = "base.desktopApplication:1.0"
+convention-base-webApplication = "base.webApplication:1.0"
 convention-base-sharedLibrary = "base.sharedLibrary:1.0"
 
 convention-component-compose = "component.compose:1.0"
