@@ -1,0 +1,29 @@
+name: _build-desktop
+on:
+  workflow_call: {}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Setup Gradle (cache)
+        uses: gradle/gradle-build-action@v3
+
+      - name: Package Desktop (.deb)
+        run: ./gradlew :app:headwayDesktop:packageDeb --stacktrace
+
+      - name: Upload Desktop distributions
+        uses: actions/upload-artifact@v4
+        with:
+          name: desktop-dist
+          path: app/headwayDesktop/build/compose/binaries/**
+          if-no-files-found: warn
+          retention-days: 14

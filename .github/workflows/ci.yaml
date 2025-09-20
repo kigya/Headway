@@ -1,0 +1,20 @@
+name: Build (KMP targets)
+
+on:
+  pull_request:
+    branches: [ trunk ]
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  android:
+    uses: ./.github/workflows/_build-android.yml
+  desktop:
+    uses: ./.github/workflows/_build-desktop.yml
+  web:
+    uses: ./.github/workflows/_build-web.yml
+  ios:
+    uses: ./.github/workflows/_build-ios.yml

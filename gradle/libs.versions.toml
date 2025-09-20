@@ -9,15 +9,15 @@ targetSdk = { strictly = "36" }
 agp = { require = "8.10.0" }
 
 # Kotlin
-kotlin = { strictly = "2.2.0" }
-ksp = { strictly = "2.2.0-2.0.2" }
+kotlin = { strictly = "2.2.20" }
+ksp = { strictly = "2.2.20-2.0.3" }
 
 # Serialization
 kotlinxSerialization = { require = "1.9.0" }
 
 # Compose
 composeActivity = { require = "1.10.1" }
-composeMultiplatform = { require = "1.9.0-beta01" }
+composeMultiplatform = { require = "1.9.0" }
 composeAdaptive = { require = "1.1.2" }
 composeNavigation = { require = "2.9.0-beta04" }
 

@@ -1,0 +1,31 @@
+name: _build-android
+on:
+  workflow_call: {}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Setup Gradle (cache)
+        uses: gradle/gradle-build-action@v3
+
+      - name: Assemble Android (Debug)
+        run: ./gradlew :app:headwayAndroid:assembleDebug --stacktrace
+
+      - name: Upload APK/AAB
+        uses: actions/upload-artifact@v4
+        with:
+          name: android-apk
+          path: |
+            app/headwayAndroid/build/outputs/apk/**/*.apk
+            app/headwayAndroid/build/outputs/bundle/**/*.aab
+          if-no-files-found: warn
+          retention-days: 14
