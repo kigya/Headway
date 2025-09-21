@@ -17,12 +17,16 @@ jobs:
   android:
     if: ${{ true }}
     uses: ./.github/workflows/_build-android.yml
+    secrets: inherit
   desktop:
     if: ${{ false }}
     uses: ./.github/workflows/_build-desktop.yml
+    secrets: inherit
   web:
     if: ${{ false }}
     uses: ./.github/workflows/_build-web.yml
+    secrets: inherit
   ios:
     if: ${{ false }}
     uses: ./.github/workflows/_build-ios.yml
+    secrets: inherit
