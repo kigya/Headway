@@ -4,7 +4,13 @@ on:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    name: Desktop (${{ matrix.os }})
+    runs-on: ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, macos-latest, windows-latest]
+
     steps:
       - uses: actions/checkout@v4
 
@@ -14,19 +20,29 @@ jobs:
           distribution: temurin
           java-version: 17
 
-      - name: Setup Gradle (cache)
-        uses: gradle/gradle-build-action@v3
+      - name: Install packaging deps (Linux)
+        if: matrix.os == 'ubuntu-latest'
+        run: |
+          sudo apt-get update
+          sudo apt-get install -y fakeroot
 
-      - name: Package Desktop (.deb)
+      - name: Install WiX Toolset (Windows)
+        if: matrix.os == 'windows-latest'
+        run: choco install wixtoolset --version=3.14.0 -y
+        shell: powershell
+
+      - name: Package Desktop (${{ matrix.os }})
+        uses: gradle/gradle-build-action@v3
         env:
           GPR_USER: ${{ secrets.GPR_USER }}
-          GPR_KEY: ${{ secrets.GPR_KEY }}
-        run: ./gradlew :app:headwayDesktop:packageDistributionForCurrentOS --stacktrace
+          GPR_KEY:  ${{ secrets.GPR_KEY }}
+        with:
+          arguments: :app:headwayDesktop:packageDistributionForCurrentOS --stacktrace
 
-      - name: Upload Desktop distributions
+      - name: Upload Desktop distributions (${{ matrix.os }})
         uses: actions/upload-artifact@v4
         with:
-          name: desktop-dist
+          name: desktop-dist-${{ matrix.os }}
           path: app/headwayDesktop/build/compose/binaries/**
           if-no-files-found: warn
           retention-days: 14
