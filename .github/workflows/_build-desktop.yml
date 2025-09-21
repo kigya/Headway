@@ -26,10 +26,21 @@ jobs:
           sudo apt-get update
           sudo apt-get install -y fakeroot
 
-      - name: Install WiX Toolset (Windows)
+      - name: Ensure WiX Toolset (Windows)
         if: matrix.os == 'windows-latest'
-        run: choco install wixtoolset --version=3.14.0 -y
         shell: powershell
+        run: |
+          choco upgrade wixtoolset -y --no-progress --allow-downgrade
+          $wixDir = (Get-ChildItem "${env:ProgramFiles(x86)}" -Filter "WiX Toolset*" -Directory |
+                     Sort-Object Name -Descending | Select-Object -First 1).FullName
+          if ($wixDir) {
+            $wixBin = Join-Path $wixDir "bin"
+            if (Test-Path $wixBin) {
+              echo $wixBin >> $env:GITHUB_PATH
+              # на всякий случай ещё переменная окружения WIX
+              echo "WIX=$wixBin" >> $env:GITHUB_ENV
+            }
+          }
 
       - name: Package Desktop (${{ matrix.os }})
         uses: gradle/gradle-build-action@v3
