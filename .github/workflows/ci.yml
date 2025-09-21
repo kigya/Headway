@@ -13,23 +13,16 @@ concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
-env:
-  RUN_ANDROID: true
-  RUN_DESKTOP: false
-  RUN_WEB: false
-  RUN_IOS: false
-
 jobs:
   android:
-    if: ${{ env.RUN_ANDROID == 'true' }}
+    if: ${{ true }}
     uses: ./.github/workflows/_build-android.yml
   desktop:
-    if: ${{ env.RUN_DESKTOP == 'true' }}
+    if: ${{ false }}
     uses: ./.github/workflows/_build-desktop.yml
   web:
-    if: ${{ env.RUN_WEB == 'true' }}
+    if: ${{ false }}
     uses: ./.github/workflows/_build-web.yml
   ios:
-    if: ${{ env.RUN_IOS == 'true' }}
+    if: ${{ false }}
     uses: ./.github/workflows/_build-ios.yml
-
