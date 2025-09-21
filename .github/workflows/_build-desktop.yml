@@ -18,6 +18,9 @@ jobs:
         uses: gradle/gradle-build-action@v3
 
       - name: Package Desktop (.deb)
+        env:
+          GPR_USER: ${{ secrets.GPR_USER }}
+          GPR_KEY: ${{ secrets.GPR_KEY }}
         run: ./gradlew :app:headwayDesktop:packageDistributionForCurrentOS --stacktrace
 
       - name: Upload Desktop distributions
