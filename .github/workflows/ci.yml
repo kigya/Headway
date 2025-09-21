@@ -5,16 +5,31 @@ on:
     branches: [ trunk ]
   workflow_dispatch:
 
+permissions:
+  contents: read
+  packages: read
+
 concurrency:
   group: ci-${{ github.workflow }}-${{ github.ref }}
   cancel-in-progress: true
 
+env:
+  RUN_ANDROID: true
+  RUN_DESKTOP: false
+  RUN_WEB: false
+  RUN_IOS: false
+
 jobs:
   android:
+    if: ${{ env.RUN_ANDROID == 'true' }}
     uses: ./.github/workflows/_build-android.yml
   desktop:
+    if: ${{ env.RUN_DESKTOP == 'true' }}
     uses: ./.github/workflows/_build-desktop.yml
   web:
+    if: ${{ env.RUN_WEB == 'true' }}
     uses: ./.github/workflows/_build-web.yml
   ios:
+    if: ${{ env.RUN_IOS == 'true' }}
     uses: ./.github/workflows/_build-ios.yml
+
