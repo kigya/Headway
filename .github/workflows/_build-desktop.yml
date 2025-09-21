@@ -18,7 +18,7 @@ jobs:
         uses: gradle/gradle-build-action@v3
 
       - name: Package Desktop (.deb)
-        run: ./gradlew :app:headwayDesktop:packageDeb --stacktrace
+        run: ./gradlew :app:headwayDesktop:packageDistributionForCurrentOS --stacktrace
 
       - name: Upload Desktop distributions
         uses: actions/upload-artifact@v4

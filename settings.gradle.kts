@@ -33,9 +33,9 @@ dependencyResolutionManagement {
             url = uri("https://maven.pkg.github.com/kigya/Outcome")
             credentials {
                 username = localProperties.getProperty("gpr.user")
-                    ?: System.getenv("GPR_USER") ?: System.getenv("GITHUB_ACTOR")
+                    ?: System.getenv("GPR_USER")
                 password = localProperties.getProperty("gpr.key")
-                    ?: System.getenv("GPR_KEY") ?: System.getenv("GITHUB_TOKEN")
+                    ?: System.getenv("GPR_KEY")
             }
         }
     }

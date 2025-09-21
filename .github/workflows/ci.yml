@@ -19,7 +19,7 @@ jobs:
     uses: ./.github/workflows/_build-android.yml
     secrets: inherit
   desktop:
-    if: ${{ false }}
+    if: ${{ true }}
     uses: ./.github/workflows/_build-desktop.yml
     secrets: inherit
   web:

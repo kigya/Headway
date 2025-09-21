@@ -1,4 +1,4 @@
-import base.formats
+import base.configureDesktopApplication
 import extension.desktopMainDependencies
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
@@ -9,7 +9,7 @@ plugins {
 
 configureDesktopApplication {
     mainClass.set("dev.kigya.headway.MainKt")
-    packageName.set("dev.kigya.headway")
+    packageName.set("Headway")
     packageVersion.set("1.0.0")
     iconDir.set(file("src/desktopMain/composeResources/drawable"))
     iconBaseName.set("ic_headway")
