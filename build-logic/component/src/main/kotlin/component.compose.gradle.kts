@@ -3,10 +3,9 @@ import detekt.DetektConfigs
 import extension.androidMainDependencies
 import extension.commonMainDependencies
 import extension.composePlugin
-import extension.libs
 import extension.configureIfExists
+import extension.libs
 import io.gitlab.arturbosch.detekt.extensions.DetektExtension
-import org.gradle.kotlin.dsl.configure
 import org.jetbrains.compose.ComposePlugin.CommonComponentsDependencies.uiToolingPreview
 import org.jetbrains.compose.android.AndroidExtension
 
@@ -19,7 +18,7 @@ configureIfExists(CommonExtension::class.java) {
     buildFeatures.compose = true
 }
 
-configure<DetektExtension> {
+configureIfExists(DetektExtension::class.java) {
     config.from(rootProject.file(DetektConfigs.COMPOSE))
 }
 

@@ -1,0 +1,32 @@
+name: Build (KMP targets)
+
+on:
+  pull_request:
+    branches: [ trunk ]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  packages: read
+
+concurrency:
+  group: ci-${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  android:
+    if: ${{ true }}
+    uses: ./.github/workflows/_build-android.yml
+    secrets: inherit
+  desktop:
+    if: ${{ true }}
+    uses: ./.github/workflows/_build-desktop.yml
+    secrets: inherit
+  web:
+    if: ${{ true }}
+    uses: ./.github/workflows/_build-web.yml
+    secrets: inherit
+  ios:
+    if: ${{ true }}
+    uses: ./.github/workflows/_build-ios.yml
+    secrets: inherit

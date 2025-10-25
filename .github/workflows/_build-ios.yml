@@ -1,0 +1,38 @@
+name: _build-ios
+on:
+  workflow_call: {}
+
+jobs:
+  build:
+    runs-on: macos-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17 (for Gradle during Xcode build)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Build iOS (Simulator, Debug, no signing)
+        env:
+          GPR_USER: ${{ secrets.GPR_USER }}
+          GPR_KEY: ${{ secrets.GPR_KEY }}
+        working-directory: app/headwayIOS
+        run: |
+          xcodebuild \
+            -project headwayIOS.xcodeproj \
+            -scheme headway-ios \
+            -configuration Debug \
+            -sdk iphonesimulator \
+            -destination 'generic/platform=iOS Simulator' \
+            -derivedDataPath ../../build/ios \
+            CODE_SIGNING_ALLOWED=NO
+
+      - name: Upload .app (Simulator)
+        uses: actions/upload-artifact@v4
+        with:
+          name: ios-app-simulator
+          path: build/ios/Build/Products/Debug-iphonesimulator/Headway.app
+          if-no-files-found: warn
+          retention-days: 14
