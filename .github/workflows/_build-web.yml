@@ -23,6 +23,11 @@ jobs:
         with:
           node-version: 20
 
+      - name: Enable Corepack (Yarn for Kotlin/Wasm)
+        run: |
+          corepack enable
+          yarn --version
+
       - name: Build Web (Wasm/JS)
         env:
           GPR_USER: ${{ secrets.GPR_USER }}
