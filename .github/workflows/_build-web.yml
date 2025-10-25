@@ -5,6 +5,7 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
+
     steps:
       - uses: actions/checkout@v4
 
@@ -21,20 +22,6 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
-
-      - name: Prepare Kotlin/Wasm lock
-        env:
-          GPR_USER: ${{ secrets.GPR_USER }}
-          GPR_KEY:  ${{ secrets.GPR_KEY }}
-          # даём больше памяти Gradle прямо здесь
-          GRADLE_OPTS: -Xmx4g
-        run: |
-          ./gradlew \
-            --no-daemon \
-            -Dorg.gradle.configuration-cache=false \
-            :app:headwayWeb:kotlinWasmUpgradeYarnLock \
-            --stacktrace \
-            --info
 
       - name: Build Web (Wasm/JS)
         env:
