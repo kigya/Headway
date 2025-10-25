@@ -6,18 +6,18 @@ compileSdk = { strictly = "36" }
 targetSdk = { strictly = "36" }
 
 # Gradle
-agp = { require = "8.10.0" }
+agp = { require = "8.11.1" }
 
 # Kotlin
-kotlin = { strictly = "2.2.20" }
-ksp = { strictly = "2.2.20-2.0.3" }
+kotlin = { strictly = "2.2.21" }
+ksp = { strictly = "2.3.0" }
 
 # Serialization
 kotlinxSerialization = { require = "1.9.0" }
 
 # Compose
 composeActivity = { require = "1.10.1" }
-composeMultiplatform = { require = "1.9.0" }
+composeMultiplatform = { require = "1.10.0-alpha03" }
 composeAdaptive = { require = "1.1.2" }
 composeNavigation = { require = "2.9.0-beta04" }
 
@@ -25,18 +25,18 @@ composeNavigation = { require = "2.9.0-beta04" }
 lifecycle = { require = "2.9.1" }
 
 # Compottie
-compottie = { require = "2.0.0-rc04" }
+compottie = { require = "2.0.2" }
 
 # DI
-koin = { strictly = "4.1.0" }
+koin = { strictly = "4.1.1" }
 
 # Network
 ktor = { require = "3.2.2" }
 
 # Local Storage
 dataStore = { require = "1.1.7" }
-room = { strictly = "2.7.2" }
-sqlite = { strictly = "2.5.2" }
+room = { strictly = "2.8.3" }
+sqlite = { strictly = "2.6.1" }
 
 # Coroutines
 coroutines = { require = "1.10.2" }
@@ -46,25 +46,25 @@ mviKotlin = { prefer = "4.3.0" }
 
 # Detekt
 detekt = { require = "1.23.8" }
-detektComposeLopez = { require = "0.4.26" }
+detektComposeLopez = { require = "0.4.27" }
 detektComposeKode = { require = "1.4.0" }
 
 # Auth
 kmpAuth = { require = "2.3.1" }
 
 # Connectivity
-connectivity = { require = "2.1.0" }
+connectivity = { require = "2.3.0" }
 
 # Annotation
 annotation = { strictly = "1.9.1" }
 
 # Firebase
-googleServices = { require = "4.4.3" }
+googleServices = { require = "4.4.4" }
 firebaseExtension = { require = "21.0.0" }
-gitlive = { require = "2.1.0" }
+gitlive = { require = "2.3.0" }
 
 # Image
-coil = { prefer = "3.2.0" }
+coil = { prefer = "3.3.0" }
 
 # Time
 kotlinxDatetime = { prefer = "0.7.1" }
@@ -79,7 +79,7 @@ outcome = "0.3.0"
 buildkonfig = "0.17.1"
 
 # Server
-logback = "1.5.18"
+logback = "1.5.20"
 
 [libraries]
 # Serialization
