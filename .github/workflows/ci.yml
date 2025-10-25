@@ -15,18 +15,18 @@ concurrency:
 
 jobs:
   android:
-    if: ${{ true }}
+    if: ${{ false }}
     uses: ./.github/workflows/_build-android.yml
     secrets: inherit
   desktop:
-    if: ${{ true }}
+    if: ${{ false }}
     uses: ./.github/workflows/_build-desktop.yml
     secrets: inherit
   web:
-    if: ${{ false }}
+    if: ${{ true }}
     uses: ./.github/workflows/_build-web.yml
     secrets: inherit
   ios:
-    if: ${{ false }}
+    if: ${{ true }}
     uses: ./.github/workflows/_build-ios.yml
     secrets: inherit

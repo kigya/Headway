@@ -15,6 +15,9 @@ jobs:
           java-version: 17
 
       - name: Build iOS (Simulator, Debug, no signing)
+        env:
+          GPR_USER: ${{ secrets.GPR_USER }}
+          GPR_KEY: ${{ secrets.GPR_KEY }}
         working-directory: app/headwayIOS
         run: |
           xcodebuild \
