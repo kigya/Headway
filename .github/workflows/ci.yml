@@ -27,6 +27,6 @@ jobs:
     uses: ./.github/workflows/_build-web.yml
     secrets: inherit
   ios:
-    if: ${{ true }}
+    if: ${{ false }}
     uses: ./.github/workflows/_build-ios.yml
     secrets: inherit

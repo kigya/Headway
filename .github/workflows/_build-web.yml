@@ -17,10 +17,21 @@ jobs:
       - name: Setup Gradle (cache)
         uses: gradle/gradle-build-action@v3
 
+      - name: Set up Node (for Wasm toolchain)
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
       - name: Prepare Kotlin/Wasm lock
+        env:
+          GPR_USER: ${{ secrets.GPR_USER }}
+          GPR_KEY:  ${{ secrets.GPR_KEY }}
         run: ./gradlew :app:headwayWeb:kotlinWasmUpgradeYarnLock --stacktrace
 
       - name: Build Web (Wasm/JS)
+        env:
+          GPR_USER: ${{ secrets.GPR_USER }}
+          GPR_KEY:  ${{ secrets.GPR_KEY }}
         run: ./gradlew :app:headwayWeb:wasmJsBrowserDistribution --stacktrace
 
       - name: Upload Web dist
