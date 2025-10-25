@@ -26,13 +26,28 @@ jobs:
         env:
           GPR_USER: ${{ secrets.GPR_USER }}
           GPR_KEY:  ${{ secrets.GPR_KEY }}
-        run: ./gradlew :app:headwayWeb:kotlinWasmUpgradeYarnLock --stacktrace
+          # даём больше памяти Gradle прямо здесь
+          GRADLE_OPTS: -Xmx4g
+        run: |
+          ./gradlew \
+            --no-daemon \
+            -Dorg.gradle.configuration-cache=false \
+            :app:headwayWeb:kotlinWasmUpgradeYarnLock \
+            --stacktrace \
+            --info
 
       - name: Build Web (Wasm/JS)
         env:
           GPR_USER: ${{ secrets.GPR_USER }}
           GPR_KEY:  ${{ secrets.GPR_KEY }}
-        run: ./gradlew :app:headwayWeb:wasmJsBrowserDistribution --stacktrace
+          GRADLE_OPTS: -Xmx4g
+        run: |
+          ./gradlew \
+            --no-daemon \
+            -Dorg.gradle.configuration-cache=false \
+            :app:headwayWeb:wasmJsBrowserDistribution \
+            --stacktrace \
+            --info
 
       - name: Upload Web dist
         uses: actions/upload-artifact@v4
