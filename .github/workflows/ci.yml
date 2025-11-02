@@ -1,4 +1,4 @@
-name: Build (KMP targets)
+name: Headway Pipelines
 
 on:
   pull_request:
@@ -29,4 +29,9 @@ jobs:
   ios:
     if: ${{ true }}
     uses: ./.github/workflows/_build-ios.yml
+    secrets: inherit
+  detekt:
+    if: ${{ true }}
+    needs: [ android, desktop, web, ios ]
+    uses: ./.github/workflows/_detekt.yml
     secrets: inherit

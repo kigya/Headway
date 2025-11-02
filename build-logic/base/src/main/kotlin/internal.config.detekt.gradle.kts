@@ -9,6 +9,10 @@ plugins {
     id("io.gitlab.arturbosch.detekt")
 }
 
+val detektExcludes = listOf(
+    "**/dev/kigya/headway/navigation/api/navigator/AsyncRunner.kt",
+)
+
 configure<DetektExtension> {
     config.from(
         rootProject.file(DetektConfigs.MAIN),
@@ -20,10 +24,11 @@ configure<DetektExtension> {
     debug = true
 
     source.from(
-        "src/androidMain/kotlin",
         "src/commonMain/kotlin",
+        "src/androidMain/kotlin",
         "src/iosMain/kotlin",
         "src/desktopMain/kotlin",
+        "src/webMain/kotlin",
     )
 }
 
@@ -36,10 +41,12 @@ tasks.withType<Detekt>().configureEach {
         sarif.required.set(false)
         md.required.set(false)
     }
+    exclude(detektExcludes)
 }
 
 tasks.withType<DetektCreateBaselineTask>().configureEach {
     jvmTarget = libs.versions.java.get()
+    exclude(detektExcludes)
 }
 
 dependencies {

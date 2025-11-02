@@ -31,8 +31,9 @@ class SplashStoreFactory(
     private val storeFactory: StoreFactory,
     private val navigator: NavigatorContract,
 ) {
-    fun create(executorCoroutineScope: CoroutineScope): SplashStore =
-        object : SplashStore, Store<Intent, State, Label>
+    fun create(executorCoroutineScope: CoroutineScope): SplashStore = object :
+        SplashStore,
+        Store<Intent, State, Label>
         by storeFactory.create<Intent, Action, Message, State, Label>(
             name = this::class.simpleName,
             initialState = State(),
@@ -52,7 +53,7 @@ class SplashStoreFactory(
                                 NavigationIntent.ReplaceTopBy(
                                     screenNavigationKey = AuthScreenKey,
                                     asyncRunner = { executorCoroutineScope.asNavigationAsyncRunner() },
-                                )
+                                ),
                             )
                         }
                     }

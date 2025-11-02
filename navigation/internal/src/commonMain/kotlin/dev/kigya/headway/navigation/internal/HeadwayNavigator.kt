@@ -27,7 +27,7 @@ class HeadwayNavigator(
                 if (backStack.lastOrNull() != key) _backStack.add(key)
             }
 
-            is NavigationIntent.ReplaceTopBy -> {
+            is NavigationIntent.ReplaceTopBy ->
                 with(this as NavigatorScope) {
                     val runner = intent.asyncRunner()
                     runner {
@@ -43,7 +43,6 @@ class HeadwayNavigator(
                         }
                     }
                 }
-            }
         }
     }
 

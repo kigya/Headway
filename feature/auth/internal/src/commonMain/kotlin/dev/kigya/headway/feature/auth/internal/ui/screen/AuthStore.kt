@@ -23,14 +23,14 @@ interface AuthStore : Store<Intent, State, Label> {
 class AuthStoreFactory(
     private val storeFactory: StoreFactory,
 ) {
-    fun create(executorCoroutineScope: CoroutineScope): AuthStore =
-        object : AuthStore, Store<Intent, State, Label>
+    fun create(executorCoroutineScope: CoroutineScope): AuthStore = object :
+        AuthStore,
+        Store<Intent, State, Label>
         by storeFactory.create<Intent, Action, Message, State, Label>(
             name = this::class.simpleName,
             initialState = State(),
             bootstrapper = coroutineBootstrapper { },
             executorFactory = coroutineExecutorFactory(executorCoroutineScope.coroutineContext) {
-
             },
             reducer = Reducer { message ->
                 copy(shouldDisplayText = true)

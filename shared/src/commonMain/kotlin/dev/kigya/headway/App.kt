@@ -51,6 +51,6 @@ private fun AppNavigationHost() {
             entry<SplashScreenKey> { splashRoute.content() }
 
             entry<AuthScreenKey> { authRoute.content() }
-        }
+        },
     )
 }
