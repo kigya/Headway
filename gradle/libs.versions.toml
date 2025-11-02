@@ -16,13 +16,13 @@ ksp = { strictly = "2.3.0" }
 kotlinxSerialization = { require = "1.9.0" }
 
 # Compose
-composeActivity = { require = "1.10.1" }
+composeActivity = { require = "1.11.0" }
 composeMultiplatform = { require = "1.10.0-alpha03" }
-composeAdaptive = { require = "1.1.2" }
-composeNavigation = { require = "2.9.0-beta04" }
+composeAdaptiveMaterial = { require = "1.2.0" }
+composeNavigation3 = { require = "1.0.0-alpha03" }
 
 # Lifecycle
-lifecycle = { require = "2.9.1" }
+lifecycle = { require = "2.10.0-alpha03" }
 
 # Compottie
 compottie = { require = "2.0.2" }
@@ -31,7 +31,7 @@ compottie = { require = "2.0.2" }
 koin = { strictly = "4.1.1" }
 
 # Network
-ktor = { require = "3.2.2" }
+ktor = { require = "3.3.1" }
 
 # Local Storage
 dataStore = { require = "1.1.7" }
@@ -87,13 +87,15 @@ serializationJson = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json
 
 # Compose
 compose-activity = { module = "androidx.activity:activity-compose", version.ref = "composeActivity" }
-compose-adaptive = { module = "org.jetbrains.compose.material3.adaptive:adaptive", version.ref = "composeAdaptive" }
+compose-adaptive = { module = "org.jetbrains.compose.material3.adaptive:adaptive", version.ref = "composeAdaptiveMaterial" }
 compose-backhandler = { module = "org.jetbrains.compose.ui:ui-backhandler", version.ref = "composeMultiplatform" }
-compose-navigation = { module = "org.jetbrains.androidx.navigation:navigation-compose", version.ref = "composeNavigation" }
+compose-navigation3-runtime = { module = "androidx.navigation3:navigation3-runtime", version.ref = "composeNavigation3" }
+compose-navigation3-ui = { module = "org.jetbrains.androidx.navigation3:navigation3-ui", version.ref = "composeNavigation3" }
 
 # Lifecycle
 lifecycle-viewmodel = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel", version.ref = "lifecycle" }
 lifecycle-runtimeCompose = { module = "org.jetbrains.androidx.lifecycle:lifecycle-runtime-compose", version.ref = "lifecycle" }
+lifecycle-viewmodel-navigation3 = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel-navigation3", version.ref = "lifecycle" }
 
 # Compottie
 compottie = { module = "io.github.alexzhirkevich:compottie", version.ref = "compottie" }

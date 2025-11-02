@@ -1,93 +1,53 @@
 package dev.kigya.headway.navigation.internal
 
-import dev.kigya.headway.navigation.api.contract.NavigatorContract
-import dev.kigya.headway.navigation.api.contract.ScreenRouteTypeKey
-import dev.kigya.headway.navigation.api.intent.NavigationIntent
-import kotlinx.coroutines.channels.BufferOverflow
-import kotlinx.coroutines.channels.Channel
+import androidx.compose.runtime.mutableStateListOf
+import androidx.navigation3.runtime.NavKey
+import dev.kigya.headway.navigation.api.navigator.NavigationIntent
+import dev.kigya.headway.navigation.api.navigator.NavigatorContract
+import dev.kigya.headway.navigation.api.navigator.NavigatorScope
+import dev.kigya.headway.navigation.api.navigator.StartKeyProvider
+import kotlinx.coroutines.delay
+import kotlin.time.Duration.Companion.milliseconds
 
-class HeadwayNavigator : NavigatorContract {
-    override val navigationChannel = Channel<NavigationIntent>(
-        capacity = Int.MAX_VALUE,
-        onBufferOverflow = BufferOverflow.DROP_LATEST,
-    )
+class HeadwayNavigator(
+    startProvider: StartKeyProvider,
+) : NavigatorContract, NavigatorScope {
 
-    private var _routeHistory: List<ScreenRouteTypeKey> = emptyList()
-    override val routeHistory: List<ScreenRouteTypeKey> get() = _routeHistory
-
-    override suspend fun navigateBack(
-        route: ScreenRouteTypeKey?,
-        inclusive: Boolean,
-    ) {
-        val newCurrent = popRouteHistory(route, inclusive)
-        navigationChannel.send(
-            NavigationIntent.NavigateBack(
-                route = newCurrent,
-                inclusive = inclusive,
-            ),
-        )
+    private val _backStack = mutableStateListOf<NavKey>().apply {
+        add(startProvider.start())
     }
+    override val backStack: List<NavKey> get() = _backStack
 
-    override suspend fun navigateTo(
-        route: ScreenRouteTypeKey,
-        popUpToRoute: ScreenRouteTypeKey?,
-        inclusive: Boolean,
-        isSingleTop: Boolean,
-    ) {
-        pushRouteHistory(route, popUpToRoute, inclusive, isSingleTop)
-        navigationChannel.send(
-            NavigationIntent.NavigateTo(
-                route = route,
-                popUpToRoute = popUpToRoute,
-                inclusive = inclusive,
-                isSingleTop = isSingleTop,
-            ),
-        )
-    }
+    override fun navigate(intent: NavigationIntent) {
+        when (intent) {
+            is NavigationIntent.NavigateBack -> _backStack.removeLastOrNull()
 
-    private fun popRouteHistory(
-        targetRoute: ScreenRouteTypeKey?,
-        inclusive: Boolean,
-    ): ScreenRouteTypeKey? {
-        val oldHistory = _routeHistory
+            is NavigationIntent.NavigateTo -> {
+                val key = intent.screenNavigationKey
+                if (backStack.lastOrNull() != key) _backStack.add(key)
+            }
 
-        val newHistory = if (targetRoute == null) {
-            if (oldHistory.isNotEmpty()) oldHistory.dropLast(1) else oldHistory
-        } else {
-            val idx = oldHistory.indexOfLast { it == targetRoute }
-            if (idx >= 0) {
-                oldHistory.take(idx + if (inclusive) 0 else 1)
-            } else {
-                emptyList()
+            is NavigationIntent.ReplaceTopBy -> {
+                with(this as NavigatorScope) {
+                    val runner = intent.asyncRunner()
+                    runner {
+                        if (this@HeadwayNavigator._backStack.lastOrNull() != intent.asyncRunner) {
+                            this@HeadwayNavigator._backStack.add(intent.screenNavigationKey)
+                        }
+                        delay(REPLACE_TOP_DELAY)
+                        if (this@HeadwayNavigator._backStack.size > 1) {
+                            this@HeadwayNavigator._backStack.removeRange(
+                                fromIndex = 0,
+                                toIndex = this@HeadwayNavigator._backStack.lastIndex,
+                            )
+                        }
+                    }
+                }
             }
         }
-
-        _routeHistory = newHistory
-        return newHistory.lastOrNull()
     }
 
-    private fun pushRouteHistory(
-        newRoute: ScreenRouteTypeKey,
-        popUpToRoute: ScreenRouteTypeKey?,
-        inclusive: Boolean,
-        isSingleTop: Boolean,
-    ) {
-        var newHistory = _routeHistory
-
-        if (isSingleTop && newHistory.lastOrNull() == newRoute) {
-            return
-        }
-
-        if (popUpToRoute != null) {
-            val idx = newHistory.indexOfLast { it == popUpToRoute }
-            newHistory = if (idx >= 0) {
-                newHistory.take(idx + if (inclusive) 0 else 1)
-            } else {
-                emptyList()
-            }
-        }
-
-        newHistory = newHistory + newRoute
-        _routeHistory = newHistory
+    private companion object {
+        val REPLACE_TOP_DELAY = 500.milliseconds
     }
 }

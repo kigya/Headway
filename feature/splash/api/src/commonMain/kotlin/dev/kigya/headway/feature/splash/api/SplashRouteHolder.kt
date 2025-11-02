@@ -1,10 +1,10 @@
 package dev.kigya.headway.feature.splash.api
 
-import dev.kigya.headway.navigation.api.contract.ScreenRouteHolderContract
-import dev.kigya.headway.navigation.api.contract.ScreenRouteTypeKey
+import androidx.navigation3.runtime.NavKey
+import dev.kigya.headway.navigation.api.route.ScreenRouteHolderContract
 import kotlinx.serialization.Serializable
 
 @Serializable
-data object SplashRoute : ScreenRouteTypeKey
+data object SplashScreenKey : NavKey
 
 interface SplashScreenRouteHolderContract : ScreenRouteHolderContract

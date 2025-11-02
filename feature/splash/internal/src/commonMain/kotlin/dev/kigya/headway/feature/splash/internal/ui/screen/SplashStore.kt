@@ -6,12 +6,19 @@ import com.arkivanov.mvikotlin.core.store.Store
 import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.arkivanov.mvikotlin.extensions.coroutines.coroutineBootstrapper
 import com.arkivanov.mvikotlin.extensions.coroutines.coroutineExecutorFactory
+import dev.kigya.headway.feature.auth.api.AuthScreenKey
+import dev.kigya.headway.feature.splash.internal.ui.screen.SplashStore.Intent
+import dev.kigya.headway.feature.splash.internal.ui.screen.SplashStore.Label
+import dev.kigya.headway.feature.splash.internal.ui.screen.SplashStore.State
+import dev.kigya.headway.navigation.api.navigator.NavigationIntent
+import dev.kigya.headway.navigation.api.navigator.NavigatorContract
+import dev.kigya.headway.navigation.api.navigator.asNavigationAsyncRunner
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.launch
 import kotlin.time.Duration.Companion.milliseconds
 
-internal interface SplashStore : Store<SplashStore.Intent, SplashStore.State, SplashStore.Label> {
+interface SplashStore : Store<Intent, State, Label> {
     sealed interface Intent
 
     sealed interface Label
@@ -20,15 +27,15 @@ internal interface SplashStore : Store<SplashStore.Intent, SplashStore.State, Sp
     data class State(val shouldDisplayText: Boolean = false)
 }
 
-internal class SplashStoreFactory(
+class SplashStoreFactory(
     private val storeFactory: StoreFactory,
+    private val navigator: NavigatorContract,
 ) {
-    fun create(executorCoroutineScope: CoroutineScope): SplashStore = object :
-        SplashStore,
-        Store<SplashStore.Intent, SplashStore.State, SplashStore.Label>
-        by storeFactory.create<SplashStore.Intent, Action, Message, SplashStore.State, SplashStore.Label>(
+    fun create(executorCoroutineScope: CoroutineScope): SplashStore =
+        object : SplashStore, Store<Intent, State, Label>
+        by storeFactory.create<Intent, Action, Message, State, Label>(
             name = this::class.simpleName,
-            initialState = SplashStore.State(),
+            initialState = State(),
             bootstrapper = coroutineBootstrapper {
                 launch {
                     delay(showTextDelay)
@@ -37,7 +44,18 @@ internal class SplashStoreFactory(
             },
             executorFactory = coroutineExecutorFactory(executorCoroutineScope.coroutineContext) {
                 onAction<Action.ShowText> {
-                    dispatch(Message.ShowText)
+                    launch {
+                        dispatch(Message.ShowText)
+                        delay(afterTextDelay)
+                        executorCoroutineScope.launch {
+                            navigator.navigate(
+                                NavigationIntent.ReplaceTopBy(
+                                    screenNavigationKey = AuthScreenKey,
+                                    asyncRunner = { executorCoroutineScope.asNavigationAsyncRunner() },
+                                )
+                            )
+                        }
+                    }
                 }
             },
             reducer = Reducer { message ->
@@ -57,5 +75,6 @@ internal class SplashStoreFactory(
 
     private companion object {
         val showTextDelay = 1_200.milliseconds
+        val afterTextDelay = 800.milliseconds
     }
 }

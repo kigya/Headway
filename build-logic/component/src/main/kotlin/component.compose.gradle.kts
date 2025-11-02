@@ -35,7 +35,7 @@ commonMainDependencies {
         implementation(animation)
         implementation(ui)
         implementation(material3)
-        implementation(uiToolingPreview)
+        implementation(preview)
     }
 }
 
