@@ -50,11 +50,18 @@ include(
 
     ":feature:splash:api",
     ":feature:splash:internal",
+    ":feature:splash:di",
+
+    ":feature:auth:api",
+    ":feature:auth:internal",
+    ":feature:auth:di",
 
     ":navigation:api",
     ":navigation:internal",
+    ":navigation:di",
 
     ":di:api",
+    ":di:modules",
 
     ":core:annotation",
     ":core:design-system",

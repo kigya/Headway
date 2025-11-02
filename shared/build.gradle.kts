@@ -19,9 +19,10 @@ kotlin {
 
 commonMainDependencies {
     projects {
-        implementation(di.api)
+        implementation(di.modules)
         implementation(navigation.api)
         implementation(core.designSystem)
         implementation(feature.splash.api)
+        implementation(feature.auth.api)
     }
 }

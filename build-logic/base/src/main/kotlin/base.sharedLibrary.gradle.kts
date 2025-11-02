@@ -1,5 +1,6 @@
 @file:OptIn(ExperimentalWasmDsl::class)
 
+import extension.commonMainDependencies
 import extension.desktopMainDependencies
 import extension.libs
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
@@ -53,6 +54,14 @@ configure<KotlinMultiplatformExtension> {
     }
 }
 
+commonMainDependencies {
+    libs {
+        implementation(coroutines.core)
+    }
+}
+
 desktopMainDependencies {
-    implementation(libs.coroutines.swing)
+    libs {
+        implementation(coroutines.swing)
+    }
 }
