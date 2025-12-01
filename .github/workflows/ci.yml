@@ -35,3 +35,9 @@ jobs:
     needs: [ android, desktop, web, ios ]
     uses: ./.github/workflows/_detekt.yml
     secrets: inherit
+  notify_google_chat:
+    if: ${{ true }}
+    needs: [ android, desktop, web, ios, detekt ]
+    uses: ./.github/workflows/_notify-google-chat.yml
+    secrets:
+      GOOGLE_CHAT_WEBHOOK_URL: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}

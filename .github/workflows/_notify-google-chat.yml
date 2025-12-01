@@ -1,0 +1,57 @@
+name: _notify-google-chat
+
+on:
+  workflow_call:
+    secrets:
+      GOOGLE_CHAT_WEBHOOK_URL:
+        required: true
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  notify:
+    name: Notify Google Chat
+    runs-on: ubuntu-latest
+
+    if: ${{ github.event_name == 'pull_request' && !github.event.pull_request.draft }}
+
+    steps:
+      - name: Gate by label (do not notify twice)
+        id: gate
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const label = "chat-notified";
+            const labels = (context.payload.pull_request.labels || []).map(l => l.name);
+            core.setOutput("send", labels.includes(label) ? "false" : "true");
+
+      - name: Send message to Google Chat
+        if: ${{ steps.gate.outputs.send == 'true' }}
+        env:
+          WEBHOOK: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
+          REPO: ${{ github.repository }}
+          PR_URL: ${{ github.event.pull_request.html_url }}
+          PR_TITLE: ${{ github.event.pull_request.title }}
+          PR_AUTHOR: ${{ github.event.pull_request.user.login }}
+          PR_NUMBER: ${{ github.event.pull_request.number }}
+        run: |
+          text="✅ All checks passed\nRepo: ${REPO}\nPR #${PR_NUMBER}: ${PR_TITLE}\nAuthor: ${PR_AUTHOR}\n${PR_URL}"
+          curl -sS -X POST -H "Content-Type: application/json" \
+            -d "$(printf '%s' "$text" | python3 -c 'import json,sys; print(json.dumps({"text": sys.stdin.read()}))')" \
+            "$WEBHOOK"
+
+      - name: Mark PR as notified (add label)
+        if: ${{ steps.gate.outputs.send == 'true' }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const issue_number = context.payload.pull_request.number;
+            await github.rest.issues.addLabels({
+              owner, repo, issue_number,
+              labels: ["chat-notified"]
+            });
+            
