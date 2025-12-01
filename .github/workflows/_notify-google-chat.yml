@@ -37,7 +37,7 @@ jobs:
           PR_AUTHOR: ${{ github.event.pull_request.user.login }}
           PR_NUMBER: ${{ github.event.pull_request.number }}
         run: |
-          text="✅ All checks passed\nRepo: ${REPO}\nPR #${PR_NUMBER}: ${PR_TITLE}\nAuthor: ${PR_AUTHOR}\n${PR_URL}"
+          text="✅All checks passed\nRepo: ${REPO}\nPR #${PR_NUMBER}: ${PR_TITLE}\nAuthor: ${PR_AUTHOR}\n${PR_URL}"
           curl -sS -X POST -H "Content-Type: application/json" \
             -d "$(printf '%s' "$text" | python3 -c 'import json,sys; print(json.dumps({"text": sys.stdin.read()}))')" \
             "$WEBHOOK"
