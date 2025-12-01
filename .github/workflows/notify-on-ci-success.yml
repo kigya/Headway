@@ -1,0 +1,59 @@
+name: Notify Google Chat on CI success
+
+on:
+  workflow_run:
+    workflows: ["Headway Pipelines"]
+    types: [completed]
+
+permissions:
+  contents: read
+  actions: read
+  pull-requests: read
+  issues: write
+
+jobs:
+  notify:
+    if: ${{ github.event.workflow_run.conclusion == 'success' }}
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: Get PR for this workflow run
+        id: pr
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const prs = context.payload.workflow_run.pull_requests || [];
+            if (prs.length === 0) {
+              core.setOutput("skip", "true");
+              return;
+            }
+            core.setOutput("skip", "false");
+            core.setOutput("number", String(prs[0].number));
+
+      - name: Load PR details
+        if: ${{ steps.pr.outputs.skip == 'false' }}
+        id: prdata
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const pull_number = Number("${{ steps.pr.outputs.number }}");
+            const { data: pr } = await github.rest.pulls.get({ owner, repo, pull_number });
+
+            core.setOutput("number", String(pr.number));
+            core.setOutput("title", pr.title);
+            core.setOutput("url", pr.html_url);
+            core.setOutput("author", pr.user.login);
+            core.setOutput("draft", pr.draft ? "true" : "false");
+
+      - name: Call reusable notifier
+        if: ${{ steps.pr.outputs.skip == 'false' && steps.prdata.outputs.draft != 'true' }}
+        uses: ./.github/workflows/_notify-google-chat.yml
+        with:
+          pr_number: ${{ fromJSON(steps.prdata.outputs.number) }}
+          pr_title: ${{ steps.prdata.outputs.title }}
+          pr_url: ${{ steps.prdata.outputs.url }}
+          pr_author: ${{ steps.prdata.outputs.author }}
+        secrets:
+          GOOGLE_CHAT_WEBHOOK_URL: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
