@@ -1,0 +1,68 @@
+name: _notify-google-chat
+
+on:
+  workflow_call:
+    inputs:
+      pr_number:
+        type: number
+        required: true
+      pr_title:
+        type: string
+        required: true
+      pr_url:
+        type: string
+        required: true
+      pr_author:
+        type: string
+        required: true
+    secrets:
+      GOOGLE_CHAT_WEBHOOK_URL:
+        required: true
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  notify:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Gate by label (do not notify twice)
+        id: gate
+        uses: actions/github-script@v7
+        with:
+          script: |
+            const owner = context.repo.owner;
+            const repo = context.repo.repo;
+            const issue_number = Number("${{ inputs.pr_number }}");
+
+            const { data } = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number });
+            const labels = data.map(l => l.name);
+
+            core.setOutput("send", labels.includes("chat-notified") ? "false" : "true");
+
+      - name: Send message to Google Chat
+        if: ${{ steps.gate.outputs.send == 'true' }}
+        env:
+          WEBHOOK: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
+          REPO: ${{ github.repository }}
+          PR_URL: ${{ inputs.pr_url }}
+          PR_TITLE: ${{ inputs.pr_title }}
+          PR_AUTHOR: ${{ inputs.pr_author }}
+          PR_NUMBER: ${{ inputs.pr_number }}
+        run: |
+          text="✅ All checks passed\nRepo: ${REPO}\nPR #${PR_NUMBER}: ${PR_TITLE}\nAuthor: ${PR_AUTHOR}\n${PR_URL}"
+          payload=$(node -e 'const fs=require("fs"); const t=fs.readFileSync(0,"utf8"); process.stdout.write(JSON.stringify({text:t}))' <<< "$text")
+          curl -sS -X POST -H "Content-Type: application/json" -d "$payload" "$WEBHOOK"
+
+      - name: Mark PR as notified (add label)
+        if: ${{ steps.gate.outputs.send == 'true' }}
+        uses: actions/github-script@v7
+        with:
+          script: |
+            await github.rest.issues.addLabels({
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              issue_number: Number("${{ inputs.pr_number }}"),
+              labels: ["chat-notified"]
+            });

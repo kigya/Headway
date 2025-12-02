@@ -4,7 +4,7 @@ on:
 
 jobs:
   build:
-    name: Desktop (${{ matrix.os }})
+    name: ${{ matrix.os }}-build
     runs-on: ${{ matrix.os }}
     strategy:
       fail-fast: false
