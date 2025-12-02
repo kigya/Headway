@@ -58,6 +58,9 @@ jobs:
   notify:
     needs: prepare
     if: ${{ needs.prepare.outputs.skip == 'false' && needs.prepare.outputs.draft != 'true' }}
+    permissions:
+      contents: read
+      issues: write
     uses: ./.github/workflows/_notify-google-chat.yml
     with:
       pr_number: ${{ fromJSON(needs.prepare.outputs.number) }}
