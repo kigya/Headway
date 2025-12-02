@@ -12,9 +12,16 @@ permissions:
   issues: write
 
 jobs:
-  notify:
+  prepare:
     if: ${{ github.event.workflow_run.conclusion == 'success' }}
     runs-on: ubuntu-latest
+    outputs:
+      skip: ${{ steps.pr.outputs.skip }}
+      number: ${{ steps.prdata.outputs.number }}
+      title: ${{ steps.prdata.outputs.title }}
+      url: ${{ steps.prdata.outputs.url }}
+      author: ${{ steps.prdata.outputs.author }}
+      draft: ${{ steps.prdata.outputs.draft }}
 
     steps:
       - name: Get PR for this workflow run
@@ -48,43 +55,14 @@ jobs:
             core.setOutput("author", pr.user.login);
             core.setOutput("draft", pr.draft ? "true" : "false");
 
-      - name: Gate by label (do not notify twice)
-        if: ${{ steps.pr.outputs.skip == 'false' && steps.prdata.outputs.draft != 'true' }}
-        id: gate
-        uses: actions/github-script@v7
-        with:
-          script: |
-            const owner = context.repo.owner;
-            const repo = context.repo.repo;
-            const issue_number = Number("${{ steps.prdata.outputs.number }}");
-
-            const { data } = await github.rest.issues.listLabelsOnIssue({ owner, repo, issue_number });
-            const labels = data.map(l => l.name);
-
-            core.setOutput("send", labels.includes("chat-notified") ? "false" : "true");
-
-      - name: Send message to Google Chat
-        if: ${{ steps.gate.outputs.send == 'true' }}
-        env:
-          WEBHOOK: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
-          REPO: ${{ github.repository }}
-          PR_URL: ${{ steps.prdata.outputs.url }}
-          PR_TITLE: ${{ steps.prdata.outputs.title }}
-          PR_AUTHOR: ${{ steps.prdata.outputs.author }}
-          PR_NUMBER: ${{ steps.prdata.outputs.number }}
-        run: |
-          text="✅ All checks passed\nRepo: ${REPO}\nPR #${PR_NUMBER}: ${PR_TITLE}\nAuthor: ${PR_AUTHOR}\n${PR_URL}"
-          payload=$(node -e 'const fs=require("fs"); const t=fs.readFileSync(0,"utf8"); process.stdout.write(JSON.stringify({text:t}))' <<< "$text")
-          curl -sS -X POST -H "Content-Type: application/json" -d "$payload" "$WEBHOOK"
-
-      - name: Mark PR as notified (add label)
-        if: ${{ steps.gate.outputs.send == 'true' }}
-        uses: actions/github-script@v7
-        with:
-          script: |
-            await github.rest.issues.addLabels({
-              owner: context.repo.owner,
-              repo: context.repo.repo,
-              issue_number: Number("${{ steps.prdata.outputs.number }}"),
-              labels: ["chat-notified"]
-            });
+  notify:
+    needs: prepare
+    if: ${{ needs.prepare.outputs.skip == 'false' && needs.prepare.outputs.draft != 'true' }}
+    uses: ./.github/workflows/_notify-google-chat.yml
+    with:
+      pr_number: ${{ fromJSON(needs.prepare.outputs.number) }}
+      pr_title: ${{ needs.prepare.outputs.title }}
+      pr_url: ${{ needs.prepare.outputs.url }}
+      pr_author: ${{ needs.prepare.outputs.author }}
+    secrets:
+      GOOGLE_CHAT_WEBHOOK_URL: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}

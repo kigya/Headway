@@ -41,7 +41,7 @@ jobs:
 
             core.setOutput("send", labels.includes("chat-notified") ? "false" : "true");
 
-      - name: Send message to Google Chat
+      - name: Send Google Chat card
         if: ${{ steps.gate.outputs.send == 'true' }}
         env:
           WEBHOOK: ${{ secrets.GOOGLE_CHAT_WEBHOOK_URL }}
@@ -51,9 +51,45 @@ jobs:
           PR_AUTHOR: ${{ inputs.pr_author }}
           PR_NUMBER: ${{ inputs.pr_number }}
         run: |
-          text="✅ All checks passed\nRepo: ${REPO}\nPR #${PR_NUMBER}: ${PR_TITLE}\nAuthor: ${PR_AUTHOR}\n${PR_URL}"
-          payload=$(node -e 'const fs=require("fs"); const t=fs.readFileSync(0,"utf8"); process.stdout.write(JSON.stringify({text:t}))' <<< "$text")
-          curl -sS -X POST -H "Content-Type: application/json" -d "$payload" "$WEBHOOK"
+          payload=$(node - <<'NODE'
+          const payload = {
+            cardsV2: [
+              {
+                cardId: "pr-ci-success",
+                card: {
+                  header: {
+                    title: "✅ All checks passed",
+                    subtitle: `Repo: ${process.env.REPO}`
+                  },
+                  sections: [
+                    {
+                      widgets: [
+                        { textParagraph: { text: `<b>PR #${process.env.PR_NUMBER}</b>: ${process.env.PR_TITLE}` } },
+                        { textParagraph: { text: `<b>Author</b>: ${process.env.PR_AUTHOR}` } },
+                        {
+                          buttonList: {
+                            buttons: [
+                              {
+                                text: "Open PR",
+                                onClick: { openLink: { url: process.env.PR_URL } }
+                              }
+                            ]
+                          }
+                        }
+                      ]
+                    }
+                  ]
+                }
+              }
+            ]
+          };
+          process.stdout.write(JSON.stringify(payload));
+          NODE
+          )
+
+          curl -sS -X POST -H "Content-Type: application/json; charset=UTF-8" \
+            -d "$payload" \
+            "$WEBHOOK"
 
       - name: Mark PR as notified (add label)
         if: ${{ steps.gate.outputs.send == 'true' }}
@@ -66,3 +102,4 @@ jobs:
               issue_number: Number("${{ inputs.pr_number }}"),
               labels: ["chat-notified"]
             });
+            
