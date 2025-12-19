@@ -68,4 +68,8 @@ include(
 
     ":server",
     ":shared",
+    ":server:gateway",
+    ":server:database",
+    ":server:auth",
+    ":server:common",
 )
