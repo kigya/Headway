@@ -1,31 +1,22 @@
 package dev.kigya.headway.auth.api.routing
 
-import dev.kigya.headway.auth.api.error.InvalidRefreshTokenException
-import dev.kigya.headway.auth.api.port.AuthUseCaseContract
-import ext.respondBadRequest
-import ext.respondServerError
+import dev.kigya.headway.auth.api.error.BadRequestApiException
+import dev.kigya.headway.auth.api.model.RefreshTokenRequest
+import dev.kigya.headway.auth.api.port.RefreshTokenUseCaseContract
+import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
 
-private const val KEY_REFRESH_TOKEN = "refresh_token"
-private const val KEY_FINGERPRINT = "fingerprint"
-
-internal fun Route.refreshToken(auth: AuthUseCaseContract) {
+internal fun Route.refreshToken(refreshTokenUseCase: RefreshTokenUseCaseContract) {
     post("/refreshToken") {
-        val refreshToken = call.request.queryParameters[KEY_REFRESH_TOKEN]
-        val fingerprint = call.request.queryParameters[KEY_FINGERPRINT]
-        if (refreshToken.isNullOrBlank() || fingerprint.isNullOrBlank()) {
-            call.respondBadRequest("Query parameter '$KEY_REFRESH_TOKEN' or '$KEY_FINGERPRINT' are missing or empty.")
-            return@post
-        }
+        val body = runCatching { call.receive<RefreshTokenRequest>() }.getOrElse { throw BadRequestApiException() }
 
-        try {
-            call.respond(auth.refreshToken(refreshToken = refreshToken, fingerprint = fingerprint))
-        } catch (e: InvalidRefreshTokenException) {
-            call.respondBadRequest(e)
-        } catch (e: Exception) {
-            call.respondServerError(e)
-        }
+        val token = body.refreshToken.trim()
+        val fp = body.fingerprint.trim()
+        if (token.isBlank() || fp.isBlank()) throw BadRequestApiException()
+
+        call.respond(refreshTokenUseCase(token, fp))
     }
 }
+

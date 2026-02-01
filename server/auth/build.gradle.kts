@@ -26,6 +26,7 @@ dependencies {
     implementation(libs.ktor.client.core)
     implementation(libs.ktor.client.content.negotiation)
     implementation(libs.ktor.client.cio)
+    implementation(libs.ktor.statusPages)
     implementation(libs.kgraphql.ktor)
     implementation(libs.koin.ktor)
     implementation(libs.google.api.client)

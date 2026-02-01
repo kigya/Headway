@@ -6,7 +6,7 @@ import kotlinx.serialization.Serializable
 import java.util.UUID
 
 @Serializable
-data class AuthResponse(
+data class LoginWithGoogleResponse(
     @SerialName("access_token") val accessToken: String,
     @SerialName("refresh_token") val refreshToken: String,
     @SerialName("user") val user: User,
@@ -15,6 +15,24 @@ data class AuthResponse(
 @Serializable
 data class RefreshTokenResponse(
     @SerialName("access_token") val accessToken: String,
+)
+
+@Serializable
+data class ApiErrorResponse(
+    @SerialName("code") val code: String,
+    @SerialName("message") val message: String,
+)
+
+@Serializable
+internal data class LoginWithGoogleRequest(
+    @SerialName("id_token") val idToken: String,
+    @SerialName("fingerprint") val fingerprint: String,
+)
+
+@Serializable
+data class RefreshTokenRequest(
+    @SerialName("refresh_token") val refreshToken: String,
+    @SerialName("fingerprint") val fingerprint: String,
 )
 
 @Serializable
@@ -38,9 +56,3 @@ enum class UserRole(val slug: String) {
     EMPLOYEE("employee"),
     GUEST("guest");
 }
-
-@Serializable
-internal data class LoginRequest(
-    @SerialName("id_token") val idToken: String,
-    @SerialName("fingerprint") val fingerprint: String,
-)

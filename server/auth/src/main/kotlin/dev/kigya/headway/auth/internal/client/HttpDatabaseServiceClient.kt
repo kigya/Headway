@@ -5,7 +5,7 @@ import dev.kigya.headway.auth.internal.client.dto.CreateSessionRequestDto
 import dev.kigya.headway.auth.internal.client.dto.UpsertGoogleUserRequestDto
 import dev.kigya.headway.auth.internal.client.dto.ValidateSessionRequestDto
 import dev.kigya.headway.auth.internal.config.ConfigurationValues
-import ext.successBodyOrThrow
+import dev.kigya.headway.common.extension.successBodyOrThrow
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.post

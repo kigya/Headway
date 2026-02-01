@@ -4,8 +4,8 @@ import dev.kigya.headway.database.api.error.UserAlreadyExistsException
 import dev.kigya.headway.database.api.port.UsersServiceContract
 import dev.kigya.headway.database.api.routing.user.request.CreateUserRequestDto
 import dev.kigya.headway.database.api.routing.user.request.UpsertGoogleUserRequestDto
-import ext.respondBadRequest
-import ext.respondServerError
+import dev.kigya.headway.common.extension.respondBadRequest
+import dev.kigya.headway.common.extension.respondServerError
 import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.request.receive

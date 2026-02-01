@@ -4,27 +4,56 @@ import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.exceptions.JWTDecodeException
 import com.auth0.jwt.exceptions.TokenExpiredException
+import java.time.Clock
+import java.time.Instant
 import java.util.Date
 import java.util.UUID
 
 private const val CLAIM_USER_UUID = "user_uuid"
+private const val CLAIM_TOKEN_TYPE = "token_type"
+private const val TOKEN_TYPE_ACCESS = "access"
+private const val TOKEN_TYPE_REFRESH = "refresh"
 
-internal class JWTServiceImpl : JWTServiceContract {
-    private val accessSecret = "secret"
-    private val refreshSecret = "refresh secret"
+internal class JWTServiceImpl(
+    private val config: JwtConfig,
+    private val clock: Clock = Clock.systemUTC(),
+) : JWTServiceContract {
 
-    override fun generateAccessToken(userUUID: UUID): String = JWT.create()
-        .withClaim(CLAIM_USER_UUID, userUUID.toString())
-        .withExpiresAt(Date(System.currentTimeMillis() + 1000 * 60 * 5))
-        .sign(Algorithm.HMAC256(accessSecret))
+    private val accessAlgorithm = Algorithm.HMAC256(config.accessSecret)
+    private val refreshAlgorithm = Algorithm.HMAC256(config.refreshSecret)
 
-    override fun generateRefreshToken(userUUID: UUID, expirationDate: Date): String = JWT.create()
-        .withClaim(CLAIM_USER_UUID, userUUID.toString())
-        .withExpiresAt(expirationDate)
-        .sign(Algorithm.HMAC256(refreshSecret))
+    override fun generateAccessToken(userUUID: UUID): String {
+        val now = Instant.now(clock)
+        val expiresAt = now.plusSeconds(config.accessTtlSec)
+
+        return JWT.create()
+            .withIssuer(config.issuer)
+            .withAudience(config.audience)
+            .withClaim(CLAIM_USER_UUID, userUUID.toString())
+            .withClaim(CLAIM_TOKEN_TYPE, TOKEN_TYPE_ACCESS)
+            .withIssuedAt(Date.from(now))
+            .withExpiresAt(Date.from(expiresAt))
+            .sign(accessAlgorithm)
+    }
+
+    override fun generateRefreshToken(userUUID: UUID, expirationDate: Date): String {
+        val now = Instant.now(clock)
+
+        return JWT.create()
+            .withIssuer(config.issuer)
+            .withAudience(config.audience)
+            .withClaim(CLAIM_USER_UUID, userUUID.toString())
+            .withClaim(CLAIM_TOKEN_TYPE, TOKEN_TYPE_REFRESH)
+            .withIssuedAt(Date.from(now))
+            .withExpiresAt(expirationDate)
+            .sign(refreshAlgorithm)
+    }
 
     override fun verifyAccessToken(token: String): Boolean = try {
-        JWT.require(Algorithm.HMAC256(accessSecret))
+        JWT.require(accessAlgorithm)
+            .withIssuer(config.issuer)
+            .withAudience(config.audience)
+            .withClaim(CLAIM_TOKEN_TYPE, TOKEN_TYPE_ACCESS)
             .build()
             .verify(token)
         true
@@ -35,7 +64,10 @@ internal class JWTServiceImpl : JWTServiceContract {
     }
 
     override fun verifyRefreshToken(token: String): Boolean = try {
-        JWT.require(Algorithm.HMAC256(refreshSecret))
+        JWT.require(refreshAlgorithm)
+            .withIssuer(config.issuer)
+            .withAudience(config.audience)
+            .withClaim(CLAIM_TOKEN_TYPE, TOKEN_TYPE_REFRESH)
             .build()
             .verify(token)
         true

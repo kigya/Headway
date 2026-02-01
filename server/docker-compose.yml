@@ -5,6 +5,7 @@ services:
       dockerfile: server/docker/Dockerfile
       target: database
     env_file:
+      - docker/env.common
       - docker/env.database
     ports:
       - "8082:8082"
@@ -16,6 +17,7 @@ services:
       dockerfile: server/docker/Dockerfile
       target: auth
     env_file:
+      - docker/env.common
       - docker/env.auth
     depends_on:
       - database
@@ -29,6 +31,7 @@ services:
       dockerfile: server/docker/Dockerfile
       target: gateway
     env_file:
+      - docker/env.common
       - docker/env.gateway
     depends_on:
       - auth

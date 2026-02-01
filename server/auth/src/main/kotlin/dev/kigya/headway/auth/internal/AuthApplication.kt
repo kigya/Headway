@@ -1,7 +1,6 @@
 package dev.kigya.headway.auth.internal
 
 import dev.kigya.headway.auth.api.installAuthApi
-import dev.kigya.headway.auth.api.port.AuthUseCaseContract
 import dev.kigya.headway.auth.internal.config.ConfigurationValues
 import dev.kigya.headway.auth.internal.di.authInternalModule
 import io.ktor.server.application.Application
@@ -13,7 +12,7 @@ import org.koin.ktor.plugin.Koin
 
 internal fun main() {
     embeddedServer(
-        Netty,
+        factory = Netty,
         port = ConfigurationValues.AUTH_SERVICE_PORT,
         host = ConfigurationValues.AUTH_SERVICE_HOST,
         module = Application::authApp,
@@ -21,8 +20,13 @@ internal fun main() {
 }
 
 internal fun Application.authApp() {
+    ConfigurationValues.validateSecrets()
+
     install(Koin) {
         modules(authInternalModule)
     }
-    installAuthApi(auth = get<AuthUseCaseContract>())
+    installAuthApi(
+        loginWithGoogleUseCase = get(),
+        refreshTokenUseCase = get(),
+    )
 }

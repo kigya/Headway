@@ -5,14 +5,14 @@ import dev.kigya.headway.database.api.error.SessionValidationException
 import dev.kigya.headway.database.api.port.RefreshSessionsServiceContract
 import dev.kigya.headway.database.api.routing.session.request.CreateSessionRequestDto
 import dev.kigya.headway.database.api.routing.session.request.ValidateSessionRequestDto
-import ext.respondServerError
-import ext.respondUnauthorized
+import dev.kigya.headway.common.extension.respondServerError
+import dev.kigya.headway.common.extension.respondUnauthorized
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
-import model.CommonApiError
+import dev.kigya.headway.common.model.CommonApiError
 
 internal fun Route.sessionRouting(refreshSessionsService: RefreshSessionsServiceContract) {
     post("/session") {
