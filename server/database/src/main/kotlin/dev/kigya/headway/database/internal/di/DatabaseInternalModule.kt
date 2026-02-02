@@ -2,39 +2,65 @@ package dev.kigya.headway.database.internal.di
 
 import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
-import dev.kigya.headway.database.api.port.RefreshSessionsServiceContract
-import dev.kigya.headway.database.api.port.UsersServiceContract
-import dev.kigya.headway.database.internal.data.RefreshSessionServiceImpl
-import dev.kigya.headway.database.internal.data.UsersServiceImpl
+import dev.kigya.headway.database.api.port.CreateGoogleUserUseCaseContract
+import dev.kigya.headway.database.api.port.CreateSessionUseCaseContract
+import dev.kigya.headway.database.api.port.GetUserUseCaseContract
+import dev.kigya.headway.database.api.port.InviteUserUseCaseContract
+import dev.kigya.headway.database.api.port.UpsertGoogleUserUseCaseContract
+import dev.kigya.headway.database.api.port.ValidateSessionUseCaseContract
+import dev.kigya.headway.database.internal.application.CreateGoogleUserUseCase
+import dev.kigya.headway.database.internal.application.CreateSessionUseCase
+import dev.kigya.headway.database.internal.application.GetUserUseCase
+import dev.kigya.headway.database.internal.application.InviteUserUseCase
+import dev.kigya.headway.database.internal.application.UpsertGoogleUserUseCase
+import dev.kigya.headway.database.internal.application.ValidateSessionUseCase
+import dev.kigya.headway.database.internal.config.ConfigurationValues
+import dev.kigya.headway.database.internal.config.DatabaseConfig
+import dev.kigya.headway.database.internal.data.RefreshSessionsRepository
+import dev.kigya.headway.database.internal.data.RefreshSessionsRepositoryContract
+import dev.kigya.headway.database.internal.data.UsersRepository
+import dev.kigya.headway.database.internal.data.UsersRepositoryContract
 import org.jetbrains.exposed.v1.jdbc.Database
+import org.koin.core.module.dsl.singleOf
+import org.koin.dsl.bind
 import org.koin.dsl.module
 
 internal val databaseModule = module {
 
     single {
-        Database.connect(hikari())
+        DatabaseConfig(
+            host = ConfigurationValues.DATABASE_HOST_URL,
+            port = ConfigurationValues.DATABASE_PORT,
+            name = ConfigurationValues.DATABASE_NAME,
+            user = ConfigurationValues.DATABASE_USER,
+            password = ConfigurationValues.DATABASE_PASSWORD,
+            sslMode = ConfigurationValues.DATABASE_SSL_MODE,
+            poolSize = ConfigurationValues.DATABASE_POOL_SIZE,
+        )
     }
+    single { Database.connect(hikari(get())) }
 
-    single<UsersServiceContract> { UsersServiceImpl(get()) }
+    singleOf(::UsersRepository) bind UsersRepositoryContract::class
+    singleOf(::RefreshSessionsRepository) bind RefreshSessionsRepositoryContract::class
 
-    single<RefreshSessionsServiceContract> { RefreshSessionServiceImpl(get()) }
+    singleOf(::GetUserUseCase) bind GetUserUseCaseContract::class
+    singleOf(::CreateGoogleUserUseCase) bind CreateGoogleUserUseCaseContract::class
+    singleOf(::UpsertGoogleUserUseCase) bind UpsertGoogleUserUseCaseContract::class
+    singleOf(::InviteUserUseCase) bind InviteUserUseCaseContract::class
+
+    singleOf(::CreateSessionUseCase) bind CreateSessionUseCaseContract::class
+    singleOf(::ValidateSessionUseCase) bind ValidateSessionUseCaseContract::class
 }
 
-private fun hikari(): HikariDataSource {
+private fun hikari(cfg: DatabaseConfig): HikariDataSource {
     val config = HikariConfig()
 
-    val host = System.getenv("DATABASE_HOST_URL")
-    val port = System.getenv("DATABASE_PORT")
-    val dbName = System.getenv("DATABASE_NAME")
-    val user = System.getenv("DATABASE_USER")
-    val password = System.getenv("DATABASE_PASSWORD")
-
     config.driverClassName = "org.postgresql.Driver"
-    config.jdbcUrl = "jdbc:postgresql://$host:$port/$dbName?sslmode=require"
-    config.username = user
-    config.password = password
+    config.jdbcUrl = "jdbc:postgresql://${cfg.host}:${cfg.port}/${cfg.name}?sslmode=${cfg.sslMode}"
+    config.username = cfg.user
+    config.password = cfg.password
 
-    config.maximumPoolSize = 10
+    config.maximumPoolSize = cfg.poolSize
     config.isAutoCommit = false
     config.transactionIsolation = "TRANSACTION_REPEATABLE_READ"
 

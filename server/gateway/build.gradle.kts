@@ -9,7 +9,7 @@ group = "dev.kigya.headway"
 version = "1.0.0"
 
 application {
-    mainClass.set("dev.kigya.headway.internal.GatewayApplicationKt")
+    mainClass.set("dev.kigya.headway.gateway.internal.GatewayApplicationKt")
 
     val isDevelopment: Boolean = project.ext.has("development")
     applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")

@@ -50,9 +50,9 @@ data class User(
 
 @Serializable
 enum class UserRole(val slug: String) {
-    DEVELOPER("developer"),
-    MANAGER("manager"),
-    MENTOR("mentor"),
-    EMPLOYEE("employee"),
-    GUEST("guest");
+    DEVELOPER("DEVELOPER"),
+    MANAGER("MANAGER"),
+    MENTOR("MENTOR"),
+    EMPLOYEE("EMPLOYEE"),
+    GUEST("GUEST");
 }

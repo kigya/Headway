@@ -33,3 +33,13 @@ enum class UserRole {
     EMPLOYEE,
     GUEST;
 }
+
+@Serializable
+data class InvitedUserPayload(
+    @Serializable(UUIDSerializer::class) val id: UUID,
+    val email: String,
+    val department: String,
+    val isActive: Boolean,
+    val createdAt: Long,
+    val updatedAt: Long,
+)

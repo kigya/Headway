@@ -1,13 +1,17 @@
 package dev.kigya.headway.gateway.internal.di
 
 import dev.kigya.headway.gateway.api.port.CheckHealthStatusUseCaseContract
+import dev.kigya.headway.gateway.api.port.InviteUserUseCaseContract
 import dev.kigya.headway.gateway.api.port.LoginWithGoogleUseCaseContract
 import dev.kigya.headway.gateway.api.port.RefreshTokenUseCaseContract
 import dev.kigya.headway.gateway.internal.application.CheckHealthStatusUseCase
+import dev.kigya.headway.gateway.internal.application.InviteUserUseCase
 import dev.kigya.headway.gateway.internal.application.LoginWithGoogleUseCase
 import dev.kigya.headway.gateway.internal.application.RefreshTokenUseCase
 import dev.kigya.headway.gateway.internal.client.AuthServiceClientContract
+import dev.kigya.headway.gateway.internal.client.DatabaseServiceClientContract
 import dev.kigya.headway.gateway.internal.client.HttpAuthServiceClient
+import dev.kigya.headway.gateway.internal.client.HttpDatabaseServiceClient
 import dev.kigya.headway.gateway.internal.probe.auth.AuthProbeContract
 import dev.kigya.headway.gateway.internal.probe.auth.HttpAuthProbe
 import io.ktor.client.HttpClient
@@ -25,6 +29,7 @@ internal val gatewayInternalModule = module {
     singleHttpClient()
     healthDependencies()
     authDependencies()
+    databaseDependencies()
 }
 
 private fun Module.singleHttpClient() {
@@ -52,4 +57,9 @@ private fun Module.authDependencies() {
     singleOf(::HttpAuthServiceClient) bind AuthServiceClientContract::class
     singleOf(::LoginWithGoogleUseCase) bind LoginWithGoogleUseCaseContract::class
     singleOf(::RefreshTokenUseCase) bind RefreshTokenUseCaseContract::class
+}
+
+private fun Module.databaseDependencies() {
+    singleOf(::HttpDatabaseServiceClient) bind DatabaseServiceClientContract::class
+    singleOf(::InviteUserUseCase) bind InviteUserUseCaseContract::class
 }

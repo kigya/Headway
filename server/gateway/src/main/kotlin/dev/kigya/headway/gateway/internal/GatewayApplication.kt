@@ -27,5 +27,6 @@ private fun Application.gatewayApp() {
         checkHealthStatusUseCaseContract = get(),
         loginWithGoogleUseCaseContract = get(),
         refreshTokenUseCaseContract = get(),
+        inviteUserUseCaseContract = get(),
     )
 }

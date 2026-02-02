@@ -2,14 +2,11 @@ package dev.kigya.headway.database.internal.data
 
 import dev.kigya.headway.database.api.error.SessionDoesNotExistsException
 import dev.kigya.headway.database.api.error.SessionValidationException
-import dev.kigya.headway.database.api.port.RefreshSessionsServiceContract
-import dev.kigya.headway.database.internal.ext.dbQuery
-import org.jetbrains.exposed.v1.core.ReferenceOption
+import dev.kigya.headway.database.internal.data.table.RefreshSessionsTable
+import dev.kigya.headway.database.internal.extension.dbQuery
 import org.jetbrains.exposed.v1.core.and
-import org.jetbrains.exposed.v1.core.dao.id.UUIDTable
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.core.greater
-import org.jetbrains.exposed.v1.datetime.timestampWithTimeZone
 import org.jetbrains.exposed.v1.jdbc.Database
 import org.jetbrains.exposed.v1.jdbc.deleteWhere
 import org.jetbrains.exposed.v1.jdbc.insert
@@ -19,19 +16,9 @@ import java.security.MessageDigest
 import java.time.OffsetDateTime
 import java.util.UUID
 
-internal class RefreshSessionServiceImpl(
+internal class RefreshSessionsRepository(
     private val database: Database,
-) : RefreshSessionsServiceContract {
-
-    object RefreshSessionsTable : UUIDTable("public.refresh_sessions") {
-        val userId = reference("user_id", UsersServiceImpl.UsersTable, onDelete = ReferenceOption.CASCADE)
-
-        val refreshTokenHash = varchar("refresh_token_hash", 255).index()
-        val fingerprint = varchar("fingerprint", 255)
-
-        val expiresIn = timestampWithTimeZone("expires_in")
-        val createdAt = timestampWithTimeZone("created_at").clientDefault { OffsetDateTime.now() }
-    }
+) : RefreshSessionsRepositoryContract {
 
     override suspend fun createSession(
         userId: UUID,
@@ -42,7 +29,9 @@ internal class RefreshSessionServiceImpl(
         database.dbQuery {
             val alreadyExistsSessionId = RefreshSessionsTable
                 .select(RefreshSessionsTable.id)
-                .where { RefreshSessionsTable.fingerprint eq fingerprint }
+                .where {
+                    (RefreshSessionsTable.fingerprint eq fingerprint) and (RefreshSessionsTable.userId eq userId)
+                }
                 .map { it[RefreshSessionsTable.id].value }
                 .firstOrNull()
 
@@ -88,12 +77,6 @@ internal class RefreshSessionServiceImpl(
                 .deleteWhere { RefreshSessionsTable.id eq row[RefreshSessionsTable.id].value }
 
             throw SessionValidationException("Invalid fingerprint")
-        }
-        if (row[RefreshSessionsTable.expiresIn] < OffsetDateTime.now()) {
-            // Session expired and need to be removed
-            RefreshSessionsTable
-                .deleteWhere { RefreshSessionsTable.id eq row[RefreshSessionsTable.id].value }
-            throw SessionValidationException("Session expired")
         }
 
         row[RefreshSessionsTable.userId].value

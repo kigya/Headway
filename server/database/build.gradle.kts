@@ -22,6 +22,7 @@ dependencies {
     implementation(libs.ktor.serverNetty)
     implementation(libs.ktor.negotiation)
     implementation(libs.ktor.serialization)
+    implementation(libs.ktor.statusPages)
     implementation(libs.koin.ktor)
     implementation(libs.google.api.client)
 

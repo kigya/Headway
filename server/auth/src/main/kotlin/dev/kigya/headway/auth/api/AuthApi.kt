@@ -6,6 +6,7 @@ import dev.kigya.headway.auth.api.error.DependencyUnavailableException
 import dev.kigya.headway.auth.api.error.GoogleIdTokenValidationException
 import dev.kigya.headway.auth.api.error.InvalidRefreshTokenException
 import dev.kigya.headway.auth.api.error.UserNotActiveException
+import dev.kigya.headway.auth.api.error.UserNotInvitedException
 import dev.kigya.headway.auth.api.model.ApiErrorResponse
 import dev.kigya.headway.auth.api.port.LoginWithGoogleUseCaseContract
 import dev.kigya.headway.auth.api.port.RefreshTokenUseCaseContract
@@ -62,6 +63,16 @@ fun Application.installAuthApi(
                 message = ApiErrorResponse(
                     code = AuthApiErrorCode.UNAUTHORIZED.name,
                     message = "Unauthorized",
+                ),
+            )
+        }
+
+        exception<UserNotInvitedException> { call, _ ->
+            call.respond(
+                status = HttpStatusCode.Forbidden,
+                message = ApiErrorResponse(
+                    code = AuthApiErrorCode.FORBIDDEN.name,
+                    message = "Forbidden",
                 ),
             )
         }

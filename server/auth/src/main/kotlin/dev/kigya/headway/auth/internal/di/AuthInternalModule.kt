@@ -21,6 +21,7 @@ import org.koin.core.module.Module
 import org.koin.core.module.dsl.singleOf
 import org.koin.dsl.bind
 import org.koin.dsl.module
+import java.time.Clock
 
 internal val authInternalModule = module {
     singleHttpClient()
@@ -35,6 +36,7 @@ internal val authInternalModule = module {
         )
     }
 
+    single<Clock> { Clock.systemUTC() }
     singleOf(::JWTServiceImpl) bind JWTServiceContract::class
     singleOf(::HttpDatabaseServiceClient) bind DatabaseServiceClientContract::class
     singleOf(::GoogleIdTokenVerifier) bind GoogleTokenVerifierContract::class

@@ -3,23 +3,30 @@ package dev.kigya.headway.gateway.api
 import com.apurebase.kgraphql.ExecutionException
 import com.apurebase.kgraphql.GraphQL
 import com.apurebase.kgraphql.GraphQLError
-import dev.kigya.headway.gateway.api.graphql.stringScalarLong
-import dev.kigya.headway.gateway.api.graphql.stringScalarUUID
-import dev.kigya.headway.gateway.api.schema.authSchema
-import dev.kigya.headway.gateway.api.schema.healthSchema
-import dev.kigya.headway.gateway.internal.exception.AuthServiceException
 import dev.kigya.headway.common.exception.BadRequestException
 import dev.kigya.headway.common.exception.ForbiddenException
 import dev.kigya.headway.common.exception.InternalServerException
+import dev.kigya.headway.gateway.api.graphql.stringScalarLong
+import dev.kigya.headway.gateway.api.graphql.stringScalarUUID
+import dev.kigya.headway.gateway.api.port.CheckHealthStatusUseCaseContract
+import dev.kigya.headway.gateway.api.port.InviteUserUseCaseContract
+import dev.kigya.headway.gateway.api.port.LoginWithGoogleUseCaseContract
+import dev.kigya.headway.gateway.api.port.RefreshTokenUseCaseContract
+import dev.kigya.headway.gateway.api.schema.authSchema
+import dev.kigya.headway.gateway.api.schema.healthSchema
+import dev.kigya.headway.gateway.api.schema.usersSchema
+import dev.kigya.headway.gateway.internal.exception.AuthServiceException
+import dev.kigya.headway.gateway.internal.exception.DatabaseServiceException
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
 import io.ktor.server.application.log
 import dev.kigya.headway.gateway.internal.exception.GatewayErrorCode as DownstreamCode
 
 fun Application.installGatewayApi(
-    checkHealthStatusUseCaseContract: dev.kigya.headway.gateway.api.port.CheckHealthStatusUseCaseContract,
-    loginWithGoogleUseCaseContract: dev.kigya.headway.gateway.api.port.LoginWithGoogleUseCaseContract,
-    refreshTokenUseCaseContract: dev.kigya.headway.gateway.api.port.RefreshTokenUseCaseContract,
+    checkHealthStatusUseCaseContract: CheckHealthStatusUseCaseContract,
+    loginWithGoogleUseCaseContract: LoginWithGoogleUseCaseContract,
+    refreshTokenUseCaseContract: RefreshTokenUseCaseContract,
+    inviteUserUseCaseContract: InviteUserUseCaseContract,
 ) {
     install(GraphQL) {
         playground = true
@@ -29,13 +36,8 @@ fun Application.installGatewayApi(
             val original = unwrapGraphQlError(throwable)
 
             val (code, message) = when (original) {
-                is AuthServiceException -> when (original.code) {
-                    DownstreamCode.BAD_REQUEST -> ErrorCode.BAD_REQUEST to "Bad request"
-                    DownstreamCode.UNAUTHORIZED -> ErrorCode.UNAUTHORIZED to "Unauthorized"
-                    DownstreamCode.FORBIDDEN -> ErrorCode.FORBIDDEN to "Forbidden"
-                    DownstreamCode.DEPENDENCY_UNAVAILABLE -> ErrorCode.DEPENDENCY_UNAVAILABLE to "Service temporarily unavailable"
-                    DownstreamCode.INTERNAL -> ErrorCode.INTERNAL to "Internal server error"
-                }
+                is AuthServiceException -> mapDownstream(original.code)
+                is DatabaseServiceException -> mapDownstream(original.code)
 
                 is BadRequestException -> ErrorCode.BAD_REQUEST to "Bad request"
                 is ForbiddenException -> ErrorCode.FORBIDDEN to "Forbidden"
@@ -64,6 +66,9 @@ fun Application.installGatewayApi(
                 loginWithGoogleUseCaseContract,
                 refreshTokenUseCaseContract,
             )
+            usersSchema(
+                inviteUserUseCaseContract,
+            )
         }
     }
 }
@@ -77,6 +82,15 @@ private enum class ErrorCode {
     DEPENDENCY_UNAVAILABLE,
     INTERNAL,
 }
+
+private fun mapDownstream(code: DownstreamCode): Pair<ErrorCode, String> =
+    when (code) {
+        DownstreamCode.BAD_REQUEST -> ErrorCode.BAD_REQUEST to "Bad request"
+        DownstreamCode.UNAUTHORIZED -> ErrorCode.UNAUTHORIZED to "Unauthorized"
+        DownstreamCode.FORBIDDEN -> ErrorCode.FORBIDDEN to "Forbidden"
+        DownstreamCode.DEPENDENCY_UNAVAILABLE -> ErrorCode.DEPENDENCY_UNAVAILABLE to "Service temporarily unavailable"
+        DownstreamCode.INTERNAL -> ErrorCode.INTERNAL to "Internal server error"
+    }
 
 private fun unwrapGraphQlError(t: Throwable): Throwable {
     val exception = t as? ExecutionException

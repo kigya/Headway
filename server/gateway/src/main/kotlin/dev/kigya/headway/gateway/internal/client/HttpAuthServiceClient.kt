@@ -12,6 +12,7 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
+import io.ktor.client.statement.HttpResponse
 import io.ktor.http.ContentType
 import io.ktor.http.contentType
 import io.ktor.http.isSuccess
@@ -43,7 +44,7 @@ internal class HttpAuthServiceClient(
     }
 }
 
-private suspend fun io.ktor.client.statement.HttpResponse.toAuthServiceException(): AuthServiceException {
+private suspend fun HttpResponse.toAuthServiceException(): AuthServiceException {
     val payload = runCatching { body<AuthServiceErrorResponse>() }.getOrNull()
 
     val code = when (payload?.code) {

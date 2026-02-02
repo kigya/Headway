@@ -1,6 +1,7 @@
 package dev.kigya.headway.auth.internal.client
 
 import dev.kigya.headway.auth.api.model.User
+import dev.kigya.headway.auth.api.error.UserNotInvitedException
 import dev.kigya.headway.auth.internal.client.dto.CreateSessionRequestDto
 import dev.kigya.headway.auth.internal.client.dto.UpsertGoogleUserRequestDto
 import dev.kigya.headway.auth.internal.client.dto.ValidateSessionRequestDto
@@ -25,7 +26,7 @@ internal class HttpDatabaseServiceClient(
         email: String,
         name: String,
         avatarUrl: String?,
-    ): User? {
+    ): User {
         val requestDto = UpsertGoogleUserRequestDto(
             googleId = googleId,
             email = email,
@@ -43,7 +44,10 @@ internal class HttpDatabaseServiceClient(
                 HttpStatusCode.OK,
                 HttpStatusCode.Created,
                 HttpStatusCode.Conflict,
-                -> r.body<User>()
+                    -> r.body<User>()
+
+                HttpStatusCode.Forbidden -> throw UserNotInvitedException()
+
                 else -> null
             }
         }

@@ -1,10 +1,9 @@
-package dev.kigya.headway.database.api.port
+package dev.kigya.headway.database.internal.data
 
 import java.time.OffsetDateTime
 import java.util.UUID
 
-interface RefreshSessionsServiceContract {
-
+internal interface RefreshSessionsRepositoryContract {
     suspend fun createSession(
         userId: UUID,
         refreshToken: String,

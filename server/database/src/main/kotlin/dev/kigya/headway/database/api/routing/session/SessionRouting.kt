@@ -1,57 +1,41 @@
 package dev.kigya.headway.database.api.routing.session
 
-import dev.kigya.headway.database.api.error.SessionDoesNotExistsException
-import dev.kigya.headway.database.api.error.SessionValidationException
-import dev.kigya.headway.database.api.port.RefreshSessionsServiceContract
+import dev.kigya.headway.database.api.error.BadRequestApiException
+import dev.kigya.headway.database.api.port.CreateSessionUseCaseContract
+import dev.kigya.headway.database.api.port.ValidateSessionUseCaseContract
 import dev.kigya.headway.database.api.routing.session.request.CreateSessionRequestDto
 import dev.kigya.headway.database.api.routing.session.request.ValidateSessionRequestDto
-import dev.kigya.headway.common.extension.respondServerError
-import dev.kigya.headway.common.extension.respondUnauthorized
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
 import io.ktor.server.routing.post
-import dev.kigya.headway.common.model.CommonApiError
 
-internal fun Route.sessionRouting(refreshSessionsService: RefreshSessionsServiceContract) {
+internal fun Route.sessionRouting(
+    createSession: CreateSessionUseCaseContract,
+    validateSession: ValidateSessionUseCaseContract,
+) {
     post("/session") {
-        val request = call.receive<CreateSessionRequestDto>()
+        val request = runCatching { call.receive<CreateSessionRequestDto>() }
+            .getOrElse { throw BadRequestApiException() }
 
-        try {
-            refreshSessionsService.createSession(
-                userId = request.userId,
-                refreshToken = request.refreshToken,
-                expiresIn = request.expiresIn,
-                fingerprint = request.fingerprint,
-            )
-            call.respond(HttpStatusCode.Created)
-        } catch (e: Exception) {
-            call.respond(
-                status = HttpStatusCode.InternalServerError,
-                message = CommonApiError(
-                    message = e.message.toString(),
-                    stackTrace = e.stackTrace.map { it.toString() },
-                )
-            )
-        }
+        createSession(
+            userId = request.userId,
+            refreshToken = request.refreshToken.trim(),
+            expiresIn = request.expiresIn,
+            fingerprint = request.fingerprint.trim(),
+        )
+        call.respond(HttpStatusCode.Created)
     }
 
     post("/session/validate") {
-        val request = call.receive<ValidateSessionRequestDto>()
+        val request = runCatching { call.receive<ValidateSessionRequestDto>() }
+            .getOrElse { throw BadRequestApiException() }
 
-        try {
-            refreshSessionsService.verifySession(
-                rawRefreshToken = request.refreshToken,
-                fingerprint = request.fingerprint,
-            )
-            call.respond(HttpStatusCode.OK)
-        } catch (e: SessionValidationException) {
-            call.respondUnauthorized(e)
-        } catch (e: SessionDoesNotExistsException) {
-            call.respondUnauthorized(e)
-        } catch (e: Exception) {
-            call.respondServerError(e)
-        }
+        validateSession(
+            refreshToken = request.refreshToken.trim(),
+            fingerprint = request.fingerprint.trim(),
+        )
+        call.respond(HttpStatusCode.OK)
     }
 }

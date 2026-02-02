@@ -1,8 +1,6 @@
 package dev.kigya.headway.database.internal
 
 import dev.kigya.headway.database.api.installDatabaseApi
-import dev.kigya.headway.database.api.port.RefreshSessionsServiceContract
-import dev.kigya.headway.database.api.port.UsersServiceContract
 import dev.kigya.headway.database.internal.config.ConfigurationValues
 import dev.kigya.headway.database.internal.di.databaseModule
 import io.ktor.server.application.Application
@@ -24,7 +22,11 @@ internal fun main() {
 private fun Application.databaseApp() {
     install(Koin) { modules(databaseModule) }
     installDatabaseApi(
-        usersService = get<UsersServiceContract>(),
-        refreshSessionsService = get<RefreshSessionsServiceContract>(),
+        getUserUseCase = get(),
+        createUserUseCase = get(),
+        upsertGoogleUserUseCase = get(),
+        inviteUserUseCase = get(),
+        createSessionUseCase = get(),
+        validateSessionUseCase = get(),
     )
 }

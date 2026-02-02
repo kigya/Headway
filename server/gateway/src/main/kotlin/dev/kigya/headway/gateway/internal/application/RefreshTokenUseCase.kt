@@ -1,11 +1,8 @@
 package dev.kigya.headway.gateway.internal.application
 
-import dev.kigya.headway.api.model.RefreshTokenPayload
-import dev.kigya.headway.api.port.RefreshTokenUseCaseContract
 import dev.kigya.headway.gateway.api.model.RefreshTokenPayload
 import dev.kigya.headway.gateway.api.port.RefreshTokenUseCaseContract
 import dev.kigya.headway.gateway.internal.client.AuthServiceClientContract
-import dev.kigya.headway.internal.client.AuthServiceClientContract
 
 internal class RefreshTokenUseCase(
     private val authClient: AuthServiceClientContract,

@@ -1,81 +1,47 @@
 package dev.kigya.headway.database.internal.data
 
 import dev.kigya.headway.database.api.error.UserAlreadyExistsException
+import dev.kigya.headway.database.api.error.UserNotInvitedException
+import dev.kigya.headway.database.api.model.ExposedAccountStatus
 import dev.kigya.headway.database.api.model.ExposedUser
 import dev.kigya.headway.database.api.model.ExposedUserRole
-import dev.kigya.headway.database.api.port.UsersServiceContract
-import dev.kigya.headway.database.internal.ext.dbQuery
-import dev.kigya.headway.database.internal.ext.toUser
-import org.jetbrains.exposed.v1.core.dao.id.UUIDTable
+import dev.kigya.headway.database.internal.data.table.UsersTable
+import dev.kigya.headway.database.internal.extension.dbQuery
+import dev.kigya.headway.database.internal.mapping.toExposedDepartment
+import dev.kigya.headway.database.internal.mapping.toUser
+import org.jetbrains.exposed.v1.core.ResultRow
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.datetime.CurrentTimestampWithTimeZone
-import org.jetbrains.exposed.v1.datetime.timestampWithTimeZone
 import org.jetbrains.exposed.v1.jdbc.Database
 import org.jetbrains.exposed.v1.jdbc.insert
 import org.jetbrains.exposed.v1.jdbc.select
 import org.jetbrains.exposed.v1.jdbc.update
-import org.postgresql.util.PGobject
 import java.util.UUID
 
-internal class UsersServiceImpl(
+internal class UsersRepository(
     private val database: Database,
-) : UsersServiceContract {
-
-    // Supabase source-of-truth: public.profiles
-    object UsersTable : UUIDTable("public.profiles") {
-
-        // В Supabase это FK на auth.users.id. Может быть nullable — оставляем nullable в коде.
-        val authUserId = uuid("auth_user_id").nullable()
-
-        // Supabase: email citext. Для JDBC это нормально как String.
-        // text() проще, чем varchar() под citext.
-        val email = text("email").uniqueIndex()
-
-        // Supabase: full_name
-        val fullName = text("full_name")
-
-        // Supabase: role user_role (enum)
-        val role = customEnumeration(
-            name = "role",
-            fromDb = { value ->
-                val slug = when (value) {
-                    is PGobject -> value.value
-                    else -> value.toString()
-                }
-                ExposedUserRole.entries.first { it.slug == slug }
-            },
-            toDb = {
-                PGobject().apply {
-                    type = "user_role"
-                    value = it.slug
-                }
-            }
-        )
-
-        val avatarUrl = text("avatar_url").nullable()
-        val isActive = bool("is_active")
-
-        // Supabase: timestamptz
-        val createdAt = timestampWithTimeZone("created_at")
-        val updatedAt = timestampWithTimeZone("updated_at")
-    }
+) : UsersRepositoryContract {
 
     private fun parseUuidOrNull(raw: String): UUID? =
         runCatching { UUID.fromString(raw) }.getOrNull()
 
-    private fun readByIdTx(id: UUID): ExposedUser? =
+    private fun readRowByIdTx(id: UUID): ResultRow? =
         UsersTable
             .select(UsersTable.columns)
             .where { UsersTable.id eq id }
-            .map { it.toUser() }
             .singleOrNull()
 
-    private fun readByEmailTx(email: String): ExposedUser? =
+    private fun readByIdTx(id: UUID): ExposedUser? =
+        readRowByIdTx(id)?.toUser()
+
+    private fun readRowByEmailTx(email: String): ResultRow? =
         UsersTable
             .select(UsersTable.columns)
             .where { UsersTable.email eq email }
-            .map { it.toUser() }
             .singleOrNull()
+
+    private fun readByEmailTx(email: String): ExposedUser? =
+        readRowByEmailTx(email)?.toUser()
 
     private fun readByAuthUserIdTx(authUserId: UUID): ExposedUser? =
         UsersTable
@@ -87,10 +53,6 @@ internal class UsersServiceImpl(
     override suspend fun readById(id: UUID): ExposedUser? =
         database.dbQuery { readByIdTx(id) }
 
-    /**
-     * Исторически метод назывался readByGoogleId, но в Supabase у тебя auth_user_id.
-     * Поэтому: если строка парсится как UUID -> ищем по auth_user_id, иначе возвращаем null.
-     */
     override suspend fun readByGoogleId(googleId: String): ExposedUser? =
         database.dbQuery {
             val authUserId = parseUuidOrNull(googleId) ?: return@dbQuery null
@@ -100,11 +62,49 @@ internal class UsersServiceImpl(
     override suspend fun readByEmail(email: String): ExposedUser? =
         database.dbQuery { readByEmailTx(email) }
 
-    /**
-     * Upsert:
-     * - ключом считаем email (как и было)
-     * - если googleId выглядит как UUID -> пробуем трактовать как auth_user_id
-     */
+    override suspend fun inviteUser(
+        email: String,
+        department: String,
+    ): ExposedUser = database.dbQuery {
+        val existingRow = readRowByEmailTx(email)
+
+        if (existingRow != null) {
+            val currentId = existingRow[UsersTable.id].value
+            val currentStatus = existingRow[UsersTable.status]
+
+            UsersTable.update({ UsersTable.id eq currentId }) {
+                it[this.department] = department.toExposedDepartment()
+                it[this.updatedAt] = CurrentTimestampWithTimeZone
+
+                when (currentStatus) {
+                    ExposedAccountStatus.INVITED,
+                    ExposedAccountStatus.REVOKED,
+                        -> {
+                        it[this.status] = ExposedAccountStatus.INVITED
+                        it[this.isActive] = false
+                    }
+
+                    ExposedAccountStatus.ACTIVE -> {
+                        // keep ACTIVE as-is
+                    }
+                }
+            }
+
+            return@dbQuery readByIdTx(currentId)!!
+        }
+
+        val newId = UsersTable.insert {
+            it[this.email] = email
+            it[this.fullName] = email
+            it[this.department] = department.toExposedDepartment()
+            it[this.role] = ExposedUserRole.EMPLOYEE
+            it[this.status] = ExposedAccountStatus.INVITED
+            it[this.isActive] = false
+        }[UsersTable.id].value
+
+        readByIdTx(newId)!!
+    }
+
     override suspend fun upsertGoogleUser(
         googleId: String,
         email: String,
@@ -114,46 +114,38 @@ internal class UsersServiceImpl(
 
         val authUserId = parseUuidOrNull(googleId)
 
-        val userByEmail = readByEmailTx(email)
+        val rowByEmail = readRowByEmailTx(email) ?: throw UserNotInvitedException()
+        val userByEmail = rowByEmail.toUser()
+        val statusByEmail = rowByEmail[UsersTable.status]
+        if (statusByEmail == ExposedAccountStatus.REVOKED) throw UserNotInvitedException()
+
         val userByAuth = authUserId?.let { readByAuthUserIdTx(it) }
 
-        // auth_user_id должен быть уникальным: если найден другой профиль — конфликт
-        if (userByAuth != null && userByEmail != null && userByAuth.id != userByEmail.id) {
+        if (userByAuth != null && userByAuth.id != userByEmail.id) {
             throw UserAlreadyExistsException(
                 message = "User with authUserId=$authUserId already exists",
                 user = userByAuth,
             )
         }
 
-        if (userByEmail == null) {
-            // Пытаемся создать профиль (если Supabase у тебя создает профиль триггером — это может упасть ограничениями)
-            val insertStatement = UsersTable.insert {
-                it[this.email] = email
-                it[this.fullName] = name
-                it[this.avatarUrl] = avatarUrl
-                it[this.role] = ExposedUserRole.EMPLOYEE
-                it[this.isActive] = true
-                if (authUserId != null) it[this.authUserId] = authUserId
-            }
-
-            val newId = insertStatement[UsersTable.id]
-
-            return@dbQuery UsersTable
-                .select(UsersTable.columns)
-                .where { UsersTable.id eq newId }
-                .single()
-                .toUser()
+        val existingAuthUserId = rowByEmail[UsersTable.authUserId]
+        if (existingAuthUserId != null && authUserId != null && existingAuthUserId != authUserId) {
+            throw UserAlreadyExistsException(
+                message = "User with email=$email already linked to a different authUserId",
+                user = userByEmail,
+            )
         }
 
-        // update existing profile
         UsersTable.update({ UsersTable.id eq userByEmail.id }) {
             it[this.fullName] = name
             if (avatarUrl != null) it[this.avatarUrl] = avatarUrl
-            if (authUserId != null && userByEmail.googleId == null) {
-                // прикрепляем auth_user_id если раньше был пустой
+            if (authUserId != null && existingAuthUserId == null) {
                 it[this.authUserId] = authUserId
             }
-            // Supabase обычно сам обновляет updated_at триггером, но выставить явно тоже нормально
+            if (statusByEmail == ExposedAccountStatus.INVITED) {
+                it[this.status] = ExposedAccountStatus.ACTIVE
+                it[this.isActive] = true
+            }
             it[this.updatedAt] = CurrentTimestampWithTimeZone
         }
 
@@ -184,16 +176,15 @@ internal class UsersServiceImpl(
             throw UserAlreadyExistsException("User with authUserId=$authUserId already exists", existingByAuth)
         }
 
-        val insertStatement = UsersTable.insert {
+        val newId = UsersTable.insert {
             it[this.email] = email
             it[this.fullName] = name
             it[this.avatarUrl] = avatarUrl
             it[this.role] = role
+            it[this.status] = ExposedAccountStatus.ACTIVE
             it[this.isActive] = true
             if (authUserId != null) it[this.authUserId] = authUserId
-        }
-
-        val newId = insertStatement[UsersTable.id]
+        }[UsersTable.id].value
 
         UsersTable
             .select(UsersTable.columns)
