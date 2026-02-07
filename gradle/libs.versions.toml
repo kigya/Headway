@@ -133,6 +133,8 @@ ktor-negotiation = { module = "io.ktor:ktor-server-content-negotiation", version
 ktor-statusPages = { module = "io.ktor:ktor-server-status-pages", version.ref = "ktor" }
 ktor-serverNetty = { module = "io.ktor:ktor-server-netty-jvm", version.ref = "ktor" }
 ktor-serverTestHost = { module = "io.ktor:ktor-server-test-host-jvm", version.ref = "ktor" }
+ktor-serverResources = { module = "io.ktor:ktor-server-resources", version.ref = "ktor" }
+ktor-clientResources = { module = "io.ktor:ktor-client-resources", version.ref = "ktor" }
 
 # Local Storage
 dataStore-core = { module = "androidx.datastore:datastore-core", version.ref = "dataStore" }

@@ -48,6 +48,8 @@ include(
     ":app:headwayDesktop",
     ":app:headwayWeb",
 
+    ":shared",
+
     ":feature:splash:api",
     ":feature:splash:internal",
     ":feature:splash:di",
@@ -66,10 +68,10 @@ include(
     ":core:annotation",
     ":core:design-system",
 
-    ":server",
-    ":shared",
     ":server:gateway",
-    ":server:database",
-    ":server:auth",
     ":server:common",
+    ":server:database:api",
+    ":server:database:internal",
+    ":server:auth:api",
+    ":server:auth:internal",
 )
