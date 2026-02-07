@@ -8,8 +8,8 @@ import dev.kigya.headway.database.internal.domain.usecase.CreateGoogleUserUseCas
 import dev.kigya.headway.database.internal.domain.usecase.GetGoogleUserUseCase
 import dev.kigya.headway.database.internal.domain.usecase.InviteUserUseCase
 import dev.kigya.headway.database.internal.domain.usecase.UpsertGoogleUserUseCase
-import dev.kigya.headway.database.internal.error.BadRequestApiException
 import io.ktor.http.HttpStatusCode
+import io.ktor.server.plugins.BadRequestException
 import io.ktor.server.request.receive
 import io.ktor.server.resources.get
 import io.ktor.server.response.respond
@@ -32,7 +32,7 @@ private fun Route.getUser(getGoogleUser: GetGoogleUserUseCase) {
     get<DatabaseUsersResource> { params ->
         val googleId = params.googleId?.trim()?.takeIf(String::isNotBlank)
         val userId = params.userId
-        if (googleId == null) throw
+        if (googleId == null && userId == null) throw BadRequestException("googleId or userId must be provided")
 
         val user = getGoogleUser(googleId = googleId, userId = userId)
         if (user == null) call.respond(HttpStatusCode.NotFound) else call.respond(HttpStatusCode.OK, user)
@@ -41,15 +41,21 @@ private fun Route.getUser(getGoogleUser: GetGoogleUserUseCase) {
 
 private fun Route.createUser(createGoogleUser: CreateGoogleUserUseCase) {
     post<DatabaseUsersResource> {
-        val request = runCatching { call.receive<DatabaseCreateUserPayloadDto>() }
-            .getOrElse { throw BadRequestApiException() }
+        val body = call.receive<DatabaseCreateUserPayloadDto>()
+
+        val googleId = body.googleId.trim()
+        val email = body.email.trim()
+        val name = body.name.trim()
+        if (googleId.isBlank()) throw BadRequestException("GoogleId is blank")
+        if (email.isBlank()) throw BadRequestException("Email is blank")
+        if (name.isBlank()) throw BadRequestException("Name is blank")
 
         val newUser = createGoogleUser(
-            googleId = request.googleId.trim(),
-            email = request.email.trim(),
-            name = request.name.trim(),
-            avatarUrl = request.avatarUrl?.trim(),
-            role = request.role,
+            googleId = googleId,
+            email = email,
+            name = name,
+            avatarUrl = body.avatarUrl?.trim(),
+            role = body.role,
         )
 
         call.respond(HttpStatusCode.Created, newUser)
@@ -58,14 +64,21 @@ private fun Route.createUser(createGoogleUser: CreateGoogleUserUseCase) {
 
 private fun Route.upsertGoogleUser(upsertGoogleUser: UpsertGoogleUserUseCase) {
     post<DatabaseUsersResource.Google.Upsert> {
-        val request = runCatching { call.receive<DatabaseUpsertGoogleUserPayloadDto>() }
-            .getOrElse { throw BadRequestApiException() }
+        val body = call.receive<DatabaseUpsertGoogleUserPayloadDto>()
+
+        val googleId = body.googleId.trim()
+        val email = body.email.trim()
+        val name = body.name.trim()
+        val avatarUrl = body.avatarUrl?.trim()
+        if (googleId.isBlank()) throw BadRequestException("GoogleId is blank")
+        if (email.isBlank()) throw BadRequestException("Email is blank")
+        if (name.isBlank()) throw BadRequestException("Name is blank")
 
         val user = upsertGoogleUser(
-            googleId = request.googleId.trim(),
-            email = request.email.trim(),
-            name = request.name.trim(),
-            avatarUrl = request.avatarUrl?.trim(),
+            googleId = googleId,
+            email = email,
+            name = name,
+            avatarUrl = avatarUrl,
         )
 
         call.respond(HttpStatusCode.OK, user)
@@ -74,12 +87,12 @@ private fun Route.upsertGoogleUser(upsertGoogleUser: UpsertGoogleUserUseCase) {
 
 private fun Route.inviteUser(inviteUser: InviteUserUseCase) {
     post<DatabaseUsersResource.Invite> {
-        val request = runCatching { call.receive<DatabaseInviteUserPayloadDto>() }
-            .getOrElse { throw BadRequestApiException() }
+        val request = call.receive<DatabaseInviteUserPayloadDto>()
 
         val email = request.email.trim()
         val department = request.department.trim()
-        if (email.isBlank() || department.isBlank()) throw BadRequestApiException()
+        if (email.isBlank()) throw BadRequestException("Email is blank")
+        if (department.isBlank()) throw BadRequestException("Department is blank")
 
         val user = inviteUser(email = email, department = department)
         call.respond(HttpStatusCode.Created, user)

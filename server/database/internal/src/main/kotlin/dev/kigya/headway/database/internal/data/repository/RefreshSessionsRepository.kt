@@ -2,9 +2,8 @@ package dev.kigya.headway.database.internal.data.repository
 
 import dev.kigya.headway.database.internal.domain.repository.RefreshSessionsRepositoryContract
 import dev.kigya.headway.database.internal.data.table.RefreshSessionsTable
-import dev.kigya.headway.database.internal.error.SessionDoesNotExistsException
-import dev.kigya.headway.database.internal.error.SessionValidationException
 import dev.kigya.headway.database.internal.core.extension.dbQuery
+import dev.kigya.headway.database.internal.domain.error.DatabaseException
 import org.jetbrains.exposed.v1.core.and
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.core.greater
@@ -70,13 +69,15 @@ internal class RefreshSessionsRepository(
                         (RefreshSessionsTable.expiresIn greater OffsetDateTime.now())
             }.singleOrNull()
 
-        if (row == null) throw SessionDoesNotExistsException()
+        if (row == null) {
+            throw DatabaseException.Unauthorized("Session does not exist or expired")
+        }
 
         if (row[RefreshSessionsTable.fingerprint] != fingerprint) {
             RefreshSessionsTable
                 .deleteWhere { RefreshSessionsTable.id eq row[RefreshSessionsTable.id].value }
 
-            throw SessionValidationException("Invalid fingerprint. Token is possibly stolen")
+            throw DatabaseException.Unauthorized("Invalid fingerprint. Token is possibly stolen")
         }
 
         row[RefreshSessionsTable.userId].value

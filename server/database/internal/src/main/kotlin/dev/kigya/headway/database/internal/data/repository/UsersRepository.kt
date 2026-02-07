@@ -4,12 +4,11 @@ import dev.kigya.headway.database.api.model.out.DatabaseUser
 import dev.kigya.headway.database.api.model.out.DatabaseUserRole
 import dev.kigya.headway.database.internal.data.table.UsersTable
 import dev.kigya.headway.database.internal.domain.repository.UsersRepositoryContract
-import dev.kigya.headway.database.internal.error.UserAlreadyExistsException
-import dev.kigya.headway.database.internal.error.UserNotInvitedException
+import dev.kigya.headway.database.internal.domain.error.DatabaseException
 import dev.kigya.headway.database.internal.core.extension.dbQuery
 import dev.kigya.headway.database.internal.mapping.toExposedDepartment
 import dev.kigya.headway.database.internal.mapping.toUser
-import dev.kigya.headway.database.internal.model.ExposedAccountStatus
+import dev.kigya.headway.database.internal.data.model.ExposedAccountStatus
 import org.jetbrains.exposed.v1.core.ResultRow
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.datetime.CurrentTimestampWithTimeZone
@@ -87,15 +86,15 @@ internal class UsersRepository(
 
         val authUserId = parseUuidOrNull(googleId)
 
-        val rowByEmail = readRowByEmailTx(email) ?: throw UserNotInvitedException()
+        val rowByEmail = readRowByEmailTx(email) ?: throw DatabaseException.UserNotInvited()
         val userByEmail = rowByEmail.toUser()
         val statusByEmail = rowByEmail[UsersTable.status]
-        if (statusByEmail == ExposedAccountStatus.REVOKED) throw UserNotInvitedException()
+        if (statusByEmail == ExposedAccountStatus.REVOKED) throw DatabaseException.UserNotInvited()
 
         val userByAuth = authUserId?.let { readByAuthUserIdTx(it) }
 
         if (userByAuth != null && userByAuth.id != userByEmail.id) {
-            throw UserAlreadyExistsException(
+            throw DatabaseException.UserAlreadyExists(
                 message = "User with authUserId=$authUserId already exists",
                 user = userByAuth,
             )
@@ -103,7 +102,7 @@ internal class UsersRepository(
 
         val existingAuthUserId = rowByEmail[UsersTable.authUserId]
         if (existingAuthUserId != null && authUserId != null && existingAuthUserId != authUserId) {
-            throw UserAlreadyExistsException(
+            throw DatabaseException.UserAlreadyExists(
                 message = "User with email=$email already linked to a different authUserId",
                 user = userByEmail,
             )
@@ -141,12 +140,12 @@ internal class UsersRepository(
 
         val existingByEmail = readByEmailTx(email)
         if (existingByEmail != null) {
-            throw UserAlreadyExistsException("User with email $email already exists", existingByEmail)
+            throw DatabaseException.UserAlreadyExists(user = existingByEmail, message = "User with email $email already exists")
         }
 
         val existingByAuth = authUserId?.let { readByAuthUserIdTx(it) }
         if (existingByAuth != null) {
-            throw UserAlreadyExistsException("User with authUserId=$authUserId already exists", existingByAuth)
+            throw DatabaseException.UserAlreadyExists(user = existingByAuth, message = "User with authUserId=$authUserId already exists")
         }
 
         val newId = UsersTable.insert {

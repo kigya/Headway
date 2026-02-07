@@ -2,6 +2,7 @@ package dev.kigya.headway.database.internal.mapping
 
 import dev.kigya.headway.database.api.model.out.DatabaseUser
 import dev.kigya.headway.database.api.model.out.DatabaseUserDepartment
+import dev.kigya.headway.database.internal.domain.error.DatabaseException
 import dev.kigya.headway.database.internal.data.table.UsersTable
 import org.jetbrains.exposed.v1.core.ResultRow
 
@@ -22,11 +23,8 @@ internal fun ResultRow.toUser(): DatabaseUser {
     )
 }
 
-internal fun String.toExposedDepartment(): DatabaseUserDepartment =
-    when (this.trim().uppercase()) {
-        "ANDROID" -> DatabaseUserDepartment.ANDROID
-        "IOS" -> DatabaseUserDepartment.IOS
-        "CROSS_PLATFORM" -> DatabaseUserDepartment.CROSSPLATFORM
-        else -> error("Unknown department: '$this'")
-    }
-
+internal fun String.toExposedDepartment(): DatabaseUserDepartment {
+    val key = trim().uppercase()
+    return DatabaseUserDepartment.entries.firstOrNull { it.slug == key }
+        ?: throw DatabaseException.InvalidRequest("Unknown department: '$key'")
+}

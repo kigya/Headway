@@ -1,6 +1,6 @@
 package dev.kigya.headway.database.internal.data.table
 
-import dev.kigya.headway.database.internal.model.ExposedAccountStatus
+import dev.kigya.headway.database.internal.data.model.ExposedAccountStatus
 import dev.kigya.headway.database.api.model.out.DatabaseUserDepartment
 import dev.kigya.headway.database.api.model.out.DatabaseUserRole
 import org.jetbrains.exposed.v1.core.dao.id.UUIDTable

@@ -1,12 +1,12 @@
 package dev.kigya.headway.database.internal.presentation.routing
 
-import dev.kigya.headway.database.internal.error.BadRequestApiException
 import dev.kigya.headway.database.api.model.`in`.DatabaseCreateSessionPayloadDto
 import dev.kigya.headway.database.api.model.`in`.DatabaseValidateSessionPayloadDto
 import dev.kigya.headway.database.api.model.resource.DatabaseSessionResource
 import dev.kigya.headway.database.internal.domain.usecase.CreateSessionUseCase
 import dev.kigya.headway.database.internal.domain.usecase.ValidateSessionUseCase
 import io.ktor.http.HttpStatusCode
+import io.ktor.server.plugins.BadRequestException
 import io.ktor.server.request.receive
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
@@ -21,15 +21,19 @@ internal fun Route.sessionRouting(
 }
 
 private fun Route.createSessionRoute(createSession: CreateSessionUseCase) {
-    post<DatabaseSessionResource>{
-        val request = runCatching { call.receive<DatabaseCreateSessionPayloadDto>() }
-            .getOrElse { throw BadRequestApiException() }
+    post<DatabaseSessionResource> {
+        val body = call.receive<DatabaseCreateSessionPayloadDto>()
+
+        val refreshToken = body.refreshToken.trim()
+        val fingerprint = body.fingerprint.trim()
+        if (refreshToken.isBlank()) throw BadRequestException("Refresh token is blank")
+        if (fingerprint.isBlank()) throw BadRequestException("Fingerprint is blank")
 
         createSession(
-            userId = request.userId,
-            refreshToken = request.refreshToken.trim(),
-            expiresIn = request.expiresIn,
-            fingerprint = request.fingerprint.trim(),
+            userId = body.userId,
+            refreshToken = refreshToken,
+            expiresIn = body.expiresIn,
+            fingerprint = fingerprint,
         )
         call.respond(HttpStatusCode.Created)
     }
@@ -37,12 +41,16 @@ private fun Route.createSessionRoute(createSession: CreateSessionUseCase) {
 
 private fun Route.validateSessionRoute(validateSession: ValidateSessionUseCase) {
     post<DatabaseSessionResource.Validate> {
-        val request = runCatching { call.receive<DatabaseValidateSessionPayloadDto>() }
-            .getOrElse { throw BadRequestApiException() }
+        val body = call.receive<DatabaseValidateSessionPayloadDto>()
+
+        val refreshToken = body.refreshToken.trim()
+        val fingerprint = body.fingerprint.trim()
+        if (refreshToken.isBlank()) throw BadRequestException("Refresh token is blank")
+        if (fingerprint.isBlank()) throw BadRequestException("Fingerprint is blank")
 
         validateSession(
-            refreshToken = request.refreshToken.trim(),
-            fingerprint = request.fingerprint.trim(),
+            refreshToken = refreshToken,
+            fingerprint = fingerprint,
         )
         call.respond(HttpStatusCode.OK)
     }

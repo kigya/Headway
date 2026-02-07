@@ -1,4 +1,4 @@
-package dev.kigya.headway.database.internal.model
+package dev.kigya.headway.database.internal.data.model
 
 import kotlinx.serialization.Serializable
 
