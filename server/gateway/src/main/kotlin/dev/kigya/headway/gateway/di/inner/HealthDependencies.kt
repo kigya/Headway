@@ -5,10 +5,8 @@ import dev.kigya.headway.database.api.url.DatabaseKoinHttpClient
 import dev.kigya.headway.gateway.data.probe.AuthServiceProbe
 import dev.kigya.headway.gateway.data.probe.DatabaseServiceProbe
 import dev.kigya.headway.gateway.domain.usecase.CheckHealthStatusUseCase
-import dev.kigya.headway.gateway.domain.port.CheckHealthStatusUseCaseContract
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
-import org.koin.dsl.bind
 
 internal fun Module.healthDependencies() {
     single {
@@ -16,5 +14,5 @@ internal fun Module.healthDependencies() {
             authProbe = AuthServiceProbe(get(named<AuthKoinHttpClient>())),
             databaseProbe = DatabaseServiceProbe(get(named<DatabaseKoinHttpClient>())),
         )
-    } bind CheckHealthStatusUseCaseContract::class
+    }
 }
