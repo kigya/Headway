@@ -1,15 +1,19 @@
 package dev.kigya.headway.gateway.domain.usecase
 
-import dev.kigya.headway.gateway.model.AuthPayload
-import dev.kigya.headway.gateway.port.LoginWithGoogleUseCaseContract
-import dev.kigya.headway.gateway.internal.client.AuthServiceClientContract
-import dev.kigya.headway.gateway.internal.mapping.toPublic
+import dev.kigya.headway.gateway.core.exception.GatewayException
+import dev.kigya.headway.gateway.domain.repository.AuthRepositoryContract
+import dev.kigya.headway.gateway.model.GatewayGoogleLoginResponse
 
 internal class LoginWithGoogleUseCase(
-    private val authClient: AuthServiceClientContract,
-) : LoginWithGoogleUseCaseContract {
-    override suspend fun invoke(idToken: String, fingerprint: String): AuthPayload {
-        val dto = authClient.loginWithGoogle(idToken = idToken, fingerprint = fingerprint)
-        return dto.toPublic()
+    private val authRepository: AuthRepositoryContract,
+) {
+    suspend operator fun invoke(idToken: String, fingerprint: String): GatewayGoogleLoginResponse {
+        val trimmedIdToken = idToken.trim()
+        val trimmedFingerprint = fingerprint.trim()
+
+        if (trimmedIdToken.isBlank()) throw GatewayException.InvalidRequest("ID token is blank")
+        if (trimmedFingerprint.isBlank()) throw GatewayException.InvalidRequest("Fingerprint is blank")
+
+        return authRepository.loginWithGoogle(idToken = idToken, fingerprint = trimmedFingerprint)
     }
 }

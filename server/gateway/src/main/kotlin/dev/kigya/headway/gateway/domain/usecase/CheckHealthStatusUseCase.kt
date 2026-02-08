@@ -4,25 +4,22 @@ import dev.kigya.headway.gateway.data.probe.base.HttpProber
 import dev.kigya.headway.gateway.model.DependencyHealth
 import dev.kigya.headway.gateway.model.HealthPayload
 import dev.kigya.headway.gateway.model.ServiceStatus
-import dev.kigya.headway.gateway.port.CheckHealthStatusUseCaseContract
-
-private const val NANOS_IN_SECOND = 1_000_000_000L
 
 internal class CheckHealthStatusUseCase(
     private val authProbe: HttpProber,
     private val databaseProbe: HttpProber,
-) : CheckHealthStatusUseCaseContract {
-
+) {
     private val startedAtNanos: Long = System.nanoTime()
 
-    override suspend fun invoke(): HealthPayload {
+    suspend operator fun invoke(): HealthPayload {
 
         val uptimeSeconds = ((System.nanoTime() - startedAtNanos) / NANOS_IN_SECOND).coerceAtLeast(0L)
         val authStatus = authProbe.check()
         val databaseStatus = databaseProbe.check()
 
         val overallStatus = when (authStatus) {
-            ServiceStatus.OK -> ServiceStatus.OK
+            ServiceStatus.OK if databaseStatus == ServiceStatus.OK -> ServiceStatus.OK
+            ServiceStatus.DOWN if databaseStatus == ServiceStatus.DOWN -> ServiceStatus.DOWN
             else -> ServiceStatus.DEGRADED
         }
 
@@ -37,3 +34,5 @@ internal class CheckHealthStatusUseCase(
         )
     }
 }
+
+private const val NANOS_IN_SECOND = 1_000_000_000L

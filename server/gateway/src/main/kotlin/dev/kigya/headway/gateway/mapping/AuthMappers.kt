@@ -1,27 +1,33 @@
 package dev.kigya.headway.gateway.mapping
 
-import dev.kigya.headway.gateway.model.AuthPayload
+import dev.kigya.headway.auth.api.model.out.AuthGoogleLoginResponse
+import dev.kigya.headway.auth.api.model.out.AuthRefreshAccessTokenResponse
+import dev.kigya.headway.database.api.model.out.DatabaseUser
+import dev.kigya.headway.database.api.model.out.DatabaseUserRole
+import dev.kigya.headway.gateway.model.GatewayGoogleLoginResponse
+import dev.kigya.headway.gateway.model.GatewayRefreshAccessTokenResponse
 import dev.kigya.headway.gateway.model.PublicUser
 import dev.kigya.headway.gateway.model.UserRole
-import dev.kigya.headway.gateway.internal.model.AuthServiceAuthResponse
-import dev.kigya.headway.gateway.internal.model.AuthServiceUserDto
-import dev.kigya.headway.gateway.internal.model.AuthServiceUserRoleDto
 
-internal fun AuthServiceAuthResponse.toPublic(): AuthPayload =
-    AuthPayload(
+internal fun AuthGoogleLoginResponse.toGateway(): GatewayGoogleLoginResponse =
+    GatewayGoogleLoginResponse(
         accessToken = accessToken,
         refreshToken = refreshToken,
-        user = user.toPublic(),
+        user = user.toPublicUser(),
     )
 
-private fun AuthServiceUserDto.toPublic(): PublicUser =
+internal fun AuthRefreshAccessTokenResponse.toGateway() = GatewayRefreshAccessTokenResponse(
+    accessToken = accessToken,
+)
+
+private fun DatabaseUser.toPublicUser(): PublicUser =
     PublicUser(
         id = id,
         email = email,
         name = name,
-        role = role.toPublic(),
+        role = role.toPublicRole(),
         avatarUrl = avatarUrl,
     )
 
-private fun AuthServiceUserRoleDto.toPublic(): UserRole =
-    UserRole.entries.firstOrNull { it.name == this.name } ?: UserRole.GUEST
+private fun DatabaseUserRole.toPublicRole(): UserRole =
+    UserRole.entries.firstOrNull { it.name == name } ?: UserRole.GUEST

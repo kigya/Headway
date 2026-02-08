@@ -1,5 +1,3 @@
-import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
-
 plugins {
     alias(libs.plugins.kotlinJvm)
     alias(libs.plugins.ktor)
@@ -11,7 +9,7 @@ group = "dev.kigya.headway"
 version = "1.0.0"
 
 application {
-    mainClass.set("dev.kigya.headway.gateway.GatewayApplicationKt")
+    mainClass.set("dev.kigya.headway.gateway.presentation.GatewayApplicationKt")
 
     val isDevelopment: Boolean = project.ext.has("development")
     applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")

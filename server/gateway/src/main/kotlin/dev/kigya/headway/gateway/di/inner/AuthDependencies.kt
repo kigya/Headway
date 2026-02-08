@@ -1,17 +1,17 @@
 package dev.kigya.headway.gateway.di.inner
 
-import dev.kigya.headway.gateway.client.AuthServiceClientContract
-import dev.kigya.headway.gateway.client.HttpAuthServiceClient
+import dev.kigya.headway.auth.api.url.AuthKoinHttpClient
+import dev.kigya.headway.gateway.data.client.AuthRepository
+import dev.kigya.headway.gateway.domain.repository.AuthRepositoryContract
 import dev.kigya.headway.gateway.domain.usecase.LoginWithGoogleUseCase
-import dev.kigya.headway.gateway.domain.usecase.RefreshTokenUseCase
-import dev.kigya.headway.gateway.port.LoginWithGoogleUseCaseContract
-import dev.kigya.headway.gateway.port.RefreshTokenUseCaseContract
+import dev.kigya.headway.gateway.domain.usecase.RefreshAccessTokenUseCase
 import org.koin.core.module.Module
 import org.koin.core.module.dsl.singleOf
+import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 
 internal fun Module.authDependencies() {
-    singleOf(::HttpAuthServiceClient) bind AuthServiceClientContract::class
-    singleOf(::LoginWithGoogleUseCase) bind LoginWithGoogleUseCaseContract::class
-    singleOf(::RefreshTokenUseCase) bind RefreshTokenUseCaseContract::class
+    single { AuthRepository(httpClient = get(named<AuthKoinHttpClient>())) } bind AuthRepositoryContract::class
+    singleOf(::LoginWithGoogleUseCase)
+    singleOf(::RefreshAccessTokenUseCase)
 }

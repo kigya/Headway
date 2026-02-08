@@ -7,7 +7,7 @@ import io.ktor.client.plugins.resources.get
 import io.ktor.client.plugins.timeout
 import io.ktor.http.isSuccess
 
-open class BaseHttpProbe(
+internal open class BaseHttpProbe(
     private val httpClient: HttpClient,
 ) : HttpProber {
     override suspend fun check(): ServiceStatus = try {

@@ -1,20 +1,30 @@
 package dev.kigya.headway.gateway.model
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-internal enum class ServiceStatus { OK, DEGRADED, DOWN }
+internal enum class ServiceStatus {
+    @SerialName("OK")
+    OK,
+
+    @SerialName("DEGRADED")
+    DEGRADED,
+
+    @SerialName("DOWN")
+    DOWN;
+}
 
 @Serializable
 internal data class DependencyHealth(
-    val name: String,
-    val status: ServiceStatus,
+    @SerialName("name") val name: String,
+    @SerialName("status") val status: ServiceStatus,
 )
 
 @Serializable
 internal data class HealthPayload(
-    val service: String,
-    val status: ServiceStatus,
-    val uptimeSec: Long,
-    val dependencies: List<DependencyHealth> = emptyList(),
+    @SerialName("service") val service: String,
+    @SerialName("status") val status: ServiceStatus,
+    @SerialName("uptimeSec") val uptimeSec: Long,
+    @SerialName("dependencies") val dependencies: List<DependencyHealth> = emptyList(),
 )

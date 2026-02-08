@@ -1,4 +1,4 @@
-package dev.kigya.headway.gateway.config
+package dev.kigya.headway.gateway.core.config
 
 import dev.kigya.headway.common.util.intEnv
 import dev.kigya.headway.common.util.stringEnv

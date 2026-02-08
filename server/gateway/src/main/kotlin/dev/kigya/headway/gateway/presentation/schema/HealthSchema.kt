@@ -1,13 +1,13 @@
-package dev.kigya.headway.gateway.schema
+package dev.kigya.headway.gateway.presentation.schema
 
 import com.apurebase.kgraphql.schema.dsl.SchemaBuilder
 import dev.kigya.headway.gateway.model.DependencyHealth
 import dev.kigya.headway.gateway.model.HealthPayload
 import dev.kigya.headway.gateway.model.ServiceStatus
-import dev.kigya.headway.gateway.port.CheckHealthStatusUseCaseContract
+import dev.kigya.headway.gateway.domain.usecase.CheckHealthStatusUseCase
 
 internal fun SchemaBuilder.healthSchema(
-    checkHealthStatusUseCaseContract: CheckHealthStatusUseCaseContract,
+    checkHealthStatus: CheckHealthStatusUseCase,
 ) {
     enum<ServiceStatus>()
     type<DependencyHealth>()
@@ -15,8 +15,8 @@ internal fun SchemaBuilder.healthSchema(
 
     query("_health") {
         description = "Gateway health"
-        resolver { stub: Boolean? ->
-            checkHealthStatusUseCaseContract()
+        resolver { _: Boolean? ->
+            checkHealthStatus()
         }
     }
 }

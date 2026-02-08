@@ -7,31 +7,36 @@ import java.util.UUID
 
 @Serializable
 data class PublicUser(
-    @Serializable(UUIDSerializer::class) val id: UUID,
-    val email: String,
-    val name: String,
-    val role: UserRole,
-    val avatarUrl: String? = null,
+    @SerialName("id") @Serializable(UUIDSerializer::class) val id: UUID,
+    @SerialName("email") val email: String,
+    @SerialName("name") val name: String,
+    @SerialName("role") val role: UserRole,
+    @SerialName("avatarUrl") val avatarUrl: String? = null,
 )
 
 @Serializable
-data class AuthPayload(
-    val accessToken: String,
-    val refreshToken: String,
-    val user: PublicUser,
+data class GatewayGoogleLoginResponse(
+    @SerialName("accessToken") val accessToken: String,
+    @SerialName("refreshToken") val refreshToken: String,
+    @SerialName("user") val user: PublicUser,
 )
 
 @Serializable
-data class RefreshTokenPayload(
-    val accessToken: String,
+data class GatewayRefreshAccessTokenResponse(
+    @SerialName("accessToken") val accessToken: String,
 )
 
 @Serializable
 enum class UserRole {
+    @SerialName("DEVELOPER")
     DEVELOPER,
+    @SerialName("MANAGER")
     MANAGER,
+    @SerialName("MENTOR")
     MENTOR,
+    @SerialName("EMPLOYEE")
     EMPLOYEE,
+    @SerialName("GUEST")
     GUEST;
 }
 
