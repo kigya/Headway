@@ -9,8 +9,9 @@ import dev.kigya.headway.gateway.domain.usecase.CheckHealthStatusUseCase
 import dev.kigya.headway.gateway.domain.usecase.InviteUserUseCase
 import dev.kigya.headway.gateway.domain.usecase.LoginWithGoogleUseCase
 import dev.kigya.headway.gateway.domain.usecase.RefreshAccessTokenUseCase
-import dev.kigya.headway.gateway.presentation.graphql.stringScalarLong
-import dev.kigya.headway.gateway.presentation.graphql.stringScalarUUID
+import dev.kigya.headway.gateway.graphql.stringScalarLong
+import dev.kigya.headway.gateway.graphql.stringScalarUUID
+import dev.kigya.headway.gateway.presentation.routes.GatewayHttpRoute
 import dev.kigya.headway.gateway.presentation.schema.authSchema
 import dev.kigya.headway.gateway.presentation.schema.databaseSchema
 import dev.kigya.headway.gateway.presentation.schema.healthSchema
@@ -27,17 +28,21 @@ internal fun Application.installGatewayApi(
 ) {
     install(GraphQL) {
         playground = true
-        endpoint = "/api/v1/graphql"
+        endpoint = GatewayHttpRoute.GraphQL.path
 
         errorHandler { throwable ->
             val originalThrowable = unwrapGraphQlError(throwable)
 
             val (code, message) = when (originalThrowable) {
                 is GatewayException -> originalThrowable.code to originalThrowable.toPublicMessage()
-                is KtorBadRequestException -> GatewayErrorCode.BAD_REQUEST to (originalThrowable.message ?: "Bad request")
+                is KtorBadRequestException -> GatewayErrorCode.BAD_REQUEST to (originalThrowable.message
+                    ?: "Bad request")
+
                 is IllegalArgumentException -> GatewayErrorCode.BAD_REQUEST to "Bad request"
                 else -> GatewayErrorCode.INTERNAL to "Internal server error"
             }
+
+            val extensions = buildExtensions(code = code, throwable = originalThrowable)
 
             if (code == GatewayErrorCode.INTERNAL || code == GatewayErrorCode.DEPENDENCY_UNAVAILABLE) {
                 this@installGatewayApi.log.error(
@@ -50,7 +55,8 @@ internal fun Application.installGatewayApi(
 
             GraphQLError(
                 message = message,
-                extensions = mapOf(EXT_CODE to code.name),
+                originalError = throwable,
+                extensions = extensions,
             )
         }
 
@@ -65,18 +71,50 @@ internal fun Application.installGatewayApi(
     }
 }
 
-private const val EXT_CODE = "code"
-
 private fun GatewayException.toPublicMessage(): String =
     when (code) {
         GatewayErrorCode.BAD_REQUEST -> message
         GatewayErrorCode.UNAUTHORIZED -> "Unauthorized"
         GatewayErrorCode.FORBIDDEN -> "Forbidden"
         GatewayErrorCode.DEPENDENCY_UNAVAILABLE -> "Service temporarily unavailable"
-        GatewayErrorCode.INTERNAL -> "Internal server error"
+        else -> "Internal server error"
     }
+
+private fun buildExtensions(
+    code: GatewayErrorCode,
+    throwable: Throwable,
+): Map<String, Any?> = buildMap {
+    put(EXT_CODE, code.name)
+
+    val httpStatus = (throwable as? GatewayException)?.httpStatus ?: when (code) {
+        GatewayErrorCode.BAD_REQUEST -> 400
+        GatewayErrorCode.UNAUTHORIZED -> 401
+        GatewayErrorCode.FORBIDDEN -> 403
+        GatewayErrorCode.CONFLICT -> 409
+        GatewayErrorCode.DEPENDENCY_UNAVAILABLE -> 503
+        GatewayErrorCode.INTERNAL -> 500
+        else -> 404
+    }
+    put(EXT_HTTP_STATUS, httpStatus)
+
+    when (throwable) {
+        is GatewayException.DependencyUnavailable -> {
+            put(EXT_DEPENDENCY, throwable.dependency)
+        }
+
+        is GatewayException.UpstreamProtocol -> {
+            put(EXT_DEPENDENCY, throwable.dependency)
+            put(EXT_UPSTREAM_STATUS, throwable.status)
+        }
+    }
+}
 
 private fun unwrapGraphQlError(t: Throwable): Throwable {
     val exception = t as? ExecutionException
     return exception?.originalError ?: t
 }
+
+private const val EXT_CODE = "code"
+private const val EXT_HTTP_STATUS = "httpStatus"
+private const val EXT_DEPENDENCY = "dependency"
+private const val EXT_UPSTREAM_STATUS = "upstreamStatus"

@@ -2,7 +2,6 @@ package dev.kigya.headway.gateway.domain.usecase
 
 import dev.kigya.headway.gateway.core.exception.GatewayException
 import dev.kigya.headway.gateway.domain.repository.DatabaseRepositoryContract
-import dev.kigya.headway.gateway.mapping.toGateway
 import dev.kigya.headway.gateway.model.GatewayUser
 
 internal class InviteUserUseCase(

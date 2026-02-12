@@ -1,4 +1,4 @@
-package dev.kigya.headway.gateway.presentation.graphql
+package dev.kigya.headway.gateway.graphql
 
 import com.apurebase.kgraphql.schema.dsl.SchemaBuilder
 import java.util.UUID

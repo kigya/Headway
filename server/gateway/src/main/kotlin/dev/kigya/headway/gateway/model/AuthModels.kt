@@ -6,46 +6,53 @@ import kotlinx.serialization.Serializable
 import java.util.UUID
 
 @Serializable
-data class PublicUser(
+internal data class GatewayUser(
     @SerialName("id") @Serializable(UUIDSerializer::class) val id: UUID,
     @SerialName("email") val email: String,
     @SerialName("name") val name: String,
-    @SerialName("role") val role: UserRole,
+    @SerialName("role") val role: GatewayUserRole,
     @SerialName("avatarUrl") val avatarUrl: String? = null,
+    @SerialName("department") val department: GatewayUserDepartment? = null,
 )
 
 @Serializable
-data class GatewayGoogleLoginResponse(
+internal data class GatewayGoogleLoginResponse(
     @SerialName("accessToken") val accessToken: String,
     @SerialName("refreshToken") val refreshToken: String,
-    @SerialName("user") val user: PublicUser,
+    @SerialName("user") val user: GatewayUser,
 )
 
 @Serializable
-data class GatewayRefreshAccessTokenResponse(
+internal data class GatewayRefreshAccessTokenResponse(
     @SerialName("accessToken") val accessToken: String,
 )
 
 @Serializable
-enum class UserRole {
+internal enum class GatewayUserRole {
     @SerialName("DEVELOPER")
     DEVELOPER,
+
     @SerialName("MANAGER")
     MANAGER,
+
     @SerialName("MENTOR")
     MENTOR,
+
     @SerialName("EMPLOYEE")
     EMPLOYEE,
+
     @SerialName("GUEST")
     GUEST;
 }
 
 @Serializable
-data class GatewayUser(
-    @SerialName("id") @Serializable(UUIDSerializer::class) val id: UUID,
-    @SerialName("email") val email: String,
-    @SerialName("department") val department: String,
-    @SerialName("isActive") val isActive: Boolean,
-    @SerialName("createdAt") val createdAt: Long,
-    @SerialName("updatedAt") val updatedAt: Long,
-)
+internal enum class GatewayUserDepartment {
+    @SerialName("ANDROID")
+    ANDROID,
+
+    @SerialName("IOS")
+    IOS,
+
+    @SerialName("CROSS_PLATFORM")
+    CROSSPLATFORM;
+}
