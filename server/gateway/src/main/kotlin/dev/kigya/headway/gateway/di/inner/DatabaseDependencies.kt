@@ -1,7 +1,7 @@
 package dev.kigya.headway.gateway.di.inner
 
 import dev.kigya.headway.database.api.url.DatabaseKoinHttpClient
-import dev.kigya.headway.gateway.data.client.DatabaseRepository
+import dev.kigya.headway.gateway.data.repository.DatabaseRepository
 import dev.kigya.headway.gateway.domain.repository.DatabaseRepositoryContract
 import dev.kigya.headway.gateway.domain.usecase.InviteUserUseCase
 import org.koin.core.module.Module

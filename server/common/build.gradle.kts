@@ -1,10 +1,9 @@
 plugins {
     alias(libs.plugins.kotlinJvm)
     alias(libs.plugins.serialization)
-    application
 }
 
-group = "dev.kigya.headway"
+group = "dev.kigya.headway.common"
 version = "1.0.0"
 
 dependencies {

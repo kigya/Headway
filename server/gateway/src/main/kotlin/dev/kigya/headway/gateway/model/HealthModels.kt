@@ -4,7 +4,7 @@ import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 
 @Serializable
-internal enum class ServiceStatus {
+internal enum class GatewayServiceStatus {
     @SerialName("OK")
     OK,
 
@@ -16,15 +16,15 @@ internal enum class ServiceStatus {
 }
 
 @Serializable
-internal data class DependencyHealth(
+internal data class GatewayDependencyHealth(
     @SerialName("name") val name: String,
-    @SerialName("status") val status: ServiceStatus,
+    @SerialName("status") val status: GatewayServiceStatus,
 )
 
 @Serializable
-internal data class HealthPayload(
+internal data class GatewayHealthPayload(
     @SerialName("service") val service: String,
-    @SerialName("status") val status: ServiceStatus,
+    @SerialName("status") val status: GatewayServiceStatus,
     @SerialName("uptimeSec") val uptimeSec: Long,
-    @SerialName("dependencies") val dependencies: List<DependencyHealth> = emptyList(),
+    @SerialName("dependencies") val dependencies: List<GatewayDependencyHealth> = emptyList(),
 )

@@ -8,6 +8,7 @@ plugins {
 group = "dev.kigya.headway.database.internal"
 version = "1.0.0"
 application {
+    applicationName = "database"
     mainClass.set("dev.kigya.headway.database.internal.DatabaseApplicationKt")
 
     val isDevelopment: Boolean = project.ext.has("development")
@@ -24,7 +25,6 @@ dependencies {
     implementation(libs.ktor.serialization)
     implementation(libs.ktor.statusPages)
     implementation(libs.koin.ktor)
-    implementation(libs.google.api.client)
     implementation(libs.ktor.serverResources)
 
     implementation(libs.exposed.core)
@@ -35,5 +35,5 @@ dependencies {
 
     testImplementation(libs.ktor.serverTestHost)
 
-    implementation(projects.server.database.api)
+    api(projects.server.database.api)
 }

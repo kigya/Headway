@@ -1,7 +1,7 @@
 package dev.kigya.headway.gateway.data.probe.base
 
 import dev.kigya.headway.common.model.resource.HealthzResource
-import dev.kigya.headway.gateway.model.ServiceStatus
+import dev.kigya.headway.gateway.model.GatewayServiceStatus
 import io.ktor.client.HttpClient
 import io.ktor.client.plugins.resources.get
 import io.ktor.client.plugins.timeout
@@ -10,7 +10,7 @@ import io.ktor.http.isSuccess
 internal open class BaseHttpProbe(
     private val httpClient: HttpClient,
 ) : HttpProber {
-    override suspend fun check(): ServiceStatus = try {
+    override suspend fun check(): GatewayServiceStatus = try {
         val response = httpClient.get(HealthzResource()) {
             timeout {
                 connectTimeoutMillis = DEFAULT_TIMEOUT
@@ -18,9 +18,9 @@ internal open class BaseHttpProbe(
                 socketTimeoutMillis = DEFAULT_TIMEOUT
             }
         }
-        if (response.status.isSuccess()) ServiceStatus.OK else ServiceStatus.DOWN
+        if (response.status.isSuccess()) GatewayServiceStatus.OK else GatewayServiceStatus.DOWN
     } catch (_: Throwable) {
-        ServiceStatus.DOWN
+        GatewayServiceStatus.DOWN
     }
 }
 

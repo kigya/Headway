@@ -46,6 +46,10 @@ private fun StatusPagesConfig.handleAuthExceptions() {
         )
     }
 
+    exception<AuthException.Forbidden> { call, exception ->
+        call.respond(HttpStatusCode.Forbidden, exception.message)
+    }
+
     exception<AuthException.DependencyUnavailable> { call, exception ->
         call.respond(
             status = HttpStatusCode.ServiceUnavailable,

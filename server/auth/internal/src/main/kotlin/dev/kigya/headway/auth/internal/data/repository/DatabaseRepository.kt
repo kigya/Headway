@@ -2,13 +2,11 @@ package dev.kigya.headway.auth.internal.data.repository
 
 import dev.kigya.headway.auth.internal.domain.error.AuthException
 import dev.kigya.headway.auth.internal.domain.repository.DatabaseRepositoryContract
-import dev.kigya.headway.common.extension.successBodyOrThrow
 import dev.kigya.headway.database.api.model.`in`.DatabaseCreateSessionPayloadDto
 import dev.kigya.headway.database.api.model.`in`.DatabaseUpsertGoogleUserPayloadDto
 import dev.kigya.headway.database.api.model.`in`.DatabaseValidateSessionPayloadDto
 import dev.kigya.headway.database.api.model.out.DatabaseUser
-import dev.kigya.headway.database.api.model.resource.DatabaseSessionResource
-import dev.kigya.headway.database.api.model.resource.DatabaseUsersResource
+import dev.kigya.headway.database.api.model.resource.DatabaseResource
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.resources.post
@@ -30,7 +28,7 @@ class DatabaseRepository(
         avatarUrl: String?,
     ): DatabaseUser {
         val response = try {
-            httpClient.post(DatabaseUsersResource.Google.Upsert()) {
+            httpClient.post(DatabaseResource.User.Google.Upsert()) {
                 contentType(ContentType.Application.Json)
                 setBody(
                     DatabaseUpsertGoogleUserPayloadDto(
@@ -45,16 +43,14 @@ class DatabaseRepository(
             throw AuthException.DependencyUnavailable("database", cause = t)
         }
 
-        return response.successBodyOrThrow { httpResponse ->
-            when (val status = httpResponse.status) {
-                HttpStatusCode.OK, HttpStatusCode.Created, HttpStatusCode.Conflict -> httpResponse.body<DatabaseUser>()
-                HttpStatusCode.Forbidden -> throw AuthException.UserNotInvited()
+        return when (val status = response.status) {
+            HttpStatusCode.OK, HttpStatusCode.Created, HttpStatusCode.Conflict -> response.body<DatabaseUser>()
+            HttpStatusCode.Forbidden -> throw AuthException.UserNotInvited()
 
-                else -> throw AuthException.UpstreamProtocol(
-                    dependency = "database",
-                    status = status.value,
-                )
-            }
+            else -> throw AuthException.UpstreamProtocol(
+                dependency = "database",
+                status = status.value,
+            )
         }
     }
 
@@ -65,7 +61,7 @@ class DatabaseRepository(
         fingerprint: String,
     ) {
         val response = try {
-            httpClient.post(DatabaseSessionResource()) {
+            httpClient.post(DatabaseResource.Session()) {
                 contentType(ContentType.Application.Json)
                 setBody(
                     DatabaseCreateSessionPayloadDto(
@@ -94,7 +90,7 @@ class DatabaseRepository(
         fingerprint: String,
     ) {
         val response = try {
-            httpClient.post(DatabaseSessionResource.Validate()) {
+            httpClient.post(DatabaseResource.Session.Validate()) {
                 contentType(ContentType.Application.Json)
                 setBody(
                     DatabaseValidateSessionPayloadDto(

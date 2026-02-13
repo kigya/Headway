@@ -5,6 +5,7 @@ import dev.kigya.headway.auth.internal.domain.usecase.RefreshTokenUseCase
 import dev.kigya.headway.auth.internal.presentation.plugin.authRouting
 import dev.kigya.headway.auth.internal.presentation.plugin.authStatusPages
 import dev.kigya.headway.common.extension.defaultContentNegotiation
+import dev.kigya.headway.common.extension.defaultResources
 import io.ktor.server.application.Application
 
 internal fun Application.installAuthApi(
@@ -12,6 +13,7 @@ internal fun Application.installAuthApi(
     refreshToken: RefreshTokenUseCase,
 ) {
     defaultContentNegotiation()
+    defaultResources()
     authStatusPages()
     authRouting(
         loginWithGoogle = loginWithGoogle,

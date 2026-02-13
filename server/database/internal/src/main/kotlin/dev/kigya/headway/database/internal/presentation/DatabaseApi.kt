@@ -1,6 +1,7 @@
 package dev.kigya.headway.database.internal.presentation
 
 import dev.kigya.headway.common.extension.defaultContentNegotiation
+import dev.kigya.headway.common.extension.defaultResources
 import dev.kigya.headway.database.internal.domain.usecase.CreateGoogleUserUseCase
 import dev.kigya.headway.database.internal.domain.usecase.CreateSessionUseCase
 import dev.kigya.headway.database.internal.domain.usecase.GetGoogleUserUseCase
@@ -20,6 +21,7 @@ internal fun Application.installDatabaseApi(
     inviteUser: InviteUserUseCase,
 ) {
     defaultContentNegotiation()
+    defaultResources()
     databaseStatusPages()
     databaseRouting(
         getUser = getUser,

@@ -5,7 +5,6 @@ import dev.kigya.headway.auth.internal.data.verifier.GoogleTokenVerifierContract
 import dev.kigya.headway.auth.internal.domain.error.AuthException
 import dev.kigya.headway.auth.internal.domain.repository.DatabaseRepositoryContract
 import dev.kigya.headway.auth.internal.domain.repository.JWTRepositoryContract
-import java.io.IOException
 import java.time.ZoneOffset
 import java.util.Calendar
 

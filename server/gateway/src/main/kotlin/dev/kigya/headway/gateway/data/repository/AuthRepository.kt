@@ -1,4 +1,4 @@
-package dev.kigya.headway.gateway.data.client
+package dev.kigya.headway.gateway.data.repository
 
 import dev.kigya.headway.auth.api.model.`in`.AuthGoogleLoginPayloadDto
 import dev.kigya.headway.auth.api.model.`in`.AuthRefreshTokenPayloadDto
@@ -15,6 +15,8 @@ import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.resources.post
 import io.ktor.client.request.setBody
+import io.ktor.http.ContentType
+import io.ktor.http.contentType
 
 internal class AuthRepository(
     private val httpClient: HttpClient,
@@ -25,6 +27,7 @@ internal class AuthRepository(
             dependency = "auth",
             request = {
                 httpClient.post(AuthGoogleResource()) {
+                    contentType(ContentType.Application.Json)
                     setBody(AuthGoogleLoginPayloadDto(idToken = idToken, fingerprint = fingerprint))
                 }
             },
@@ -36,6 +39,7 @@ internal class AuthRepository(
             dependency = "auth",
             request = {
                 httpClient.post(AuthRefreshTokenResource()) {
+                    contentType(ContentType.Application.Json)
                     setBody(AuthRefreshTokenPayloadDto(refreshToken = refreshToken, fingerprint = fingerprint))
                 }
             },

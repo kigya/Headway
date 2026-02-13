@@ -11,6 +11,10 @@ import dev.kigya.headway.gateway.domain.usecase.LoginWithGoogleUseCase
 import dev.kigya.headway.gateway.domain.usecase.RefreshAccessTokenUseCase
 import dev.kigya.headway.gateway.graphql.stringScalarLong
 import dev.kigya.headway.gateway.graphql.stringScalarUUID
+import dev.kigya.headway.gateway.model.GatewayGoogleLoginResponse
+import dev.kigya.headway.gateway.model.GatewayRefreshAccessTokenResponse
+import dev.kigya.headway.gateway.model.GatewayUser
+import dev.kigya.headway.gateway.model.GatewayUserRole
 import dev.kigya.headway.gateway.presentation.routes.GatewayHttpRoute
 import dev.kigya.headway.gateway.presentation.schema.authSchema
 import dev.kigya.headway.gateway.presentation.schema.databaseSchema
@@ -34,7 +38,7 @@ internal fun Application.installGatewayApi(
             val originalThrowable = unwrapGraphQlError(throwable)
 
             val (code, message) = when (originalThrowable) {
-                is GatewayException -> originalThrowable.code to originalThrowable.toPublicMessage()
+                is GatewayException -> originalThrowable.code to originalThrowable.code.rawName
                 is KtorBadRequestException -> GatewayErrorCode.BAD_REQUEST to (originalThrowable.message
                     ?: "Bad request")
 
@@ -61,6 +65,11 @@ internal fun Application.installGatewayApi(
         }
 
         schema {
+            enum<GatewayUserRole>()
+            type<GatewayUser>()
+            type<GatewayGoogleLoginResponse>()
+            type<GatewayRefreshAccessTokenResponse>()
+
             stringScalarUUID()
             stringScalarLong()
 
@@ -70,15 +79,6 @@ internal fun Application.installGatewayApi(
         }
     }
 }
-
-private fun GatewayException.toPublicMessage(): String =
-    when (code) {
-        GatewayErrorCode.BAD_REQUEST -> message
-        GatewayErrorCode.UNAUTHORIZED -> "Unauthorized"
-        GatewayErrorCode.FORBIDDEN -> "Forbidden"
-        GatewayErrorCode.DEPENDENCY_UNAVAILABLE -> "Service temporarily unavailable"
-        else -> "Internal server error"
-    }
 
 private fun buildExtensions(
     code: GatewayErrorCode,

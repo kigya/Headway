@@ -2,14 +2,14 @@ package dev.kigya.headway.gateway.core.exception
 
 import io.ktor.http.HttpStatusCode
 
-internal enum class GatewayErrorCode {
-    BAD_REQUEST,
-    UNAUTHORIZED,
-    FORBIDDEN,
-    NOT_FOUND,
-    CONFLICT,
-    DEPENDENCY_UNAVAILABLE,
-    INTERNAL,
+internal enum class GatewayErrorCode(val rawName: String) {
+    BAD_REQUEST("Bad Request"),
+    UNAUTHORIZED("Unauthorized"),
+    FORBIDDEN("Forbidden"),
+    NOT_FOUND("Not Found"),
+    CONFLICT("Conflict"),
+    DEPENDENCY_UNAVAILABLE("Dependency Unavailable"),
+    INTERNAL("Internal Server Error");
 }
 
 internal sealed class GatewayException(

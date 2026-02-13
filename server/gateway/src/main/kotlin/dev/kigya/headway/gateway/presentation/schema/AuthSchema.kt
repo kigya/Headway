@@ -13,11 +13,6 @@ internal fun SchemaBuilder.authSchema(
     loginWithGoogle: LoginWithGoogleUseCase,
     refreshToken: RefreshAccessTokenUseCase,
 ) {
-    enum<GatewayUserRole>()
-    type<GatewayUser>()
-    type<GatewayGoogleLoginResponse>()
-    type<GatewayRefreshAccessTokenResponse>()
-
     mutation(GatewayGraphqlOperation.LoginWithGoogle.name) {
         description = "Authorization via Google ID Token"
         resolver { idToken: String, fingerprint: String -> loginWithGoogle(idToken, fingerprint) }

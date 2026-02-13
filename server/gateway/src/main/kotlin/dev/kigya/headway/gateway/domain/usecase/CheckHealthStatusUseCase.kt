@@ -1,9 +1,9 @@
 package dev.kigya.headway.gateway.domain.usecase
 
 import dev.kigya.headway.gateway.data.probe.base.HttpProber
-import dev.kigya.headway.gateway.model.DependencyHealth
-import dev.kigya.headway.gateway.model.HealthPayload
-import dev.kigya.headway.gateway.model.ServiceStatus
+import dev.kigya.headway.gateway.model.GatewayDependencyHealth
+import dev.kigya.headway.gateway.model.GatewayHealthPayload
+import dev.kigya.headway.gateway.model.GatewayServiceStatus
 
 internal class CheckHealthStatusUseCase(
     private val authProbe: HttpProber,
@@ -11,25 +11,25 @@ internal class CheckHealthStatusUseCase(
 ) {
     private val startedAtNanos: Long = System.nanoTime()
 
-    suspend operator fun invoke(): HealthPayload {
+    suspend operator fun invoke(): GatewayHealthPayload {
 
         val uptimeSeconds = ((System.nanoTime() - startedAtNanos) / NANOS_IN_SECOND).coerceAtLeast(0L)
         val authStatus = authProbe.check()
         val databaseStatus = databaseProbe.check()
 
         val overallStatus = when (authStatus) {
-            ServiceStatus.OK if databaseStatus == ServiceStatus.OK -> ServiceStatus.OK
-            ServiceStatus.DOWN if databaseStatus == ServiceStatus.DOWN -> ServiceStatus.DOWN
-            else -> ServiceStatus.DEGRADED
+            GatewayServiceStatus.OK if databaseStatus == GatewayServiceStatus.OK -> GatewayServiceStatus.OK
+            GatewayServiceStatus.DOWN if databaseStatus == GatewayServiceStatus.DOWN -> GatewayServiceStatus.DOWN
+            else -> GatewayServiceStatus.DEGRADED
         }
 
-        return HealthPayload(
+        return GatewayHealthPayload(
             service = "gateway",
             status = overallStatus,
             uptimeSec = uptimeSeconds,
             dependencies = listOf(
-                DependencyHealth(name = "auth", status = authStatus),
-                DependencyHealth(name = "database", status = databaseStatus),
+                GatewayDependencyHealth(name = "auth", status = authStatus),
+                GatewayDependencyHealth(name = "database", status = databaseStatus),
             ),
         )
     }

@@ -12,6 +12,8 @@ import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
+import io.ktor.http.URLProtocol
+import io.ktor.http.encodedPath
 
 interface KoinHttpClient
 
@@ -23,10 +25,18 @@ inline fun <reified ServiceKoinName> Module.createServiceHttpClient(
     single(named<ServiceKoinName>()) {
         HttpClient(CIO) {
             baseConfig()
+            val basePath = "/" + baseUrl.trim().trim('/')
+
             defaultRequest {
-                this.host = host
-                this.port = port
-                this.url(baseUrl)
+                url {
+                    protocol = URLProtocol.HTTP
+                    this.host = host
+                    this.port = port
+
+                    val reqPath = encodedPath.ifBlank { "/" }
+                    val joined = basePath.trimEnd('/') + "/" + reqPath.trimStart('/')
+                    encodedPath = joined.replace(Regex("/{2,}"), "/")
+                }
             }
         }
     }

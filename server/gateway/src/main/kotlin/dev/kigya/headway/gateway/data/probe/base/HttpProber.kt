@@ -1,7 +1,7 @@
 package dev.kigya.headway.gateway.data.probe.base
 
-import dev.kigya.headway.gateway.model.ServiceStatus
+import dev.kigya.headway.gateway.model.GatewayServiceStatus
 
 internal fun interface HttpProber {
-    suspend fun check(): ServiceStatus
+    suspend fun check(): GatewayServiceStatus
 }

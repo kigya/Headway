@@ -1,7 +1,7 @@
 package dev.kigya.headway.gateway.di.inner
 
 import dev.kigya.headway.auth.api.url.AuthKoinHttpClient
-import dev.kigya.headway.gateway.data.client.AuthRepository
+import dev.kigya.headway.gateway.data.repository.AuthRepository
 import dev.kigya.headway.gateway.domain.repository.AuthRepositoryContract
 import dev.kigya.headway.gateway.domain.usecase.LoginWithGoogleUseCase
 import dev.kigya.headway.gateway.domain.usecase.RefreshAccessTokenUseCase

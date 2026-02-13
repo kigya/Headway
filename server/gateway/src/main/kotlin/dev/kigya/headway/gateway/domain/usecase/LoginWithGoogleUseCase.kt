@@ -14,6 +14,6 @@ internal class LoginWithGoogleUseCase(
         if (trimmedIdToken.isBlank()) throw GatewayException.InvalidRequest("ID token is blank")
         if (trimmedFingerprint.isBlank()) throw GatewayException.InvalidRequest("Fingerprint is blank")
 
-        return authRepository.loginWithGoogle(idToken = idToken, fingerprint = trimmedFingerprint)
+        return authRepository.loginWithGoogle(idToken = trimmedIdToken, fingerprint = trimmedFingerprint)
     }
 }

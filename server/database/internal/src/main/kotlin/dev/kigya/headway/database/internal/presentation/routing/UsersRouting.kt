@@ -3,7 +3,7 @@ package dev.kigya.headway.database.internal.presentation.routing
 import dev.kigya.headway.database.api.model.`in`.DatabaseCreateUserPayloadDto
 import dev.kigya.headway.database.api.model.`in`.DatabaseInviteUserPayloadDto
 import dev.kigya.headway.database.api.model.`in`.DatabaseUpsertGoogleUserPayloadDto
-import dev.kigya.headway.database.api.model.resource.DatabaseUsersResource
+import dev.kigya.headway.database.api.model.resource.DatabaseResource
 import dev.kigya.headway.database.internal.domain.usecase.CreateGoogleUserUseCase
 import dev.kigya.headway.database.internal.domain.usecase.GetGoogleUserUseCase
 import dev.kigya.headway.database.internal.domain.usecase.InviteUserUseCase
@@ -14,7 +14,7 @@ import io.ktor.server.request.receive
 import io.ktor.server.resources.get
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
-import io.ktor.server.routing.post
+import io.ktor.server.resources.post
 
 internal fun Route.usersRouting(
     getGoogleUser: GetGoogleUserUseCase,
@@ -29,7 +29,7 @@ internal fun Route.usersRouting(
 }
 
 private fun Route.getUser(getGoogleUser: GetGoogleUserUseCase) {
-    get<DatabaseUsersResource> { params ->
+    get<DatabaseResource.User.Query> { params ->
         val googleId = params.googleId?.trim()?.takeIf(String::isNotBlank)
         val userId = params.userId
         if (googleId == null && userId == null) throw BadRequestException("googleId or userId must be provided")
@@ -40,7 +40,7 @@ private fun Route.getUser(getGoogleUser: GetGoogleUserUseCase) {
 }
 
 private fun Route.createUser(createGoogleUser: CreateGoogleUserUseCase) {
-    post<DatabaseUsersResource> {
+    post<DatabaseResource.User.Google> {
         val body = call.receive<DatabaseCreateUserPayloadDto>()
 
         val googleId = body.googleId.trim()
@@ -63,7 +63,7 @@ private fun Route.createUser(createGoogleUser: CreateGoogleUserUseCase) {
 }
 
 private fun Route.upsertGoogleUser(upsertGoogleUser: UpsertGoogleUserUseCase) {
-    post<DatabaseUsersResource.Google.Upsert> {
+    post<DatabaseResource.User.Google.Upsert> {
         val body = call.receive<DatabaseUpsertGoogleUserPayloadDto>()
 
         val googleId = body.googleId.trim()
@@ -86,7 +86,7 @@ private fun Route.upsertGoogleUser(upsertGoogleUser: UpsertGoogleUserUseCase) {
 }
 
 private fun Route.inviteUser(inviteUser: InviteUserUseCase) {
-    post<DatabaseUsersResource.Invite> {
+    post<DatabaseResource.User.Invite> {
         val request = call.receive<DatabaseInviteUserPayloadDto>()
 
         val email = request.email.trim()
