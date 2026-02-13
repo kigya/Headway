@@ -1,5 +1,6 @@
 package dev.kigya.headway.database.internal.data.repository
 
+import dev.kigya.headway.database.api.model.`in`.DatabaseSessionPlatform
 import dev.kigya.headway.database.internal.domain.repository.RefreshSessionsRepositoryContract
 import dev.kigya.headway.database.internal.data.table.RefreshSessionsTable
 import dev.kigya.headway.database.internal.core.extension.dbQuery
@@ -25,6 +26,7 @@ internal class RefreshSessionsRepository(
         refreshToken: String,
         expiresIn: OffsetDateTime,
         fingerprint: String,
+        platform: DatabaseSessionPlatform,
     ) {
         database.dbQuery {
             val alreadyExistsSessionId = RefreshSessionsTable
@@ -43,6 +45,7 @@ internal class RefreshSessionsRepository(
                             it[this.refreshTokenHash] = hashToken(refreshToken)
                             it[this.expiresIn] = expiresIn
                             it[this.createdAt] = OffsetDateTime.now()
+                            it[this.platform] = platform
                         }
                     )
             } else {
@@ -51,6 +54,7 @@ internal class RefreshSessionsRepository(
                     it[this.refreshTokenHash] = hashToken(refreshToken)
                     it[this.fingerprint] = fingerprint
                     it[this.expiresIn] = expiresIn
+                    it[this.platform] = platform
                 }
             }
         }
@@ -66,7 +70,7 @@ internal class RefreshSessionsRepository(
             .select(RefreshSessionsTable.columns)
             .where {
                 (RefreshSessionsTable.refreshTokenHash eq hash) and
-                        (RefreshSessionsTable.expiresIn greater OffsetDateTime.now())
+                    (RefreshSessionsTable.expiresIn greater OffsetDateTime.now())
             }.singleOrNull()
 
         if (row == null) {

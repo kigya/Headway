@@ -56,3 +56,18 @@ internal enum class GatewayUserDepartment {
     @SerialName("CROSS_PLATFORM")
     CROSSPLATFORM;
 }
+
+@Serializable
+internal enum class GatewaySessionPlatform {
+    @SerialName("ANDROID")
+    ANDROID,
+
+    @SerialName("IOS")
+    IOS,
+
+    @SerialName("DESKTOP")
+    DESKTOP,
+
+    @SerialName("WEB")
+    WEB;
+}

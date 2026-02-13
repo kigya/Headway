@@ -8,9 +8,11 @@ import dev.kigya.headway.auth.api.model.resource.AuthGoogleResource
 import dev.kigya.headway.auth.api.model.resource.AuthRefreshTokenResource
 import dev.kigya.headway.gateway.core.http.upstreamCall
 import dev.kigya.headway.gateway.domain.repository.AuthRepositoryContract
+import dev.kigya.headway.gateway.mapping.toDatabase
 import dev.kigya.headway.gateway.mapping.toGateway
 import dev.kigya.headway.gateway.model.GatewayGoogleLoginResponse
 import dev.kigya.headway.gateway.model.GatewayRefreshAccessTokenResponse
+import dev.kigya.headway.gateway.model.GatewaySessionPlatform
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
 import io.ktor.client.plugins.resources.post
@@ -22,13 +24,23 @@ internal class AuthRepository(
     private val httpClient: HttpClient,
 ) : AuthRepositoryContract {
 
-    override suspend fun loginWithGoogle(idToken: String, fingerprint: String): GatewayGoogleLoginResponse =
+    override suspend fun loginWithGoogle(
+        idToken: String,
+        fingerprint: String,
+        platform: GatewaySessionPlatform,
+    ): GatewayGoogleLoginResponse =
         upstreamCall(
             dependency = "auth",
             request = {
                 httpClient.post(AuthGoogleResource()) {
                     contentType(ContentType.Application.Json)
-                    setBody(AuthGoogleLoginPayloadDto(idToken = idToken, fingerprint = fingerprint))
+                    setBody(
+                        AuthGoogleLoginPayloadDto(
+                            idToken = idToken,
+                            fingerprint = fingerprint,
+                            platform = platform.toDatabase(),
+                        )
+                    )
                 }
             },
             onSuccess = { it.body<AuthGoogleLoginResponse>().toGateway() },

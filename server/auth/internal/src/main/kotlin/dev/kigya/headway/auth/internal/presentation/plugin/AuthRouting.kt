@@ -39,7 +39,7 @@ private fun Route.authByGoogle(loginWithGoogle: LoginWithGoogleUseCase) {
         if (idToken.isBlank()) throw BadRequestException("ID token is blank")
         if (fingerprint.isBlank()) throw BadRequestException("Fingerprint is blank")
 
-        call.respond(loginWithGoogle(idToken, fingerprint))
+        call.respond(loginWithGoogle(idToken, fingerprint, body.platform))
     }
 }
 

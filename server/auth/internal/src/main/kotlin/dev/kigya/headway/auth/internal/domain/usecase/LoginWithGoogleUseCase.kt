@@ -5,6 +5,7 @@ import dev.kigya.headway.auth.internal.data.verifier.GoogleTokenVerifierContract
 import dev.kigya.headway.auth.internal.domain.error.AuthException
 import dev.kigya.headway.auth.internal.domain.repository.DatabaseRepositoryContract
 import dev.kigya.headway.auth.internal.domain.repository.JWTRepositoryContract
+import dev.kigya.headway.database.api.model.`in`.DatabaseSessionPlatform
 import java.time.ZoneOffset
 import java.util.Calendar
 
@@ -17,6 +18,7 @@ internal class LoginWithGoogleUseCase(
     suspend operator fun invoke(
         idToken: String,
         fingerprint: String,
+        platform: DatabaseSessionPlatform,
     ): AuthGoogleLoginResponse {
         val googleUser = googleTokenVerifier.verify(tokenString = idToken)
 
@@ -40,6 +42,7 @@ internal class LoginWithGoogleUseCase(
             refreshToken = refreshToken,
             expiresIn = expirationDate.toInstant().atOffset(ZoneOffset.UTC),
             fingerprint = fingerprint,
+            platform = platform,
         )
 
         return AuthGoogleLoginResponse(

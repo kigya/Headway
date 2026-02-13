@@ -13,4 +13,5 @@ data class DatabaseCreateSessionPayloadDto(
     @SerialName("refresh_token") val refreshToken: String,
     @SerialName("expires_in") @Serializable(OffsetDateTimeSerializer::class) val expiresIn: OffsetDateTime,
     @SerialName("fingerprint") val fingerprint: String,
+    @SerialName("platform") val platform: DatabaseSessionPlatform,
 )

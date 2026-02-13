@@ -13,6 +13,7 @@ import dev.kigya.headway.gateway.graphql.stringScalarLong
 import dev.kigya.headway.gateway.graphql.stringScalarUUID
 import dev.kigya.headway.gateway.model.GatewayGoogleLoginResponse
 import dev.kigya.headway.gateway.model.GatewayRefreshAccessTokenResponse
+import dev.kigya.headway.gateway.model.GatewaySessionPlatform
 import dev.kigya.headway.gateway.model.GatewayUser
 import dev.kigya.headway.gateway.model.GatewayUserRole
 import dev.kigya.headway.gateway.presentation.routes.GatewayHttpRoute
@@ -66,6 +67,7 @@ internal fun Application.installGatewayApi(
 
         schema {
             enum<GatewayUserRole>()
+            enum<GatewaySessionPlatform>()
             type<GatewayUser>()
             type<GatewayGoogleLoginResponse>()
             type<GatewayRefreshAccessTokenResponse>()

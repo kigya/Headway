@@ -34,6 +34,7 @@ private fun Route.createSessionRoute(createSession: CreateSessionUseCase) {
             refreshToken = refreshToken,
             expiresIn = body.expiresIn,
             fingerprint = fingerprint,
+            platform = body.platform,
         )
         call.respond(HttpStatusCode.Created)
     }

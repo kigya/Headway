@@ -1,5 +1,6 @@
 package dev.kigya.headway.auth.internal.domain.repository
 
+import dev.kigya.headway.database.api.model.`in`.DatabaseSessionPlatform
 import dev.kigya.headway.database.api.model.out.DatabaseUser
 import java.time.OffsetDateTime
 import java.util.UUID
@@ -17,6 +18,7 @@ interface DatabaseRepositoryContract {
         refreshToken: String,
         expiresIn: OffsetDateTime,
         fingerprint: String,
+        platform: DatabaseSessionPlatform,
     )
 
     suspend fun validateSession(

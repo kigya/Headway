@@ -3,6 +3,7 @@ package dev.kigya.headway.auth.internal.data.repository
 import dev.kigya.headway.auth.internal.domain.error.AuthException
 import dev.kigya.headway.auth.internal.domain.repository.DatabaseRepositoryContract
 import dev.kigya.headway.database.api.model.`in`.DatabaseCreateSessionPayloadDto
+import dev.kigya.headway.database.api.model.`in`.DatabaseSessionPlatform
 import dev.kigya.headway.database.api.model.`in`.DatabaseUpsertGoogleUserPayloadDto
 import dev.kigya.headway.database.api.model.`in`.DatabaseValidateSessionPayloadDto
 import dev.kigya.headway.database.api.model.out.DatabaseUser
@@ -59,6 +60,7 @@ class DatabaseRepository(
         refreshToken: String,
         expiresIn: OffsetDateTime,
         fingerprint: String,
+        platform: DatabaseSessionPlatform,
     ) {
         val response = try {
             httpClient.post(DatabaseResource.Session()) {
@@ -69,6 +71,7 @@ class DatabaseRepository(
                         refreshToken = refreshToken,
                         expiresIn = expiresIn,
                         fingerprint = fingerprint,
+                        platform = platform,
                     )
                 )
             }
