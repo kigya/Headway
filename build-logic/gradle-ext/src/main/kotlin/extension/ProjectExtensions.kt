@@ -3,7 +3,13 @@ package extension
 import org.gradle.accessors.dm.LibrariesForLibs
 import org.gradle.api.Project
 import org.gradle.api.plugins.ExtensionAware
+import org.gradle.kotlin.dsl.DependencyHandlerScope
+import org.gradle.kotlin.dsl.dependencies
+import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
+import org.gradle.api.Action
+import org.gradle.kotlin.dsl.the
+import org.jetbrains.kotlin.gradle.dsl.KotlinVersion.*
 import org.jetbrains.kotlin.gradle.plugin.KotlinDependencyHandler
 
 /**
@@ -175,4 +181,38 @@ public fun Project.wasmTestDependencies(
         .configure {
             dependencies(configure)
         }
+}
+
+public fun Project.withKotlinJvmExtension(action: Action<KotlinJvmProjectExtension>) {
+    plugins.withId("org.jetbrains.kotlin.jvm") {
+        the<KotlinJvmProjectExtension>().apply { action.execute(this) }
+    }
+}
+
+public fun Project.withKotlinKmpExtension(action: Action<KotlinMultiplatformExtension>) {
+    plugins.withId("org.jetbrains.kotlin.multiplatform") {
+        the<KotlinMultiplatformExtension>().apply { action.execute(this) }
+    }
+}
+
+public fun Project.enableContextParameters() {
+    withKotlinJvmExtension {
+        compilerOptions {
+            freeCompilerArgs.add("-Xcontext-parameters")
+        }
+    }
+
+    withKotlinKmpExtension {
+        compilerOptions {
+            freeCompilerArgs.add("-Xcontext-parameters")
+        }
+    }
+}
+
+public fun Project.microserviceDependencies(block: DependencyHandlerScope.() -> Unit) {
+    dependencies(block)
+}
+
+public fun Project.jvmLibraryDependencies(block: DependencyHandlerScope.() -> Unit) {
+    dependencies(block)
 }

@@ -1,44 +1,44 @@
+import base.configureMicroserviceApplication
+import extension.implementation
+import extension.microserviceDependencies
+
 plugins {
-    alias(libs.plugins.kotlinJvm)
-    alias(libs.plugins.ktor)
-    application
+    alias(libs.plugins.convention.base.microserviceApplication)
+    alias(libs.plugins.convention.component.serialization)
 }
 
-group = "dev.kigya.headway.auth"
-version = "1.0.0"
-
-application {
-    applicationName = "auth"
-
-    mainClass.set("dev.kigya.headway.auth.internal.AuthApplicationKt")
-
-    val isDevelopment: Boolean = project.ext.has("development")
-    applicationDefaultJvmArgs = listOf("-Dio.ktor.development=$isDevelopment")
+configureMicroserviceApplication {
+    version.set("1.0.0")
+    mainClass.set("AuthApplicationKt")
+    applicationName.set("auth")
 }
 
-dependencies {
-    implementation(projects.server.common)
-    api(projects.server.auth.api)
-    api(projects.server.database.api)
+microserviceDependencies {
+    libs {
+        implementation(logback)
+        implementation(google.api.client)
 
-    implementation(libs.logback)
+        implementation(ktor.serverCore)
+        implementation(ktor.serverNetty)
+        implementation(ktor.serverResources)
+        implementation(ktor.statusPages)
+        implementation(ktor.negotiation)
+        implementation(ktor.serialization)
 
-    implementation(libs.ktor.serverCore)
-    implementation(libs.ktor.serverNetty)
-    implementation(libs.ktor.serverResources)
-    implementation(libs.ktor.statusPages)
-    implementation(libs.ktor.negotiation)
-    implementation(libs.ktor.serialization)
+        implementation(ktor.auth.jwt)
+        implementation(koin.ktor)
 
-    implementation(libs.ktor.auth.jwt)
-    implementation(libs.koin.ktor)
+        implementation(ktor.client.core)
+        implementation(ktor.client.cio)
+        implementation(ktor.client.content.negotiation)
+        implementation(ktor.clientResources)
 
-    implementation(libs.ktor.client.core)
-    implementation(libs.ktor.client.cio)
-    implementation(libs.ktor.client.content.negotiation)
-    implementation(libs.ktor.clientResources)
+        testImplementation(ktor.serverTestHost)
+    }
 
-    implementation(libs.google.api.client)
-
-    testImplementation(libs.ktor.serverTestHost)
+    projects {
+        implementation(server.common)
+        api(server.auth.api)
+        api(server.database.api)
+    }
 }

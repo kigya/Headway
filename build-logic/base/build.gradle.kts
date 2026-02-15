@@ -5,12 +5,15 @@ plugins {
 
 dependencies {
     libs {
-        implementation(gradle.kotlin)
-        implementation(gradle.kotlinMultiplatform)
-        implementation(gradle.composeCompiler)
-        implementation(gradle.android)
-        implementation(gradle.detekt)
-        implementation(gradle.ksp)
+        with(gradle) {
+            implementation(kotlin)
+            implementation(kotlinMultiplatform)
+            implementation(kotlinJvm)
+            implementation(composeCompiler)
+            implementation(android)
+            implementation(detekt)
+            implementation(ksp)
+        }
     }
 
     projects {

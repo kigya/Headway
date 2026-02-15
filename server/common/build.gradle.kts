@@ -1,20 +1,27 @@
+import extension.jvmLibraryDependencies
+import base.configureJvmLibrary
+
 plugins {
-    alias(libs.plugins.kotlinJvm)
-    alias(libs.plugins.serialization)
+    alias(libs.plugins.convention.base.jvmLibrary)
+    alias(libs.plugins.convention.component.serialization)
 }
 
-group = "dev.kigya.headway.common"
-version = "1.0.0"
+configureJvmLibrary {
+    archivesName.set("common")
+    version.set("1.0.0")
+}
 
-dependencies {
-    implementation(libs.ktor.serialization)
-    implementation(libs.ktor.client.core)
-    implementation(libs.ktor.serverCore)
-    implementation(libs.ktor.serverResources)
-    implementation(libs.ktor.client.cio)
-    implementation(libs.ktor.clientResources)
-    implementation(libs.ktor.negotiation)
-    implementation(libs.ktor.client.content.negotiation)
-    implementation(libs.koin.core)
-    implementation(libs.ktor.statusPages)
+jvmLibraryDependencies {
+    libs {
+        implementation(ktor.serialization)
+        implementation(ktor.client.core)
+        implementation(ktor.serverCore)
+        implementation(ktor.serverResources)
+        implementation(ktor.client.cio)
+        implementation(ktor.clientResources)
+        implementation(ktor.negotiation)
+        implementation(ktor.client.content.negotiation)
+        implementation(koin.core)
+        implementation(ktor.statusPages)
+    }
 }

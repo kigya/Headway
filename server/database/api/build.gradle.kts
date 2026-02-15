@@ -1,16 +1,22 @@
+import base.configureJvmLibrary
+import extension.jvmLibraryDependencies
+
 plugins {
-    alias(libs.plugins.kotlinJvm)
-    alias(libs.plugins.serialization)
+    alias(libs.plugins.convention.base.jvmLibrary)
+    alias(libs.plugins.convention.component.serialization)
 }
 
-group = "dev.kigya.headway.database.api"
-version = "1.0.0"
-
-base {
+configureJvmLibrary {
     archivesName.set("database-api")
+    version.set("1.0.0")
 }
 
-dependencies {
-    implementation(projects.server.common)
-    implementation(libs.ktor.serverResources)
+jvmLibraryDependencies {
+    projects {
+        implementation(server.common)
+    }
+
+    libs {
+        implementation(ktor.serverResources)
+    }
 }

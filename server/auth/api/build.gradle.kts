@@ -1,18 +1,23 @@
+import base.configureJvmLibrary
+import extension.jvmLibraryDependencies
+
 plugins {
-    alias(libs.plugins.kotlinJvm)
-    alias(libs.plugins.serialization)
+    alias(libs.plugins.convention.base.jvmLibrary)
+    alias(libs.plugins.convention.component.serialization)
 }
 
-group = "dev.kigya.headway.auth.api"
-version = "1.0.0"
-
-base {
+configureJvmLibrary {
     archivesName.set("auth-api")
+    version.set("1.0.0")
 }
 
-dependencies {
-    implementation(projects.server.common)
-    api(projects.server.database.api)
+jvmLibraryDependencies {
+    projects {
+        implementation(server.common)
+        api(server.database.api)
+    }
 
-    implementation(libs.ktor.serverResources)
+    libs {
+        implementation(libs.ktor.serverResources)
+    }
 }

@@ -202,6 +202,7 @@ exposed-date-time = { module = "org.jetbrains.exposed:exposed-kotlin-datetime", 
 # Gradle Plugins
 gradle-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 gradle-kotlinMultiplatform = { module = "org.jetbrains.kotlin.multiplatform:org.jetbrains.kotlin.multiplatform.gradle.plugin", version.ref = "kotlin" }
+gradle-kotlinJvm = { module = "org.jetbrains.kotlin.jvm:org.jetbrains.kotlin.jvm.gradle.plugin", version.ref = "kotlin" }
 gradle-serialization = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlin" }
 gradle-ksp = { module = "com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
 gradle-android = { module = "com.android.tools.build:gradle", version.ref = "agp" }
@@ -231,7 +232,9 @@ buildkonfig = { id = "com.codingfeline.buildkonfig", version.ref = "buildkonfig"
 convention-base-androidApplication = "base.androidApplication:1.0"
 convention-base-desktopApplication = "base.desktopApplication:1.0"
 convention-base-webApplication = "base.webApplication:1.0"
+convention-base-microserviceApplication = "base.microserviceApplication:1.0"
 convention-base-sharedLibrary = "base.sharedLibrary:1.0"
+convention-base-jvmLibrary = "base.jvmLibrary:1.0"
 
 convention-component-compose = "component.compose:1.0"
 convention-component-composeNavigation = "component.composeNavigation:1.0"

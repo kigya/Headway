@@ -3,10 +3,16 @@
 package extension
 
 import org.gradle.accessors.dm.LibrariesForLibs
+import org.gradle.api.Project
 import org.gradle.api.artifacts.Dependency
+import org.gradle.api.artifacts.VersionCatalog
+import org.gradle.api.artifacts.VersionCatalogsExtension
 import org.gradle.api.artifacts.dsl.DependencyHandler
 import org.gradle.api.internal.catalog.TypeSafeProjectDependencyFactory
 import org.gradle.api.plugins.ExtensionAware
+import org.gradle.kotlin.dsl.DependencyHandlerScope
+import org.gradle.kotlin.dsl.dependencies
+import org.gradle.kotlin.dsl.getByType
 import org.jetbrains.compose.ComposeExtension
 import org.jetbrains.compose.ComposePlugin
 import org.jetbrains.kotlin.gradle.plugin.KotlinDependencyHandler
