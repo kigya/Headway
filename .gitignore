@@ -16,9 +16,7 @@ captures
 !*.xcodeproj/project.xcworkspace/
 !*.xcworkspace/contents.xcworkspacedata
 **/xcshareddata/WorkspaceSettings.xcsettings
-/server/docker/env.auth
-/server/docker/env.common
-/server/docker/env.database
-/server/docker/env.gateway
+/server/docker/*
+!/server/docker/Dockerfile
 **/bin/
 **/lib/
