@@ -20,3 +20,5 @@ captures
 /server/docker/env.common
 /server/docker/env.database
 /server/docker/env.gateway
+**/bin/
+**/lib/
