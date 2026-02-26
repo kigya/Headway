@@ -24,8 +24,7 @@ jobs:
         env:
           GPR_USER: ${{ secrets.GPR_USER }}
           GPR_KEY:  ${{ secrets.GPR_KEY }}
-        # Рекомендация 2: Добавлена задача bundleDebug для сборки AAB
-        run: ./gradlew :app:headwayAndroid:assembleDebug :app:headwayAndroid:bundleDebug --stacktrace
+        run: ./gradlew :app:headwayAndroid:assembleDebug --stacktrace
 
       - name: Upload APK and AAB
         uses: actions/upload-artifact@v4
