@@ -22,7 +22,7 @@ jobs:
         run: |
           xcodebuild \
             -project headwayIOS.xcodeproj \
-            -scheme Headway \
+            -scheme headwayIOS \
             -configuration Debug \
             -sdk iphonesimulator \
             -destination 'generic/platform=iOS Simulator' \
