@@ -37,8 +37,8 @@ microserviceDependencies {
     }
 
     projects {
-        implementation(server.common)
-        api(server.auth.api)
-        api(server.database.api)
+        implementation(common)
+        api(auth.api)
+        api(database.api)
     }
 }

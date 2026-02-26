@@ -18,6 +18,7 @@ jobs:
         uses: gradle/gradle-build-action@v3
 
       - name: Run Detekt
+        working-directory: ./client
         env:
           GPR_USER: ${{ secrets.GPR_USER }}
           GPR_KEY: ${{ secrets.GPR_KEY }}

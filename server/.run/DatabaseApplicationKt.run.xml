@@ -1,0 +1,23 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="DatabaseApplicationKt" type="JetRunConfigurationType" singleton="false" nameIsGenerated="true">
+    <envs>
+      <env name="AUTH_SERVICE_HOST" value="0.0.0.0" />
+      <env name="AUTH_SERVICE_PORT" value="8081" />
+      <env name="DATABASE_HOST_URL" value="aws-1-eu-north-1.pooler.supabase.com" />
+      <env name="DATABASE_NAME" value="postgres" />
+      <env name="DATABASE_PASSWORD" value="M6U$C.Ppgk%FEuE" />
+      <env name="DATABASE_PORT" value="5432" />
+      <env name="DATABASE_SERVICE_PORT" value="8082" />
+      <env name="DATABASE_SERVICE_HOST" value="0.0.0.0" />
+      <env name="DATABASE_USER" value="postgres.ymqpiogjzymkkwzutqds" />
+      <env name="GATEWAY_SERVICE_HOST" value="0.0.0.0" />
+      <env name="GATEWAY_SERVICE_PORT" value="8080" />
+    </envs>
+    <option name="MAIN_CLASS_NAME" value="dev.kigya.headway.database.DatabaseApplicationKt" />
+    <module name="Headway.server.database.main" />
+    <shortenClasspath name="NONE" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>

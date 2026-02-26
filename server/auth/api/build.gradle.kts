@@ -13,8 +13,8 @@ configureJvmLibrary {
 
 jvmLibraryDependencies {
     projects {
-        implementation(server.common)
-        api(server.database.api)
+        implementation(common)
+        api(database.api)
     }
 
     libs {

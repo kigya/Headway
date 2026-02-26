@@ -43,17 +43,16 @@ jobs:
           }
 
       - name: Package Desktop (${{ matrix.os }})
-        uses: gradle/gradle-build-action@v3
+        working-directory: ./client
         env:
           GPR_USER: ${{ secrets.GPR_USER }}
-          GPR_KEY:  ${{ secrets.GPR_KEY }}
-        with:
-          arguments: :app:headwayDesktop:packageDistributionForCurrentOS --stacktrace
+          GPR_KEY: ${{ secrets.GPR_KEY }}
+        run: ./gradlew :app:headwayDesktop:packageDistributionForCurrentOS --stacktrace
 
       - name: Upload Desktop distributions (${{ matrix.os }})
         uses: actions/upload-artifact@v4
         with:
           name: desktop-dist-${{ matrix.os }}
-          path: app/headwayDesktop/build/compose/binaries/**
+          path: client/app/headwayDesktop/build/compose/binaries/**
           if-no-files-found: warn
           retention-days: 14

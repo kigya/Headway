@@ -33,6 +33,7 @@ jobs:
           GPR_USER: ${{ secrets.GPR_USER }}
           GPR_KEY:  ${{ secrets.GPR_KEY }}
           GRADLE_OPTS: -Xmx4g
+        working-directory: ./client
         run: |
           ./gradlew \
             --no-daemon \
@@ -46,7 +47,7 @@ jobs:
         with:
           name: web-dist
           path: |
-            app/headwayWeb/build/dist/**
-            app/headwayWeb/build/distributions/**
+            client/app/headwayWeb/build/dist/**
+            client/app/headwayWeb/build/distributions/**
           if-no-files-found: warn
           retention-days: 14

@@ -4,21 +4,21 @@ COPY . .
 
 RUN --mount=type=cache,target=/home/gradle/.gradle \
     ./gradlew --no-daemon -Dorg.gradle.vfs.watch=false -Dorg.gradle.configuration-cache=false \
-      :server:database:internal:installDist \
-      :server:auth:internal:installDist \
-      :server:gateway:installDist
+      database:internal:installDist \
+      auth:internal:installDist \
+      gateway:installDist
 
 FROM eclipse-temurin:21-jre AS database
 WORKDIR /app
-COPY --from=build /src/server/database/internal/build/install/database/ ./
+COPY --from=build /src/database/internal/build/install/database/ ./
 CMD ["bin/database"]
 
 FROM eclipse-temurin:21-jre AS auth
 WORKDIR /app
-COPY --from=build /src/server/auth/internal/build/install/auth/ ./
+COPY --from=build /src/auth/internal/build/install/auth/ ./
 CMD ["bin/auth"]
 
 FROM eclipse-temurin:21-jre AS gateway
 WORKDIR /app
-COPY --from=build /src/server/gateway/build/install/gateway/ ./
+COPY --from=build /src/gateway/build/install/gateway/ ./
 CMD ["bin/gateway"]

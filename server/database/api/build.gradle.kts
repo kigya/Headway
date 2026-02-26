@@ -13,7 +13,7 @@ configureJvmLibrary {
 
 jvmLibraryDependencies {
     projects {
-        implementation(server.common)
+        implementation(common)
     }
 
     libs {
