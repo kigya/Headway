@@ -1,6 +1,6 @@
 package dev.kigya.headway.auth.api.model.`in`
 
-class AuthGoogleUserPayloadDto(
+data class AuthGoogleUserPayloadDto(
     val googleId: String,
     val email: String,
     val name: String,
