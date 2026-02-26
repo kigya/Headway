@@ -14,9 +14,9 @@ configureMicroserviceApplication {
 
 microserviceDependencies {
     projects {
-        implementation(server.common)
-        implementation(server.database.api)
-        implementation(server.auth.api)
+        implementation(common)
+        implementation(database.api)
+        implementation(auth.api)
     }
 
     libs {

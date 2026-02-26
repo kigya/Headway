@@ -1,0 +1,16 @@
+<component name="ProjectRunConfigurationManager">
+  <configuration default="false" name="GatewayApplicationKt" type="JetRunConfigurationType" nameIsGenerated="true">
+    <envs>
+      <env name="GATEWAY_SERVICE_HOST" value="0.0.0.0" />
+      <env name="GATEWAY_SERVICE_PORT" value="8080" />
+      <env name="AUTH_SERVICE_HOST" value="0.0.0.0" />
+      <env name="AUTH_SERVICE_PORT" value="8081" />
+    </envs>
+    <option name="MAIN_CLASS_NAME" value="dev.kigya.headway.GatewayApplicationKt" />
+    <module name="Headway.server.gateway.main" />
+    <shortenClasspath name="NONE" />
+    <method v="2">
+      <option name="Make" enabled="true" />
+    </method>
+  </configuration>
+</component>
