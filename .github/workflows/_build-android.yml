@@ -19,14 +19,14 @@ jobs:
         env:
           GPR_USER: ${{ secrets.GPR_USER }}
           GPR_KEY:  ${{ secrets.GPR_KEY }}
-        run: ./gradlew :app:headwayAndroid:assembleDebug --stacktrace
+        run: client/./gradlew :app:headwayAndroid:assembleDebug --stacktrace
 
       - name: Upload APK/AAB
         uses: actions/upload-artifact@v4
         with:
           name: android-apk
           path: |
-            app/headwayAndroid/build/outputs/apk/**/*.apk
-            app/headwayAndroid/build/outputs/bundle/**/*.aab
+            client/app/headwayAndroid/build/outputs/apk/**/*.apk
+            client/app/headwayAndroid/build/outputs/bundle/**/*.aab
           if-no-files-found: warn
           retention-days: 14
