@@ -12,19 +12,25 @@ jobs:
         with:
           distribution: temurin
           java-version: 17
+
       - name: Setup Gradle (cache)
         uses: gradle/gradle-build-action@v3
 
+      - name: Make gradlew executable
+        run: chmod +x client/gradlew
+
       - name: Build Android
+        working-directory: ./client
         env:
           GPR_USER: ${{ secrets.GPR_USER }}
           GPR_KEY:  ${{ secrets.GPR_KEY }}
-        run: client/./gradlew :app:headwayAndroid:assembleDebug --stacktrace
+        # Рекомендация 2: Добавлена задача bundleDebug для сборки AAB
+        run: ./gradlew :app:headwayAndroid:assembleDebug :app:headwayAndroid:bundleDebug --stacktrace
 
-      - name: Upload APK/AAB
+      - name: Upload APK and AAB
         uses: actions/upload-artifact@v4
         with:
-          name: android-apk
+          name: android-build-outputs
           path: |
             client/app/headwayAndroid/build/outputs/apk/**/*.apk
             client/app/headwayAndroid/build/outputs/bundle/**/*.aab
