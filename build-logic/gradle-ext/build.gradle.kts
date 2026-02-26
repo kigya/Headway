@@ -1,9 +1,14 @@
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
+
 plugins {
     kotlin("jvm").version(libs.versions.kotlin.get())
     `kotlin-dsl`
 }
 
 kotlin {
+    compilerOptions {
+        freeCompilerArgs.add("-Xcontext-parameters")
+    }
     explicitApi()
 }
 

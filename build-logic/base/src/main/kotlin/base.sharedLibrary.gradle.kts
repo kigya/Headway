@@ -2,6 +2,7 @@
 
 import extension.commonMainDependencies
 import extension.desktopMainDependencies
+import extension.enableContextParameters
 import extension.libs
 import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
@@ -44,13 +45,7 @@ configure<KotlinMultiplatformExtension> {
             binaries.executable()
         }
 
-        compilerOptions.freeCompilerArgs.add("-Xcontext-parameters")
-
-        sourceSets.configureEach {
-            languageSettings {
-                enableLanguageFeature("ContextParameters")
-            }
-        }
+        enableContextParameters()
     }
 }
 

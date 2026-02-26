@@ -1,9 +1,15 @@
 [versions]
 # Basic Environment Setup
+googleApiClient = "2.8.1"
+hikaricp = "7.0.2"
 java = { strictly = "17" }
+kgraphqlKtor = "0.36.0"
+koinKtor = { strictly = "4.1.1" }
 minSdk = { strictly = "28" }
 compileSdk = { strictly = "36" }
+postgresql = "42.7.8"
 targetSdk = { strictly = "36" }
+exposed = { strictly = "1.0.0-rc-4" }
 
 # Gradle
 agp = { require = "8.11.1" }
@@ -31,7 +37,7 @@ compottie = { require = "2.0.2" }
 koin = { strictly = "4.1.1" }
 
 # Network
-ktor = { require = "3.3.1" }
+ktor = { require = "3.3.3" }
 
 # Local Storage
 dataStore = { require = "1.1.7" }
@@ -79,10 +85,15 @@ outcome = "0.3.0"
 buildkonfig = "0.17.1"
 
 # Server
-logback = "1.5.20"
+logback = "1.5.23"
 
 [libraries]
 # Serialization
+google-api-client = { module = "com.google.api-client:google-api-client", version.ref = "googleApiClient" }
+hikaricp = { module = "com.zaxxer:HikariCP", version.ref = "hikaricp" }
+kgraphql-ktor = { module = "de.stuebingerb:kgraphql-ktor", version.ref = "kgraphqlKtor" }
+koin-ktor = { module = "io.insert-koin:koin-ktor", version.ref = "koinKtor" }
+postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql" }
 serializationJson = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
 
 # Compose
@@ -108,15 +119,22 @@ koin-compose = { module = "io.insert-koin:koin-compose", version.ref = "koin" }
 koin-composeViewModel = { module = "io.insert-koin:koin-compose-viewmodel", version.ref = "koin" }
 
 # Network
-ktor-clientCore = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
-ktor-clientContentNegotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
+ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
+ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
+ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
 ktor-clientDarwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
 ktor-clientLogging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
 ktor-clientAndroid = { module = "io.ktor:ktor-client-android", version.ref = "ktor" }
 ktor-serialization = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
+ktor-auth = { module = "io.ktor:ktor-server-auth", version.ref = "ktor" }
+ktor-auth-jwt = { module = "io.ktor:ktor-server-auth-jwt", version.ref = "ktor" }
 ktor-serverCore = { module = "io.ktor:ktor-server-core-jvm", version.ref = "ktor" }
+ktor-negotiation = { module = "io.ktor:ktor-server-content-negotiation", version.ref = "ktor" }
+ktor-statusPages = { module = "io.ktor:ktor-server-status-pages", version.ref = "ktor" }
 ktor-serverNetty = { module = "io.ktor:ktor-server-netty-jvm", version.ref = "ktor" }
 ktor-serverTestHost = { module = "io.ktor:ktor-server-test-host-jvm", version.ref = "ktor" }
+ktor-serverResources = { module = "io.ktor:ktor-server-resources", version.ref = "ktor" }
+ktor-clientResources = { module = "io.ktor:ktor-client-resources", version.ref = "ktor" }
 
 # Local Storage
 dataStore-core = { module = "androidx.datastore:datastore-core", version.ref = "dataStore" }
@@ -176,9 +194,15 @@ outcome = { module = "dev.kigya.outcome:core", version.ref = "outcome" }
 # Logger
 logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
 
+# Exposed
+exposed-core = { module = "org.jetbrains.exposed:exposed-core", version.ref = "exposed" }
+exposed-jdbc = { module = "org.jetbrains.exposed:exposed-jdbc", version.ref = "exposed" }
+exposed-date-time = { module = "org.jetbrains.exposed:exposed-kotlin-datetime", version.ref = "exposed" }
+
 # Gradle Plugins
 gradle-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 gradle-kotlinMultiplatform = { module = "org.jetbrains.kotlin.multiplatform:org.jetbrains.kotlin.multiplatform.gradle.plugin", version.ref = "kotlin" }
+gradle-kotlinJvm = { module = "org.jetbrains.kotlin.jvm:org.jetbrains.kotlin.jvm.gradle.plugin", version.ref = "kotlin" }
 gradle-serialization = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlin" }
 gradle-ksp = { module = "com.google.devtools.ksp:com.google.devtools.ksp.gradle.plugin", version.ref = "ksp" }
 gradle-android = { module = "com.android.tools.build:gradle", version.ref = "agp" }
@@ -208,7 +232,9 @@ buildkonfig = { id = "com.codingfeline.buildkonfig", version.ref = "buildkonfig"
 convention-base-androidApplication = "base.androidApplication:1.0"
 convention-base-desktopApplication = "base.desktopApplication:1.0"
 convention-base-webApplication = "base.webApplication:1.0"
+convention-base-microserviceApplication = "base.microserviceApplication:1.0"
 convention-base-sharedLibrary = "base.sharedLibrary:1.0"
+convention-base-jvmLibrary = "base.jvmLibrary:1.0"
 
 convention-component-compose = "component.compose:1.0"
 convention-component-composeNavigation = "component.composeNavigation:1.0"

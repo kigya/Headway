@@ -8,21 +8,11 @@ import org.jetbrains.compose.desktop.DesktopExtension
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 import java.io.File
 
-public class Prop<T>(initial: T) {
-    private var v: T = initial
-    public fun set(value: T) {
-        v = value
-    }
-
-    public fun get(): T = v
-    override fun toString(): String = v.toString()
-}
-
 public class DesktopAppConfig {
     public val mainClass: Prop<String> = Prop("MainKt")
     public val packageName: Prop<String> = Prop("App")
     public val packageVersion: Prop<String> = Prop("1.0.0")
-    public val iconDir: Prop<File?> = Prop<File?>(null)
+    public val iconDir: Prop<File?> = Prop(null)
     public val iconBaseName: Prop<String> = Prop("")
     public val dockName: Prop<String> = Prop("")
 
