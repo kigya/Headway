@@ -3,7 +3,12 @@ plugins {
     alias(libs.plugins.serialization) apply false
 }
 
-apply {
-    from("../config/git/hooks/installer.gradle.kts")
-    from("../config/templates/installer.gradle.kts")
+val gitHooksScript = file("../config/git/hooks/installer.gradle.kts")
+if (gitHooksScript.exists()) {
+    apply(from = gitHooksScript)
+}
+
+val templateScript = file("../config/templates/installer.gradle.kts")
+if (templateScript.exists()) {
+    apply(from = templateScript)
 }
