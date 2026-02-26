@@ -9,4 +9,3 @@ import io.ktor.server.resources.get
 fun Route.healthzRouting() {
     get<HealthzResource> { call.respondText(status = HttpStatusCode.OK, text = "OK") }
 }
-

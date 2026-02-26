@@ -32,6 +32,8 @@ internal object ConfigurationValues {
 
     val JWT_ACCESS_TTL_SEC: Long get() = longEnv("JWT_ACCESS_TTL_SEC").takeIf { it > 0 } ?: 300L
 
+    val GOOGLE_TOKEN_AUDIENCE: String = stringEnv("GOOGLE_TOKEN_AUDIENCE")
+        .ifBlank { throw IllegalArgumentException("GOOGLE_TOKEN_AUDIENCE must be set") }
 
     fun validateSecrets() {
         if (ENV == "prod") {

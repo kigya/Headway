@@ -4,6 +4,7 @@ import com.google.api.client.googleapis.auth.oauth2.GoogleIdTokenVerifier
 import com.google.api.client.http.javanet.NetHttpTransport
 import com.google.api.client.json.gson.GsonFactory
 import dev.kigya.headway.auth.api.model.`in`.AuthGoogleUserPayloadDto
+import dev.kigya.headway.auth.internal.core.ConfigurationValues.GOOGLE_TOKEN_AUDIENCE
 import dev.kigya.headway.auth.internal.domain.error.AuthException
 import java.util.Collections
 
@@ -13,8 +14,7 @@ internal class GoogleIdTokenVerifier : GoogleTokenVerifierContract {
         NetHttpTransport(),
         GsonFactory.getDefaultInstance(),
     )
-        // TODO: move to env/config when you introduce config module for the service
-        .setAudience(Collections.singletonList("407408718192.apps.googleusercontent.com"))
+        .setAudience(Collections.singletonList(GOOGLE_TOKEN_AUDIENCE))
         .build()
 
     override suspend fun verify(tokenString: String): AuthGoogleUserPayloadDto = try {
