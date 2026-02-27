@@ -1,4 +1,5 @@
 @file:OptIn(ExperimentalContracts::class)
+@file:Suppress("RedundantVisibilityModifierRule", "TooManyFunctions")
 
 package dev.kigya.headway.core.outcome
 
@@ -99,9 +100,8 @@ public inline fun <Error, Value> Outcome<Error, Value>.getOrElse(
  * println(y.getOrDefault(0)) // 5
  * ```
  */
-public fun <Error, Value> Outcome<Error, Value>.getOrDefault(
-    defaultValue: Value,
-): Value = if (this is Outcome.Success) value else defaultValue
+public fun <Error, Value> Outcome<Error, Value>.getOrDefault(defaultValue: Value): Value =
+    if (this is Outcome.Success) value else defaultValue
 
 // ─── Observers ──────────────────────────────────────────────────────────────
 
@@ -140,11 +140,13 @@ public inline fun <Error, Value> Outcome<Error, Value>.handle(
     }
     return when (this) {
         is Outcome.Success -> {
-            onSuccess(value); this
+            onSuccess(value)
+            this
         }
 
         is Outcome.Failure -> {
-            onFailure(error); this
+            onFailure(error)
+            this
         }
     }
 }
@@ -348,9 +350,7 @@ public suspend inline fun <Error, A, B, R> zipParallelAccumulate(
  * // Output: Error: NumberFormatException
  * ```
  */
-public inline fun <Value> outcomeCatching(
-    block: () -> Value,
-): Outcome<Throwable, Value> {
+public inline fun <Value> outcomeCatching(block: () -> Value): Outcome<Throwable, Value> {
     contract { callsInPlace(block, InvocationKind.AT_MOST_ONCE) }
     return try {
         Outcome.success(block())
