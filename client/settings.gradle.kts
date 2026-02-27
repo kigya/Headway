@@ -29,15 +29,6 @@ dependencyResolutionManagement {
         mavenLocal()
         mavenCentral()
         maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
-        maven {
-            url = uri("https://maven.pkg.github.com/kigya/Outcome")
-            credentials {
-                username = localProperties.getProperty("gpr.user")
-                    ?: System.getenv("GPR_USER")
-                password = localProperties.getProperty("gpr.key")
-                    ?: System.getenv("GPR_KEY")
-            }
-        }
     }
 }
 
@@ -67,4 +58,5 @@ include(
 
     "core:annotation",
     "core:design-system",
+    "core:outcome",
 )

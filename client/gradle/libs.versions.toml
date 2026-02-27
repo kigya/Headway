@@ -78,9 +78,6 @@ kotlinxDatetime = { prefer = "0.7.1" }
 # Immutable Collections
 kotlinxCollectionsImmutable = { require = "0.4.0" }
 
-# Outcome
-outcome = "0.3.0"
-
 # Buildkonfig
 buildkonfig = "0.17.1"
 
@@ -187,9 +184,6 @@ kotlinxDatetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.r
 
 # Immutable Collections
 immutableCollections = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinxCollectionsImmutable" }
-
-# Outcome
-outcome = { module = "dev.kigya.outcome:core", version.ref = "outcome" }
 
 # Logger
 logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
