@@ -15,7 +15,6 @@ plugins {
     id("internal.config.android")
     id("internal.config.desktop")
     id("internal.config.detekt")
-    id("internal.config.shared.outcome")
 }
 
 configure<KotlinMultiplatformExtension> {
@@ -52,6 +51,11 @@ configure<KotlinMultiplatformExtension> {
 commonMainDependencies {
     libs {
         implementation(coroutines.core)
+
+        val outcomeLibPath = ":core:outcome"
+        if (project.path != outcomeLibPath) {
+            implementation(project(outcomeLibPath))
+        }
     }
 }
 
