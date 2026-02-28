@@ -5,7 +5,7 @@ import dev.kigya.headway.database.api.model.out.DatabaseUser
 import java.time.OffsetDateTime
 import java.util.UUID
 
-interface DatabaseRepositoryContract {
+internal interface DatabaseRepositoryContract {
     suspend fun upsertGoogleUser(
         googleId: String,
         email: String,
