@@ -101,12 +101,10 @@ private enum class FreudButtonPreviewKind {
 private enum class FreudButtonPreviewIconKind {
     NONE,
     STATIC,
-    ANIM_FADE,
-    ANIM_SCALE,
     ANIM_FADE_SCALE;
 
     val isAnimated: Boolean
-        get() = this == ANIM_FADE || this == ANIM_SCALE || this == ANIM_FADE_SCALE
+        get() = this == ANIM_FADE_SCALE
 }
 
 private data class FreudButtonPreviewCase(
@@ -130,25 +128,6 @@ private class FreudButtonPreviewCaseProvider : PreviewParameterProvider<FreudBut
                 enabled = true,
                 borderEnabled = false,
                 leading = FreudButtonPreviewIconKind.STATIC,
-                trailing = FreudButtonPreviewIconKind.NONE,
-                supportingEnabled = false,
-            ),
-            FreudButtonPreviewCase(
-                isDark = false,
-                kind = FreudButtonPreviewKind.HORIZONTAL_LARGE,
-                enabled = true,
-                borderEnabled = true,
-                leading = FreudButtonPreviewIconKind.ANIM_FADE,
-                trailing = FreudButtonPreviewIconKind.STATIC,
-                supportingEnabled = true,
-            ),
-
-            FreudButtonPreviewCase(
-                isDark = false,
-                kind = FreudButtonPreviewKind.HORIZONTAL_SMALL,
-                enabled = true,
-                borderEnabled = false,
-                leading = FreudButtonPreviewIconKind.ANIM_SCALE,
                 trailing = FreudButtonPreviewIconKind.NONE,
                 supportingEnabled = false,
             ),
@@ -214,12 +193,12 @@ private fun FreudButtonPreview(
 
         val needsAnimation = case.leading.isAnimated || case.trailing.isAnimated
 
-        var visible by remember { mutableStateOf(true) }
+        var isVisible by remember { mutableStateOf(false) }
         if (needsAnimation) {
             LaunchedEffect(case.kind, case.leading, case.trailing) {
                 while (true) {
                     delay(ANIM_DELAY_MS)
-                    visible = !visible
+                    isVisible = !isVisible
                 }
             }
         }
@@ -277,14 +256,14 @@ private fun FreudButtonPreview(
                             size = FreudHorizontalButtonSize.LARGE,
                             isEnabled = case.enabled,
                             borderColor = border,
-                            leadingIcon = iconSpec(kind = case.leading, visible = visible, tint = iconTint),
-                            trailingIcon = iconSpec(kind = case.trailing, visible = visible, tint = iconTint),
+                            leadingIcon = iconSpec(kind = case.leading, isVisible = isVisible, tint = iconTint),
+                            trailingIcon = iconSpec(kind = case.trailing, isVisible = isVisible, tint = iconTint),
                             supportingText = if (case.supportingEnabled) "innowise.com only" else null,
                             supportingColor = supporting,
                             supportingIcon = if (case.supportingEnabled) {
                                 iconSpec(
                                     kind = FreudButtonPreviewIconKind.STATIC,
-                                    visible = true,
+                                    isVisible = true,
                                     tint = supporting,
                                 )
                             } else {
@@ -310,14 +289,14 @@ private fun FreudButtonPreview(
                             size = FreudHorizontalButtonSize.SMALL,
                             isEnabled = case.enabled,
                             borderColor = border,
-                            leadingIcon = iconSpec(kind = case.leading, visible = visible, tint = iconTint),
-                            trailingIcon = iconSpec(kind = case.trailing, visible = visible, tint = iconTint),
+                            leadingIcon = iconSpec(kind = case.leading, isVisible = isVisible, tint = iconTint),
+                            trailingIcon = iconSpec(kind = case.trailing, isVisible = isVisible, tint = iconTint),
                             supportingText = if (case.supportingEnabled) "Secondary action" else null,
                             supportingColor = supporting,
                             supportingIcon = if (case.supportingEnabled) {
                                 iconSpec(
                                     kind = FreudButtonPreviewIconKind.STATIC,
-                                    visible = true,
+                                    isVisible = true,
                                     tint = supporting,
                                 )
                             } else {
@@ -353,7 +332,7 @@ private fun FreudButtonPreview(
                                     contentColor = content,
                                     isEnabled = case.enabled,
                                     borderColor = border,
-                                    icon = iconSpec(kind = case.leading, visible = visible, tint = iconTint),
+                                    icon = iconSpec(kind = case.leading, isVisible = isVisible, tint = iconTint),
                                 )
                             }
                         }
@@ -367,7 +346,7 @@ private fun FreudButtonPreview(
 @Composable
 private fun iconSpec(
     kind: FreudButtonPreviewIconKind,
-    visible: Boolean,
+    isVisible: Boolean,
     tint: FreudDsToken<Color>,
 ): FreudButtonIconSpec? = when (kind) {
     FreudButtonPreviewIconKind.NONE -> null
@@ -378,27 +357,11 @@ private fun iconSpec(
         tint = tint,
     )
 
-    FreudButtonPreviewIconKind.ANIM_FADE -> FreudButtonIconSpec.Animated(
-        resource = PreviewButtonIconRes,
-        contentDescription = null,
-        tint = tint,
-        isVisible = visible,
-        animation = FreudIconDefaults.fadeIn(),
-    )
-
-    FreudButtonPreviewIconKind.ANIM_SCALE -> FreudButtonIconSpec.Animated(
-        resource = PreviewButtonIconRes,
-        contentDescription = null,
-        tint = tint,
-        isVisible = visible,
-        animation = FreudIconDefaults.scale(),
-    )
-
     FreudButtonPreviewIconKind.ANIM_FADE_SCALE -> FreudButtonIconSpec.Animated(
         resource = PreviewButtonIconRes,
         contentDescription = null,
         tint = tint,
-        isVisible = visible,
+        isVisible = isVisible,
         animation = FreudIconDefaults.fadeInScale(),
     )
 }

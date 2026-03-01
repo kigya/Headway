@@ -20,30 +20,28 @@ import org.jetbrains.compose.resources.DrawableResource
 import org.jetbrains.compose.resources.painterResource
 
 object FreudIconDefaults {
-    val defaultAlphaSpec: AnimationSpec<Float> = tween(
+    private const val DEFAULT_ANIM_DURATION_MS = 200
+    private const val DEFAULT_HIDDEN_SCALE = 0.92f
+
+    val defaultFadeInScaleAlphaSpec: AnimationSpec<Float> = tween(
         durationMillis = DEFAULT_ANIM_DURATION_MS,
         easing = FastOutSlowInEasing,
     )
 
-    val defaultScaleSpec: AnimationSpec<Float> = tween(
+    val defaultFadeInScaleScaleSpec: AnimationSpec<Float> = tween(
         durationMillis = DEFAULT_ANIM_DURATION_MS,
         easing = FastOutSlowInEasing,
     )
-
-    fun fadeIn(
-        alphaSpec: AnimationSpec<Float> = defaultAlphaSpec,
-    ): FreudAnimatedIconAnimation = FreudAnimatedIconAnimation.FadeIn(alphaSpec)
-
-    fun scale(
-        scaleSpec: AnimationSpec<Float> = defaultScaleSpec,
-        hiddenScale: Float = DEFAULT_HIDDEN_SCALE,
-    ): FreudAnimatedIconAnimation = FreudAnimatedIconAnimation.Scale(scaleSpec, hiddenScale)
 
     fun fadeInScale(
-        alphaSpec: AnimationSpec<Float> = defaultAlphaSpec,
-        scaleSpec: AnimationSpec<Float> = defaultScaleSpec,
+        alphaSpec: AnimationSpec<Float> = defaultFadeInScaleAlphaSpec,
+        scaleSpec: AnimationSpec<Float> = defaultFadeInScaleScaleSpec,
         hiddenScale: Float = DEFAULT_HIDDEN_SCALE,
-    ): FreudAnimatedIconAnimation = FreudAnimatedIconAnimation.FadeInScale(alphaSpec, scaleSpec, hiddenScale)
+    ): FreudAnimatedIconAnimation = FreudAnimatedIconAnimation.FadeInScale(
+        alphaSpec = alphaSpec,
+        scaleSpec = scaleSpec,
+        hiddenScale = hiddenScale,
+    )
 }
 
 @Composable
@@ -54,9 +52,7 @@ fun FreudIcon(
     size: FreudDsToken<Dp>? = null,
     tint: FreudDsToken<Color>? = null,
 ) {
-    val resolvedModifier = modifier.then(
-        if (size != null) Modifier.size(size.value) else Modifier
-    )
+    val resolvedModifier = if (size != null) modifier.then(Modifier.size(size.value)) else modifier
 
     Image(
         painter = painterResource(resource),
@@ -70,21 +66,10 @@ fun FreudIcon(
 sealed interface FreudAnimatedIconAnimation {
 
     @Immutable
-    data class FadeIn(
-        val alphaSpec: AnimationSpec<Float> = FreudIconDefaults.defaultAlphaSpec,
-    ) : FreudAnimatedIconAnimation
-
-    @Immutable
-    data class Scale(
-        val scaleSpec: AnimationSpec<Float> = FreudIconDefaults.defaultScaleSpec,
-        val hiddenScale: Float = DEFAULT_HIDDEN_SCALE,
-    ) : FreudAnimatedIconAnimation
-
-    @Immutable
     data class FadeInScale(
-        val alphaSpec: AnimationSpec<Float> = FreudIconDefaults.defaultAlphaSpec,
-        val scaleSpec: AnimationSpec<Float> = FreudIconDefaults.defaultScaleSpec,
-        val hiddenScale: Float = DEFAULT_HIDDEN_SCALE,
+        val alphaSpec: AnimationSpec<Float> = FreudIconDefaults.defaultFadeInScaleAlphaSpec,
+        val scaleSpec: AnimationSpec<Float> = FreudIconDefaults.defaultFadeInScaleScaleSpec,
+        val hiddenScale: Float = 0.92f,
     ) : FreudAnimatedIconAnimation
 }
 
@@ -96,74 +81,34 @@ fun FreudAnimatedIcon(
     modifier: Modifier = Modifier,
     size: FreudDsToken<Dp>? = null,
     tint: FreudDsToken<Color>? = null,
-    animation: FreudAnimatedIconAnimation = FreudIconDefaults.fadeIn(),
+    animation: FreudAnimatedIconAnimation = FreudIconDefaults.fadeInScale(),
 ) {
+    val anim = animation as FreudAnimatedIconAnimation.FadeInScale
+
     val targetAlpha = if (isVisible) 1f else 0f
+    val alpha by animateFloatAsState(
+        targetValue = targetAlpha,
+        animationSpec = anim.alphaSpec,
+        label = ANIM_ALPHA_LABEL,
+    )
 
-    when (animation) {
-        is FreudAnimatedIconAnimation.FadeIn -> {
-            val alpha by animateFloatAsState(
-                targetValue = targetAlpha,
-                animationSpec = animation.alphaSpec,
-                label = ANIM_ALPHA_LABEL,
-            )
+    val targetScale = if (isVisible) 1f else anim.hiddenScale
+    val scale by animateFloatAsState(
+        targetValue = targetScale,
+        animationSpec = anim.scaleSpec,
+        label = ANIM_SCALE_LABEL,
+    )
 
-            FreudIcon(
-                resource = resource,
-                contentDescription = contentDescription,
-                modifier = modifier.alpha(alpha),
-                size = size,
-                tint = tint,
-            )
-        }
-
-        is FreudAnimatedIconAnimation.Scale -> {
-            val scaleTarget = if (isVisible) 1f else animation.hiddenScale
-            val scale by animateFloatAsState(
-                targetValue = scaleTarget,
-                animationSpec = animation.scaleSpec,
-                label = ANIM_SCALE_LABEL,
-            )
-
-            FreudIcon(
-                resource = resource,
-                contentDescription = contentDescription,
-                modifier = modifier
-                    .scale(scale),
-                size = size,
-                tint = tint,
-            )
-        }
-
-        is FreudAnimatedIconAnimation.FadeInScale -> {
-            val alpha by animateFloatAsState(
-                targetValue = targetAlpha,
-                animationSpec = animation.alphaSpec,
-                label = ANIM_ALPHA_LABEL,
-            )
-
-            val scaleTarget = if (isVisible) 1f else animation.hiddenScale
-            val scale by animateFloatAsState(
-                targetValue = scaleTarget,
-                animationSpec = animation.scaleSpec,
-                label = ANIM_SCALE_LABEL,
-            )
-
-            FreudIcon(
-                resource = resource,
-                contentDescription = contentDescription,
-                modifier = modifier
-                    .alpha(alpha)
-                    .scale(scale),
-                size = size,
-                tint = tint,
-            )
-        }
-    }
+    FreudIcon(
+        resource = resource,
+        contentDescription = contentDescription,
+        modifier = modifier
+            .alpha(alpha)
+            .scale(scale),
+        size = size,
+        tint = tint,
+    )
 }
 
 private const val ANIM_ALPHA_LABEL = "FreudAnimatedIcon.alpha"
 private const val ANIM_SCALE_LABEL = "FreudAnimatedIcon.scale"
-
-private const val DEFAULT_ANIM_DURATION_MS = 200
-private const val DEFAULT_HIDDEN_SCALE = 0.92f

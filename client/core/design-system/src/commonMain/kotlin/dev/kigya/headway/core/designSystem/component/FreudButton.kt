@@ -70,7 +70,7 @@ sealed interface FreudButtonIconSpec {
         override val contentDescription: String? = null,
         override val tint: FreudDsToken<Color>? = null,
         val isVisible: Boolean = true,
-        val animation: FreudAnimatedIconAnimation = FreudIconDefaults.fadeIn(),
+        val animation: FreudAnimatedIconAnimation = FreudIconDefaults.fadeInScale(),
     ) : FreudButtonIconSpec
 }
 

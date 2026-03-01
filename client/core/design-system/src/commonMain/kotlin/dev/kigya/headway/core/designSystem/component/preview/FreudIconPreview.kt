@@ -1,13 +1,13 @@
 package dev.kigya.headway.core.designSystem.component.preview
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
@@ -22,9 +22,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.Dp
-import androidx.compose.ui.unit.dp
 import dev.kigya.headway.core.designSystem.component.FreudAnimatedIcon
-import dev.kigya.headway.core.designSystem.component.FreudAnimatedIconAnimation
 import dev.kigya.headway.core.designSystem.component.FreudIcon
 import dev.kigya.headway.core.designSystem.component.FreudIconDefaults
 import dev.kigya.headway.core.designSystem.component.FreudText
@@ -72,8 +70,6 @@ private object FreudIconPreviewTheme : FreudTheme() {
 
 private enum class FreudIconPreviewKind {
     STATIC,
-    ANIM_FADE_IN,
-    ANIM_SCALE,
     ANIM_FADE_IN_SCALE,
 }
 
@@ -89,8 +85,6 @@ private class FreudIconPreviewCaseProvider : PreviewParameterProvider<FreudIconP
         val themes = listOf(false, true)
         val kinds = listOf(
             FreudIconPreviewKind.STATIC,
-            FreudIconPreviewKind.ANIM_FADE_IN,
-            FreudIconPreviewKind.ANIM_SCALE,
             FreudIconPreviewKind.ANIM_FADE_IN_SCALE,
         )
         val sizes = listOf(
@@ -117,7 +111,6 @@ private class FreudIconPreviewCaseProvider : PreviewParameterProvider<FreudIconP
     showBackground = false,
 )
 @Composable
-@Suppress("CyclomaticComplexMethod")
 private fun FreudIconPreview(
     @PreviewParameter(FreudIconPreviewCaseProvider::class) case: FreudIconPreviewCase,
 ) {
@@ -132,8 +125,6 @@ private fun FreudIconPreview(
         val themeLabel = if (case.isDark) "Dark" else "Light"
         val kindLabel = when (case.kind) {
             FreudIconPreviewKind.STATIC -> "Static"
-            FreudIconPreviewKind.ANIM_FADE_IN -> "Animated • FadeIn"
-            FreudIconPreviewKind.ANIM_SCALE -> "Animated • Scale"
             FreudIconPreviewKind.ANIM_FADE_IN_SCALE -> "Animated • FadeInScale"
         }
         val sizeLabel = case.size?.value?.toString() ?: "null"
@@ -164,15 +155,8 @@ private fun FreudIconPreview(
                         .background(block)
                         .padding(ds.dimension.dp12.value),
                     verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.Center,
                 ) {
-                    Box(
-                        modifier = Modifier
-                            .size(56.dp)
-                            .previewPixelGrid(),
-                    )
-
-                    Box(modifier = Modifier.size(12.dp))
-
                     when (case.kind) {
                         FreudIconPreviewKind.STATIC -> FreudIcon(
                             resource = PreviewIconRes,
@@ -182,28 +166,11 @@ private fun FreudIconPreview(
                             modifier = Modifier.previewPixelGrid(),
                         )
 
-                        FreudIconPreviewKind.ANIM_FADE_IN -> TogglingAnimatedIcon(
-                            resource = PreviewIconRes,
-                            contentDescription = null,
-                            size = case.size,
-                            tint = tint,
-                            animation = FreudIconDefaults.fadeIn(),
-                        )
-
-                        FreudIconPreviewKind.ANIM_SCALE -> TogglingAnimatedIcon(
-                            resource = PreviewIconRes,
-                            contentDescription = null,
-                            size = case.size,
-                            tint = tint,
-                            animation = FreudIconDefaults.scale(),
-                        )
-
                         FreudIconPreviewKind.ANIM_FADE_IN_SCALE -> TogglingAnimatedIcon(
                             resource = PreviewIconRes,
                             contentDescription = null,
                             size = case.size,
                             tint = tint,
-                            animation = FreudIconDefaults.fadeInScale(),
                         )
                     }
                 }
@@ -219,24 +186,23 @@ private fun TogglingAnimatedIcon(
     contentDescription: String?,
     size: FreudDsToken<Dp>?,
     tint: FreudDsToken<Color>?,
-    animation: FreudAnimatedIconAnimation,
 ) {
-    var visible by remember { mutableStateOf(true) }
+    var isVisible by remember { mutableStateOf(false) }
 
     LaunchedEffect(Unit) {
         while (true) {
             delay(ANIMATED_ICON_DELAY)
-            visible = !visible
+            isVisible = !isVisible
         }
     }
 
     FreudAnimatedIcon(
         resource = resource,
         contentDescription = contentDescription,
-        isVisible = visible,
+        isVisible = isVisible,
         size = size,
         tint = tint,
-        animation = animation,
+        animation = FreudIconDefaults.fadeInScale(),
         modifier = Modifier.previewPixelGrid(),
     )
 }
