@@ -16,6 +16,7 @@ import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.kigya.headway.core.designSystem.component.FreudLottie
 import dev.kigya.headway.core.designSystem.component.FreudSpacer
+import dev.kigya.headway.core.designSystem.component.FreudText
 import dev.kigya.headway.feature.splash.internal.ui.theme.SplashTheme
 import dev.kigya.headway.feature.splash.internal.ui.theme.SplashTheme.brandTextColor
 import dev.kigya.headway.feature.splash.internal.ui.theme.SplashTheme.splashBackground

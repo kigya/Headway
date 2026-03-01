@@ -1,4 +1,4 @@
-@file:Suppress("MagicNumber")
+@file:Suppress("MagicNumber", "ObjectPropertyNaming")
 
 package dev.kigya.headway.core.designSystem.component
 
@@ -62,6 +62,9 @@ private object FreudButtonDefaults {
 
     val iconSize = FreudTheme.DefaultFreudTheme.dimension.dp24
     val supportingIconSize = FreudTheme.DefaultFreudTheme.dimension.dp20
+
+    const val revealIconDurationMillis = 220
+    const val revealIconHiddenScale = 0.92f
 }
 
 @Immutable
@@ -95,8 +98,8 @@ sealed interface FreudButtonIconSpec {
         override val tint: FreudDsToken<Color>? = null,
         val isVisible: Boolean = true,
         val direction: RevealDirection = RevealDirection.LEFT_TO_RIGHT,
-        val durationMs: Int = 220,
-        val hiddenScale: Float = 0.92f,
+        val durationMs: Int = FreudButtonDefaults.revealIconDurationMillis,
+        val hiddenScale: Float = FreudButtonDefaults.revealIconHiddenScale,
     ) : FreudButtonIconSpec
 }
 

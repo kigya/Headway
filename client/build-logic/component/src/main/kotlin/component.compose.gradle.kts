@@ -30,6 +30,7 @@ commonMainDependencies {
         implementation(compose.backhandler)
         implementation(compose.componentsResources)
         implementation(compose.material3)
+        implementation(immutableCollections)
 
         implementation(compose.uiToolingPreview)
     }

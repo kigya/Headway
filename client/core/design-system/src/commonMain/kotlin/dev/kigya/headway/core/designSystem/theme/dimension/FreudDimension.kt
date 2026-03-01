@@ -20,7 +20,7 @@ data object FreudDimension {
     val dp48: FreudDsToken<Dp> = FreudDsToken(48.dp)
     val dp56: FreudDsToken<Dp> = FreudDsToken(56.dp)
     val dp64: FreudDsToken<Dp> = FreudDsToken(64.dp)
-    val dp72: FreudDsToken<Dp> = FreudDsToken(64.dp)
+    val dp72: FreudDsToken<Dp> = FreudDsToken(72.dp)
     val dp80: FreudDsToken<Dp> = FreudDsToken(80.dp)
     val dp128: FreudDsToken<Dp> = FreudDsToken(128.dp)
     val dp240: FreudDsToken<Dp> = FreudDsToken(240.dp)
