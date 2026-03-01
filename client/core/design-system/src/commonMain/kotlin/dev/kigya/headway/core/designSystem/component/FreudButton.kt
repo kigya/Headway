@@ -24,6 +24,19 @@ import androidx.compose.ui.unit.Dp
 import dev.kigya.headway.core.designSystem.theme.FreudDsToken
 import dev.kigya.headway.core.designSystem.theme.FreudTheme
 import org.jetbrains.compose.resources.DrawableResource
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandHorizontally
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.shrinkHorizontally
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
+import androidx.compose.ui.draw.clipToBounds
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntSize
 
 enum class FreudHorizontalButtonSize {
     LARGE,
@@ -72,6 +85,19 @@ sealed interface FreudButtonIconSpec {
         val isVisible: Boolean = true,
         val animation: FreudAnimatedIconAnimation = FreudIconDefaults.fadeInScale(),
     ) : FreudButtonIconSpec
+
+    enum class RevealDirection { LEFT_TO_RIGHT, RIGHT_TO_LEFT }
+
+    @Immutable
+    data class Reveal(
+        override val resource: DrawableResource,
+        override val contentDescription: String? = null,
+        override val tint: FreudDsToken<Color>? = null,
+        val isVisible: Boolean = true,
+        val direction: RevealDirection = RevealDirection.LEFT_TO_RIGHT,
+        val durationMs: Int = 220,
+        val hiddenScale: Float = 0.92f,
+    ) : FreudButtonIconSpec
 }
 
 @Composable
@@ -111,7 +137,7 @@ fun FreudHorizontalButton(
     ) {
         Row(
             modifier = Modifier
-                .heightIn(min = minHeight) // <-- ключевая правка вместо .height(minHeight)
+                .heightIn(min = minHeight)
                 .clip(shape)
                 .background(containerColor.value)
                 .then(
@@ -265,5 +291,47 @@ private fun FreudButtonIcon(
             tint = icon.tint,
             animation = icon.animation,
         )
+
+        is FreudButtonIconSpec.Reveal -> {
+            val floatSpec = tween<Float>(durationMillis = icon.durationMs)
+            val sizeSpec = tween<IntSize>(durationMillis = icon.durationMs)
+            val offsetSpec = tween<IntOffset>(durationMillis = icon.durationMs)
+
+            val enter = fadeIn(floatSpec) +
+                scaleIn(animationSpec = floatSpec, initialScale = icon.hiddenScale) +
+                expandHorizontally(
+                    animationSpec = sizeSpec,
+                    expandFrom = if (icon.direction == FreudButtonIconSpec.RevealDirection.LEFT_TO_RIGHT)
+                        Alignment.Start else Alignment.End,
+                ) +
+                slideInHorizontally(animationSpec = offsetSpec) { fullWidth ->
+                    if (icon.direction == FreudButtonIconSpec.RevealDirection.LEFT_TO_RIGHT) -fullWidth else fullWidth
+                }
+
+            val exit = fadeOut(floatSpec) +
+                scaleOut(animationSpec = floatSpec, targetScale = icon.hiddenScale) +
+                shrinkHorizontally(
+                    animationSpec = sizeSpec,
+                    shrinkTowards = if (icon.direction == FreudButtonIconSpec.RevealDirection.LEFT_TO_RIGHT)
+                        Alignment.Start else Alignment.End,
+                ) +
+                slideOutHorizontally(animationSpec = offsetSpec) { fullWidth ->
+                    if (icon.direction == FreudButtonIconSpec.RevealDirection.LEFT_TO_RIGHT) -fullWidth else fullWidth
+                }
+
+            AnimatedVisibility(
+                visible = icon.isVisible,
+                enter = enter,
+                exit = exit,
+                modifier = Modifier.clipToBounds(),
+            ) {
+                FreudIcon(
+                    resource = icon.resource,
+                    contentDescription = icon.contentDescription,
+                    size = size,
+                    tint = icon.tint,
+                )
+            }
+        }
     }
 }

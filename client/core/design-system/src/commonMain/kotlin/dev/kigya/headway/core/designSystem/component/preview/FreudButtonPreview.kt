@@ -25,7 +25,6 @@ import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import dev.kigya.headway.core.designSystem.component.FreudButtonIconSpec
 import dev.kigya.headway.core.designSystem.component.FreudHorizontalButton
 import dev.kigya.headway.core.designSystem.component.FreudHorizontalButtonSize
-import dev.kigya.headway.core.designSystem.component.FreudIconDefaults
 import dev.kigya.headway.core.designSystem.component.FreudSpacer
 import dev.kigya.headway.core.designSystem.component.FreudText
 import dev.kigya.headway.core.designSystem.component.FreudVerticalButton
@@ -66,7 +65,6 @@ private object FreudButtonPreviewTheme : FreudTheme() {
             dark = super.color.brown10,
         )
 
-    // button colors (as in your screenshot)
     val FreudColorScheme.container
         @Composable get() = colorScheme provides FreudDynamicColor(
             light = super.color.brown80,
@@ -101,10 +99,12 @@ private enum class FreudButtonPreviewKind {
 private enum class FreudButtonPreviewIconKind {
     NONE,
     STATIC,
-    ANIM_FADE_SCALE;
+    ANIM_FADE_SCALE,
+    REVEAL_LTR,
+    REVEAL_RTL;
 
     val isAnimated: Boolean
-        get() = this == ANIM_FADE_SCALE
+        get() = this == ANIM_FADE_SCALE || this == REVEAL_LTR || this == REVEAL_RTL
 }
 
 private data class FreudButtonPreviewCase(
@@ -131,13 +131,34 @@ private class FreudButtonPreviewCaseProvider : PreviewParameterProvider<FreudBut
                 trailing = FreudButtonPreviewIconKind.NONE,
                 supportingEnabled = false,
             ),
+
+            FreudButtonPreviewCase(
+                isDark = false,
+                kind = FreudButtonPreviewKind.HORIZONTAL_LARGE,
+                enabled = true,
+                borderEnabled = true,
+                leading = FreudButtonPreviewIconKind.REVEAL_LTR,
+                trailing = FreudButtonPreviewIconKind.STATIC,
+                supportingEnabled = true,
+            ),
+
+            FreudButtonPreviewCase(
+                isDark = false,
+                kind = FreudButtonPreviewKind.HORIZONTAL_SMALL,
+                enabled = true,
+                borderEnabled = false,
+                leading = FreudButtonPreviewIconKind.ANIM_FADE_SCALE,
+                trailing = FreudButtonPreviewIconKind.NONE,
+                supportingEnabled = false,
+            ),
+
             FreudButtonPreviewCase(
                 isDark = false,
                 kind = FreudButtonPreviewKind.HORIZONTAL_SMALL,
                 enabled = false,
                 borderEnabled = true,
                 leading = FreudButtonPreviewIconKind.STATIC,
-                trailing = FreudButtonPreviewIconKind.ANIM_FADE_SCALE,
+                trailing = FreudButtonPreviewIconKind.REVEAL_RTL,
                 supportingEnabled = true,
             ),
 
@@ -150,6 +171,7 @@ private class FreudButtonPreviewCaseProvider : PreviewParameterProvider<FreudBut
                 trailing = FreudButtonPreviewIconKind.NONE,
                 supportingEnabled = false,
             ),
+
             FreudButtonPreviewCase(
                 isDark = false,
                 kind = FreudButtonPreviewKind.VERTICAL,
@@ -162,9 +184,7 @@ private class FreudButtonPreviewCaseProvider : PreviewParameterProvider<FreudBut
         )
 
         for (isDark in themes) {
-            for (c in baseCases) {
-                yield(c.copy(isDark = isDark))
-            }
+            for (c in baseCases) yield(c.copy(isDark = isDark))
         }
     }
 }
@@ -266,9 +286,7 @@ private fun FreudButtonPreview(
                                     isVisible = true,
                                     tint = supporting,
                                 )
-                            } else {
-                                null
-                            },
+                            } else null,
                         )
                     }
                 }
@@ -299,9 +317,7 @@ private fun FreudButtonPreview(
                                     isVisible = true,
                                     tint = supporting,
                                 )
-                            } else {
-                                null
-                            },
+                            } else null,
                         )
                     }
                 }
@@ -362,7 +378,26 @@ private fun iconSpec(
         contentDescription = null,
         tint = tint,
         isVisible = isVisible,
-        animation = FreudIconDefaults.fadeInScale(),
+    )
+
+    FreudButtonPreviewIconKind.REVEAL_LTR -> FreudButtonIconSpec.Reveal(
+        resource = PreviewButtonIconRes,
+        contentDescription = null,
+        tint = tint,
+        isVisible = isVisible,
+        direction = FreudButtonIconSpec.RevealDirection.LEFT_TO_RIGHT,
+        durationMs = 220,
+        hiddenScale = 0.92f,
+    )
+
+    FreudButtonPreviewIconKind.REVEAL_RTL -> FreudButtonIconSpec.Reveal(
+        resource = PreviewButtonIconRes,
+        contentDescription = null,
+        tint = tint,
+        isVisible = isVisible,
+        direction = FreudButtonIconSpec.RevealDirection.RIGHT_TO_LEFT,
+        durationMs = 220,
+        hiddenScale = 0.92f,
     )
 }
 
