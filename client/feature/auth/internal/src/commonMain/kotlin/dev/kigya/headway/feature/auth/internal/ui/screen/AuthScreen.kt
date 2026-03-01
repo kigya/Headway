@@ -9,7 +9,6 @@ import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import dev.kigya.headway.core.designSystem.component.FreudText
 import dev.kigya.headway.feature.auth.internal.ui.theme.AuthTheme
 import dev.kigya.headway.feature.auth.internal.ui.theme.AuthTheme.authBackground
 import dev.kigya.headway.feature.auth.internal.ui.theme.AuthTheme.brandTextColor
