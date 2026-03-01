@@ -2,11 +2,9 @@ import com.android.build.api.dsl.CommonExtension
 import detekt.DetektConfigs
 import extension.androidMainDependencies
 import extension.commonMainDependencies
-import extension.composePlugin
 import extension.configureIfExists
 import extension.libs
 import io.gitlab.arturbosch.detekt.extensions.DetektExtension
-import org.jetbrains.compose.ComposePlugin.CommonComponentsDependencies.uiToolingPreview
 import org.jetbrains.compose.android.AndroidExtension
 
 plugins {
@@ -26,24 +24,35 @@ commonMainDependencies {
     libs {
         implementation(lifecycle.viewmodel)
         implementation(lifecycle.runtimeCompose)
-        implementation(compose.adaptive)
+
+        implementation(compose.ui)
+        implementation(compose.animation)
         implementation(compose.backhandler)
+        implementation(compose.componentsResources)
+        implementation(compose.material3)
         implementation(immutableCollections)
-    }
-    composePlugin {
-        implementation(components.resources)
-        implementation(animation)
-        implementation(ui)
-        implementation(material3)
-        implementation(preview)
+
+        implementation(compose.uiToolingPreview)
     }
 }
 
 configureIfExists(AndroidExtension::class.java) {
     androidMainDependencies {
-        composePlugin {
-            implementation(preview)
-            implementation(uiTooling)
+        libs {
+            implementation(compose.activity)
         }
     }
+}
+
+project.addAndroidPreviewTooling()
+
+private fun Project.addAndroidPreviewTooling() {
+    fun attach() {
+        dependencies {
+            add("debugImplementation", libs.compose.androidxUiTooling)
+        }
+    }
+
+    pluginManager.withPlugin("com.android.library") { attach() }
+    pluginManager.withPlugin("com.android.application") { attach() }
 }

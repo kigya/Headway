@@ -7,8 +7,6 @@ import org.gradle.api.artifacts.Dependency
 import org.gradle.api.artifacts.dsl.DependencyHandler
 import org.gradle.api.internal.catalog.TypeSafeProjectDependencyFactory
 import org.gradle.api.plugins.ExtensionAware
-import org.jetbrains.compose.ComposeExtension
-import org.jetbrains.compose.ComposePlugin
 import org.jetbrains.kotlin.gradle.plugin.KotlinDependencyHandler
 
 /**
@@ -97,28 +95,6 @@ public inline fun DependencyHandler.detektPlugins(dependencyNotation: Any): Depe
  */
 public fun KotlinDependencyHandler.libs(block: LibrariesForLibs.() -> Unit) {
     project.libs.block()
-}
-
-/**
- * Provides access to JetBrains Compose plugin dependencies block.
- *
- * Allows you to add Compose-specific dependencies via a DSL block.
- *
- * Example:
- * ```
- * dependencies {
- *     composePlugin {
- *         implementation(resources)
- *     }
- * }
- * ```
- *
- * @param block A lambda with receiver of [ComposePlugin.Dependencies] to declare Compose dependencies.
- */
-public fun KotlinDependencyHandler.composePlugin(block: ComposePlugin.Dependencies.() -> Unit) {
-    ((project as ExtensionAware)
-        .extensions
-        .getByName("compose") as ComposeExtension).dependencies.block()
 }
 
 /**
