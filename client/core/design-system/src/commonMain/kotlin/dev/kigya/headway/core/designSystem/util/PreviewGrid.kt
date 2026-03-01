@@ -9,8 +9,8 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.drawscope.Stroke
 import androidx.compose.ui.unit.Dp
 import dev.kigya.headway.core.designSystem.theme.LocalTheme
-import dev.kigya.headway.core.designSystem.theme.dimension.FreudDimension
 import dev.kigya.headway.core.designSystem.theme.color.FreudColor
+import dev.kigya.headway.core.designSystem.theme.dimension.FreudDimension
 
 internal object PreviewGrid {
     private val palette = FreudColor()
@@ -19,6 +19,7 @@ internal object PreviewGrid {
     val defaultBorderWidth: Dp = FreudDimension.dp1.value
 
     @Composable
+    @Suppress("TopLevelComposableFunctions")
     fun colors(): Colors = if (LocalTheme.current.isDark) {
         Colors(
             a = palette.brown60.value,

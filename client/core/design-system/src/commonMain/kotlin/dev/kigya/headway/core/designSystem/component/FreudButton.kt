@@ -2,6 +2,16 @@
 
 package dev.kigya.headway.core.designSystem.component
 
+import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.animation.core.tween
+import androidx.compose.animation.expandHorizontally
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
+import androidx.compose.animation.scaleIn
+import androidx.compose.animation.scaleOut
+import androidx.compose.animation.shrinkHorizontally
+import androidx.compose.animation.slideInHorizontally
+import androidx.compose.animation.slideOutHorizontally
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -18,25 +28,15 @@ import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.unit.Dp
+import androidx.compose.ui.unit.IntOffset
+import androidx.compose.ui.unit.IntSize
 import dev.kigya.headway.core.designSystem.theme.FreudDsToken
 import dev.kigya.headway.core.designSystem.theme.FreudTheme
 import org.jetbrains.compose.resources.DrawableResource
-import androidx.compose.animation.AnimatedVisibility
-import androidx.compose.animation.core.tween
-import androidx.compose.animation.expandHorizontally
-import androidx.compose.animation.fadeIn
-import androidx.compose.animation.fadeOut
-import androidx.compose.animation.scaleIn
-import androidx.compose.animation.scaleOut
-import androidx.compose.animation.shrinkHorizontally
-import androidx.compose.animation.slideInHorizontally
-import androidx.compose.animation.slideOutHorizontally
-import androidx.compose.ui.draw.clipToBounds
-import androidx.compose.ui.unit.IntOffset
-import androidx.compose.ui.unit.IntSize
 
 enum class FreudHorizontalButtonSize {
     LARGE,
@@ -149,7 +149,7 @@ fun FreudHorizontalButton(
                         )
                     } else {
                         Modifier
-                    }
+                    },
                 )
                 .clickable(
                     enabled = isEnabled,
@@ -242,7 +242,7 @@ fun FreudVerticalButton(
                     )
                 } else {
                     Modifier
-                }
+                },
             )
             .clickable(
                 enabled = isEnabled,
@@ -276,21 +276,23 @@ private fun FreudButtonIcon(
     size: FreudDsToken<Dp>,
 ) {
     when (icon) {
-        is FreudButtonIconSpec.Static -> FreudIcon(
-            resource = icon.resource,
-            contentDescription = icon.contentDescription,
-            size = size,
-            tint = icon.tint,
-        )
+        is FreudButtonIconSpec.Static ->
+            FreudIcon(
+                resource = icon.resource,
+                contentDescription = icon.contentDescription,
+                size = size,
+                tint = icon.tint,
+            )
 
-        is FreudButtonIconSpec.Animated -> FreudAnimatedIcon(
-            resource = icon.resource,
-            contentDescription = icon.contentDescription,
-            isVisible = icon.isVisible,
-            size = size,
-            tint = icon.tint,
-            animation = icon.animation,
-        )
+        is FreudButtonIconSpec.Animated ->
+            FreudAnimatedIcon(
+                resource = icon.resource,
+                contentDescription = icon.contentDescription,
+                isVisible = icon.isVisible,
+                size = size,
+                tint = icon.tint,
+                animation = icon.animation,
+            )
 
         is FreudButtonIconSpec.Reveal -> {
             val floatSpec = tween<Float>(durationMillis = icon.durationMs)
@@ -301,22 +303,36 @@ private fun FreudButtonIcon(
                 scaleIn(animationSpec = floatSpec, initialScale = icon.hiddenScale) +
                 expandHorizontally(
                     animationSpec = sizeSpec,
-                    expandFrom = if (icon.direction == FreudButtonIconSpec.RevealDirection.LEFT_TO_RIGHT)
-                        Alignment.Start else Alignment.End,
+                    expandFrom = if (icon.direction == FreudButtonIconSpec.RevealDirection.LEFT_TO_RIGHT) {
+                        Alignment.Start
+                    } else {
+                        Alignment.End
+                    },
                 ) +
                 slideInHorizontally(animationSpec = offsetSpec) { fullWidth ->
-                    if (icon.direction == FreudButtonIconSpec.RevealDirection.LEFT_TO_RIGHT) -fullWidth else fullWidth
+                    if (icon.direction == FreudButtonIconSpec.RevealDirection.LEFT_TO_RIGHT) {
+                        -fullWidth
+                    } else {
+                        fullWidth
+                    }
                 }
 
             val exit = fadeOut(floatSpec) +
                 scaleOut(animationSpec = floatSpec, targetScale = icon.hiddenScale) +
                 shrinkHorizontally(
                     animationSpec = sizeSpec,
-                    shrinkTowards = if (icon.direction == FreudButtonIconSpec.RevealDirection.LEFT_TO_RIGHT)
-                        Alignment.Start else Alignment.End,
+                    shrinkTowards = if (icon.direction == FreudButtonIconSpec.RevealDirection.LEFT_TO_RIGHT) {
+                        Alignment.Start
+                    } else {
+                        Alignment.End
+                    },
                 ) +
                 slideOutHorizontally(animationSpec = offsetSpec) { fullWidth ->
-                    if (icon.direction == FreudButtonIconSpec.RevealDirection.LEFT_TO_RIGHT) -fullWidth else fullWidth
+                    if (icon.direction == FreudButtonIconSpec.RevealDirection.LEFT_TO_RIGHT) {
+                        -fullWidth
+                    } else {
+                        fullWidth
+                    }
                 }
 
             AnimatedVisibility(

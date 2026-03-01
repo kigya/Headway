@@ -101,7 +101,8 @@ private enum class FreudButtonPreviewIconKind {
     STATIC,
     ANIM_FADE_SCALE,
     REVEAL_LTR,
-    REVEAL_RTL;
+    REVEAL_RTL,
+    ;
 
     val isAnimated: Boolean
         get() = this == ANIM_FADE_SCALE || this == REVEAL_LTR || this == REVEAL_RTL
@@ -131,7 +132,6 @@ private class FreudButtonPreviewCaseProvider : PreviewParameterProvider<FreudBut
                 trailing = FreudButtonPreviewIconKind.NONE,
                 supportingEnabled = false,
             ),
-
             FreudButtonPreviewCase(
                 isDark = false,
                 kind = FreudButtonPreviewKind.HORIZONTAL_LARGE,
@@ -141,7 +141,6 @@ private class FreudButtonPreviewCaseProvider : PreviewParameterProvider<FreudBut
                 trailing = FreudButtonPreviewIconKind.STATIC,
                 supportingEnabled = true,
             ),
-
             FreudButtonPreviewCase(
                 isDark = false,
                 kind = FreudButtonPreviewKind.HORIZONTAL_SMALL,
@@ -151,7 +150,6 @@ private class FreudButtonPreviewCaseProvider : PreviewParameterProvider<FreudBut
                 trailing = FreudButtonPreviewIconKind.NONE,
                 supportingEnabled = false,
             ),
-
             FreudButtonPreviewCase(
                 isDark = false,
                 kind = FreudButtonPreviewKind.HORIZONTAL_SMALL,
@@ -161,7 +159,6 @@ private class FreudButtonPreviewCaseProvider : PreviewParameterProvider<FreudBut
                 trailing = FreudButtonPreviewIconKind.REVEAL_RTL,
                 supportingEnabled = true,
             ),
-
             FreudButtonPreviewCase(
                 isDark = false,
                 kind = FreudButtonPreviewKind.VERTICAL,
@@ -171,7 +168,6 @@ private class FreudButtonPreviewCaseProvider : PreviewParameterProvider<FreudBut
                 trailing = FreudButtonPreviewIconKind.NONE,
                 supportingEnabled = false,
             ),
-
             FreudButtonPreviewCase(
                 isDark = false,
                 kind = FreudButtonPreviewKind.VERTICAL,
@@ -194,7 +190,7 @@ private class FreudButtonPreviewCaseProvider : PreviewParameterProvider<FreudBut
     showBackground = false,
 )
 @Composable
-@Suppress("LongMethod")
+@Suppress("LongMethod", "CyclomaticComplexMethod")
 private fun FreudButtonPreview(
     @PreviewParameter(FreudButtonPreviewCaseProvider::class) case: FreudButtonPreviewCase,
 ) {
@@ -260,7 +256,7 @@ private fun FreudButtonPreview(
             FreudSpacer(size = ds.dimension.dp12)
 
             when (case.kind) {
-                FreudButtonPreviewKind.HORIZONTAL_LARGE -> {
+                FreudButtonPreviewKind.HORIZONTAL_LARGE ->
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -286,12 +282,13 @@ private fun FreudButtonPreview(
                                     isVisible = true,
                                     tint = supporting,
                                 )
-                            } else null,
+                            } else {
+                                null
+                            },
                         )
                     }
-                }
 
-                FreudButtonPreviewKind.HORIZONTAL_SMALL -> {
+                FreudButtonPreviewKind.HORIZONTAL_SMALL ->
                     Column(
                         modifier = Modifier
                             .fillMaxWidth()
@@ -317,12 +314,13 @@ private fun FreudButtonPreview(
                                     isVisible = true,
                                     tint = supporting,
                                 )
-                            } else null,
+                            } else {
+                                null
+                            },
                         )
                     }
-                }
 
-                FreudButtonPreviewKind.VERTICAL -> {
+                FreudButtonPreviewKind.VERTICAL ->
                     Box(
                         modifier = Modifier.fillMaxWidth(),
                         contentAlignment = Alignment.Center,
@@ -353,7 +351,6 @@ private fun FreudButtonPreview(
                             }
                         }
                     }
-                }
             }
         }
     }

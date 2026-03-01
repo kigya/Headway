@@ -51,14 +51,13 @@ private class FreudTextPreviewCaseProvider : PreviewParameterProvider<FreudTextP
 
 @Preview(
     name = "FreudText – Theme x maxLines",
-    showBackground = false
+    showBackground = false,
 )
 @Composable
 private fun FreudTextPreview(
     @PreviewParameter(FreudTextPreviewCaseProvider::class) case: FreudTextPreviewCase,
 ) {
     FreudTheme(isDark = case.isDark) {
-
         FreudText(
             value = PreviewText.loremForMaxLines(maxLines = case.maxLines),
             color = FreudTextPreviewTheme.colorScheme.primaryText,

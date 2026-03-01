@@ -157,6 +157,5 @@ private fun FreudLottiePreview(
 }
 
 @OptIn(ExperimentalResourceApi::class)
-private suspend fun readPreviewLottieJson(): ByteArray =
-    Res.readBytes(LOTTIE_JSON_PATH)
+private suspend fun readPreviewLottieJson(): ByteArray = Res.readBytes(LOTTIE_JSON_PATH)
 private const val LOTTIE_JSON_PATH = "files/lottie_el_baion.json"
