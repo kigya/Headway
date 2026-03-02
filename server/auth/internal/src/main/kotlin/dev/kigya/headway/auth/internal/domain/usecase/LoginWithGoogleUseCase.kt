@@ -9,7 +9,7 @@ import dev.kigya.headway.database.api.model.`in`.DatabaseSessionPlatform
 import java.time.ZoneOffset
 import java.util.Calendar
 
-private const val JWT_REFRESH_ALIVE_MOTHS = 3
+private const val JWT_REFRESH_ALIVE_MONTHS = 3
 
 internal class LoginWithGoogleUseCase(
     private val databaseRepository: DatabaseRepositoryContract,
@@ -35,7 +35,7 @@ internal class LoginWithGoogleUseCase(
             throw AuthException.UserNotActive()
         }
 
-        val expirationDate = Calendar.getInstance().apply { add(Calendar.MONTH, JWT_REFRESH_ALIVE_MOTHS) }
+        val expirationDate = Calendar.getInstance().apply { add(Calendar.MONTH, JWT_REFRESH_ALIVE_MONTHS) }
         val accessToken = jwtRepository.generateAccessToken(user.id)
         val refreshToken = jwtRepository.generateRefreshToken(user.id, expirationDate.time)
 

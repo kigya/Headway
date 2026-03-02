@@ -11,7 +11,6 @@ internal suspend fun <T> Database.dbQuery(block: suspend () -> T): T = try {
 } catch (e: DatabaseException) {
     throw e
 } catch (e: ExposedSQLException) {
-    @Suppress("StringLiteralDuplication")
     throw DatabaseException.DependencyUnavailable(dependency = "postgres", cause = e)
 } catch (e: SQLException) {
     throw DatabaseException.DependencyUnavailable(dependency = "postgres", cause = e)

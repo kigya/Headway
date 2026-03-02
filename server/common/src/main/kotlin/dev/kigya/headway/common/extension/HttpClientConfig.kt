@@ -33,7 +33,7 @@ inline fun <reified ServiceKoinName> Module.createServiceHttpClient(
                     this.host = host
                     this.port = port
 
-                    val reqPath = encodedPath.ifBlank { '/' }.toString()
+                    val reqPath = encodedPath.ifBlank { "/" }
                     val joined = basePath.trimEnd('/') + "/" + reqPath.trimStart('/')
                     encodedPath = joined.replace(Regex("/{2,}"), "/")
                 }
