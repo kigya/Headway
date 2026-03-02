@@ -32,6 +32,6 @@ internal interface UsersRepositoryContract {
     suspend fun updateGoogleUser(
         userId: UUID,
         name: String,
-        avatarUrl: String?
+        avatarUrl: String?,
     ): DatabaseUser?
 }

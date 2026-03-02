@@ -7,7 +7,10 @@ import dev.kigya.headway.gateway.model.GatewayRefreshAccessTokenResponse
 internal class RefreshAccessTokenUseCase(
     private val authRepository: AuthRepositoryContract,
 ) {
-    suspend operator fun invoke(refreshToken: String, fingerprint: String): GatewayRefreshAccessTokenResponse {
+    suspend operator fun invoke(
+        refreshToken: String,
+        fingerprint: String,
+    ): GatewayRefreshAccessTokenResponse {
         val trimmedToken = refreshToken.trim()
         val trimmedFingerprint = fingerprint.trim()
 

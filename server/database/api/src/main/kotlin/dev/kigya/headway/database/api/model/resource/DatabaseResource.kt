@@ -12,7 +12,7 @@ class DatabaseResource {
 
     @Serializable
     @Resource("user")
-    class User(val parent: DatabaseResource = DatabaseResource()) {
+    data class User(val parent: DatabaseResource = DatabaseResource()) {
 
         @Serializable
         @Resource("")
@@ -27,15 +27,15 @@ class DatabaseResource {
 
         @Serializable
         @Resource("invite")
-        class Invite(val parent: User = User())
+        data class Invite(val parent: User = User())
 
         @Serializable
         @Resource("google")
-        class Google(val parent: User = User()) {
+        data class Google(val parent: User = User()) {
 
             @Serializable
             @Resource("upsert")
-            class Upsert(val parent: Google = Google())
+            data class Upsert(val parent: Google = Google())
         }
     }
 
@@ -45,9 +45,8 @@ class DatabaseResource {
 
         @Serializable
         @Resource("validate")
-        class Validate(
+        data class Validate(
             val parent: Session = Session(),
         )
     }
 }
-

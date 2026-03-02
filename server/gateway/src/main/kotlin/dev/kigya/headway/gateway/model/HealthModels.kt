@@ -12,7 +12,7 @@ internal enum class GatewayServiceStatus {
     DEGRADED,
 
     @SerialName("DOWN")
-    DOWN;
+    DOWN,
 }
 
 @Serializable

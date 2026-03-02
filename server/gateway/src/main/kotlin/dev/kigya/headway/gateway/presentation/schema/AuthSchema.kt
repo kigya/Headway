@@ -3,11 +3,7 @@ package dev.kigya.headway.gateway.presentation.schema
 import com.apurebase.kgraphql.schema.dsl.SchemaBuilder
 import dev.kigya.headway.gateway.domain.usecase.LoginWithGoogleUseCase
 import dev.kigya.headway.gateway.domain.usecase.RefreshAccessTokenUseCase
-import dev.kigya.headway.gateway.model.GatewayGoogleLoginResponse
-import dev.kigya.headway.gateway.model.GatewayRefreshAccessTokenResponse
 import dev.kigya.headway.gateway.model.GatewaySessionPlatform
-import dev.kigya.headway.gateway.model.GatewayUser
-import dev.kigya.headway.gateway.model.GatewayUserRole
 import dev.kigya.headway.gateway.presentation.routes.GatewayGraphqlOperation
 
 internal fun SchemaBuilder.authSchema(

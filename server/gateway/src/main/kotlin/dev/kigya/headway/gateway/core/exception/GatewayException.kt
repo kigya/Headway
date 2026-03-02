@@ -9,7 +9,7 @@ internal enum class GatewayErrorCode(val rawName: String) {
     NOT_FOUND("Not Found"),
     CONFLICT("Conflict"),
     DEPENDENCY_UNAVAILABLE("Dependency Unavailable"),
-    INTERNAL("Internal Server Error");
+    INTERNAL("Internal Server Error"),
 }
 
 internal sealed class GatewayException(

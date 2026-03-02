@@ -13,7 +13,7 @@ fun Application.defaultContentNegotiation() {
             Json {
                 prettyPrint = true
                 encodeDefaults = true
-            }
+            },
         )
     }
 }

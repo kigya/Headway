@@ -7,9 +7,7 @@ import dev.kigya.headway.gateway.model.GatewayHealthPayload
 import dev.kigya.headway.gateway.model.GatewayServiceStatus
 import dev.kigya.headway.gateway.presentation.routes.GatewayGraphqlOperation
 
-internal fun SchemaBuilder.healthSchema(
-    checkHealthStatus: CheckHealthStatusUseCase,
-) {
+internal fun SchemaBuilder.healthSchema(checkHealthStatus: CheckHealthStatusUseCase) {
     enum<GatewayServiceStatus>()
     type<GatewayDependencyHealth>()
     type<GatewayHealthPayload>()

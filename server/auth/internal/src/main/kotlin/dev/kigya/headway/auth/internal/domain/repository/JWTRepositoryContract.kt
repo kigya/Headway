@@ -7,7 +7,10 @@ internal interface JWTRepositoryContract {
 
     fun generateAccessToken(userUUID: UUID): String
 
-    fun generateRefreshToken(userUUID: UUID, expirationDate: Date): String
+    fun generateRefreshToken(
+        userUUID: UUID,
+        expirationDate: Date,
+    ): String
 
     fun isAccessTokenValid(token: String): Boolean
 

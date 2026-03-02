@@ -18,5 +18,5 @@ enum class DatabaseUserRole(val slug: String) {
     EMPLOYEE("EMPLOYEE"),
 
     @SerialName("GUEST")
-    GUEST("GUEST");
+    GUEST("GUEST"),
 }

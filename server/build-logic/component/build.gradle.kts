@@ -4,7 +4,7 @@ import org.gradle.kotlin.dsl.projects
 
 plugins {
     `kotlin-dsl`
-    kotlin("jvm").version(libs.versions.kotlin.get())
+    alias(libs.plugins.kotlin.jvm)
 }
 
 dependencies {

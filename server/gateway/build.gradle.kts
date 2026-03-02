@@ -1,5 +1,6 @@
 import base.configureMicroserviceApplication
 import extension.microserviceDependencies
+import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
     alias(libs.plugins.convention.base.microserviceApplication)

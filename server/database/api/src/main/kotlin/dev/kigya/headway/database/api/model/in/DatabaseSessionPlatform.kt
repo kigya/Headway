@@ -15,5 +15,5 @@ enum class DatabaseSessionPlatform {
     DESKTOP,
 
     @SerialName("WEB")
-    WEB;
+    WEB,
 }

@@ -8,7 +8,6 @@ interface ServiceUrlHolder<T : KoinHttpClient> {
     val httpClientKClass: KClass<T>
 }
 
-
 inline fun <reified T : KoinHttpClient> serviceUrlHolder(baseUrl: String): ServiceUrlHolder<T> =
     object : ServiceUrlHolder<T> {
         override val baseUrl: String = baseUrl

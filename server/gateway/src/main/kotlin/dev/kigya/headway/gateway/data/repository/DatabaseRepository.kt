@@ -18,7 +18,10 @@ internal class DatabaseRepository(
     private val httpClient: HttpClient,
 ) : DatabaseRepositoryContract {
 
-    override suspend fun inviteUser(email: String, department: String): GatewayUser = upstreamCall(
+    override suspend fun inviteUser(
+        email: String,
+        department: String,
+    ): GatewayUser = upstreamCall(
         dependency = "database",
         request = {
             httpClient.post(DatabaseResource.User.Invite()) {

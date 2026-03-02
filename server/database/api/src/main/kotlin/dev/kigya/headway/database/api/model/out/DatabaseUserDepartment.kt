@@ -12,5 +12,5 @@ enum class DatabaseUserDepartment(val slug: String) {
     IOS("IOS"),
 
     @SerialName("CROSS_PLATFORM")
-    CROSSPLATFORM("CROSS_PLATFORM");
+    CROSSPLATFORM("CROSS_PLATFORM"),
 }

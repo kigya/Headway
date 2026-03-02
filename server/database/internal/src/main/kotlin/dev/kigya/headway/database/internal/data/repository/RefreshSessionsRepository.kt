@@ -1,10 +1,10 @@
 package dev.kigya.headway.database.internal.data.repository
 
 import dev.kigya.headway.database.api.model.`in`.DatabaseSessionPlatform
-import dev.kigya.headway.database.internal.domain.repository.RefreshSessionsRepositoryContract
-import dev.kigya.headway.database.internal.data.table.RefreshSessionsTable
 import dev.kigya.headway.database.internal.core.extension.dbQuery
+import dev.kigya.headway.database.internal.data.table.RefreshSessionsTable
 import dev.kigya.headway.database.internal.domain.error.DatabaseException
+import dev.kigya.headway.database.internal.domain.repository.RefreshSessionsRepositoryContract
 import org.jetbrains.exposed.v1.core.and
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.core.greater
@@ -46,7 +46,7 @@ internal class RefreshSessionsRepository(
                             it[this.expiresIn] = expiresIn
                             it[this.createdAt] = OffsetDateTime.now()
                             it[this.platform] = platform
-                        }
+                        },
                     )
             } else {
                 RefreshSessionsTable.insert {
@@ -71,7 +71,8 @@ internal class RefreshSessionsRepository(
             .where {
                 (RefreshSessionsTable.refreshTokenHash eq hash) and
                     (RefreshSessionsTable.expiresIn greater OffsetDateTime.now())
-            }.singleOrNull()
+            }
+            .singleOrNull()
 
         if (row == null) {
             throw DatabaseException.Unauthorized("Session does not exist or expired")
@@ -95,6 +96,7 @@ internal class RefreshSessionsRepository(
         val bytes = token.toByteArray()
         val md = MessageDigest.getInstance("SHA-256")
         val digest = md.digest(bytes)
-        return digest.fold("") { str, it -> str + "%02x".format(it) }
+
+        return digest.fold("") { str, digit -> str + "%02x".format(digit) }
     }
 }

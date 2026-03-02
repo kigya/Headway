@@ -1,8 +1,8 @@
 package dev.kigya.headway.auth.internal
 
-import dev.kigya.headway.auth.internal.presentation.installAuthApi
 import dev.kigya.headway.auth.internal.core.ConfigurationValues
 import dev.kigya.headway.auth.internal.di.authInternalModule
+import dev.kigya.headway.auth.internal.presentation.installAuthApi
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
 import io.ktor.server.engine.embeddedServer

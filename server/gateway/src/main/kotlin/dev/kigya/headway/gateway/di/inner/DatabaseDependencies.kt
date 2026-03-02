@@ -10,6 +10,9 @@ import org.koin.core.qualifier.named
 import org.koin.dsl.bind
 
 internal fun Module.databaseDependencies() {
-    single { DatabaseRepository(httpClient = get(named<DatabaseKoinHttpClient>())) } bind DatabaseRepositoryContract::class
+    single {
+        DatabaseRepository(httpClient = get(named<DatabaseKoinHttpClient>()))
+    } bind DatabaseRepositoryContract::class
+
     singleOf(::InviteUserUseCase)
 }

@@ -1,8 +1,8 @@
 package dev.kigya.headway.database.internal.data.table
 
-import dev.kigya.headway.database.internal.data.model.ExposedAccountStatus
 import dev.kigya.headway.database.api.model.out.DatabaseUserDepartment
 import dev.kigya.headway.database.api.model.out.DatabaseUserRole
+import dev.kigya.headway.database.internal.data.model.ExposedAccountStatus
 import org.jetbrains.exposed.v1.core.dao.id.UUIDTable
 import org.jetbrains.exposed.v1.datetime.timestampWithTimeZone
 import org.postgresql.util.PGobject
@@ -26,7 +26,7 @@ internal object UsersTable : UUIDTable(name = "public.users") {
                 type = "department",
                 value = department.slug,
             )
-        }
+        },
     )
 
     val role = customEnumeration(
@@ -42,7 +42,7 @@ internal object UsersTable : UUIDTable(name = "public.users") {
                 type = "user_role",
                 value = userRole.slug,
             )
-        }
+        },
     )
 
     val status = customEnumeration(
@@ -58,7 +58,7 @@ internal object UsersTable : UUIDTable(name = "public.users") {
                 type = "account_status",
                 value = accountStatus.slug,
             )
-        }
+        },
     )
 
     val avatarUrl = text(name = "avatar_url").nullable()
@@ -67,10 +67,12 @@ internal object UsersTable : UUIDTable(name = "public.users") {
     val createdAt = timestampWithTimeZone(name = "created_at")
     val updatedAt = timestampWithTimeZone(name = "updated_at")
 
-    private fun enumDbValue(value: Any): String =
-        (value as? PGobject)?.value ?: value.toString()
+    private fun enumDbValue(value: Any): String = (value as? PGobject)?.value ?: value.toString()
 
-    private fun pgEnum(type: String, value: String) = PGobject().apply {
+    private fun pgEnum(
+        type: String,
+        value: String,
+    ) = PGobject().apply {
         this.type = type
         this.value = value
     }

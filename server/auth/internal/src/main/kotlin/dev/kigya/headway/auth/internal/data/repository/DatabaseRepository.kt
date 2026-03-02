@@ -37,10 +37,11 @@ class DatabaseRepository(
                         email = email,
                         name = name,
                         avatarUrl = avatarUrl,
-                    )
+                    ),
                 )
             }
         } catch (t: Throwable) {
+            @Suppress("StringLiteralDuplication")
             throw AuthException.DependencyUnavailable("database", cause = t)
         }
 
@@ -72,7 +73,7 @@ class DatabaseRepository(
                         expiresIn = expiresIn,
                         fingerprint = fingerprint,
                         platform = platform,
-                    )
+                    ),
                 )
             }
         } catch (t: Throwable) {
@@ -99,7 +100,7 @@ class DatabaseRepository(
                     DatabaseValidateSessionPayloadDto(
                         refreshToken = refreshToken,
                         fingerprint = fingerprint,
-                    )
+                    ),
                 )
             }
         } catch (t: Throwable) {
@@ -112,7 +113,7 @@ class DatabaseRepository(
             HttpStatusCode.Unauthorized,
             HttpStatusCode.NotFound,
             HttpStatusCode.Forbidden,
-                -> throw AuthException.Unauthorized("Invalid session")
+            -> throw AuthException.Unauthorized("Invalid session")
 
             else -> throw AuthException.UpstreamProtocol(
                 dependency = "database",

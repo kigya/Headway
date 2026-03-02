@@ -12,9 +12,9 @@ import io.ktor.http.HttpStatusCode
 import io.ktor.server.plugins.BadRequestException
 import io.ktor.server.request.receive
 import io.ktor.server.resources.get
+import io.ktor.server.resources.post
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
-import io.ktor.server.resources.post
 
 internal fun Route.usersRouting(
     getGoogleUser: GetGoogleUserUseCase,
