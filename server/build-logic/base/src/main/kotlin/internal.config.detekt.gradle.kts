@@ -10,7 +10,7 @@ plugins {
 }
 
 configure<DetektExtension> {
-    config.from(rootProject.file(DetektConfigs.BACKEND))
+    config.from(rootProject.file(DetektConfigs.SERVER))
     autoCorrect = System.getProperty("DETEKT_AUTOCORRECT")?.toBooleanStrictOrNull() ?: true
     parallel = true
     allRules = false
