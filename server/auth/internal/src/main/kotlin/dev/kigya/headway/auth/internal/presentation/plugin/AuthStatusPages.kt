@@ -9,7 +9,6 @@ import io.ktor.server.plugins.statuspages.StatusPages
 import io.ktor.server.plugins.statuspages.StatusPagesConfig
 import io.ktor.server.response.respond
 
-
 internal fun Application.authStatusPages() {
     install(StatusPages) {
         handleDefaultExceptions()

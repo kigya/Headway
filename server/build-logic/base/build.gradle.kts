@@ -1,17 +1,10 @@
 plugins {
     `kotlin-dsl`
-    kotlin("jvm").version(libs.versions.kotlin.get())
+    alias(libs.plugins.kotlin.jvm)
 }
 
 dependencies {
-    libs {
-        with(gradle) {
-            implementation(kotlin)
-            implementation(detekt)
-        }
-    }
+    implementation(libs.gradle.detekt)
 
-    projects {
-        implementation(gradleExt)
-    }
+    implementation(projects.gradleExt)
 }

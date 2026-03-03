@@ -7,7 +7,10 @@ import java.util.UUID
 internal class GetGoogleUserUseCase(
     private val usersRepository: UsersRepositoryContract,
 ) {
-    suspend operator fun invoke(googleId: String?, userId: UUID?): DatabaseUser? = when {
+    suspend operator fun invoke(
+        googleId: String?,
+        userId: UUID?,
+    ): DatabaseUser? = when {
         userId != null -> usersRepository.readById(userId)
         googleId != null -> usersRepository.readByGoogleId(googleId)
         else -> null

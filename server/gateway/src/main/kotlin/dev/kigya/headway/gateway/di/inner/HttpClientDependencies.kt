@@ -24,5 +24,3 @@ internal fun Module.httpClients() {
         baseUrl = authServiceUrlHolder.baseUrl,
     )
 }
-
-

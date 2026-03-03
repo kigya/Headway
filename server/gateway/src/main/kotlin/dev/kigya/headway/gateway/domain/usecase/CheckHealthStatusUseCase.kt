@@ -12,7 +12,6 @@ internal class CheckHealthStatusUseCase(
     private val startedAtNanos: Long = System.nanoTime()
 
     suspend operator fun invoke(): GatewayHealthPayload {
-
         val uptimeSeconds = ((System.nanoTime() - startedAtNanos) / NANOS_IN_SECOND).coerceAtLeast(0L)
         val authStatus = authProbe.check()
         val databaseStatus = databaseProbe.check()

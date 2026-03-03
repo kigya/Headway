@@ -32,7 +32,10 @@ internal class JWTRepository(
             .sign(accessAlgorithm)
     }
 
-    override fun generateRefreshToken(userUUID: UUID, expirationDate: Date): String {
+    override fun generateRefreshToken(
+        userUUID: UUID,
+        expirationDate: Date,
+    ): String {
         val now = Instant.now(clock)
 
         return JWT.create()

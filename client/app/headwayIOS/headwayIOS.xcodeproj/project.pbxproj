@@ -19,7 +19,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		B99700CA2DC9B8D800C7335B /* Exceptions for "headwayIOS" folder in "headwayIOS" target */ = {
+		CEC8C2282F55BE3600A84066 /* Exceptions for "headwayIOS" folder in "headwayIOS" target */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
@@ -32,7 +32,7 @@
 		B9DA97B32DC1472C00A4DA20 /* headwayIOS */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				B99700CA2DC9B8D800C7335B /* Exceptions for "headwayIOS" folder in "headwayIOS" target */,
+				CEC8C2282F55BE3600A84066 /* Exceptions for "headwayIOS" folder in "headwayIOS" target */,
 			);
 			path = headwayIOS;
 			sourceTree = "<group>";
@@ -164,7 +164,7 @@
 			inputFileListPaths = (
 			);
 			inputPaths = (
-				"$(SRCROOT)/../../../client/shared/build.gradle.kts",
+				"$(SRCROOT)/../../client/shared/build.gradle.kts",
 			);
 			name = "Compile Kotlin Framework";
 			outputFileListPaths = (

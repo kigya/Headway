@@ -1,18 +1,17 @@
 package dev.kigya.headway.auth.internal.di
 
-import dev.kigya.headway.auth.api.url.authServiceUrlHolder
 import dev.kigya.headway.auth.internal.core.ConfigurationValues
 import dev.kigya.headway.auth.internal.core.ConfigurationValues.DATABASE_SERVICE_HOST
 import dev.kigya.headway.auth.internal.core.ConfigurationValues.DATABASE_SERVICE_PORT
-import dev.kigya.headway.auth.internal.domain.repository.JWTRepositoryContract
 import dev.kigya.headway.auth.internal.data.jwt.JWTRepository
 import dev.kigya.headway.auth.internal.data.jwt.JwtConfig
 import dev.kigya.headway.auth.internal.data.repository.DatabaseRepository
+import dev.kigya.headway.auth.internal.data.verifier.GoogleIdTokenVerifier
 import dev.kigya.headway.auth.internal.data.verifier.GoogleTokenVerifierContract
 import dev.kigya.headway.auth.internal.domain.repository.DatabaseRepositoryContract
+import dev.kigya.headway.auth.internal.domain.repository.JWTRepositoryContract
 import dev.kigya.headway.auth.internal.domain.usecase.LoginWithGoogleUseCase
 import dev.kigya.headway.auth.internal.domain.usecase.RefreshTokenUseCase
-import dev.kigya.headway.auth.internal.data.verifier.GoogleIdTokenVerifier
 import dev.kigya.headway.common.extension.createServiceHttpClient
 import dev.kigya.headway.database.api.url.DatabaseKoinHttpClient
 import dev.kigya.headway.database.api.url.databaseServiceUrlHolder

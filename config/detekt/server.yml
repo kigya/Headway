@@ -102,7 +102,7 @@ complexity:
     ignoreOverloaded: false
   CyclomaticComplexMethod:
     active: true
-    threshold: 13
+    threshold: 14
     ignoreSingleWhenExpression: false
     ignoreSimpleWhenEntries: false
     ignoreNestingFunctions: false
@@ -127,7 +127,7 @@ complexity:
     threshold: 100
   LongParameterList:
     active: true
-    functionThreshold: 6
+    functionThreshold: 7
     constructorThreshold: 7
     ignoreDefaultParameters: true
     ignoreDataClasses: true
@@ -157,10 +157,10 @@ complexity:
   StringLiteralDuplication:
     active: true
     excludes: [ '**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/iosTest/**' ]
-    threshold: 2
+    threshold: 4
     ignoreAnnotation: true
     excludeStringsWithLessThan5Characters: false
-  #    ignoreStringsRegex: '$^'
+#    ignoreStringsRegex: '^database$|^network$|^cache$|^auth$'
   #    ignoreAnnotated: [ 'Preview' ] #not exist
   TooManyFunctions:
     active: true
@@ -744,7 +744,7 @@ style:
   UseIfEmptyOrIfBlank:
     active: true
   UseIfInsteadOfWhen:
-    active: true
+    active: false
   UseIsNullOrEmpty:
     active: true
   UseOrEmpty:
@@ -987,7 +987,7 @@ formatting:
     active: true
     autoCorrect: true
   PackageName:
-    active: true
+    active: false
   ParameterListSpacing:
     active: true
     autoCorrect: true

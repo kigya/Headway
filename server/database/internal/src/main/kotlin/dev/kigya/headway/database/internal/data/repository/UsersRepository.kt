@@ -2,13 +2,13 @@ package dev.kigya.headway.database.internal.data.repository
 
 import dev.kigya.headway.database.api.model.out.DatabaseUser
 import dev.kigya.headway.database.api.model.out.DatabaseUserRole
-import dev.kigya.headway.database.internal.data.table.UsersTable
-import dev.kigya.headway.database.internal.domain.repository.UsersRepositoryContract
-import dev.kigya.headway.database.internal.domain.error.DatabaseException
 import dev.kigya.headway.database.internal.core.extension.dbQuery
+import dev.kigya.headway.database.internal.data.model.ExposedAccountStatus
+import dev.kigya.headway.database.internal.data.table.UsersTable
+import dev.kigya.headway.database.internal.domain.error.DatabaseException
+import dev.kigya.headway.database.internal.domain.repository.UsersRepositoryContract
 import dev.kigya.headway.database.internal.mapping.toExposedDepartment
 import dev.kigya.headway.database.internal.mapping.toUser
-import dev.kigya.headway.database.internal.data.model.ExposedAccountStatus
 import org.jetbrains.exposed.v1.core.ResultRow
 import org.jetbrains.exposed.v1.core.eq
 import org.jetbrains.exposed.v1.datetime.CurrentTimestampWithTimeZone
@@ -22,14 +22,12 @@ internal class UsersRepository(
     private val database: Database,
 ) : UsersRepositoryContract {
 
-    override suspend fun readById(id: UUID): DatabaseUser? =
-        database.dbQuery { readByIdTx(id) }
+    override suspend fun readById(id: UUID): DatabaseUser? = database.dbQuery { readByIdTx(id) }
 
-    override suspend fun readByGoogleId(googleId: String): DatabaseUser? =
-        database.dbQuery {
-            val authUserId = parseUuidOrNull(googleId) ?: return@dbQuery null
-            readByAuthUserIdTx(authUserId)
-        }
+    override suspend fun readByGoogleId(googleId: String): DatabaseUser? = database.dbQuery {
+        val authUserId = parseUuidOrNull(googleId) ?: return@dbQuery null
+        readByAuthUserIdTx(authUserId)
+    }
 
     override suspend fun readByEmail(email: String): DatabaseUser? =
         database.dbQuery { readByEmailTx(email) }
@@ -51,7 +49,7 @@ internal class UsersRepository(
                 when (currentStatus) {
                     ExposedAccountStatus.INVITED,
                     ExposedAccountStatus.REVOKED,
-                        -> {
+                    -> {
                         it[this.status] = ExposedAccountStatus.INVITED
                         it[this.isActive] = false
                     }
@@ -83,7 +81,6 @@ internal class UsersRepository(
         name: String,
         avatarUrl: String?,
     ): DatabaseUser = database.dbQuery {
-
         val authUserId = parseUuidOrNull(googleId)
 
         val rowByEmail = readRowByEmailTx(email) ?: throw DatabaseException.UserNotInvited()
@@ -135,17 +132,22 @@ internal class UsersRepository(
         avatarUrl: String?,
         role: DatabaseUserRole,
     ): DatabaseUser = database.dbQuery {
-
         val authUserId = parseUuidOrNull(googleId)
 
         val existingByEmail = readByEmailTx(email)
         if (existingByEmail != null) {
-            throw DatabaseException.UserAlreadyExists(user = existingByEmail, message = "User with email $email already exists")
+            throw DatabaseException.UserAlreadyExists(
+                user = existingByEmail,
+                message = "User with email $email already exists",
+            )
         }
 
         val existingByAuth = authUserId?.let { readByAuthUserIdTx(it) }
         if (existingByAuth != null) {
-            throw DatabaseException.UserAlreadyExists(user = existingByAuth, message = "User with authUserId=$authUserId already exists")
+            throw DatabaseException.UserAlreadyExists(
+                user = existingByAuth,
+                message = "User with authUserId=$authUserId already exists",
+            )
         }
 
         val newId = UsersTable.insert {
@@ -170,7 +172,6 @@ internal class UsersRepository(
         name: String,
         avatarUrl: String?,
     ): DatabaseUser? = database.dbQuery {
-
         UsersTable.update({ UsersTable.id eq userId }) {
             it[this.fullName] = name
             if (avatarUrl != null) it[this.avatarUrl] = avatarUrl
@@ -187,28 +188,23 @@ internal class UsersRepository(
     private fun parseUuidOrNull(raw: String): UUID? =
         runCatching { UUID.fromString(raw) }.getOrNull()
 
-    private fun readRowByIdTx(id: UUID): ResultRow? =
-        UsersTable
-            .select(UsersTable.columns)
-            .where { UsersTable.id eq id }
-            .singleOrNull()
+    private fun readRowByIdTx(id: UUID): ResultRow? = UsersTable
+        .select(UsersTable.columns)
+        .where { UsersTable.id eq id }
+        .singleOrNull()
 
-    private fun readByIdTx(id: UUID): DatabaseUser? =
-        readRowByIdTx(id)?.toUser()
+    private fun readByIdTx(id: UUID): DatabaseUser? = readRowByIdTx(id)?.toUser()
 
-    private fun readRowByEmailTx(email: String): ResultRow? =
-        UsersTable
-            .select(UsersTable.columns)
-            .where { UsersTable.email eq email }
-            .singleOrNull()
+    private fun readRowByEmailTx(email: String): ResultRow? = UsersTable
+        .select(UsersTable.columns)
+        .where { UsersTable.email eq email }
+        .singleOrNull()
 
-    private fun readByEmailTx(email: String): DatabaseUser? =
-        readRowByEmailTx(email)?.toUser()
+    private fun readByEmailTx(email: String): DatabaseUser? = readRowByEmailTx(email)?.toUser()
 
-    private fun readByAuthUserIdTx(authUserId: UUID): DatabaseUser? =
-        UsersTable
-            .select(UsersTable.columns)
-            .where { UsersTable.authUserId eq authUserId }
-            .map { it.toUser() }
-            .singleOrNull()
+    private fun readByAuthUserIdTx(authUserId: UUID): DatabaseUser? = UsersTable
+        .select(UsersTable.columns)
+        .where { UsersTable.authUserId eq authUserId }
+        .map { it.toUser() }
+        .singleOrNull()
 }

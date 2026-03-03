@@ -2,8 +2,8 @@ package dev.kigya.headway.auth.internal.domain.usecase
 
 import dev.kigya.headway.auth.api.model.out.AuthRefreshAccessTokenResponse
 import dev.kigya.headway.auth.internal.domain.error.AuthException
-import dev.kigya.headway.auth.internal.domain.repository.JWTRepositoryContract
 import dev.kigya.headway.auth.internal.domain.repository.DatabaseRepositoryContract
+import dev.kigya.headway.auth.internal.domain.repository.JWTRepositoryContract
 
 internal class RefreshTokenUseCase(
     private val databaseRepository: DatabaseRepositoryContract,
@@ -13,8 +13,9 @@ internal class RefreshTokenUseCase(
         refreshToken: String,
         fingerprint: String,
     ): AuthRefreshAccessTokenResponse {
-        if (!jwtRepository.isRefreshTokenValid(refreshToken))
+        if (!jwtRepository.isRefreshTokenValid(refreshToken)) {
             throw AuthException.Unauthorized("Invalid refresh token")
+        }
 
         databaseRepository.validateSession(
             refreshToken = refreshToken,

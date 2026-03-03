@@ -34,8 +34,10 @@ internal object RefreshSessionsTable : UUIDTable("public.refresh_sessions") {
                 ?: error("Unknown session_platform value: '$raw'")
         },
         toDb = { p ->
-            PGobject().apply { type = "platform_type"; this.value = p.name }
-        }
+            PGobject().apply {
+                type = "platform_type"
+                this.value = p.name
+            }
+        },
     )
-
 }

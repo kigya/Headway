@@ -18,6 +18,8 @@ import io.ktor.http.contentType
 import java.time.OffsetDateTime
 import java.util.UUID
 
+private const val DATABASE_DEPENDENCY_NAME = "database"
+
 class DatabaseRepository(
     private val httpClient: HttpClient,
 ) : DatabaseRepositoryContract {
@@ -37,11 +39,11 @@ class DatabaseRepository(
                         email = email,
                         name = name,
                         avatarUrl = avatarUrl,
-                    )
+                    ),
                 )
             }
         } catch (t: Throwable) {
-            throw AuthException.DependencyUnavailable("database", cause = t)
+            throw AuthException.DependencyUnavailable(DATABASE_DEPENDENCY_NAME, cause = t)
         }
 
         return when (val status = response.status) {
@@ -49,7 +51,7 @@ class DatabaseRepository(
             HttpStatusCode.Forbidden -> throw AuthException.UserNotInvited()
 
             else -> throw AuthException.UpstreamProtocol(
-                dependency = "database",
+                dependency = DATABASE_DEPENDENCY_NAME,
                 status = status.value,
             )
         }
@@ -72,17 +74,17 @@ class DatabaseRepository(
                         expiresIn = expiresIn,
                         fingerprint = fingerprint,
                         platform = platform,
-                    )
+                    ),
                 )
             }
         } catch (t: Throwable) {
-            throw AuthException.DependencyUnavailable("database", cause = t)
+            throw AuthException.DependencyUnavailable(DATABASE_DEPENDENCY_NAME, cause = t)
         }
 
         when (val status = response.status) {
             HttpStatusCode.Created -> return
             else -> throw AuthException.UpstreamProtocol(
-                dependency = "database",
+                dependency = DATABASE_DEPENDENCY_NAME,
                 status = status.value,
             )
         }
@@ -99,11 +101,11 @@ class DatabaseRepository(
                     DatabaseValidateSessionPayloadDto(
                         refreshToken = refreshToken,
                         fingerprint = fingerprint,
-                    )
+                    ),
                 )
             }
         } catch (t: Throwable) {
-            throw AuthException.DependencyUnavailable("database", cause = t)
+            throw AuthException.DependencyUnavailable(DATABASE_DEPENDENCY_NAME, cause = t)
         }
 
         when (val status = response.status) {
@@ -112,10 +114,10 @@ class DatabaseRepository(
             HttpStatusCode.Unauthorized,
             HttpStatusCode.NotFound,
             HttpStatusCode.Forbidden,
-                -> throw AuthException.Unauthorized("Invalid session")
+            -> throw AuthException.Unauthorized("Invalid session")
 
             else -> throw AuthException.UpstreamProtocol(
-                dependency = "database",
+                dependency = DATABASE_DEPENDENCY_NAME,
                 status = status.value,
             )
         }

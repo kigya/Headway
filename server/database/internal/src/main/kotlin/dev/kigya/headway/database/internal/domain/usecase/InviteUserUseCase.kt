@@ -6,6 +6,8 @@ import dev.kigya.headway.database.internal.domain.repository.UsersRepositoryCont
 internal class InviteUserUseCase(
     private val usersRepository: UsersRepositoryContract,
 ) {
-    suspend operator fun invoke(email: String, department: String): DatabaseUser =
-        usersRepository.inviteUser(email = email, department = department)
+    suspend operator fun invoke(
+        email: String,
+        department: String,
+    ): DatabaseUser = usersRepository.inviteUser(email = email, department = department)
 }

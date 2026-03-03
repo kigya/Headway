@@ -25,14 +25,13 @@ internal fun AuthRefreshAccessTokenResponse.toGateway() = GatewayRefreshAccessTo
 internal fun GatewaySessionPlatform.toDatabase() =
     DatabaseSessionPlatform.entries.firstOrNull { it.name == name } ?: DatabaseSessionPlatform.ANDROID
 
-private fun DatabaseUser.toGatewayUser(): GatewayUser =
-    GatewayUser(
-        id = id,
-        email = email,
-        name = name,
-        role = role.toPublicRole(),
-        avatarUrl = avatarUrl,
-    )
+private fun DatabaseUser.toGatewayUser(): GatewayUser = GatewayUser(
+    id = id,
+    email = email,
+    name = name,
+    role = role.toPublicRole(),
+    avatarUrl = avatarUrl,
+)
 
 private fun DatabaseUserRole.toPublicRole(): GatewayUserRole =
     GatewayUserRole.entries.firstOrNull { it.name == name } ?: GatewayUserRole.GUEST

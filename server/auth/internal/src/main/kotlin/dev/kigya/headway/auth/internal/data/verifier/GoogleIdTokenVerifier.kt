@@ -18,8 +18,8 @@ internal class GoogleIdTokenVerifier : GoogleTokenVerifierContract {
         .build()
 
     override suspend fun verify(tokenString: String): AuthGoogleUserPayloadDto = try {
-        val idToken = verifier.verify(tokenString) ?:
-            throw AuthException.Unauthorized("Invalid Google token")
+        val idToken = verifier.verify(tokenString)
+            ?: throw AuthException.Unauthorized("Invalid Google token")
 
         val payload = idToken.payload
 

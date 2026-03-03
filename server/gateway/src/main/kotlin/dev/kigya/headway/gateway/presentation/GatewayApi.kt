@@ -20,6 +20,7 @@ import dev.kigya.headway.gateway.presentation.routes.GatewayHttpRoute
 import dev.kigya.headway.gateway.presentation.schema.authSchema
 import dev.kigya.headway.gateway.presentation.schema.databaseSchema
 import dev.kigya.headway.gateway.presentation.schema.healthSchema
+import io.ktor.http.HttpStatusCode
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
 import io.ktor.server.application.log
@@ -40,8 +41,10 @@ internal fun Application.installGatewayApi(
 
             val (code, message) = when (originalThrowable) {
                 is GatewayException -> originalThrowable.code to originalThrowable.code.rawName
-                is KtorBadRequestException -> GatewayErrorCode.BAD_REQUEST to (originalThrowable.message
-                    ?: "Bad request")
+                is KtorBadRequestException -> GatewayErrorCode.BAD_REQUEST to (
+                    originalThrowable.message
+                        ?: "Bad request"
+                    )
 
                 is IllegalArgumentException -> GatewayErrorCode.BAD_REQUEST to "Bad request"
                 else -> GatewayErrorCode.INTERNAL to "Internal server error"
@@ -51,11 +54,23 @@ internal fun Application.installGatewayApi(
 
             if (code == GatewayErrorCode.INTERNAL || code == GatewayErrorCode.DEPENDENCY_UNAVAILABLE) {
                 this@installGatewayApi.log.error(
-                    "GraphQL error: code=$code type=${originalThrowable::class.qualifiedName} msg=${originalThrowable.message}",
+                    """
+                        |GraphQL error:
+                        | code=$code
+                        | type=${originalThrowable::class.qualifiedName}
+                        | msg=${originalThrowable.message}
+                    """.trimMargin(),
                     originalThrowable,
                 )
             } else {
-                this@installGatewayApi.log.info("GraphQL error: code=$code type=${originalThrowable::class.simpleName} msg=${originalThrowable.message}")
+                this@installGatewayApi.log.info(
+                    """
+                        |GraphQL error:
+                        | code=$code
+                        | type=${originalThrowable::class.qualifiedName}
+                        | msg=${originalThrowable.message}
+                    """.trimMargin(),
+                )
             }
 
             GraphQLError(
@@ -89,20 +104,18 @@ private fun buildExtensions(
     put(EXT_CODE, code.name)
 
     val httpStatus = (throwable as? GatewayException)?.httpStatus ?: when (code) {
-        GatewayErrorCode.BAD_REQUEST -> 400
-        GatewayErrorCode.UNAUTHORIZED -> 401
-        GatewayErrorCode.FORBIDDEN -> 403
-        GatewayErrorCode.CONFLICT -> 409
-        GatewayErrorCode.DEPENDENCY_UNAVAILABLE -> 503
-        GatewayErrorCode.INTERNAL -> 500
-        else -> 404
+        GatewayErrorCode.BAD_REQUEST -> HttpStatusCode.BadRequest.value
+        GatewayErrorCode.UNAUTHORIZED -> HttpStatusCode.Unauthorized.value
+        GatewayErrorCode.FORBIDDEN -> HttpStatusCode.Forbidden.value
+        GatewayErrorCode.CONFLICT -> HttpStatusCode.Conflict.value
+        GatewayErrorCode.DEPENDENCY_UNAVAILABLE -> HttpStatusCode.ServiceUnavailable.value
+        GatewayErrorCode.INTERNAL -> HttpStatusCode.InternalServerError.value
+        else -> HttpStatusCode.NotFound.value
     }
     put(EXT_HTTP_STATUS, httpStatus)
 
     when (throwable) {
-        is GatewayException.DependencyUnavailable -> {
-            put(EXT_DEPENDENCY, throwable.dependency)
-        }
+        is GatewayException.DependencyUnavailable -> put(EXT_DEPENDENCY, throwable.dependency)
 
         is GatewayException.UpstreamProtocol -> {
             put(EXT_DEPENDENCY, throwable.dependency)

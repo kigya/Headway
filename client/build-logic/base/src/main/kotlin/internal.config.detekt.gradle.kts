@@ -15,7 +15,7 @@ val detektExcludes = listOf(
 
 configure<DetektExtension> {
     config.from(
-        rootProject.file(DetektConfigs.MAIN),
+        rootProject.file(DetektConfigs.CLIENT),
         rootProject.file(DetektConfigs.COMPOSE)
     )
     autoCorrect = System.getProperty("DETEKT_AUTOCORRECT")?.toBooleanStrictOrNull() ?: true

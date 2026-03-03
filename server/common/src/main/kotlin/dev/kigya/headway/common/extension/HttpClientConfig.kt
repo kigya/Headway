@@ -8,12 +8,12 @@ import io.ktor.client.plugins.HttpTimeout
 import io.ktor.client.plugins.contentnegotiation.ContentNegotiation
 import io.ktor.client.plugins.defaultRequest
 import io.ktor.client.plugins.resources.Resources
+import io.ktor.http.URLProtocol
+import io.ktor.http.encodedPath
 import io.ktor.serialization.kotlinx.json.json
 import kotlinx.serialization.json.Json
 import org.koin.core.module.Module
 import org.koin.core.qualifier.named
-import io.ktor.http.URLProtocol
-import io.ktor.http.encodedPath
 
 interface KoinHttpClient
 
@@ -25,7 +25,7 @@ inline fun <reified ServiceKoinName> Module.createServiceHttpClient(
     single(named<ServiceKoinName>()) {
         HttpClient(CIO) {
             baseConfig()
-            val basePath = "/" + baseUrl.trim().trim('/')
+            val basePath = '/' + baseUrl.trim().trim('/')
 
             defaultRequest {
                 url {
@@ -44,7 +44,12 @@ inline fun <reified ServiceKoinName> Module.createServiceHttpClient(
 
 fun HttpClientConfig<CIOEngineConfig>.baseConfig() {
     install(ContentNegotiation) {
-        json(Json { prettyPrint = false; ignoreUnknownKeys = true })
+        json(
+            Json {
+                prettyPrint = false
+                ignoreUnknownKeys = true
+            },
+        )
     }
     install(Resources)
     install(HttpTimeout)

@@ -28,33 +28,34 @@ internal class AuthRepository(
         idToken: String,
         fingerprint: String,
         platform: GatewaySessionPlatform,
-    ): GatewayGoogleLoginResponse =
-        upstreamCall(
-            dependency = "auth",
-            request = {
-                httpClient.post(AuthGoogleResource()) {
-                    contentType(ContentType.Application.Json)
-                    setBody(
-                        AuthGoogleLoginPayloadDto(
-                            idToken = idToken,
-                            fingerprint = fingerprint,
-                            platform = platform.toDatabase(),
-                        )
-                    )
-                }
-            },
-            onSuccess = { it.body<AuthGoogleLoginResponse>().toGateway() },
-        )
+    ): GatewayGoogleLoginResponse = upstreamCall(
+        dependency = "auth",
+        request = {
+            httpClient.post(AuthGoogleResource()) {
+                contentType(ContentType.Application.Json)
+                setBody(
+                    AuthGoogleLoginPayloadDto(
+                        idToken = idToken,
+                        fingerprint = fingerprint,
+                        platform = platform.toDatabase(),
+                    ),
+                )
+            }
+        },
+        onSuccess = { it.body<AuthGoogleLoginResponse>().toGateway() },
+    )
 
-    override suspend fun refreshToken(refreshToken: String, fingerprint: String): GatewayRefreshAccessTokenResponse =
-        upstreamCall(
-            dependency = "auth",
-            request = {
-                httpClient.post(AuthRefreshTokenResource()) {
-                    contentType(ContentType.Application.Json)
-                    setBody(AuthRefreshTokenPayloadDto(refreshToken = refreshToken, fingerprint = fingerprint))
-                }
-            },
-            onSuccess = { it.body<AuthRefreshAccessTokenResponse>().toGateway() },
-        )
+    override suspend fun refreshToken(
+        refreshToken: String,
+        fingerprint: String,
+    ): GatewayRefreshAccessTokenResponse = upstreamCall(
+        dependency = "auth",
+        request = {
+            httpClient.post(AuthRefreshTokenResource()) {
+                contentType(ContentType.Application.Json)
+                setBody(AuthRefreshTokenPayloadDto(refreshToken = refreshToken, fingerprint = fingerprint))
+            }
+        },
+        onSuccess = { it.body<AuthRefreshAccessTokenResponse>().toGateway() },
+    )
 }

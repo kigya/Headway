@@ -5,7 +5,10 @@ import dev.kigya.headway.database.internal.domain.repository.RefreshSessionsRepo
 internal class ValidateSessionUseCase(
     private val refreshSessionsRepository: RefreshSessionsRepositoryContract,
 ) {
-    suspend operator fun invoke(refreshToken: String, fingerprint: String) {
+    suspend operator fun invoke(
+        refreshToken: String,
+        fingerprint: String,
+    ) {
         refreshSessionsRepository.verifySession(
             rawRefreshToken = refreshToken,
             fingerprint = fingerprint,

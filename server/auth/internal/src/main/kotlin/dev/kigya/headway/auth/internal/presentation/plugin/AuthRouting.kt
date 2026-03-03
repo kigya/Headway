@@ -11,9 +11,9 @@ import dev.kigya.headway.common.extension.healthzRouting
 import io.ktor.server.application.Application
 import io.ktor.server.plugins.BadRequestException
 import io.ktor.server.request.receive
+import io.ktor.server.resources.post
 import io.ktor.server.response.respond
 import io.ktor.server.routing.Route
-import io.ktor.server.resources.post
 import io.ktor.server.routing.route
 import io.ktor.server.routing.routing
 
@@ -36,8 +36,12 @@ private fun Route.authByGoogle(loginWithGoogle: LoginWithGoogleUseCase) {
         val idToken = body.idToken.trim()
         val fingerprint = body.fingerprint.trim()
 
-        if (idToken.isBlank()) throw BadRequestException("ID token is blank")
-        if (fingerprint.isBlank()) throw BadRequestException("Fingerprint is blank")
+        if (idToken.isBlank()) {
+            throw BadRequestException("ID token is blank")
+        }
+        if (fingerprint.isBlank()) {
+            throw BadRequestException("Fingerprint is blank")
+        }
 
         call.respond(loginWithGoogle(idToken, fingerprint, body.platform))
     }

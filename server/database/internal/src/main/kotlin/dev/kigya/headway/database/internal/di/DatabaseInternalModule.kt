@@ -5,8 +5,8 @@ import com.zaxxer.hikari.HikariDataSource
 import dev.kigya.headway.database.internal.core.config.ConfigurationValues
 import dev.kigya.headway.database.internal.core.config.DatabaseConfig
 import dev.kigya.headway.database.internal.data.repository.RefreshSessionsRepository
-import dev.kigya.headway.database.internal.domain.repository.RefreshSessionsRepositoryContract
 import dev.kigya.headway.database.internal.data.repository.UsersRepository
+import dev.kigya.headway.database.internal.domain.repository.RefreshSessionsRepositoryContract
 import dev.kigya.headway.database.internal.domain.repository.UsersRepositoryContract
 import dev.kigya.headway.database.internal.domain.usecase.CreateGoogleUserUseCase
 import dev.kigya.headway.database.internal.domain.usecase.CreateSessionUseCase

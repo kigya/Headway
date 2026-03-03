@@ -7,7 +7,10 @@ import dev.kigya.headway.gateway.model.GatewayUser
 internal class InviteUserUseCase(
     private val databaseRepository: DatabaseRepositoryContract,
 ) {
-    suspend operator fun invoke(email: String, department: String): GatewayUser {
+    suspend operator fun invoke(
+        email: String,
+        department: String,
+    ): GatewayUser {
         val trimmedEmail = email.trim()
         val trimmedDepartment = department.trim()
 

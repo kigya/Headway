@@ -2,8 +2,8 @@ package dev.kigya.headway.database.internal.mapping
 
 import dev.kigya.headway.database.api.model.out.DatabaseUser
 import dev.kigya.headway.database.api.model.out.DatabaseUserDepartment
-import dev.kigya.headway.database.internal.domain.error.DatabaseException
 import dev.kigya.headway.database.internal.data.table.UsersTable
+import dev.kigya.headway.database.internal.domain.error.DatabaseException
 import org.jetbrains.exposed.v1.core.ResultRow
 
 internal fun ResultRow.toUser(): DatabaseUser {

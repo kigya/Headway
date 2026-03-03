@@ -42,7 +42,7 @@ internal enum class GatewayUserRole {
     EMPLOYEE,
 
     @SerialName("GUEST")
-    GUEST;
+    GUEST,
 }
 
 @Serializable
@@ -54,7 +54,7 @@ internal enum class GatewayUserDepartment {
     IOS,
 
     @SerialName("CROSS_PLATFORM")
-    CROSSPLATFORM;
+    CROSSPLATFORM,
 }
 
 @Serializable
@@ -69,5 +69,5 @@ internal enum class GatewaySessionPlatform {
     DESKTOP,
 
     @SerialName("WEB")
-    WEB;
+    WEB,
 }
