@@ -31,6 +31,10 @@ jobs:
     if: ${{ true }}
     uses: ./.github/workflows/_build-ios.yml
     secrets: inherit
+  server:
+    if: ${{ true }}
+    uses: ./.github/workflows/_build-server.yml
+    secrets: inherit
   detekt:
     if: ${{ true }}
     needs: [ android, desktop, web, ios ]
