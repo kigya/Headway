@@ -1,0 +1,50 @@
+name: _build-server
+on:
+  workflow_call: {}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Setup Gradle (cache)
+        uses: gradle/gradle-build-action@v3
+
+      - name: Make gradlew executable
+        run: chmod +x server/gradlew
+
+      - name: Build Database Microservice
+        working-directory: ./server
+        env:
+          GPR_USER: ${{ secrets.GPR_USER }}
+          GPR_KEY:  ${{ secrets.GPR_KEY }}
+        run: ./gradlew database:internal:installDist --stacktrace
+
+      - name: Build Auth Microservice
+        working-directory: ./server
+        env:
+          GPR_USER: ${{ secrets.GPR_USER }}
+          GPR_KEY: ${{ secrets.GPR_KEY }}
+        run: ./gradlew auth:internal:installDist --stacktrace
+
+      - name: Build Gateway Microservice
+        working-directory: ./server
+        env:
+          GPR_USER: ${{ secrets.GPR_USER }}
+          GPR_KEY: ${{ secrets.GPR_KEY }}
+        run: ./gradlew gateway:installDist --stacktrace
+
+      - name: Upload Artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: server-build-outputs
+          path: |
+            server/**/build/install/
+          if-no-files-found: warn
+          retention-days: 14

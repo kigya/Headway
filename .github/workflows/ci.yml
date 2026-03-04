@@ -15,24 +15,28 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  android:
+#  android:
+#    if: ${{ true }}
+#    uses: ./.github/workflows/_build-android.yml
+#    secrets: inherit
+#  desktop:
+#    if: ${{ true }}
+#    uses: ./.github/workflows/_build-desktop.yml
+#    secrets: inherit
+#  web:
+#    if: ${{ true }}
+#    uses: ./.github/workflows/_build-web.yml
+#    secrets: inherit
+#  ios:
+#    if: ${{ true }}
+#    uses: ./.github/workflows/_build-ios.yml
+#    secrets: inherit
+  server:
     if: ${{ true }}
-    uses: ./.github/workflows/_build-android.yml
+    uses: ./.github/workflows/_build-server.yml
     secrets: inherit
-  desktop:
-    if: ${{ true }}
-    uses: ./.github/workflows/_build-desktop.yml
-    secrets: inherit
-  web:
-    if: ${{ true }}
-    uses: ./.github/workflows/_build-web.yml
-    secrets: inherit
-  ios:
-    if: ${{ true }}
-    uses: ./.github/workflows/_build-ios.yml
-    secrets: inherit
-  detekt:
-    if: ${{ true }}
-    needs: [ android, desktop, web, ios ]
-    uses: ./.github/workflows/_detekt.yml
-    secrets: inherit
+#  detekt:
+#    if: ${{ true }}
+#    needs: [ android, desktop, web, ios ]
+#    uses: ./.github/workflows/_detekt.yml
+#    secrets: inherit
