@@ -1,4 +1,4 @@
-import com.android.build.api.dsl.CommonExtension
+
 import detekt.DetektConfigs
 import extension.androidMainDependencies
 import extension.commonMainDependencies
@@ -11,9 +11,6 @@ plugins {
     id("org.jetbrains.kotlin.plugin.compose")
 }
 
-configureIfExists(CommonExtension::class.java) {
-    buildFeatures.compose = true
-}
 
 configureIfExists(DetektExtension::class.java) {
     config.from(rootProject.file(DetektConfigs.COMPOSE))
