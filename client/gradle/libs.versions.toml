@@ -12,7 +12,7 @@ targetSdk = { strictly = "36" }
 exposed = { strictly = "1.0.0-rc-4" }
 
 # Gradle
-agp = { require = "8.11.1" }
+agp = { require = "9.0.1" }
 
 # Kotlin
 kotlin = { strictly = "2.2.21" }
@@ -219,6 +219,7 @@ gradle-room = { module = "androidx.room:room-gradle-plugin", version.ref = "room
 # Plugin Configurations
 androidApplication = { id = "com.android.application", version.ref = "agp" }
 androidLibrary = { id = "com.android.library", version.ref = "agp" }
+androidKmpLibrary = { id = "com.android.kotlin.multiplatform.library", version.ref = "agp" }
 kotlinAndroid = { id = "org.jetbrains.kotlin.android", version.ref = "kotlin" }
 kotlinJvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
 kotlinMultiplatform = { id = "org.jetbrains.kotlin.multiplatform", version.ref = "kotlin" }

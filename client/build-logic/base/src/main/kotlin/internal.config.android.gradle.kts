@@ -1,12 +1,10 @@
 import base.AndroidApplicationConventionParams
-import com.android.build.api.dsl.CommonExtension
-import com.android.build.gradle.BaseExtension
+import com.android.build.api.dsl.ApplicationExtension
 import extension.configureIfExists
 import extension.getInt
 import extension.libs
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
-import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
-import org.jetbrains.kotlin.gradle.tasks.KotlinJvmCompile
+import org.jetbrains.kotlin.gradle.dsl.KotlinAndroidProjectExtension
 
 val androidExtension = project.extensions.create(
     "configureAndroidApplication",
@@ -23,16 +21,17 @@ androidExtension.namespace.convention(
 )
 
 /**
- * Before using this plugin, ensure that necessary Android configurations have been applied.
- * Note: This script does not configure the Kotlin JVM version.
+ * Android application module configuration.
+ * Uses ApplicationExtension (AGP 9+) instead of the deprecated BaseExtension.
+ * Note: This plugin is only applied to the Android app module (com.android.application).
  */
-configure<BaseExtension> {
-    compileSdkVersion(rootProject.libs.versions.compileSdk.getInt())
+configureIfExists(ApplicationExtension::class.java) {
+    namespace = androidExtension.namespace.get()
+    println("Namespace: ${project.path} -> $namespace")
+
+    compileSdk = rootProject.libs.versions.compileSdk.getInt()
 
     defaultConfig {
-        namespace = androidExtension.namespace.get()
-        println("Namespace: ${project.path} -> $namespace")
-
         minSdk = rootProject.libs.versions.minSdk.getInt()
         targetSdk = rootProject.libs.versions.targetSdk.getInt()
         versionCode = androidExtension.versionCode.get()
@@ -45,12 +44,19 @@ configure<BaseExtension> {
         }
     }
 
-    compileOptions {
-        sourceCompatibility(rootProject.libs.versions.java.get())
-        targetCompatibility(rootProject.libs.versions.java.get())
+    sourceSets.getByName("main") {
+        manifest.srcFile("src/androidMain/AndroidManifest.xml")
+        res.directories.add("src/androidMain/res")
+        java.directories.add("src/androidMain/kotlin")
+        kotlin.directories.add("src/androidMain/kotlin")
     }
 
-    packagingOptions {
+    compileOptions {
+        sourceCompatibility = JavaVersion.toVersion(rootProject.libs.versions.java.get())
+        targetCompatibility = JavaVersion.toVersion(rootProject.libs.versions.java.get())
+    }
+
+    packaging {
         resources.excludes.addAll(
             listOf(
                 "META-INF/LICENSE.md",
@@ -65,21 +71,15 @@ configure<BaseExtension> {
             )
         )
     }
-}
 
-configureIfExists(CommonExtension::class.java) {
     lint {
         htmlReport = false
         baseline = file("${rootProject.projectDir}/lint-baseline.xml")
     }
 }
 
-configure<KotlinMultiplatformExtension> {
-    androidTarget {
-        tasks.withType<KotlinJvmCompile>().configureEach {
-            compilerOptions {
-                jvmTarget.set(JvmTarget.fromTarget(rootProject.libs.versions.java.get()))
-            }
-        }
+configureIfExists(KotlinAndroidProjectExtension::class.java) {
+    compilerOptions {
+        jvmTarget.set(JvmTarget.fromTarget(rootProject.libs.versions.java.get()))
     }
 }
