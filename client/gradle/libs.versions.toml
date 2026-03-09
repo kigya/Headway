@@ -34,15 +34,14 @@ koin = { strictly = "4.1.1" }
 mviKotlin = { prefer = "4.3.0" }
 
 # Network & APIs
-ktor = { require = "3.3.3" }
-googleApiClient = "2.8.1"
-connectivity = { require = "2.3.0" }
+ktor = { require = "3.4.1" }
+googleApiClient = "2.9.0"
+connectivity = { require = "2.4.1" }
 
 # Data & Storage
-dataStore = { require = "1.1.7" }
-room = { strictly = "2.8.3" }
-sqlite = { strictly = "2.6.1" }
-exposed = { strictly = "1.0.0-rc-4" }
+dataStore = { require = "1.2.0" }
+room = { strictly = "2.8.4" }
+sqlite = { strictly = "2.6.2" }
 
 # Authentication
 kmpAuth = { require = "2.3.1" }
@@ -50,20 +49,18 @@ kmpAuth = { require = "2.3.1" }
 # Firebase
 googleServices = { require = "4.4.4" }
 firebaseExtension = { require = "21.0.0" }
-gitlive = { require = "2.3.0" }
+gitlive = { require = "2.4.0" }
 
 # Imaging
-coil = { prefer = "3.3.0" }
+coil = { prefer = "3.4.0" }
 
 # Tooling & Verification
 detekt = { require = "1.23.8" }
-detektComposeLopez = { require = "0.4.27" }
+detektComposeLopez = { require = "0.5.6" }
 detektComposeKode = { require = "1.4.0" }
 buildkonfig = "0.17.1"
 
 [libraries]
-# Subgroups for logical categorization
-
 # --- Core Kotlin ---
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines" }
 coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", version.ref = "coroutines" }
@@ -111,7 +108,6 @@ ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negoti
 ktor-client-darwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
 ktor-client-logging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
 ktor-client-android = { module = "io.ktor:ktor-client-android", version.ref = "ktor" }
-ktor-client-resources = { module = "io.ktor:ktor-client-resources", version.ref = "ktor" }
 ktor-serialization = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
 
 # --- Network Misc ---
@@ -126,9 +122,6 @@ dataStore-preferencesCore = { module = "androidx.datastore:datastore-preferences
 room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
-exposed-core = { module = "org.jetbrains.exposed:exposed-core", version.ref = "exposed" }
-exposed-jdbc = { module = "org.jetbrains.exposed:exposed-jdbc", version.ref = "exposed" }
-exposed-date-time = { module = "org.jetbrains.exposed:exposed-kotlin-datetime", version.ref = "exposed" }
 
 # --- Auth & Image ---
 kmpAuth-google = { module = "io.github.mirzemehdi:kmpauth-google", version.ref = "kmpAuth" }
