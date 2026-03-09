@@ -41,6 +41,7 @@ subprojects {
     tasks.withType<KotlinCompile>().configureEach {
         val outPath = layout.buildDirectory.dir("compose_compiler").get().asFile.absoluteFile
         compilerOptions {
+            freeCompilerArgs.add("-Xskip-prerelease-check")
             if (project.findProperty("composeCompilerReports") == "true") {
                 freeCompilerArgs.addAll(
                     "-P",

@@ -2,7 +2,7 @@
 # Basic Environment Setup
 googleApiClient = "2.8.1"
 hikaricp = "7.0.2"
-java = { strictly = "17" }
+java = { strictly = "21" }
 kgraphqlKtor = "0.36.0"
 koinKtor = { strictly = "4.1.1" }
 postgresql = "42.7.8"

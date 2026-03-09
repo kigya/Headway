@@ -15,6 +15,10 @@ pluginManagement {
     includeBuild("build-logic")
 }
 
+plugins {
+    id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
+}
+
 val localProperties: Properties = Properties().apply {
     rootDir
         .resolve("local.properties")
@@ -26,7 +30,6 @@ val localProperties: Properties = Properties().apply {
 dependencyResolutionManagement {
     repositories {
         google()
-        mavenLocal()
         mavenCentral()
         maven("https://maven.pkg.jetbrains.space/public/p/compose/dev")
     }

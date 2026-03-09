@@ -1,11 +1,11 @@
-@file:OptIn(ExperimentalWasmDsl::class)
-
+import extension.addKotlinCompilerOptIns
 import extension.commonMainDependencies
 import extension.desktopMainDependencies
 import extension.enableContextParameters
+import extension.enableDataFlowBasedExhaustiveness
+import extension.enableExplicitBackingFields
 import extension.getInt
 import extension.libs
-import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.JvmTarget
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
@@ -72,6 +72,21 @@ configure<KotlinMultiplatformExtension> {
         }
 
         enableContextParameters()
+        enableDataFlowBasedExhaustiveness()
+        enableExplicitBackingFields()
+
+        addKotlinCompilerOptIns(
+            listOf(
+                "kotlin.ExperimentalStdlibApi",
+                "kotlinx.coroutines.ExperimentalCoroutinesApi",
+                "org.koin.core.annotation.KoinExperimentalAPI",
+                "androidx.compose.ui.ExperimentalComposeUiApi",
+                "org.jetbrains.kotlin.gradle.ExperimentalWasmDsl",
+                "org.jetbrains.compose.resources.ExperimentalResourceApi",
+                "kotlinx.cinterop.ExperimentalForeignApi",
+                "org.jetbrains.compose.resources.InternalResourceApi",
+            )
+        )
     }
 }
 

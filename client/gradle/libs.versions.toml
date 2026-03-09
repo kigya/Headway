@@ -1,6 +1,6 @@
 [versions]
 # Core Setup
-java = { strictly = "17" }
+java = { strictly = "21" }
 compileSdk = { strictly = "36" }
 minSdk = { strictly = "28" }
 targetSdk = { strictly = "36" }
@@ -8,7 +8,7 @@ targetSdk = { strictly = "36" }
 # Kotlin & Gradle
 agp = { require = "9.0.1" }
 kotlin = { strictly = "2.3.10" }
-ksp = { strictly = "2.3.0" }
+ksp = { strictly = "2.3.6" }
 coroutines = { require = "1.10.2" }
 kotlinxSerialization = { require = "1.10.0" }
 kotlinxDatetime = { prefer = "0.7.1" }
