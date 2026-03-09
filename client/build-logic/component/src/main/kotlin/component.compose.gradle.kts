@@ -3,6 +3,7 @@ import detekt.DetektConfigs
 import extension.androidMainDependencies
 import extension.commonMainDependencies
 import extension.configureIfExists
+import extension.invoke
 import extension.libs
 import io.gitlab.arturbosch.detekt.extensions.DetektExtension
 
@@ -36,15 +37,18 @@ pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
 
 pluginManager.withPlugin("com.android.application") {
     dependencies {
-        add("implementation", libs.lifecycle.viewmodel)
-        add("implementation", libs.lifecycle.runtimeCompose)
-        add("implementation", libs.compose.ui)
-        add("implementation", libs.compose.animation)
-        add("implementation", libs.compose.backhandler)
-        add("implementation", libs.compose.componentsResources)
-        add("implementation", libs.compose.material3)
-        add("implementation", libs.immutableCollections)
-        add("implementation", libs.compose.uiToolingPreview)
+        val implementationDef = "implementation"
+        libs {
+            add(implementationDef, libs.lifecycle.viewmodel)
+            add(implementationDef, libs.lifecycle.runtimeCompose)
+            add(implementationDef, libs.compose.ui)
+            add(implementationDef, libs.compose.animation)
+            add(implementationDef, libs.compose.backhandler)
+            add(implementationDef, libs.compose.componentsResources)
+            add(implementationDef, libs.compose.material3)
+            add(implementationDef, libs.immutableCollections)
+            add(implementationDef, libs.compose.uiToolingPreview)
+        }
     }
 }
 
