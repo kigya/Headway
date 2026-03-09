@@ -8,7 +8,6 @@ import org.gradle.kotlin.dsl.DependencyHandlerScope
 import org.gradle.kotlin.dsl.dependencies
 import org.gradle.kotlin.dsl.the
 import org.jetbrains.kotlin.gradle.dsl.KotlinJvmProjectExtension
-import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 
 /**
  * Allows configuring an extension of the given [type] if it exists on the project.
@@ -57,41 +56,8 @@ private fun Project.withKotlinJvmExtension(action: Action<KotlinJvmProjectExtens
     }
 }
 
-/**
- * Executes [action] when the Kotlin Multiplatform plugin is applied to the project.
- *
- * Useful for safely configuring KMP options from convention plugins without requiring
- * non-KMP modules to apply Kotlin Multiplatform.
- *
- * Usage:
- * ```
- * withKotlinKmpExtension {
- *   sourceSets { /* ... */ }
- * }
- * ```
- */
-private fun Project.withKotlinKmpExtension(action: Action<KotlinMultiplatformExtension>) {
-    plugins.withId("org.jetbrains.kotlin.multiplatform") {
-        the<KotlinMultiplatformExtension>().apply { action.execute(this) }
-    }
-}
-
-/**
- * Enables Kotlin compiler language feature "ContextParameters" via `-Xcontext-parameters`
- * for both Kotlin/JVM and Kotlin Multiplatform modules (whichever is applied).
- *
- * This is a convenience wrapper around [withKotlinJvmExtension] and [withKotlinKmpExtension].
- *
- * Note: this does not turn on K2 mode; it only adds compiler arguments.
- */
 public fun Project.enableContextParameters() {
     withKotlinJvmExtension {
-        compilerOptions {
-            freeCompilerArgs.add("-Xcontext-parameters")
-        }
-    }
-
-    withKotlinKmpExtension {
         compilerOptions {
             freeCompilerArgs.add("-Xcontext-parameters")
         }
