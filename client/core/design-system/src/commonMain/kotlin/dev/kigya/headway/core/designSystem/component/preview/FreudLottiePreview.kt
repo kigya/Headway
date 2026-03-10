@@ -29,7 +29,6 @@ import dev.kigya.headway.core.designSystem.theme.color.FreudDynamicColor
 import dev.kigya.headway.core.designSystem.theme.color.provides
 import dev.kigya.headway.core.designSystem.util.previewPixelGrid
 import headway.core.design_system.generated.resources.Res
-import org.jetbrains.compose.resources.ExperimentalResourceApi
 
 private object FreudLottiePreviewTheme : FreudTheme() {
 
@@ -156,6 +155,5 @@ private fun FreudLottiePreview(
     }
 }
 
-@OptIn(ExperimentalResourceApi::class)
 private suspend fun readPreviewLottieJson(): ByteArray = Res.readBytes(LOTTIE_JSON_PATH)
 private const val LOTTIE_JSON_PATH = "files/lottie_el_baion.json"

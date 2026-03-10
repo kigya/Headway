@@ -1,42 +1,53 @@
-import com.android.build.api.dsl.CommonExtension
 import detekt.DetektConfigs
+import extension.addImplementationDependencies
+import extension.addDebugImplementationDependencies
 import extension.androidMainDependencies
 import extension.commonMainDependencies
 import extension.configureIfExists
 import extension.libs
 import io.gitlab.arturbosch.detekt.extensions.DetektExtension
-import org.jetbrains.compose.android.AndroidExtension
+import org.gradle.api.Project
 
 plugins {
     id("org.jetbrains.compose")
     id("org.jetbrains.kotlin.plugin.compose")
 }
 
-configureIfExists(CommonExtension::class.java) {
-    buildFeatures.compose = true
-}
-
 configureIfExists(DetektExtension::class.java) {
     config.from(rootProject.file(DetektConfigs.COMPOSE))
 }
 
-commonMainDependencies {
-    libs {
-        implementation(lifecycle.viewmodel)
-        implementation(lifecycle.runtimeCompose)
+pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
+    configureComposeCommonDependencies()
+}
 
-        implementation(compose.ui)
-        implementation(compose.animation)
-        implementation(compose.backhandler)
-        implementation(compose.componentsResources)
-        implementation(compose.material3)
-        implementation(immutableCollections)
+pluginManager.withPlugin("com.android.kotlin.multiplatform.library") {
+    configureComposeAndroidMainDependencies()
+}
 
-        implementation(compose.uiToolingPreview)
+pluginManager.withPlugin("com.android.application") {
+    configureComposeAndroidAppDependencies()
+}
+
+private fun Project.configureComposeCommonDependencies() {
+    commonMainDependencies {
+        libs {
+            implementation(lifecycle.viewmodel)
+            implementation(lifecycle.runtimeCompose)
+
+            implementation(compose.ui)
+            implementation(compose.animation)
+            implementation(compose.backhandler)
+            implementation(compose.componentsResources)
+            implementation(compose.material3)
+            implementation(immutableCollections)
+
+            implementation(compose.uiToolingPreview)
+        }
     }
 }
 
-configureIfExists(AndroidExtension::class.java) {
+private fun Project.configureComposeAndroidMainDependencies() {
     androidMainDependencies {
         libs {
             implementation(compose.activity)
@@ -44,15 +55,21 @@ configureIfExists(AndroidExtension::class.java) {
     }
 }
 
-project.addAndroidPreviewTooling()
+private fun Project.configureComposeAndroidAppDependencies() {
+    addImplementationDependencies(
+        libs.lifecycle.viewmodel,
+        libs.lifecycle.runtimeCompose,
+        libs.compose.ui,
+        libs.compose.animation,
+        libs.compose.backhandler,
+        libs.compose.componentsResources,
+        libs.compose.material3,
+        libs.immutableCollections,
+        libs.compose.uiToolingPreview,
+        libs.compose.activity,
+    )
 
-private fun Project.addAndroidPreviewTooling() {
-    fun attach() {
-        dependencies {
-            add("debugImplementation", libs.compose.androidxUiTooling)
-        }
-    }
-
-    pluginManager.withPlugin("com.android.library") { attach() }
-    pluginManager.withPlugin("com.android.application") { attach() }
+    addDebugImplementationDependencies(
+        libs.compose.androidxUiTooling,
+    )
 }

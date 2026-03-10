@@ -2,31 +2,26 @@
 # Basic Environment Setup
 googleApiClient = "2.8.1"
 hikaricp = "7.0.2"
-java = { strictly = "17" }
+java = { strictly = "21" }
 kgraphqlKtor = "0.36.0"
 koinKtor = { strictly = "4.1.1" }
 postgresql = "42.7.8"
 exposed = { strictly = "1.0.0-rc-4" }
 
-# Gradle
-agp = { require = "8.11.1" }
-
 # Kotlin
-kotlin = { strictly = "2.2.21" }
+kotlin = { strictly = "2.3.10" }
 
 # Serialization
-kotlinxSerialization = { require = "1.9.0" }
+kotlinxSerialization = { require = "1.10.0" }
 
 # DI
 koin = { strictly = "4.1.1" }
 
 # Network
-ktor = { require = "3.3.3" }
+ktor = { require = "3.4.1" }
 
 # Detekt
 detekt = { require = "1.23.8" }
-detektComposeLopez = { require = "0.4.27" }
-detektComposeKode = { require = "1.4.0" }
 
 # Server
 logback = "1.5.23"
@@ -47,11 +42,8 @@ koin-core = { module = "io.insert-koin:koin-core", version.ref = "koin" }
 ktor-client-core = { module = "io.ktor:ktor-client-core", version.ref = "ktor" }
 ktor-client-cio = { module = "io.ktor:ktor-client-cio", version.ref = "ktor" }
 ktor-client-content-negotiation = { module = "io.ktor:ktor-client-content-negotiation", version.ref = "ktor" }
-ktor-clientDarwin = { module = "io.ktor:ktor-client-darwin", version.ref = "ktor" }
-ktor-clientLogging = { module = "io.ktor:ktor-client-logging", version.ref = "ktor" }
-ktor-clientAndroid = { module = "io.ktor:ktor-client-android", version.ref = "ktor" }
+
 ktor-serialization = { module = "io.ktor:ktor-serialization-kotlinx-json", version.ref = "ktor" }
-ktor-auth = { module = "io.ktor:ktor-server-auth", version.ref = "ktor" }
 ktor-auth-jwt = { module = "io.ktor:ktor-server-auth-jwt", version.ref = "ktor" }
 ktor-serverCore = { module = "io.ktor:ktor-server-core-jvm", version.ref = "ktor" }
 ktor-negotiation = { module = "io.ktor:ktor-server-content-negotiation", version.ref = "ktor" }
@@ -63,8 +55,6 @@ ktor-clientResources = { module = "io.ktor:ktor-client-resources", version.ref =
 
 # Detekt Libraries
 detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }
-detekt-composePluginLopez = { module = "io.nlopez.compose.rules:detekt", version.ref = "detektComposeLopez" }
-detekt-composePluginKode = { module = "ru.kode:detekt-rules-compose", version.ref = "detektComposeKode" }
 
 # Logger
 logback = { module = "ch.qos.logback:logback-classic", version.ref = "logback" }
@@ -78,7 +68,6 @@ exposed-date-time = { module = "org.jetbrains.exposed:exposed-kotlin-datetime", 
 gradle-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.ref = "kotlin" }
 gradle-serialization = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlin" }
 gradle-detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
-gradle-kotlin-jvm = { module = "org.jetbrains.kotlin.jvm:org.jetbrains.kotlin.jvm.gradle.plugin", version.ref = "kotlin" }
 
 [plugins]
 # Plugin Configurations

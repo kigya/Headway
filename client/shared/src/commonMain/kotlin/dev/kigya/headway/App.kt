@@ -16,10 +16,8 @@ import dev.kigya.headway.navigation.api.navigator.NavigatorContract
 import org.koin.compose.KoinMultiplatformApplication
 import org.koin.compose.currentKoinScope
 import org.koin.compose.scope.rememberKoinScope
-import org.koin.core.annotation.KoinExperimentalAPI
 import org.koin.dsl.KoinConfiguration
 
-@OptIn(KoinExperimentalAPI::class)
 @Composable
 fun App() {
     KoinMultiplatformApplication(
@@ -31,7 +29,6 @@ fun App() {
     }
 }
 
-@OptIn(KoinExperimentalAPI::class)
 @Composable
 private fun AppNavigationHost() {
     val koinScope = rememberKoinScope(currentKoinScope())

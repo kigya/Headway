@@ -5,7 +5,6 @@ package dev.kigya.headway.core.designSystem.util
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.SideEffect
 import androidx.compose.runtime.remember
-import kotlinx.cinterop.ExperimentalForeignApi
 import kotlinx.cinterop.zeroValue
 import platform.CoreGraphics.CGRect
 import platform.UIKit.UIApplication
@@ -17,7 +16,6 @@ import platform.UIKit.UIWindow
 import platform.UIKit.setStatusBarStyle
 import platform.UIKit.statusBarManager
 
-@OptIn(ExperimentalForeignApi::class)
 @Composable
 private fun rememberStatusBarView() = remember {
     val keyWindow: UIWindow? =

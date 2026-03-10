@@ -19,7 +19,6 @@ val webExtension = project.extensions.create(
 
 project.afterEvaluate {
     configure<KotlinMultiplatformExtension> {
-        @OptIn(ExperimentalWasmDsl::class)
         wasmJs {
             val name = webExtension.name.get().lowercase()
             outputModuleName.set("${name}App")

@@ -1,5 +1,3 @@
-import extension.androidMainDependencies
-
 plugins {
     alias(libs.plugins.convention.base.androidApplication)
     alias(libs.plugins.convention.component.compose)
@@ -14,7 +12,7 @@ configureAndroidApplication {
     resourceConfigurations.addAll(listOf("en", "ru"))
 }
 
-androidMainDependencies {
+dependencies {
     projects {
         implementation(shared)
     }

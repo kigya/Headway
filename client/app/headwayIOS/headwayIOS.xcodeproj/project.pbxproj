@@ -19,7 +19,7 @@
 /* End PBXFileReference section */
 
 /* Begin PBXFileSystemSynchronizedBuildFileExceptionSet section */
-		CEC8C2282F55BE3600A84066 /* Exceptions for "headwayIOS" folder in "headwayIOS" target */ = {
+		CEC8C2282F55BE3600A84066 /* PBXFileSystemSynchronizedBuildFileExceptionSet */ = {
 			isa = PBXFileSystemSynchronizedBuildFileExceptionSet;
 			membershipExceptions = (
 				Info.plist,
@@ -32,7 +32,7 @@
 		B9DA97B32DC1472C00A4DA20 /* headwayIOS */ = {
 			isa = PBXFileSystemSynchronizedRootGroup;
 			exceptions = (
-				CEC8C2282F55BE3600A84066 /* Exceptions for "headwayIOS" folder in "headwayIOS" target */,
+				CEC8C2282F55BE3600A84066 /* PBXFileSystemSynchronizedBuildFileExceptionSet */,
 			);
 			path = headwayIOS;
 			sourceTree = "<group>";
@@ -174,7 +174,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "cd \"$SRCROOT/../..\"\n./gradlew :shared:embedAndSignAppleFrameworkForXcode\n";
+			shellScript = "if [ \"YES\" = \"$OVERRIDE_KOTLIN_BUILD_IDE_SUPPORTED\" ]; then\n  echo \"Skipping Gradle build task invocation due to OVERRIDE_KOTLIN_BUILD_IDE_SUPPORTED environment variable set to \\\"YES\\\"\"\n  exit 0\nfi\ncd \"$SRCROOT/../..\"\n./gradlew :shared:embedAndSignAppleFrameworkForXcode";
 		};
 /* End PBXShellScriptBuildPhase section */
 

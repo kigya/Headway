@@ -20,27 +20,8 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinDependencyHandler
 public inline fun DependencyHandler.implementation(dependencyNotation: Any): Dependency? =
     add("implementation", dependencyNotation)
 
-/**
- * Adds a dependency to the 'debugImplementation' configuration.
- *
- * @param dependencyNotation notation for the dependency to be added.
- * @return The dependency.
- *
- * @see [DependencyHandler.add]
- */
-public inline fun DependencyHandler.debugImplementation(dependencyNotation: Any): Dependency? =
-    add("debugImplementation", dependencyNotation)
 
-/**
- * Adds a dependency to the 'ksp' configuration.
- *
- * @param dependencyNotation notation for the dependency to be added.
- * @return The dependency.
- *
- * @see [DependencyHandler.add]
- */
-public inline fun DependencyHandler.ksp(dependencyNotation: Any): Dependency? =
-    add("ksp", dependencyNotation)
+
 
 
 /**
@@ -54,16 +35,6 @@ public inline fun DependencyHandler.ksp(dependencyNotation: Any): Dependency? =
 public inline fun DependencyHandler.testImplementation(dependencyNotation: Any): Dependency? =
     add("testImplementation", dependencyNotation)
 
-/**
- * Adds a dependency to the 'androidTestImplementation' configuration.
- *
- * @param dependencyNotation notation for the dependency to be added.
- * @return The dependency.
- *
- * @see [DependencyHandler.add]
- */
-public inline fun DependencyHandler.androidTestImplementation(dependencyNotation: Any): Dependency? =
-    add("androidTestImplementation", dependencyNotation)
 
 /**
  * Adds a dependency to the 'detektPlugins' configuration.
