@@ -15,28 +15,12 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  android:
+  client:
+    name: client
     if: ${{ true }}
-    uses: ./.github/workflows/_build-android.yml
-    secrets: inherit
-  desktop:
-    if: ${{ true }}
-    uses: ./.github/workflows/_build-desktop.yml
-    secrets: inherit
-  web:
-    if: ${{ true }}
-    uses: ./.github/workflows/_build-web.yml
-    secrets: inherit
-  ios:
-    if: ${{ true }}
-    uses: ./.github/workflows/_build-ios.yml
-    secrets: inherit
+    uses: ./.github/workflows/_client.yml
   server:
+    name: server
     if: ${{ true }}
-    uses: ./.github/workflows/_build-server.yml
-    secrets: inherit
-  detekt:
-    if: ${{ true }}
-    needs: [ android, desktop, web, ios ]
-    uses: ./.github/workflows/_detekt.yml
+    uses: ./.github/workflows/_server.yml
     secrets: inherit

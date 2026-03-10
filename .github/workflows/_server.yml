@@ -1,0 +1,14 @@
+name: client
+on:
+  workflow_call: {}
+
+jobs:
+  build:
+    if: ${{ true }}
+    uses: ./.github/workflows/_build-server.yml
+    secrets: inherit
+  detekt:
+    if: ${{ true }}
+    needs: [ build ]
+    uses: ./.github/workflows/_detekt-server.yml
+    secrets: inherit
