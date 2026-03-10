@@ -8,7 +8,6 @@ Compose:
     active: true
   CompositionLocalAllowlist:
     active: true
-    allowedCompositionLocals: LocalTheme
   CompositionLocalNaming:
     active: true
   ContentEmitterReturningValues:
@@ -18,8 +17,6 @@ Compose:
   LambdaParameterInRestartableEffect:
     active: true
   ModifierClickableOrder:
-    active: true
-  ModifierComposable:
     active: true
   ModifierComposed:
     active: true
