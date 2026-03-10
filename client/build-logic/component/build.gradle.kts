@@ -22,6 +22,6 @@ dependencies {
     }
 
     projects {
-        implementation(gradleExt)
+        implementation(gradleExtension)
     }
 }

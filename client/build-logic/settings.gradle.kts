@@ -26,5 +26,5 @@ rootProject.name = "build-logic"
 include(
     "component",
     "base",
-    "gradle-ext",
+    "gradle-extension",
 )

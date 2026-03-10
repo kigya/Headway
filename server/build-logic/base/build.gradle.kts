@@ -5,5 +5,5 @@ plugins {
 dependencies {
     implementation(libs.gradle.detekt)
 
-    implementation(projects.gradleExt)
+    implementation(projects.gradleExtension)
 }
