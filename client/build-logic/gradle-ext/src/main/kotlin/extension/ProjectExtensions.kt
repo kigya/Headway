@@ -240,3 +240,53 @@ public fun Project.microserviceDependencies(block: DependencyHandlerScope.() -> 
 public fun Project.jvmLibraryDependencies(block: DependencyHandlerScope.() -> Unit) {
     dependencies(block)
 }
+
+/**
+ * Adds a batch of dependencies to the standard Gradle `implementation` configuration.
+ *
+ * Useful in convention plugins when the same set of implementation dependencies must be attached
+ * programmatically, without repeating multiple `add("implementation", ...)` calls.
+ *
+ * Intended for regular module-level dependencies. For source-set-specific dependencies in KMP
+ * modules, prefer helpers such as `commonMainDependencies` or `androidMainDependencies`.
+ *
+ * Usage:
+ * ```
+ * addImplementationDependencies(
+ *   libs.koin.core,
+ *   libs.koin.compose,
+ * )
+ * ```
+ */
+public fun Project.addImplementationDependencies(vararg dependenciesToAdd: Any) {
+    dependencies {
+        dependenciesToAdd.forEach { dependency ->
+            add("implementation", dependency)
+        }
+    }
+}
+
+/**
+ * Adds a batch of dependencies to the standard Gradle `debugImplementation` configuration.
+ *
+ * Useful in convention plugins when the same set of implementation dependencies must be attached
+ * programmatically, without repeating multiple `add("debugImplementation", ...)` calls.
+ *
+ * Intended for regular module-level dependencies. For source-set-specific dependencies in KMP
+ * modules, prefer helpers such as `commonMainDependencies` or `androidMainDependencies`.
+ *
+ * Usage:
+ * ```
+ * addDebugImplementationDependencies(
+ *   libs.koin.core,
+ *   libs.koin.compose,
+ * )
+ * ```
+ */
+public fun Project.addDebugImplementationDependencies(vararg dependenciesToAdd: Any) {
+    dependencies {
+        dependenciesToAdd.forEach { dependency ->
+            add("debugImplementation", dependency)
+        }
+    }
+}

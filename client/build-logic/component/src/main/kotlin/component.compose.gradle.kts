@@ -1,23 +1,35 @@
-
 import detekt.DetektConfigs
+import extension.addImplementationDependencies
+import extension.addDebugImplementationDependencies
 import extension.androidMainDependencies
 import extension.commonMainDependencies
 import extension.configureIfExists
-import extension.invoke
 import extension.libs
 import io.gitlab.arturbosch.detekt.extensions.DetektExtension
+import org.gradle.api.Project
 
 plugins {
     id("org.jetbrains.compose")
     id("org.jetbrains.kotlin.plugin.compose")
 }
 
-
 configureIfExists(DetektExtension::class.java) {
     config.from(rootProject.file(DetektConfigs.COMPOSE))
 }
 
 pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
+    configureComposeCommonDependencies()
+}
+
+pluginManager.withPlugin("com.android.kotlin.multiplatform.library") {
+    configureComposeAndroidMainDependencies()
+}
+
+pluginManager.withPlugin("com.android.application") {
+    configureComposeAndroidAppDependencies()
+}
+
+private fun Project.configureComposeCommonDependencies() {
     commonMainDependencies {
         libs {
             implementation(lifecycle.viewmodel)
@@ -35,24 +47,7 @@ pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
     }
 }
 
-pluginManager.withPlugin("com.android.application") {
-    dependencies {
-        val implementationDef = "implementation"
-        libs {
-            add(implementationDef, libs.lifecycle.viewmodel)
-            add(implementationDef, libs.lifecycle.runtimeCompose)
-            add(implementationDef, libs.compose.ui)
-            add(implementationDef, libs.compose.animation)
-            add(implementationDef, libs.compose.backhandler)
-            add(implementationDef, libs.compose.componentsResources)
-            add(implementationDef, libs.compose.material3)
-            add(implementationDef, libs.immutableCollections)
-            add(implementationDef, libs.compose.uiToolingPreview)
-        }
-    }
-}
-
-pluginManager.withPlugin("com.android.kotlin.multiplatform.library") {
+private fun Project.configureComposeAndroidMainDependencies() {
     androidMainDependencies {
         libs {
             implementation(compose.activity)
@@ -60,12 +55,21 @@ pluginManager.withPlugin("com.android.kotlin.multiplatform.library") {
     }
 }
 
-pluginManager.withPlugin("com.android.application") {
-    dependencies {
-        add("implementation", libs.compose.activity)
-    }
+private fun Project.configureComposeAndroidAppDependencies() {
+    addImplementationDependencies(
+        libs.lifecycle.viewmodel,
+        libs.lifecycle.runtimeCompose,
+        libs.compose.ui,
+        libs.compose.animation,
+        libs.compose.backhandler,
+        libs.compose.componentsResources,
+        libs.compose.material3,
+        libs.immutableCollections,
+        libs.compose.uiToolingPreview,
+        libs.compose.activity,
+    )
 
-    dependencies {
-        add("debugImplementation", libs.compose.androidxUiTooling)
-    }
+    addDebugImplementationDependencies(
+        libs.compose.androidxUiTooling,
+    )
 }

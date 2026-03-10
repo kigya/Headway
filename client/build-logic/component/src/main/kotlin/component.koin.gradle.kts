@@ -1,6 +1,7 @@
 import extension.androidMainDependencies
 import extension.commonMainDependencies
 import extension.libs
+import extension.addImplementationDependencies
 
 pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
     commonMainDependencies {
@@ -9,15 +10,6 @@ pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
             implementation(koin.compose)
             implementation(koin.composeViewModel)
         }
-    }
-}
-
-pluginManager.withPlugin("com.android.application") {
-    dependencies {
-        val implementationDef = "implementation"
-        add(implementationDef, libs.koin.core)
-        add(implementationDef, libs.koin.compose)
-        add(implementationDef, libs.koin.composeViewModel)
     }
 }
 
@@ -31,9 +23,11 @@ pluginManager.withPlugin("com.android.kotlin.multiplatform.library") {
 }
 
 pluginManager.withPlugin("com.android.application") {
-    dependencies {
-        val implementationDef = "implementation"
-        add(implementationDef, libs.koin.android)
-        add(implementationDef, libs.koin.androidxCompose)
-    }
+    addImplementationDependencies(
+        libs.koin.core,
+        libs.koin.compose,
+        libs.koin.composeViewModel,
+        libs.koin.android,
+        libs.koin.androidxCompose,
+    )
 }
