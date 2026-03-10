@@ -20,3 +20,4 @@ captures
 !/server/docker/Dockerfile
 **/bin/
 **/lib/
+**/.vscode
