@@ -4,7 +4,7 @@ on:
 
 jobs:
   build:
-    name: build-android
+    name: android-build
     runs-on: ubuntu-latest
     steps:
       - uses: actions/checkout@v4
