@@ -8,9 +8,9 @@ enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {
     repositories {
-        google()
         gradlePluginPortal()
         mavenCentral()
+        google()
     }
     includeBuild("build-logic")
 }
@@ -30,15 +30,7 @@ val localProperties: Properties = Properties().apply {
 dependencyResolutionManagement {
     repositories {
         mavenCentral()
-        maven {
-            url = uri("https://maven.pkg.github.com/kigya/Outcome")
-            credentials {
-                username = localProperties.getProperty("gpr.user")
-                    ?: System.getenv("GPR_USER")
-                password = localProperties.getProperty("gpr.key")
-                    ?: System.getenv("GPR_KEY")
-            }
-        }
+        google()
     }
 }
 

@@ -56,6 +56,7 @@ public fun Project.configureMicroserviceApplication(block: MicroserviceAppConfig
             val args = mutableListOf("-Dio.ktor.development=$isDevelopment")
             args += cfg.resolvedJvmArgs()
             applicationDefaultJvmArgs = args
+            executableDir = "build"
         }
     }
 }
