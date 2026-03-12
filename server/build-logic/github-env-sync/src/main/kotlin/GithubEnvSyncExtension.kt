@@ -1,7 +1,12 @@
+import gradle.ProjectGradleProperties
 import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.model.ObjectFactory
 import org.gradle.api.provider.Property
+import javax.inject.Inject
 
-abstract class GithubEnvSyncExtension {
+abstract class GithubEnvSyncExtension @Inject constructor(
+    objects: ObjectFactory,
+) {
 
     abstract val owner: Property<String>
 
@@ -9,7 +14,9 @@ abstract class GithubEnvSyncExtension {
 
     abstract val environment: Property<String>
 
-    abstract val clientId: Property<String>
+    val clientId: Property<String> = objects
+        .property(String::class.java)
+        .value(ProjectGradleProperties.read("github.app.clientId"))
 
     abstract val tokenPropertyName: Property<String>
 
@@ -22,4 +29,6 @@ abstract class GithubEnvSyncExtension {
     abstract val autoOpenBrowser: Property<Boolean>
 
     abstract val failOnMissingVariables: Property<Boolean>
+
+    abstract val runOnIdeSync: Property<Boolean>
 }

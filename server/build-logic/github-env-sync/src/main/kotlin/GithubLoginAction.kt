@@ -2,6 +2,7 @@ import github.GithubApi
 import gradle.GradleUserProperties
 import util.GithubApiException
 import java.awt.Desktop
+import java.awt.GraphicsEnvironment
 import java.net.URI
 import kotlin.math.min
 
@@ -21,12 +22,20 @@ internal class GithubLoginAction(
         logger("Open: ${deviceCode.verificationUri}")
         logger("Code: ${deviceCode.userCode}")
 
-        if (autoOpenBrowser && Desktop.isDesktopSupported()) {
+        val isSupported = !GraphicsEnvironment.isHeadless() && Desktop.isDesktopSupported()
+        if (autoOpenBrowser && isSupported) {
             runCatching {
-                Desktop.getDesktop().browse(URI(deviceCode.verificationUri))
+                val desktop = Desktop.getDesktop()
+                if (desktop.isSupported(Desktop.Action.BROWSE)) {
+                    desktop.browse(URI(deviceCode.verificationUri))
+                } else {
+                    logger("Browser opening is not supported. Open the URL manually: ${deviceCode.verificationUri}")
+                }
             }.onFailure {
-                logger("Could not open browser automatically. Open the URL manually.")
+                logger("Could not open browser automatically. Open the URL manually: ${deviceCode.verificationUri}")
             }
+        } else {
+            logger("Open the URL manually: ${deviceCode.verificationUri}")
         }
 
         val deadlineMillis = System.currentTimeMillis() + deviceCode.expiresIn * 1000

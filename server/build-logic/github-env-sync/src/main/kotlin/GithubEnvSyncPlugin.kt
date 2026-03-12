@@ -1,5 +1,6 @@
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import util.EnvSyncState
 
 internal class GithubEnvSyncPlugin : Plugin<Project> {
 
@@ -8,13 +9,14 @@ internal class GithubEnvSyncPlugin : Plugin<Project> {
     private fun Project.applyGithubEnvSync() {
         val ext = extensions.create(
             "githubEnvSync",
-            GithubEnvSyncExtension::class.java
+            GithubEnvSyncExtension::class.java,
         )
 
         ext.tokenPropertyName.convention("github.env.sync.token")
         ext.usernamePropertyName.convention("github.env.sync.username")
         ext.autoOpenBrowser.convention(true)
         ext.failOnMissingVariables.convention(true)
+        ext.runOnIdeSync.convention(true)
 
         tasks.register("githubLogin", GithubLoginTask::class.java) {
             group = "github env sync"
@@ -37,6 +39,7 @@ internal class GithubEnvSyncPlugin : Plugin<Project> {
         }
 
         afterEvaluate {
+            if (!ext.runOnIdeSync.get()) return@afterEvaluate
             if (!isIdeSync(project)) return@afterEvaluate
 
             val logger = project.logger

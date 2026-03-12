@@ -26,6 +26,11 @@ detekt = { require = "1.23.8" }
 # Server
 logback = "1.5.23"
 
+# Jackson
+jackson = "2.18.2"
+
+github-env-sync-plugin = "unspecified"
+
 [libraries]
 # Serialization
 google-api-client = { module = "com.google.api-client:google-api-client", version.ref = "googleApiClient" }
@@ -69,6 +74,9 @@ gradle-kotlin = { module = "org.jetbrains.kotlin:kotlin-gradle-plugin", version.
 gradle-serialization = { module = "org.jetbrains.kotlin:kotlin-serialization", version.ref = "kotlin" }
 gradle-detekt = { module = "io.gitlab.arturbosch.detekt:detekt-gradle-plugin", version.ref = "detekt" }
 
+# Jackson
+jackson-module-kotlin = { module = "com.fasterxml.jackson.module:jackson-module-kotlin", version.ref = "jackson" }
+
 [plugins]
 # Plugin Configurations
 ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
@@ -80,3 +88,5 @@ convention-base-microserviceApplication = "base.microserviceApplication:1.0"
 convention-base-jvmLibrary = "base.jvmLibrary:1.0"
 
 convention-component-serialization = "component.serialization:1.0"
+
+convention-github-env-sync = { id = "dev.kigya.github-env-sync", version.ref = "github-env-sync-plugin" }

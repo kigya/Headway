@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.detekt) apply false
     alias(libs.plugins.serialization) apply false
     alias(libs.plugins.kotlin.jvm) apply false
-    id("dev.kygia.github-env-sync")
+    alias(libs.plugins.convention.github.env.sync)
 }
 
 val gitHooksScript = file("../config/git/hooks/installer.gradle.kts")
@@ -28,8 +28,6 @@ githubEnvSync {
     owner.set("kigya")
     repo.set("Headway")
     environment.set("dev")
-
-    clientId.set("Iv23li1SBZOzRNTZ2ve9")
 
     templatesDir.set(layout.projectDirectory.dir("docker/template"))
     outputDir.set(layout.projectDirectory.dir("docker"))

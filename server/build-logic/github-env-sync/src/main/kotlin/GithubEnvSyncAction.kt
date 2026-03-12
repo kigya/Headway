@@ -1,5 +1,6 @@
 import github.GithubApi
 import gradle.GradleUserProperties
+import util.EnvSyncState
 import util.TemplateRenderer
 import java.io.File
 

@@ -1,3 +1,5 @@
+package util
+
 import java.io.File
 import java.security.MessageDigest
 import java.util.Properties

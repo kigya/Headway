@@ -3,7 +3,7 @@ plugins {
     `java-gradle-plugin`
 }
 
-group = "com.example"
+group = "dev.kigya.headway.gradle"
 version = "1.0.0"
 
 repositories {
@@ -13,13 +13,13 @@ repositories {
 
 dependencies {
     implementation(kotlin("stdlib"))
-    implementation("com.fasterxml.jackson.module:jackson-module-kotlin:2.18.2")
+    implementation(libs.jackson.module.kotlin)
 }
 
 gradlePlugin {
     plugins {
         create("githubEnvSyncPlugin") {
-            id = "dev.kygia.github-env-sync"
+            id = "dev.kigya.github-env-sync"
             implementationClass = "GithubEnvSyncPlugin"
             displayName = "GitHub Env Sync Plugin"
             description = "Authorize via GitHub, verify repo access, fetch Actions Variables, and generate env files"
