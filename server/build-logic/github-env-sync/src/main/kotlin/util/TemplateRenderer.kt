@@ -15,7 +15,7 @@ internal object TemplateRenderer {
             val key = match.groupValues[1]
             val value = values[key]
             when {
-                value != null -> value
+                value != null -> EnvValueSanitizer.sanitize(value)
                 failOnMissing -> {
                     missing += key
                     match.value
