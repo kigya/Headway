@@ -8,7 +8,7 @@ import dev.kigya.headway.common.util.stringEnv
 internal object ConfigurationValues {
 
     val AUTH_SERVICE_HOST: String
-        get() = stringEnv(EnvKeys.AUTH_SERVICE_HOST)
+        get() = stringEnv(EnvKeys.AUTH_SERVICE_SELF_HOST)
 
     val AUTH_SERVICE_PORT: Int
         get() = intEnv(EnvKeys.AUTH_SERVICE_PORT)
@@ -45,7 +45,7 @@ internal object ConfigurationValues {
 
     object EnvKeys {
 
-        const val AUTH_SERVICE_HOST = "AUTH_SERVICE_HOST"
+        const val AUTH_SERVICE_SELF_HOST = "AUTH_SERVICE_SELF_HOST"
 
         const val DATABASE_SERVICE_HOST = "DATABASE_SERVICE_HOST"
 

@@ -7,7 +7,7 @@ import dev.kigya.headway.common.util.stringEnv
 internal object ConfigurationValues {
 
     val DATABASE_SERVICE_HOST: String
-        get() = stringEnv(EnvKeys.DATABASE_SERVICE_HOST)
+        get() = stringEnv(EnvKeys.DATABASE_SELF_SERVICE_HOST)
 
     val DATABASE_SERVICE_PORT: Int
         get() = intEnv(EnvKeys.DATABASE_SERVICE_PORT)
@@ -30,7 +30,7 @@ internal object ConfigurationValues {
 
     object EnvKeys {
 
-        const val DATABASE_SERVICE_HOST = "DATABASE_SERVICE_HOST"
+        const val DATABASE_SELF_SERVICE_HOST = "DATABASE_SELF_SERVICE_HOST"
 
         const val DATABASE_SERVICE_PORT = "DATABASE_SERVICE_PORT"
 

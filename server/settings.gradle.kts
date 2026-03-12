@@ -13,6 +13,7 @@ pluginManagement {
         google()
     }
     includeBuild("build-logic")
+    includeBuild("build-logic/github-env-sync")
 }
 
 plugins {
