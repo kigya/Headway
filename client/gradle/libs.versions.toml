@@ -82,6 +82,7 @@ compose-material3 = { module = "org.jetbrains.compose.material3:material3", vers
 compose-navigation3-runtime = { module = "androidx.navigation3:navigation3-runtime", version.ref = "composeNavigation3" }
 compose-navigation3-ui = { module = "org.jetbrains.androidx.navigation3:navigation3-ui", version.ref = "composeNavigation3" }
 compottie = { module = "io.github.alexzhirkevich:compottie", version.ref = "compottie" }
+compottie-dot = { module = "io.github.alexzhirkevich:compottie-dot", version.ref = "compottie" }
 
 # --- Architecture & Lifecycle ---
 lifecycle-viewmodel = { module = "org.jetbrains.androidx.lifecycle:lifecycle-viewmodel", version.ref = "lifecycle" }

@@ -15,6 +15,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.kigya.headway.core.designSystem.component.FreudLottie
+import dev.kigya.headway.core.designSystem.component.FreudLottieSource
 import dev.kigya.headway.core.designSystem.component.FreudSpacer
 import dev.kigya.headway.core.designSystem.component.FreudText
 import dev.kigya.headway.feature.splash.internal.ui.theme.SplashTheme
@@ -43,8 +44,9 @@ private fun SplashScreenContent(state: State<SplashStore.State>) {
         verticalArrangement = Arrangement.Center,
     ) {
         FreudLottie(
-            modifier = Modifier.size(SplashTheme.dimension.dp72.value),
             reader = { Res.readBytes("files/lottie_brand_logo.json") },
+            source = FreudLottieSource.Json,
+            modifier = Modifier.size(SplashTheme.dimension.dp72.value),
         )
         AnimatedVisibility(
             visible = state.value.shouldDisplayText,
