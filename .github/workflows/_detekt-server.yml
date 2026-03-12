@@ -1,0 +1,33 @@
+name: _detekt-server
+on:
+  workflow_call: { }
+
+jobs:
+  detekt:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Set up JDK 17
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Setup Gradle (cache)
+        uses: gradle/gradle-build-action@v3
+
+      - name: Run Detekt
+        working-directory: ./server
+        env:
+          GPR_USER: ${{ secrets.GPR_USER }}
+          GPR_KEY: ${{ secrets.GPR_KEY }}
+        run: ./gradlew detekt --stacktrace
+
+      - name: Upload Detekt HTML reports
+        uses: actions/upload-artifact@v4
+        with:
+          name: detekt-reports
+          path: '**/build/reports/detekt/*.html'
+          if-no-files-found: warn
+          retention-days: 14

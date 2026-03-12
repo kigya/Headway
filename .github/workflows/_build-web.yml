@@ -4,6 +4,7 @@ on:
 
 jobs:
   build:
+    name: web-build
     runs-on: macos-latest
 
     steps:
