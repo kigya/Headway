@@ -11,6 +11,7 @@ plugins {
 commonMainDependencies {
     libs {
         implementation(compottie)
+        implementation(compottie.dot)
     }
     projects {
         implementation(navigation.api)

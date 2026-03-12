@@ -23,6 +23,7 @@ pluginManager.withPlugin("org.jetbrains.kotlin.multiplatform") {
 
 pluginManager.withPlugin("com.android.kotlin.multiplatform.library") {
     configureComposeAndroidMainDependencies()
+    configureComposeAndroidKmpPreviewDependencies()
 }
 
 pluginManager.withPlugin("com.android.application") {
@@ -69,7 +70,11 @@ private fun Project.configureComposeAndroidAppDependencies() {
         libs.compose.activity,
     )
 
-    addDebugImplementationDependencies(
+    addImplementationDependencies(
         libs.compose.androidxUiTooling,
     )
+}
+
+private fun Project.configureComposeAndroidKmpPreviewDependencies() {
+    dependencies.add("androidRuntimeClasspath", libs.compose.uiTooling)
 }

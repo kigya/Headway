@@ -19,6 +19,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import dev.kigya.headway.core.designSystem.component.FreudLottie
+import dev.kigya.headway.core.designSystem.component.FreudLottieSource
 import dev.kigya.headway.core.designSystem.component.FreudText
 import dev.kigya.headway.core.designSystem.component.preview.FreudLottiePreviewTheme.block
 import dev.kigya.headway.core.designSystem.component.preview.FreudLottiePreviewTheme.surface
@@ -60,27 +61,41 @@ private data class FreudLottiePreviewCase(
 
 private class FreudLottiePreviewCaseProvider : PreviewParameterProvider<FreudLottiePreviewCase> {
     override val values: Sequence<FreudLottiePreviewCase> = sequence {
-        val themes = listOf(false, true)
-
-        val modes = listOf(
-            FreudLottiePreviewCase(isDark = false, iterations = 1, reverseOnRepeat = false, speed = 1f),
-            FreudLottiePreviewCase(isDark = false, iterations = Int.MAX_VALUE, reverseOnRepeat = false, speed = 1f),
-            FreudLottiePreviewCase(isDark = false, iterations = Int.MAX_VALUE, reverseOnRepeat = true, speed = 1f),
+        val baseModes = listOf(
+            FreudLottiePreviewCase(
+                isDark = false,
+                iterations = 1,
+                reverseOnRepeat = false,
+                speed = 1f,
+            ),
+            FreudLottiePreviewCase(
+                isDark = false,
+                iterations = Int.MAX_VALUE,
+                reverseOnRepeat = false,
+                speed = 1f,
+            ),
+            FreudLottiePreviewCase(
+                isDark = false,
+                iterations = Int.MAX_VALUE,
+                reverseOnRepeat = true,
+                speed = 1f,
+            ),
         )
 
-        for (isDark in themes) {
-            for (m in modes) {
-                yield(m.copy(isDark = isDark))
+        listOf(false, true).forEach { isDark ->
+            baseModes.forEach { mode ->
+                yield(mode.copy(isDark = isDark))
             }
         }
     }
 }
 
 @Preview(
-    name = "FreudLottie – Theme x Mode",
+    name = "FreudLottie – Theme x Mode x Source",
     showBackground = false,
 )
 @Composable
+@Suppress("LongMethod")
 private fun FreudLottiePreview(
     @PreviewParameter(FreudLottiePreviewCaseProvider::class) case: FreudLottiePreviewCase,
 ) {
@@ -97,9 +112,11 @@ private fun FreudLottiePreview(
             case.reverseOnRepeat -> "Loop • Reverse"
             else -> "Loop"
         }
+        val dotLottieThemeLabel = if (case.isDark) "dark" else "light"
         val header = "$themeLabel • $modeLabel • speed=${case.speed}"
 
-        var finished by remember { mutableStateOf(false) }
+        var dotLottieFinished by remember(case) { mutableStateOf(false) }
+        var jsonFinished by remember(case) { mutableStateOf(false) }
 
         Box(
             modifier = Modifier
@@ -119,6 +136,17 @@ private fun FreudLottiePreview(
 
                 Box(modifier = Modifier.height(ds.dimension.dp12.value))
 
+                FreudText(
+                    value = ".lottie • auto theme=$dotLottieThemeLabel",
+                    color = text,
+                    typography = ds.typography.textSmSemiBold,
+                    align = TextAlign.Start,
+                    maxLines = 1,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+
+                Box(modifier = Modifier.height(ds.dimension.dp8.value))
+
                 Box(
                     modifier = Modifier
                         .fillMaxWidth()
@@ -127,12 +155,13 @@ private fun FreudLottiePreview(
                     contentAlignment = Alignment.Center,
                 ) {
                     FreudLottie(
-                        reader = { readPreviewLottieJson() },
+                        reader = { readPreviewDotLottie() },
+                        source = FreudLottieSource.DotLottie,
                         iterations = case.iterations,
                         shouldBeReversedOnRepeat = case.reverseOnRepeat,
                         speed = case.speed,
                         isRestartable = true,
-                        onFinish = { finished = true },
+                        onFinish = { dotLottieFinished = true },
                         modifier = Modifier
                             .size(ds.dimension.dp128.value)
                             .previewPixelGrid(),
@@ -140,9 +169,55 @@ private fun FreudLottiePreview(
                 }
 
                 if (case.iterations == 1) {
-                    Box(modifier = Modifier.height(ds.dimension.dp12.value))
+                    Box(modifier = Modifier.height(ds.dimension.dp8.value))
                     FreudText(
-                        value = if (finished) "onFinish() fired" else "playing…",
+                        value = if (dotLottieFinished) ".lottie onFinish() fired" else ".lottie playing…",
+                        color = text,
+                        typography = ds.typography.textSmSemiBold,
+                        align = TextAlign.Start,
+                        maxLines = 1,
+                        modifier = Modifier.fillMaxWidth(),
+                    )
+                }
+
+                Box(modifier = Modifier.height(ds.dimension.dp16.value))
+
+                FreudText(
+                    value = ".json • no theme",
+                    color = text,
+                    typography = ds.typography.textSmSemiBold,
+                    align = TextAlign.Start,
+                    maxLines = 1,
+                    modifier = Modifier.fillMaxWidth(),
+                )
+
+                Box(modifier = Modifier.height(ds.dimension.dp8.value))
+
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .background(block)
+                        .padding(ds.dimension.dp16.value),
+                    contentAlignment = Alignment.Center,
+                ) {
+                    FreudLottie(
+                        reader = { readPreviewJsonLottie() },
+                        source = FreudLottieSource.Json,
+                        iterations = case.iterations,
+                        shouldBeReversedOnRepeat = case.reverseOnRepeat,
+                        speed = case.speed,
+                        isRestartable = true,
+                        onFinish = { jsonFinished = true },
+                        modifier = Modifier
+                            .size(ds.dimension.dp128.value)
+                            .previewPixelGrid(),
+                    )
+                }
+
+                if (case.iterations == 1) {
+                    Box(modifier = Modifier.height(ds.dimension.dp8.value))
+                    FreudText(
+                        value = if (jsonFinished) ".json onFinish() fired" else ".json playing…",
                         color = text,
                         typography = ds.typography.textSmSemiBold,
                         align = TextAlign.Start,
@@ -155,5 +230,8 @@ private fun FreudLottiePreview(
     }
 }
 
-private suspend fun readPreviewLottieJson(): ByteArray = Res.readBytes(LOTTIE_JSON_PATH)
+private suspend fun readPreviewJsonLottie(): ByteArray = Res.readBytes(LOTTIE_JSON_PATH)
+private suspend fun readPreviewDotLottie(): ByteArray = Res.readBytes(LOTTIE_DOT_LOTTIE_PATH)
+
 private const val LOTTIE_JSON_PATH = "files/lottie_el_baion.json"
+private const val LOTTIE_DOT_LOTTIE_PATH = "files/lottie_stub_robot.lottie"
