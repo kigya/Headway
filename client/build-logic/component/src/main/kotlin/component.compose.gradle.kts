@@ -1,12 +1,10 @@
 import detekt.DetektConfigs
 import extension.addImplementationDependencies
-import extension.addDebugImplementationDependencies
 import extension.androidMainDependencies
 import extension.commonMainDependencies
 import extension.configureIfExists
 import extension.libs
 import io.gitlab.arturbosch.detekt.extensions.DetektExtension
-import org.gradle.api.Project
 
 plugins {
     id("org.jetbrains.compose")
@@ -44,6 +42,8 @@ private fun Project.configureComposeCommonDependencies() {
             implementation(immutableCollections)
 
             implementation(compose.uiToolingPreview)
+
+            implementation(compose.windowSizeClass)
         }
     }
 }

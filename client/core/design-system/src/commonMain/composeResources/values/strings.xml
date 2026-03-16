@@ -1,0 +1,8 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="freud_fallback_error_title">Something went wrong</string>
+    <string name="freud_fallback_error_body">We couldn't load the data. Please try again.</string>
+    <string name="freud_fallback_network_title">You're offline</string>
+    <string name="freud_fallback_network_body">Connect to the internet to load the data, then try again.</string>
+    <string name="freud_fallback_retry_button">Try Again</string>
+</resources>
