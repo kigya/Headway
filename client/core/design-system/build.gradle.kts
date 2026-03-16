@@ -1,5 +1,6 @@
 import extension.androidMainDependencies
 import extension.commonMainDependencies
+import extension.iosMainDependencies
 
 plugins {
     alias(libs.plugins.convention.base.sharedLibrary)
@@ -10,16 +11,22 @@ plugins {
 
 commonMainDependencies {
     libs {
-        implementation(compottie)
-        implementation(compottie.dot)
+        implementation(bundles.connectivity)
+        implementation(bundles.compottie)
     }
     projects {
         implementation(navigation.api)
     }
 }
 
+iosMainDependencies {
+    libs {
+        implementation(libs.connectivity.compose.device)
+    }
+}
+
 androidMainDependencies {
     libs {
-        implementation(compose.activity)
+        implementation(libs.connectivity.compose.device)
     }
 }

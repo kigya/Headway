@@ -50,70 +50,70 @@ private val Project.kmp: KotlinMultiplatformExtension
 public fun Project.commonMainDependencies(
     configure: KotlinDependencyHandler.() -> Unit,
 ) {
-    kmp.sourceSets.named("commonMain").configure { dependencies(configure) }
+    kmp.sourceSets.matching { it.name == "commonMain" }.configureEach { this.dependencies(configure) }
 }
 
 /** Adds dependencies to the `androidMain` source set. */
 public fun Project.androidMainDependencies(
     configure: KotlinDependencyHandler.() -> Unit,
 ) {
-    kmp.sourceSets.named("androidMain").configure { dependencies(configure) }
+    kmp.sourceSets.matching { it.name == "androidMain" }.configureEach { this.dependencies(configure) }
 }
 
 /** Adds dependencies to the `desktopMain` source set. */
 public fun Project.desktopMainDependencies(
     configure: KotlinDependencyHandler.() -> Unit,
 ) {
-    kmp.sourceSets.named("desktopMain").configure { dependencies(configure) }
+    kmp.sourceSets.matching { it.name == "desktopMain" }.configureEach { this.dependencies(configure) }
 }
 
 /** Adds dependencies to the `iosMain` source set. */
 public fun Project.iosMainDependencies(
     configure: KotlinDependencyHandler.() -> Unit,
 ) {
-    kmp.sourceSets.named("iosMain").configure { dependencies(configure) }
+    kmp.sourceSets.matching { it.name == "iosMain" }.configureEach { this.dependencies(configure) }
 }
 
 /** Adds dependencies to the `jsMain` source set. */
 public fun Project.wasmMainDependencies(
     configure: KotlinDependencyHandler.() -> Unit,
 ) {
-    kmp.sourceSets.named("wasmJsMain").configure { dependencies(configure) }
+    kmp.sourceSets.matching { it.name == "wasmJsMain" }.configureEach { this.dependencies(configure) }
 }
 
 /** Adds dependencies to the `commonTest` source set. */
 public fun Project.commonTestDependencies(
     configure: KotlinDependencyHandler.() -> Unit,
 ) {
-    kmp.sourceSets.named("commonTest").configure { dependencies(configure) }
+    kmp.sourceSets.matching { it.name == "commonTest" }.configureEach { this.dependencies(configure) }
 }
 
 /** Adds dependencies to the `androidTest` source set. */
 public fun Project.androidTestDependencies(
     configure: KotlinDependencyHandler.() -> Unit,
 ) {
-    kmp.sourceSets.named("androidTest").configure { dependencies(configure) }
+    kmp.sourceSets.matching { it.name == "androidTest" }.configureEach { this.dependencies(configure) }
 }
 
 /** Adds dependencies to the `desktopTest` source set. */
 public fun Project.desktopTestDependencies(
     configure: KotlinDependencyHandler.() -> Unit,
 ) {
-    kmp.sourceSets.named("desktopTest").configure { dependencies(configure) }
+    kmp.sourceSets.matching { it.name == "desktopTest" }.configureEach { this.dependencies(configure) }
 }
 
 /** Adds dependencies to the `iosTest` source set. */
 public fun Project.iosTestDependencies(
     configure: KotlinDependencyHandler.() -> Unit,
 ) {
-    kmp.sourceSets.named("iosTest").configure { dependencies(configure) }
+    kmp.sourceSets.matching { it.name == "iosTest" }.configureEach { this.dependencies(configure) }
 }
 
 /** Adds dependencies to the `jsTest` source set. */
 public fun Project.wasmTestDependencies(
     configure: KotlinDependencyHandler.() -> Unit,
 ) {
-    kmp.sourceSets.named("wasmJsTest").configure { dependencies(configure) }
+    kmp.sourceSets.matching { it.name == "wasmJsTest" }.configureEach { this.dependencies(configure) }
 }
 
 /**

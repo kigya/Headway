@@ -107,6 +107,14 @@ Booleans in this codebase are consistently named with the **`isXxx`** prefix:
 
 This should remain consistent across new APIs. Avoid `enabled`, `visible`, `dark` as bare parameter names unless there is a strong reason.
 
+### 2.6 No code comments
+This codebase follows a "no comments" policy. Do not use single-line (`//`) or multi-line (`/* */`) comments to explain what the code is doing. The code should be self-describing through:
+- expressive naming (functions, variables, internal enums),
+- clear layout structure,
+- KDoc for public APIs (allowed and encouraged for documentation).
+
+Avoid redundant comments like: `// Derive the stub kind; null means "show normal content"`.
+
 ---
 
 ## 3. Theme and token system
