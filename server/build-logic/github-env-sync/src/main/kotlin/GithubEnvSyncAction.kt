@@ -122,6 +122,10 @@ internal class GithubEnvSyncAction(
 
         if (!outputDir.exists()) {
             outputDir.mkdirs()
+        } else {
+            outputDir.listFiles()
+                ?.filter { it.isFile && it.name != ".github-env-sync.state" }
+                ?.forEach { it.delete() }
         }
 
         val templates = templatesDir.listFiles()
