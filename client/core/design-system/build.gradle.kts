@@ -9,6 +9,10 @@ plugins {
     alias(libs.plugins.convention.component.serialization)
 }
 
+compose.resources {
+    publicResClass = true
+}
+
 commonMainDependencies {
     libs {
         implementation(bundles.connectivity)

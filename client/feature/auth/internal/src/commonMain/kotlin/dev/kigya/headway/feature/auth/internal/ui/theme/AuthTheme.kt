@@ -10,8 +10,8 @@ internal object AuthTheme : FreudTheme() {
     val FreudColorScheme.authBackground
         @Composable
         get() = this provides FreudDynamicColor(
-            light = super.color.green40,
-            dark = super.color.green90,
+            light = super.color.brown10,
+            dark = super.color.brown100,
         )
 
     val FreudColorScheme.brandTextColor
@@ -20,4 +20,39 @@ internal object AuthTheme : FreudTheme() {
             light = super.color.brown10,
             dark = super.color.brown30,
         )
+
+    val FreudColorScheme.greetingHighlight @Composable get() = this provides FreudDynamicColor(
+        light = super.color.brown60,
+        dark = super.color.green50,
+    )
+
+    val FreudColorScheme.greetingTextColor @Composable get() = this provides FreudDynamicColor(
+        light = super.color.brown80,
+        dark = super.color.brown40,
+    )
+
+    val FreudColorScheme.greetingSubTextColor @Composable get() = this provides FreudDynamicColor(
+        light = super.color.brown100,
+        dark = super.color.brown30,
+    )
+
+    val FreudColorScheme.learnAsGuestButtonColor @Composable get() = this provides FreudDynamicColor(
+        light = super.color.green60,
+        dark = super.color.green60,
+    )
+
+    val FreudColorScheme.googleSingInButtonColor @Composable get() = this provides FreudDynamicColor(
+        light = super.color.brown80,
+        dark = super.color.brown80,
+    )
+
+    val FreudColorScheme.googleSingInButtonTextColor @Composable get() = this provides FreudDynamicColor(
+        light = super.color.brown10,
+        dark = super.color.brown10,
+    )
+
+    val FreudColorScheme.authUnderButtonTextColor @Composable get() = this provides FreudDynamicColor(
+        light = super.color.orange40,
+        dark = super.color.orange40,
+    )
 }

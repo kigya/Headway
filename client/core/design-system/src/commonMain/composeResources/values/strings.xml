@@ -5,4 +5,12 @@
     <string name="freud_fallback_network_title">You're offline</string>
     <string name="freud_fallback_network_body">Connect to the internet to load the data, then try again.</string>
     <string name="freud_fallback_retry_button">Try Again</string>
+
+    <!--AuthScreen strings-->
+    <string name="freud_greeting_auth_text">Welcome to Headway!</string>
+    <string name="freud_greeting_auth_subtext">Your pocket assistant for interview preparation 🍃</string>
+    <string name="freud_learn_as_guest_auth_button">Learn As A Guest</string>
+    <string name="freud_sing_in_google_auth_button">Sign In</string>innowise.com only
+    <string name="freud_auth_under_button_text">innowise.com only</string>
+    <string name="freud_substring_for_colorized_auth_header">Headway!</string>
 </resources>
