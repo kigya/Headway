@@ -5,8 +5,8 @@ services:
       dockerfile: docker/Dockerfile
       target: database
     env_file:
-      - docker/env.common
-      - docker/env.database
+      - docker/${ENV}/env.common
+      - docker/${ENV}/env.database
     ports:
       - "8082:8082"
     restart: "no"
@@ -17,8 +17,8 @@ services:
       dockerfile: docker/Dockerfile
       target: auth
     env_file:
-      - docker/env.common
-      - docker/env.auth
+      - docker/${ENV}/env.common
+      - docker/${ENV}/env.auth
     depends_on:
       - database
     ports:
@@ -31,8 +31,8 @@ services:
       dockerfile: docker/Dockerfile
       target: gateway
     env_file:
-      - docker/env.common
-      - docker/env.gateway
+      - docker/${ENV}/env.common
+      - docker/${ENV}/env.gateway
     depends_on:
       - auth
     ports:
