@@ -1,6 +1,7 @@
 import gradle.ProjectGradleProperties
 import org.gradle.api.file.DirectoryProperty
 import org.gradle.api.model.ObjectFactory
+import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import javax.inject.Inject
 
@@ -14,6 +15,10 @@ abstract class GithubEnvSyncExtension @Inject constructor(
 
     abstract val environment: Property<String>
 
+    abstract val environments: ListProperty<String>
+
+    abstract val includeLocalEnvironment: Property<Boolean>
+
     val clientId: Property<String> = objects
         .property(String::class.java)
         .value(ProjectGradleProperties.read("github.app.clientId"))
@@ -25,6 +30,8 @@ abstract class GithubEnvSyncExtension @Inject constructor(
     abstract val templatesDir: DirectoryProperty
 
     abstract val outputDir: DirectoryProperty
+
+    abstract val generatedRootDir: DirectoryProperty
 
     abstract val autoOpenBrowser: Property<Boolean>
 
