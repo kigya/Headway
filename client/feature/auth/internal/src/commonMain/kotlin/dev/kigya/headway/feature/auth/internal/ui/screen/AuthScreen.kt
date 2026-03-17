@@ -21,7 +21,6 @@ import dev.kigya.headway.core.designSystem.component.FreudIcon
 import dev.kigya.headway.core.designSystem.component.FreudImage
 import dev.kigya.headway.core.designSystem.component.FreudSpacer
 import dev.kigya.headway.core.designSystem.component.FreudText
-import dev.kigya.headway.core.designSystem.theme.FreudDsToken
 import dev.kigya.headway.core.designSystem.util.FreudBackgroundPattern
 import dev.kigya.headway.core.designSystem.util.background
 import dev.kigya.headway.core.designSystem.util.colorizeSubStrings
@@ -34,6 +33,7 @@ import dev.kigya.headway.feature.auth.internal.ui.theme.AuthTheme.greetingHighli
 import dev.kigya.headway.feature.auth.internal.ui.theme.AuthTheme.greetingSubTextColor
 import dev.kigya.headway.feature.auth.internal.ui.theme.AuthTheme.greetingTextColor
 import dev.kigya.headway.feature.auth.internal.ui.theme.AuthTheme.learnAsGuestButtonColor
+import dev.kigya.headway.feature.auth.internal.ui.theme.AuthTheme.transparent
 import headway.core.design_system.generated.resources.Res
 import headway.core.design_system.generated.resources.freud_auth_under_button_text
 import headway.core.design_system.generated.resources.freud_greeting_auth_subtext
@@ -41,7 +41,7 @@ import headway.core.design_system.generated.resources.freud_greeting_auth_text
 import headway.core.design_system.generated.resources.freud_learn_as_guest_auth_button
 import headway.core.design_system.generated.resources.freud_robot_dark_theme_img
 import headway.core.design_system.generated.resources.freud_robot_light_theme_img
-import headway.core.design_system.generated.resources.freud_sing_in_google_auth_button
+import headway.core.design_system.generated.resources.freud_sign_in_google_auth_button
 import headway.core.design_system.generated.resources.freud_substring_for_colorized_auth_header
 import headway.core.design_system.generated.resources.ic_freud_google
 import headway.core.design_system.generated.resources.ic_freud_logo
@@ -123,7 +123,7 @@ private fun AuthScreenContent(state: State<AuthStore.State>) {
                 modifier = Modifier.fillMaxWidth(),
                 text = stringResource(Res.string.freud_learn_as_guest_auth_button),
                 onClick = { /* TODO */ },
-                containerColor = FreudDsToken(androidx.compose.ui.graphics.Color.Transparent),
+                containerColor = AuthTheme.colorScheme.transparent,
                 contentColor = AuthTheme.colorScheme.learnAsGuestButtonColor,
                 borderColor = AuthTheme.colorScheme.learnAsGuestButtonColor,
                 size = FreudHorizontalButtonSize.LARGE,
@@ -133,7 +133,7 @@ private fun AuthScreenContent(state: State<AuthStore.State>) {
 
             FreudHorizontalButton(
                 modifier = Modifier.fillMaxWidth(),
-                text = stringResource(Res.string.freud_sing_in_google_auth_button),
+                text = stringResource(Res.string.freud_sign_in_google_auth_button),
                 onClick = { /* TODO */ },
                 containerColor = AuthTheme.colorScheme.googleSingInButtonColor,
                 contentColor = AuthTheme.colorScheme.googleSingInButtonTextColor,

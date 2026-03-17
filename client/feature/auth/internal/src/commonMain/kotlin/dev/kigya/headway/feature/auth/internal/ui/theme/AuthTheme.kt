@@ -1,6 +1,8 @@
 package dev.kigya.headway.feature.auth.internal.ui.theme
 
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.graphics.Color
+import dev.kigya.headway.core.designSystem.theme.FreudDsToken
 import dev.kigya.headway.core.designSystem.theme.FreudTheme
 import dev.kigya.headway.core.designSystem.theme.color.FreudColorScheme
 import dev.kigya.headway.core.designSystem.theme.color.FreudDynamicColor
@@ -54,5 +56,10 @@ internal object AuthTheme : FreudTheme() {
     val FreudColorScheme.authUnderButtonTextColor @Composable get() = this provides FreudDynamicColor(
         light = super.color.orange40,
         dark = super.color.orange40,
+    )
+
+    val FreudColorScheme.transparent @Composable get() = this provides FreudDynamicColor(
+        light = FreudDsToken(Color.Transparent),
+        dark = FreudDsToken(Color.Transparent)
     )
 }

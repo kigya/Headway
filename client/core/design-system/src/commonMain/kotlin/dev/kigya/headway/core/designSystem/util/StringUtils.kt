@@ -9,7 +9,7 @@ import dev.kigya.headway.core.designSystem.theme.FreudDsToken
 
 /**
  * Extension for [String] to create an [AnnotatedString] by coloring a specific substring.
- * * @param subString The target text to colorize.
+ * @param subString The target text to colorize.
  * @param color The [FreudDsToken] color from the design system.
  * @return [AnnotatedString] with the styled substring, or plain text if no match is found.
  */
