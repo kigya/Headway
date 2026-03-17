@@ -1,8 +1,10 @@
 import org.gradle.api.DefaultTask
 import org.gradle.api.file.DirectoryProperty
+import org.gradle.api.provider.ListProperty
 import org.gradle.api.provider.Property
 import org.gradle.api.tasks.Input
 import org.gradle.api.tasks.InputDirectory
+import org.gradle.api.tasks.Optional
 import org.gradle.api.tasks.OutputDirectory
 import org.gradle.api.tasks.TaskAction
 
@@ -15,12 +17,23 @@ internal abstract class SyncGithubEnvTask : DefaultTask() {
     abstract val repo: Property<String>
 
     @get:Input
+    @get:Optional
     abstract val environment: Property<String>
+
+    @get:Input
+    abstract val environments: ListProperty<String>
+
+    @get:Input
+    abstract val includeLocalEnvironment: Property<Boolean>
 
     @get:InputDirectory
     abstract val templatesDir: DirectoryProperty
 
     @get:OutputDirectory
+    abstract val generatedRootDir: DirectoryProperty
+
+    @get:OutputDirectory
+    @get:Optional
     abstract val outputDir: DirectoryProperty
 
     @get:Input
@@ -37,9 +50,12 @@ internal abstract class SyncGithubEnvTask : DefaultTask() {
         GithubEnvSyncAction(
             owner = owner.get(),
             repo = repo.get(),
-            environment = environment.get(),
+            environments = environments.orNull.orEmpty(),
+            legacyEnvironment = environment.orNull,
+            includeLocalEnvironment = includeLocalEnvironment.get(),
             templatesDir = templatesDir.get().asFile,
-            outputDir = outputDir.get().asFile,
+            outputDir = outputDir.orNull?.asFile,
+            generatedRootDir = generatedRootDir.get().asFile,
             tokenPropertyName = tokenPropertyName.get(),
             usernamePropertyName = usernamePropertyName.get(),
             failOnMissingVariables = failOnMissingVariables.get(),

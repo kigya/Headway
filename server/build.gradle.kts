@@ -27,7 +27,6 @@ tasks.register("detekt") {
 githubEnvSync {
     owner.set("kigya")
     repo.set("Headway")
-    environment.set("dev")
 
     templatesDir.set(layout.projectDirectory.dir("docker/template"))
     outputDir.set(layout.projectDirectory.dir("docker"))
@@ -37,4 +36,7 @@ githubEnvSync {
 
     autoOpenBrowser.set(true)
     failOnMissingVariables.set(true)
+
+    environments.set(listOf("dev", "prod"))
+    includeLocalEnvironment.set(true)
 }

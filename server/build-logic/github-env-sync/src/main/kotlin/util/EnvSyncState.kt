@@ -13,7 +13,7 @@ internal object EnvSyncState {
         templatesDir: File,
         owner: String,
         repo: String,
-        environment: String
+        environment: String,
     ): Boolean {
         val marker = File(outputDir, MARKER_FILE)
         if (!marker.exists()) return false
@@ -34,7 +34,7 @@ internal object EnvSyncState {
         if (savedTemplatesHash != currentHash) return false
 
         val generatedFiles = outputDir.listFiles()
-            ?.filter { it.isFile && it.name.startsWith("env.") }
+            ?.filter { it.isFile && it.name != MARKER_FILE }
             .orEmpty()
 
         return generatedFiles.isNotEmpty()
@@ -45,7 +45,7 @@ internal object EnvSyncState {
         templatesDir: File,
         owner: String,
         repo: String,
-        environment: String
+        environment: String,
     ) {
         if (!outputDir.exists()) {
             outputDir.mkdirs()
@@ -66,7 +66,7 @@ internal object EnvSyncState {
         val digest = MessageDigest.getInstance("SHA-256")
 
         val files = dir.listFiles()
-            ?.filter { it.isFile && it.name.startsWith("env.") && it.name.endsWith(".template") }
+            ?.filter { it.isFile && it.name.endsWith(".template") }
             ?.sortedBy { it.name }
             .orEmpty()
 

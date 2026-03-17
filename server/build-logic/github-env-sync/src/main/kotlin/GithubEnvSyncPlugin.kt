@@ -1,3 +1,4 @@
+import java.io.File
 import org.gradle.api.Plugin
 import org.gradle.api.Project
 import util.EnvSyncState
@@ -17,6 +18,9 @@ internal class GithubEnvSyncPlugin : Plugin<Project> {
         ext.autoOpenBrowser.convention(true)
         ext.failOnMissingVariables.convention(true)
         ext.runOnIdeSync.convention(true)
+        ext.includeLocalEnvironment.convention(true)
+        ext.environments.convention(emptyList())
+        ext.generatedRootDir.convention(ext.outputDir)
 
         tasks.register("githubLogin", GithubLoginTask::class.java) {
             group = "github env sync"
@@ -24,6 +28,15 @@ internal class GithubEnvSyncPlugin : Plugin<Project> {
             tokenPropertyName.set(ext.tokenPropertyName)
             usernamePropertyName.set(ext.usernamePropertyName)
             autoOpenBrowser.set(ext.autoOpenBrowser)
+            owner.set(ext.owner)
+            repo.set(ext.repo)
+            environment.set(ext.environment)
+            environments.set(ext.environments)
+            includeLocalEnvironment.set(ext.includeLocalEnvironment)
+            templatesDir.set(ext.templatesDir)
+            outputDir.set(ext.outputDir)
+            generatedRootDir.set(ext.generatedRootDir)
+            failOnMissingVariables.set(ext.failOnMissingVariables)
         }
 
         tasks.register("syncGithubEnv", SyncGithubEnvTask::class.java) {
@@ -31,8 +44,11 @@ internal class GithubEnvSyncPlugin : Plugin<Project> {
             owner.set(ext.owner)
             repo.set(ext.repo)
             environment.set(ext.environment)
+            environments.set(ext.environments)
+            includeLocalEnvironment.set(ext.includeLocalEnvironment)
             templatesDir.set(ext.templatesDir)
             outputDir.set(ext.outputDir)
+            generatedRootDir.set(ext.generatedRootDir)
             tokenPropertyName.set(ext.tokenPropertyName)
             usernamePropertyName.set(ext.usernamePropertyName)
             failOnMissingVariables.set(ext.failOnMissingVariables)
@@ -43,19 +59,27 @@ internal class GithubEnvSyncPlugin : Plugin<Project> {
             if (!isIdeSync(project)) return@afterEvaluate
 
             val logger = project.logger
-                    logger.lifecycle("IDE Gradle sync detected")
+            logger.lifecycle("IDE Gradle sync detected")
 
-            val outputDir = ext.outputDir.get().asFile
             val templatesDir = ext.templatesDir.get().asFile
+            val targetEnvironments = resolveConfiguredEnvironments(
+                environments = ext.environments.orNull.orEmpty(),
+                legacyEnvironment = ext.environment.orNull,
+                includeLocalEnvironment = ext.includeLocalEnvironment.get()
+            )
+            val generatedRootDir = ext.generatedRootDir.get().asFile
 
-            if (EnvSyncState.isUpToDate(
-                    outputDir = outputDir,
+            val allUpToDate = targetEnvironments.all { environment ->
+                EnvSyncState.isUpToDate(
+                    outputDir = File(generatedRootDir, environment),
                     templatesDir = templatesDir,
                     owner = ext.owner.get(),
                     repo = ext.repo.get(),
-                    environment = ext.environment.get()
+                    environment = environment
                 )
-            ) {
+            }
+
+            if (allUpToDate) {
                 logger.lifecycle("Env files already generated for IDE sync. Skipping githubLogin/syncGithubEnv.")
                 return@afterEvaluate
             }
@@ -72,9 +96,12 @@ internal class GithubEnvSyncPlugin : Plugin<Project> {
                 GithubEnvSyncAction(
                     owner = ext.owner.get(),
                     repo = ext.repo.get(),
-                    environment = ext.environment.get(),
+                    environments = ext.environments.orNull.orEmpty(),
+                    legacyEnvironment = ext.environment.orNull,
+                    includeLocalEnvironment = ext.includeLocalEnvironment.get(),
                     templatesDir = templatesDir,
-                    outputDir = outputDir,
+                    outputDir = ext.outputDir.orNull?.asFile,
+                    generatedRootDir = generatedRootDir,
                     tokenPropertyName = ext.tokenPropertyName.get(),
                     usernamePropertyName = ext.usernamePropertyName.get(),
                     failOnMissingVariables = ext.failOnMissingVariables.get(),
@@ -83,10 +110,26 @@ internal class GithubEnvSyncPlugin : Plugin<Project> {
             } catch (t: Throwable) {
                 logger.warn(
                     "githubEnvSync auto-run was skipped during IDE sync: ${t.message}. " +
-                            "Project sync will continue. You can run githubLogin / syncGithubEnv manually."
+                        "Project sync will continue. You can run githubLogin / syncGithubEnv manually."
                 )
             }
         }
+    }
+
+    private fun resolveConfiguredEnvironments(
+        environments: List<String>,
+        legacyEnvironment: String?,
+        includeLocalEnvironment: Boolean,
+    ): List<String> {
+        val result = linkedSetOf<String>()
+        result.addAll(environments.filter { it.isNotBlank() })
+        if (result.isEmpty() && !legacyEnvironment.isNullOrBlank()) {
+            result += legacyEnvironment
+        }
+        if (includeLocalEnvironment) {
+            result += "local"
+        }
+        return result.toList()
     }
 
     private fun isIdeSync(project: Project): Boolean {

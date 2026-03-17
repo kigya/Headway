@@ -7,9 +7,12 @@ import java.io.File
 internal class GithubEnvSyncAction(
     private val owner: String,
     private val repo: String,
-    private val environment: String,
+    private val environments: List<String>,
+    private val legacyEnvironment: String?,
+    private val includeLocalEnvironment: Boolean,
     private val templatesDir: File,
-    private val outputDir: File,
+    private val outputDir: File?,
+    private val generatedRootDir: File,
     private val tokenPropertyName: String,
     private val usernamePropertyName: String,
     private val failOnMissingVariables: Boolean,
@@ -17,7 +20,18 @@ internal class GithubEnvSyncAction(
 ) {
 
     fun runIfNeeded() {
-        if (EnvSyncState.isUpToDate(outputDir, templatesDir, owner, repo, environment)) {
+        val targetEnvironments = resolveTargetEnvironments()
+        val allUpToDate = targetEnvironments.all { environment ->
+            EnvSyncState.isUpToDate(
+                outputDir = resolveOutputDir(environment),
+                templatesDir = templatesDir,
+                owner = owner,
+                repo = repo,
+                environment = environment,
+            )
+        }
+
+        if (allUpToDate) {
             logger("GitHub env files already generated and up-to-date. Skipping.")
             return
         }
@@ -25,7 +39,7 @@ internal class GithubEnvSyncAction(
         runSync()
     }
 
-    private fun runSync() {
+    fun runSync() {
         val token = GradleUserProperties.read(tokenPropertyName)
             ?: error("GitHub token not found. Run githubLogin first")
 
@@ -41,7 +55,7 @@ internal class GithubEnvSyncAction(
             token = token,
             owner = owner,
             repo = repo,
-            username = currentUser.login
+            username = currentUser.login,
         )
 
         val allowed = permission.permission in setOf("read", "triage", "write", "maintain", "admin")
@@ -50,30 +64,59 @@ internal class GithubEnvSyncAction(
         }
 
         val repoVars = api.getRepositoryVariables(token, owner, repo)
-        val envVars = api.getEnvironmentVariables(token, owner, repo, environment)
 
-        val merged = linkedMapOf<String, String>()
-        merged.putAll(repoVars)
-        merged.putAll(envVars)
+        resolveTargetEnvironments().forEach { environment ->
+            val merged = linkedMapOf<String, String>()
+            merged.putAll(repoVars)
+            if (environment != LOCAL_ENVIRONMENT) {
+                val envVars = api.getEnvironmentVariables(token, owner, repo, environment)
+                merged.putAll(envVars)
+            }
 
-        renderTemplates(templatesDir, outputDir, merged, failOnMissingVariables)
+            val environmentOutputDir = resolveOutputDir(environment)
+            renderTemplates(templatesDir, environmentOutputDir, merged, failOnMissingVariables)
 
-        EnvSyncState.markSuccess(
-            outputDir = outputDir,
-            templatesDir = templatesDir,
-            owner = owner,
-            repo = repo,
-            environment = environment
-        )
+            EnvSyncState.markSuccess(
+                outputDir = environmentOutputDir,
+                templatesDir = templatesDir,
+                owner = owner,
+                repo = repo,
+                environment = environment,
+            )
 
-        logger("GitHub env sync completed.")
+            logger("GitHub env sync completed for '$environment'.")
+        }
+    }
+
+    private fun resolveTargetEnvironments(): List<String> {
+        val result = linkedSetOf<String>()
+        result.addAll(environments.filter { it.isNotBlank() })
+        if (result.isEmpty() && !legacyEnvironment.isNullOrBlank()) {
+            result += legacyEnvironment
+        }
+        if (includeLocalEnvironment) {
+            result += LOCAL_ENVIRONMENT
+        }
+        require(result.isNotEmpty()) {
+            "No environments configured. Set githubEnvSync.environments or githubEnvSync.environment"
+        }
+        return result.toList()
+    }
+
+    private fun resolveOutputDir(environment: String): File {
+        val legacyOutputDir = outputDir
+        return if (legacyOutputDir != null && environment == legacyEnvironment && environments.isEmpty() && !includeLocalEnvironment) {
+            legacyOutputDir
+        } else {
+            File(generatedRootDir, environment)
+        }
     }
 
     private fun renderTemplates(
         templatesDir: File,
         outputDir: File,
         values: Map<String, String>,
-        failOnMissing: Boolean
+        failOnMissing: Boolean,
     ) {
         require(templatesDir.exists()) { "Templates dir does not exist: ${templatesDir.absolutePath}" }
 
@@ -81,17 +124,17 @@ internal class GithubEnvSyncAction(
             outputDir.mkdirs()
         } else {
             outputDir.listFiles()
-                .forEach { file ->
-                    if (file.isFile && file.startsWith("env.")) file.delete()
-                }
+                ?.filter { it.isFile && it.name != ".github-env-sync.state" }
+                ?.forEach { it.delete() }
         }
 
         val templates = templatesDir.listFiles()
-            ?.filter { it.isFile && it.name.startsWith("env.") && it.name.endsWith(".template") }
+            ?.filter { it.isFile && it.name.endsWith(".template") }
+            ?.sortedBy { it.name }
             .orEmpty()
 
         if (templates.isEmpty()) {
-            logger("No env.*.template files found in ${templatesDir.absolutePath}")
+            logger("No *.template files found in ${templatesDir.absolutePath}")
             return
         }
 
@@ -99,15 +142,17 @@ internal class GithubEnvSyncAction(
             val rendered = TemplateRenderer.render(
                 template = templateFile.readText(),
                 values = values,
-                failOnMissing = failOnMissing
+                failOnMissing = failOnMissing,
             )
 
             val outputName = templateFile.name.removeSuffix(".template")
-
             val outputFile = File(outputDir, outputName)
             outputFile.writeText(rendered)
-
             logger("Generated ${outputFile.absolutePath}")
         }
+    }
+
+    private companion object {
+        const val LOCAL_ENVIRONMENT = "local"
     }
 }
