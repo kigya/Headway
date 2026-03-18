@@ -2,8 +2,6 @@ package dev.kigya.headway.core.designSystem.theme.text
 
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
-import androidx.compose.ui.unit.sp
-import dev.kigya.headway.core.designSystem.theme.FreudDsToken
 
 @Immutable
 object FreudTypography {

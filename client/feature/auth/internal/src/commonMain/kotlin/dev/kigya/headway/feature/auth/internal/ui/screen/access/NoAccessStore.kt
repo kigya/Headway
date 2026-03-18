@@ -28,7 +28,8 @@ class AuthNoAccessStoreFactory(
     private val storeFactory: StoreFactory,
     private val navigator: NavigatorContract,
 ) {
-    fun create(executorCoroutineScope: CoroutineScope): NoAccessStore = object : NoAccessStore,
+    fun create(executorCoroutineScope: CoroutineScope): NoAccessStore = object :
+        NoAccessStore,
         Store<Intent, State, Label>
         by storeFactory.create<Intent, Action, Message, State, Label>(
             name = this::class.simpleName,
@@ -46,4 +47,3 @@ class AuthNoAccessStoreFactory(
 
     private sealed interface Message
 }
-

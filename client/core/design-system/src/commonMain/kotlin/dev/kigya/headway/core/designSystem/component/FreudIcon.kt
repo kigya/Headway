@@ -83,10 +83,10 @@ fun FreudIcon(
 @Composable
 private fun FreudIconContent(
     size: FreudDsToken<Dp>?,
-    modifier: Modifier,
     resource: DrawableResource,
     contentDescription: String?,
     tint: FreudDsToken<Color>?,
+    modifier: Modifier = Modifier,
 ) {
     val resolvedModifier = if (size != null) modifier.then(Modifier.size(size.value)) else modifier
 
@@ -157,9 +157,9 @@ private fun FreudAnimatedIconContent(
     isVisible: Boolean,
     resource: DrawableResource,
     contentDescription: String?,
-    modifier: Modifier,
     size: FreudDsToken<Dp>?,
     tint: FreudDsToken<Color>?,
+    modifier: Modifier = Modifier,
 ) {
     val anim = animation as FreudAnimatedIconAnimation.FadeInScale
 

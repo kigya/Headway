@@ -74,9 +74,7 @@ internal fun NoAccessScreen() {
 
 @Suppress("ModifierOrder")
 @Composable
-private fun NoAccessScreenContent(
-    onBack: () -> Unit,
-) {
+private fun NoAccessScreenContent(onBack: () -> Unit) {
     val isWide = isWide()
     val backgroundColor = if (isWide) {
         AuthNoAccessTheme.colorScheme.screenBackgroundWide
@@ -121,7 +119,7 @@ private fun NoAccessScreenContent(
 
 @Composable
 private fun NarrowNoAccessLayout() {
-    val contentTopInset = NarrowOverlayHeight * ArcVisibleTopRatio
+    val contentTopInset = NARROW_OVERLAY_HEIGHT * ARC_VISIBLE_TOP_RATIO
 
     Box(
         modifier = Modifier
@@ -142,7 +140,7 @@ private fun NarrowNoAccessLayout() {
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
-                .height(NarrowOverlayHeight),
+                .height(NARROW_OVERLAY_HEIGHT),
         ) {
             NoAccessArcOverlay(
                 modifier = Modifier.matchParentSize(),
@@ -175,7 +173,7 @@ private fun WideNoAccessLayout() {
     ) {
         Box(
             modifier = Modifier
-                .weight(WideLottiePaneWeight)
+                .weight(WIDE_LOTTIE_PANE_WEIGHT)
                 .fillMaxHeight()
                 .background(
                     color = AuthNoAccessTheme.colorScheme.cardBackgroundWide,
@@ -187,21 +185,21 @@ private fun WideNoAccessLayout() {
             NoAccessLottie(
                 modifier = Modifier
                     .fillMaxHeight()
-                    .widthIn(max = WideLottieMaxWidth),
+                    .widthIn(max = WIDE_LOTTIE_MAX_WIDTH),
                 contentScale = ContentScale.FillHeight,
             )
         }
 
         Box(
             modifier = Modifier
-                .weight(WideContentPaneWeight)
+                .weight(WIDE_CONTENT_PANE_WEIGHT)
                 .fillMaxHeight(),
             contentAlignment = Alignment.Center,
         ) {
             NoAccessTextAndButton(
                 modifier = Modifier
-                    .padding(horizontal = WideContentHorizontalPadding)
-                    .widthIn(max = WideContentMaxWidth),
+                    .padding(horizontal = WIDE_CONTENT_HORIZONTAL_PADDING)
+                    .widthIn(max = WIDE_CONTENT_MAX_WIDTH),
                 isWide = true,
             )
         }
@@ -223,20 +221,18 @@ private fun NoAccessLottie(
 }
 
 @Composable
-private fun NoAccessArcOverlay(
-    modifier: Modifier = Modifier,
-) {
+private fun NoAccessArcOverlay(modifier: Modifier = Modifier) {
     val overlayColor = AuthNoAccessTheme.colorScheme.arcOverlay.value
 
     Box(
         modifier = modifier.drawBehind {
-            val startY = size.height * ArcStartYRatio
+            val startY = size.height * ARC_START_Y_RATIO
 
             val path = Path().apply {
                 moveTo(0f, startY)
                 quadraticTo(
                     x1 = size.width / 2f,
-                    y1 = size.height * ArcControlYRatio,
+                    y1 = size.height * ARC_CONTROL_Y_RATIO,
                     x2 = size.width,
                     y2 = startY,
                 )
@@ -284,7 +280,7 @@ private fun NoAccessTextAndButton(
     }
 
     val buttonModifier = if (isWide) {
-        Modifier.width(WideButtonWidth)
+        Modifier.width(WIDE_BUTTON_WIDTH)
     } else {
         Modifier.fillMaxWidth()
     }
@@ -347,15 +343,14 @@ private fun BackIcon() {
 }
 
 private const val REPORT_ANIMATION_DELAY_MILLIS = 500L
-private val NarrowOverlayHeight = 334.dp
-private const val ArcStartYRatio = 0.42f
-private const val ArcControlYRatio = -0.18f
-private const val ArcVisibleTopRatio = (ArcStartYRatio + ArcControlYRatio) / 2f
+private val NARROW_OVERLAY_HEIGHT = 334.dp
+private const val ARC_START_Y_RATIO = 0.42f
+private const val ARC_CONTROL_Y_RATIO = -0.18f
+private const val ARC_VISIBLE_TOP_RATIO = (ARC_START_Y_RATIO + ARC_CONTROL_Y_RATIO) / 2f
 
-private const val WideLottiePaneWeight = 1f
-private const val WideContentPaneWeight = 2f
-private val WideLottieMaxWidth = 520.dp
-private val WideContentMaxWidth = 560.dp
-private val WideButtonWidth = 336.dp
-private val WideContentHorizontalPadding = 48.dp
-
+private const val WIDE_LOTTIE_PANE_WEIGHT = 1f
+private const val WIDE_CONTENT_PANE_WEIGHT = 2f
+private val WIDE_LOTTIE_MAX_WIDTH = 520.dp
+private val WIDE_CONTENT_MAX_WIDTH = 560.dp
+private val WIDE_BUTTON_WIDTH = 336.dp
+private val WIDE_CONTENT_HORIZONTAL_PADDING = 48.dp
