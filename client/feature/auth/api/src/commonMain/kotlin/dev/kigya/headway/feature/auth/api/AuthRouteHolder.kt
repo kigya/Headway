@@ -7,4 +7,9 @@ import kotlinx.serialization.Serializable
 @Serializable
 data object AuthScreenKey : NavKey
 
+@Serializable
+data object AuthNoAccessScreenKey : NavKey
+
 interface AuthScreenRouteHolderContract : ScreenRouteHolderContract
+
+interface AuthNoAccessScreenRouteHolderContract : ScreenRouteHolderContract

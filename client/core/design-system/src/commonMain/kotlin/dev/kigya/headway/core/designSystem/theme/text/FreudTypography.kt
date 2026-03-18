@@ -420,7 +420,7 @@ object FreudTypography {
                 fontSize = FreudTextSize.sp24,
                 fontWeight = FreudFontWeight.semiBold,
                 fontFamily = FreudFont.semiBold,
-                lineHeight = FreudDsToken(160.sp),
+                lineHeight = FreudTextSize.sp38,
             )
 
     @get:Composable
@@ -430,7 +430,7 @@ object FreudTypography {
                 fontSize = FreudTextSize.sp20,
                 fontWeight = FreudFontWeight.semiBold,
                 fontFamily = FreudFont.semiBold,
-                lineHeight = FreudDsToken(160.sp),
+                lineHeight = FreudTextSize.sp32,
             )
 
     @get:Composable
@@ -440,7 +440,7 @@ object FreudTypography {
                 fontSize = FreudTextSize.sp18,
                 fontWeight = FreudFontWeight.semiBold,
                 fontFamily = FreudFont.semiBold,
-                lineHeight = FreudDsToken(160.sp),
+                lineHeight = FreudTextSize.sp28,
             )
 
     @get:Composable
@@ -450,7 +450,7 @@ object FreudTypography {
                 fontSize = FreudTextSize.sp16,
                 fontWeight = FreudFontWeight.semiBold,
                 fontFamily = FreudFont.semiBold,
-                lineHeight = FreudDsToken(160.sp),
+                lineHeight = FreudTextSize.sp26,
             )
 
     @get:Composable
@@ -460,7 +460,7 @@ object FreudTypography {
                 fontSize = FreudTextSize.sp14,
                 fontWeight = FreudFontWeight.semiBold,
                 fontFamily = FreudFont.semiBold,
-                lineHeight = FreudDsToken(160.sp),
+                lineHeight = FreudTextSize.sp22,
             )
 
     @get:Composable
@@ -470,7 +470,7 @@ object FreudTypography {
                 fontSize = FreudTextSize.sp12,
                 fontWeight = FreudFontWeight.semiBold,
                 fontFamily = FreudFont.semiBold,
-                lineHeight = FreudDsToken(160.sp),
+                lineHeight = FreudTextSize.sp20,
             )
 
     @get:Composable
