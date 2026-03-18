@@ -59,7 +59,7 @@ private class FreudImagePreviewCaseProvider : PreviewParameterProvider<FreudImag
         val scales = listOf(
             ContentScale.Fit to "Fit (Default)",
             ContentScale.Crop to "Crop",
-            ContentScale.FillBounds to "Fill Bounds"
+            ContentScale.FillBounds to "Fill Bounds",
         )
         for (isDark in listOf(false, true)) {
             for (scale in scales) {

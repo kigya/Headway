@@ -60,6 +60,6 @@ internal object AuthTheme : FreudTheme() {
 
     val FreudColorScheme.transparent @Composable get() = this provides FreudDynamicColor(
         light = FreudDsToken(Color.Transparent),
-        dark = FreudDsToken(Color.Transparent)
+        dark = FreudDsToken(Color.Transparent),
     )
 }

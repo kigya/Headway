@@ -15,7 +15,7 @@ import dev.kigya.headway.core.designSystem.theme.FreudDsToken
  */
 fun String.colorizeSubStrings(
     subString: String,
-    color: FreudDsToken<Color>
+    color: FreudDsToken<Color>,
 ): AnnotatedString {
     val fullText = this
     val startIndex = fullText.indexOf(subString)
