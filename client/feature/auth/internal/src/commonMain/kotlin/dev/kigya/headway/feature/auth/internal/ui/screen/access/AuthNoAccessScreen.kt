@@ -37,6 +37,7 @@ import dev.kigya.headway.core.designSystem.component.FreudTopBar
 import dev.kigya.headway.core.designSystem.component.FreudTopBarStartSlot
 import dev.kigya.headway.core.designSystem.util.FreudBackgroundPattern
 import dev.kigya.headway.core.designSystem.util.background
+import dev.kigya.headway.core.designSystem.util.FreudScreenByWidth
 import dev.kigya.headway.core.designSystem.util.isWide
 import dev.kigya.headway.feature.auth.internal.ui.theme.access.AuthNoAccessTheme
 import dev.kigya.headway.feature.auth.internal.ui.theme.access.AuthNoAccessTheme.arcOverlay
@@ -72,44 +73,44 @@ internal fun NoAccessScreen() {
 @Suppress("ModifierOrder")
 @Composable
 private fun NoAccessScreenContent(onBack: () -> Unit) {
-    val isWide = isWide()
-    val backgroundColor = if (isWide) {
+    val wide = isWide()
+    val backgroundColor = if (wide) {
         AuthNoAccessTheme.colorScheme.screenBackgroundWide
     } else {
         AuthNoAccessTheme.colorScheme.screenBackgroundNarrow
     }
-    val backgroundPattern = if (isWide) {
+    val backgroundPattern = if (wide) {
         FreudBackgroundPattern.Waves
     } else {
         FreudBackgroundPattern.None
     }
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(
-                color = backgroundColor,
-                pattern = backgroundPattern,
-            ),
-    ) {
-        if (isWide) {
-            WideNoAccessLayout()
-        } else {
+    FreudScreenByWidth(
+        modifier = Modifier.background(
+            color = backgroundColor,
+            pattern = backgroundPattern,
+        ),
+        narrow = {
             NarrowNoAccessLayout()
-        }
-        FreudTopBar(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(
-                    vertical = AuthNoAccessTheme.dimension.dp36.value,
-                    horizontal = AuthNoAccessTheme.dimension.dp16.value,
+        },
+        wide = {
+            WideNoAccessLayout()
+        },
+        overlay = {
+            FreudTopBar(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(
+                        vertical = AuthNoAccessTheme.dimension.dp36.value,
+                        horizontal = AuthNoAccessTheme.dimension.dp16.value,
+                    ),
+                startSlot = FreudTopBarStartSlot.Back(
+                    onClick = onBack,
+                    contentDescription = stringResource(Res.string.auth_back_icon_content_description),
                 ),
-            startSlot = FreudTopBarStartSlot.Back(
-                onClick = onBack,
-                contentDescription = stringResource(Res.string.auth_back_icon_content_description),
             )
-        )
-    }
+        },
+    )
 }
 
 @Composable

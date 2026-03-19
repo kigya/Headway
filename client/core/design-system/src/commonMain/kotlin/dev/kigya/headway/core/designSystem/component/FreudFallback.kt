@@ -46,7 +46,7 @@ import dev.kigya.headway.core.designSystem.theme.color.FreudDynamicColor
 import dev.kigya.headway.core.designSystem.theme.color.provides
 import dev.kigya.headway.core.designSystem.util.FreudBackgroundPattern
 import dev.kigya.headway.core.designSystem.util.background
-import dev.kigya.headway.core.designSystem.util.isWide
+import dev.kigya.headway.core.designSystem.util.FreudScreenByWidth
 import headway.core.design_system.generated.resources.Res
 import headway.core.design_system.generated.resources.freud_fallback_error_body
 import headway.core.design_system.generated.resources.freud_fallback_error_title
@@ -204,43 +204,50 @@ private fun FreudFallbackStubContent(
     }
     val retryLabel = stringResource(Res.string.freud_fallback_retry_button)
     val stubContentDescription = "$title. $body"
-    val isWide = isWide()
 
-    Box(
+    FreudScreenByWidth(
         modifier = Modifier
-            .fillMaxSize()
             .background(
                 color = backgroundColor,
                 pattern = FreudBackgroundPattern.Waves,
             )
             .testTag(FreudFallbackTestTags.STUB_ROBOT)
             .semantics { contentDescription = stubContentDescription },
-        contentAlignment = Alignment.Center,
-    ) {
-        if (isWide) {
-            FreudFallbackWideLayout(
-                title = title,
-                body = body,
-                retryLabel = retryLabel,
-                onRetry = onRetry,
-                titleColor = titleColor,
-                bodyColor = bodyColor,
-                buttonContainerColor = buttonContainerColor,
-                buttonContentColor = buttonContentColor,
-            )
-        } else {
-            FreudFallbackNarrowLayout(
-                title = title,
-                body = body,
-                retryLabel = retryLabel,
-                onRetry = onRetry,
-                titleColor = titleColor,
-                bodyColor = bodyColor,
-                buttonContainerColor = buttonContainerColor,
-                buttonContentColor = buttonContentColor,
-            )
-        }
-    }
+        narrow = {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center,
+            ) {
+                FreudFallbackNarrowLayout(
+                    title = title,
+                    body = body,
+                    retryLabel = retryLabel,
+                    onRetry = onRetry,
+                    titleColor = titleColor,
+                    bodyColor = bodyColor,
+                    buttonContainerColor = buttonContainerColor,
+                    buttonContentColor = buttonContentColor,
+                )
+            }
+        },
+        wide = {
+            Box(
+                modifier = Modifier.fillMaxSize(),
+                contentAlignment = Alignment.Center,
+            ) {
+                FreudFallbackWideLayout(
+                    title = title,
+                    body = body,
+                    retryLabel = retryLabel,
+                    onRetry = onRetry,
+                    titleColor = titleColor,
+                    bodyColor = bodyColor,
+                    buttonContainerColor = buttonContainerColor,
+                    buttonContentColor = buttonContentColor,
+                )
+            }
+        },
+    )
 }
 
 @Composable

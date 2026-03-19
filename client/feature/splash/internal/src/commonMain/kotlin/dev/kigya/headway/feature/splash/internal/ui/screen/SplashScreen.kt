@@ -6,6 +6,7 @@ import androidx.compose.animation.expandVertically
 import androidx.compose.animation.fadeIn
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxScope
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
@@ -15,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.kigya.headway.core.designSystem.component.FreudLottie
+import dev.kigya.headway.core.designSystem.util.FreudScreenByWidth
 import dev.kigya.headway.core.designSystem.component.FreudLottieSource
 import dev.kigya.headway.core.designSystem.component.FreudSpacer
 import dev.kigya.headway.core.designSystem.component.FreudText
@@ -36,28 +38,35 @@ internal fun SplashScreen() {
 
 @Composable
 private fun SplashScreenContent(state: State<SplashStore.State>) {
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .background(SplashTheme.colorScheme.splashBackground.value),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center,
-    ) {
-        FreudLottie(
-            reader = { Res.readBytes("files/lottie_brand_logo.json") },
-            source = FreudLottieSource.Json,
-            modifier = Modifier.size(SplashTheme.dimension.dp72.value),
-        )
-        AnimatedVisibility(
-            visible = state.value.shouldDisplayText,
-            enter = fadeIn(tween()) + expandVertically(tween()),
+    val content: @Composable BoxScope.() -> Unit = {
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(SplashTheme.colorScheme.splashBackground.value),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
         ) {
-            FreudSpacer(size = SplashTheme.dimension.dp16)
-            FreudText(
-                value = stringResource(Res.string.splash_brand),
-                color = SplashTheme.colorScheme.brandTextColor,
-                typography = SplashTheme.typography.headingSmExtraBold,
+            FreudLottie(
+                reader = { Res.readBytes("files/lottie_brand_logo.json") },
+                source = FreudLottieSource.Json,
+                modifier = Modifier.size(SplashTheme.dimension.dp72.value),
             )
+            AnimatedVisibility(
+                visible = state.value.shouldDisplayText,
+                enter = fadeIn(tween()) + expandVertically(tween()),
+            ) {
+                FreudSpacer(size = SplashTheme.dimension.dp16)
+                FreudText(
+                    value = stringResource(Res.string.splash_brand),
+                    color = SplashTheme.colorScheme.brandTextColor,
+                    typography = SplashTheme.typography.headingSmExtraBold,
+                )
+            }
         }
     }
+
+    FreudScreenByWidth(
+        narrow = content,
+        wide = content,
+    )
 }
