@@ -1,6 +1,5 @@
 package dev.kigya.headway.feature.auth.internal.ui.screen.access
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -21,7 +20,6 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Path
@@ -31,17 +29,17 @@ import androidx.compose.ui.unit.dp
 import dev.kigya.headway.core.designSystem.component.FreudButtonIconSpec
 import dev.kigya.headway.core.designSystem.component.FreudHorizontalButton
 import dev.kigya.headway.core.designSystem.component.FreudHorizontalButtonSize
-import dev.kigya.headway.core.designSystem.component.FreudIcon
 import dev.kigya.headway.core.designSystem.component.FreudLottie
 import dev.kigya.headway.core.designSystem.component.FreudLottieSource
 import dev.kigya.headway.core.designSystem.component.FreudSpacer
 import dev.kigya.headway.core.designSystem.component.FreudText
+import dev.kigya.headway.core.designSystem.component.FreudTopBar
+import dev.kigya.headway.core.designSystem.component.FreudTopBarStartSlot
 import dev.kigya.headway.core.designSystem.util.FreudBackgroundPattern
 import dev.kigya.headway.core.designSystem.util.background
 import dev.kigya.headway.core.designSystem.util.isWide
 import dev.kigya.headway.feature.auth.internal.ui.theme.access.AuthNoAccessTheme
 import dev.kigya.headway.feature.auth.internal.ui.theme.access.AuthNoAccessTheme.arcOverlay
-import dev.kigya.headway.feature.auth.internal.ui.theme.access.AuthNoAccessTheme.backIconTint
 import dev.kigya.headway.feature.auth.internal.ui.theme.access.AuthNoAccessTheme.buttonContainer
 import dev.kigya.headway.feature.auth.internal.ui.theme.access.AuthNoAccessTheme.buttonContent
 import dev.kigya.headway.feature.auth.internal.ui.theme.access.AuthNoAccessTheme.cardBackgroundNarrow
@@ -56,7 +54,6 @@ import headway.feature.auth.internal.generated.resources.auth_ask_manager
 import headway.feature.auth.internal.generated.resources.auth_back_icon_content_description
 import headway.feature.auth.internal.generated.resources.auth_manager_hasnt_added_to_the_system
 import headway.feature.auth.internal.generated.resources.auth_no_access
-import headway.feature.auth.internal.generated.resources.ic_chevron_left
 import headway.feature.auth.internal.generated.resources.ic_report
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.stringResource
@@ -100,20 +97,18 @@ private fun NoAccessScreenContent(onBack: () -> Unit) {
         } else {
             NarrowNoAccessLayout()
         }
-
-        Box(
+        FreudTopBar(
             modifier = Modifier
-                .align(Alignment.TopStart)
+                .fillMaxWidth()
                 .padding(
                     vertical = AuthNoAccessTheme.dimension.dp36.value,
                     horizontal = AuthNoAccessTheme.dimension.dp16.value,
-                )
-                .clip(AuthNoAccessTheme.shape.circle.value)
-                .clickable(onClick = onBack),
-            contentAlignment = Alignment.Center,
-        ) {
-            BackIcon()
-        }
+                ),
+            startSlot = FreudTopBarStartSlot.Back(
+                onClick = onBack,
+                contentDescription = stringResource(Res.string.auth_back_icon_content_description),
+            )
+        )
     }
 }
 
@@ -331,15 +326,6 @@ private fun NoAccessTextAndButton(
             ),
         )
     }
-}
-
-@Composable
-private fun BackIcon() {
-    FreudIcon(
-        resource = Res.drawable.ic_chevron_left,
-        contentDescription = Res.string.auth_back_icon_content_description,
-        tint = AuthNoAccessTheme.colorScheme.backIconTint,
-    )
 }
 
 private const val REPORT_ANIMATION_DELAY_MILLIS = 500L

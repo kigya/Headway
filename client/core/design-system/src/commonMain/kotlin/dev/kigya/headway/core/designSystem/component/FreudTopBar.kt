@@ -11,6 +11,7 @@ import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.semantics.Role
 import androidx.compose.ui.text.TextStyle
@@ -129,14 +130,15 @@ private fun FreudTopBarIconButton(
     Box(
         modifier = Modifier
             .size(FreudTopBarDefaults.slotSize.value)
+            .clip(shape)
+            .clickable(
+                role = Role.Button,
+                onClick = onClick,
+            )
             .border(
                 width = FreudTopBarDefaults.borderWidth.value,
                 color = borderColor.value,
                 shape = shape,
-            )
-            .clickable(
-                role = Role.Button,
-                onClick = onClick,
             ),
         contentAlignment = Alignment.Center,
     ) {

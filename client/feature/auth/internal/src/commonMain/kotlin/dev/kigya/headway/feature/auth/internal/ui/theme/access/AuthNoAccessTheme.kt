@@ -54,18 +54,12 @@ internal object AuthNoAccessTheme : FreudTheme() {
     val FreudColorScheme.buttonContainer: FreudDsToken<Color>
         @Composable get() = colorScheme provides FreudDynamicColor(
             light = super.color.brown80,
-            dark = super.color.brown60,
+            dark = super.color.brown80,
         )
 
     val FreudColorScheme.buttonContent: FreudDsToken<Color>
         @Composable get() = colorScheme provides FreudDynamicColor(
             light = super.color.brown10,
-            dark = super.color.brown10,
-        )
-
-    val FreudColorScheme.backIconTint: FreudDsToken<Color>
-        @Composable get() = colorScheme provides FreudDynamicColor(
-            light = super.color.brown80,
             dark = super.color.brown10,
         )
 
