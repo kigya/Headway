@@ -169,8 +169,8 @@ private fun WideNoAccessLayout() {
     ) {
         Box(
             modifier = Modifier
-                .weight(WIDE_LOTTIE_PANE_WEIGHT)
                 .fillMaxHeight()
+                .widthIn(max = WIDE_LOTTIE_MAX_WIDTH)
                 .background(
                     color = AuthNoAccessTheme.colorScheme.cardBackgroundWide,
                     pattern = FreudBackgroundPattern.None,
@@ -179,16 +179,14 @@ private fun WideNoAccessLayout() {
             contentAlignment = Alignment.CenterStart,
         ) {
             NoAccessLottie(
-                modifier = Modifier
-                    .fillMaxHeight()
-                    .widthIn(max = WIDE_LOTTIE_MAX_WIDTH),
+                modifier = Modifier.fillMaxHeight(),
                 contentScale = ContentScale.FillHeight,
             )
         }
 
         Box(
             modifier = Modifier
-                .weight(WIDE_CONTENT_PANE_WEIGHT)
+                .weight(1f)
                 .fillMaxHeight(),
             contentAlignment = Alignment.Center,
         ) {
@@ -334,9 +332,6 @@ private val NARROW_OVERLAY_HEIGHT = 334.dp
 private const val ARC_START_Y_RATIO = 0.42f
 private const val ARC_CONTROL_Y_RATIO = -0.18f
 private const val ARC_VISIBLE_TOP_RATIO = (ARC_START_Y_RATIO + ARC_CONTROL_Y_RATIO) / 2f
-
-private const val WIDE_LOTTIE_PANE_WEIGHT = 1f
-private const val WIDE_CONTENT_PANE_WEIGHT = 2f
 private val WIDE_LOTTIE_MAX_WIDTH = 520.dp
 private val WIDE_CONTENT_MAX_WIDTH = 560.dp
 private val WIDE_BUTTON_WIDTH = 336.dp
