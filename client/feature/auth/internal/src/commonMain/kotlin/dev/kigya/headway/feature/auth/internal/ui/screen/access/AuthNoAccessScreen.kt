@@ -106,7 +106,7 @@ private fun NoAccessScreenContent(onBack: () -> Unit) {
                 modifier = Modifier
                     .fillMaxWidth()
                     .windowInsetsPadding(
-                        WindowInsets.systemBars.only(WindowInsetsSides.Top)
+                        WindowInsets.systemBars.only(WindowInsetsSides.Top),
                     )
                     .padding(
                         start = AuthNoAccessTheme.dimension.dp16.value,
