@@ -11,9 +11,16 @@ pluginManagement {
         gradlePluginPortal()
         mavenCentral()
         google()
+        maven {
+            name = "GithubPackages"
+            url = uri("https://maven.pkg.github.com/kigya/GithubEnvSync-Plugin")
+            credentials {
+                username = "kigya"
+                password = "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"
+            }
+        }
     }
     includeBuild("build-logic")
-    includeBuild("build-logic/github-env-sync")
 }
 
 plugins {
@@ -34,8 +41,6 @@ dependencyResolutionManagement {
         google()
     }
 }
-
-includeBuild("build-logic")
 
 include(
     ":gateway",
