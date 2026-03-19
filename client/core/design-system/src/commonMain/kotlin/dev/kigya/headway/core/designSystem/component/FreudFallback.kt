@@ -45,8 +45,8 @@ import dev.kigya.headway.core.designSystem.theme.color.FreudColorScheme
 import dev.kigya.headway.core.designSystem.theme.color.FreudDynamicColor
 import dev.kigya.headway.core.designSystem.theme.color.provides
 import dev.kigya.headway.core.designSystem.util.FreudBackgroundPattern
-import dev.kigya.headway.core.designSystem.util.background
 import dev.kigya.headway.core.designSystem.util.FreudScreenByWidth
+import dev.kigya.headway.core.designSystem.util.background
 import headway.core.design_system.generated.resources.Res
 import headway.core.design_system.generated.resources.freud_fallback_error_body
 import headway.core.design_system.generated.resources.freud_fallback_error_title

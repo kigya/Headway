@@ -36,8 +36,8 @@ import dev.kigya.headway.core.designSystem.component.FreudText
 import dev.kigya.headway.core.designSystem.component.FreudTopBar
 import dev.kigya.headway.core.designSystem.component.FreudTopBarStartSlot
 import dev.kigya.headway.core.designSystem.util.FreudBackgroundPattern
-import dev.kigya.headway.core.designSystem.util.background
 import dev.kigya.headway.core.designSystem.util.FreudScreenByWidth
+import dev.kigya.headway.core.designSystem.util.background
 import dev.kigya.headway.core.designSystem.util.isWide
 import dev.kigya.headway.feature.auth.internal.ui.theme.access.AuthNoAccessTheme
 import dev.kigya.headway.feature.auth.internal.ui.theme.access.AuthNoAccessTheme.arcOverlay
