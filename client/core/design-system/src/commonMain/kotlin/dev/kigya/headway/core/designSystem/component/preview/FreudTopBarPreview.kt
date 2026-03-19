@@ -1,3 +1,5 @@
+@file:Suppress("MagicNumber")
+
 package dev.kigya.headway.core.designSystem.component.preview
 
 import androidx.compose.foundation.background
@@ -107,6 +109,7 @@ private class FreudTopBarPreviewCaseProvider : PreviewParameterProvider<FreudTop
     name = "FreudTopBar – Theme x Width x Slots",
     showBackground = false,
 )
+@Suppress("CyclomaticComplexMethod")
 @Composable
 private fun FreudTopBarPreview(
     @PreviewParameter(FreudTopBarPreviewCaseProvider::class) case: FreudTopBarPreviewCase,
@@ -129,14 +132,15 @@ private fun FreudTopBarPreview(
             else -> "title=short"
         }
         val header = buildString {
+            val delimiter = " • "
             append(themeLabel)
-            append(" • ")
+            append(delimiter)
             append(widthLabel)
-            append(" • ")
+            append(delimiter)
             append(if (case.hasStartSlot) "start=back" else "start=null")
-            append(" • ")
+            append(delimiter)
             append(if (case.hasEndSlot) "end=signOut" else "end=null")
-            append(" • ")
+            append(delimiter)
             append(titleLabel)
         }
 
