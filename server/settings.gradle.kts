@@ -15,8 +15,8 @@ pluginManagement {
             name = "GithubPackages"
             url = uri("https://maven.pkg.github.com/kigya/GithubEnvSync-Plugin")
             credentials {
-                username = "kigya"
-                password = "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"
+                username = settings.extra["github.env.sync.username"] as? String
+                password = settings.extra["github.env.sync.token"] as? String
             }
         }
     }
