@@ -1,0 +1,58 @@
+---
+description: Cumulative anti-patterns — update when fixing reusable user-reported mistakes
+alwaysApply: true
+---
+
+## Lessons Learned
+
+### Format
+
+- **Rule:**
+- **Why it exists:**
+- **Bad pattern (short):**
+- **Correct pattern (short):**
+
+---
+
+### 1
+
+- **Rule:** Use Freud design system in feature UI, not Material3 or raw theme values.
+- **Why it exists:** [client/AGENTS.md](../../client/AGENTS.md) forbids raw Material3 without design-system wrapping and hard-coded colors/dimensions/typography in features.
+- **Bad pattern (short):** `MaterialTheme`, `androidx.compose.material3.Text`, raw `Color(0xFF…)`, fixed `dp`/`sp` literals in feature composables.
+- **Correct pattern (short):** `FreudText`, `FreudDsToken`, feature `internal object XTheme : FreudTheme()` with `FreudColorScheme` extensions using `super.color.*` and `FreudDynamicColor`.
+
+---
+
+### 2
+
+- **Rule:** Keep ViewModel a thin bridge; put behavior in the MVIKotlin Store.
+- **Why it exists:** [client/AGENTS.md](../../client/AGENTS.md) requires StoreFactory executor/reducer for logic and forbids business logic in ViewModel.
+- **Bad pattern (short):** Branching, navigation, or state updates inside `ViewModel` methods or `viewModelScope` that belong in the store pipeline.
+- **Correct pattern (short):** ViewModel calls `store.accept(Intent)`; StoreFactory `coroutineExecutorFactory` / reducer handle navigation via `NavigatorContract` and state changes via `Message`.
+
+---
+
+### 3
+
+- **Rule:** Model expected client failures with `Outcome`, not ad-hoc exceptions.
+- **Why it exists:** [client/AGENTS.md](../../client/AGENTS.md) and root [AGENTS.md](../../AGENTS.md) require typed `Outcome` for client error handling.
+- **Bad pattern (short):** `try/catch` or `runCatching` for normal domain failures; throwing for control flow in client domain code.
+- **Correct pattern (short):** Sealed error types and `Outcome` helpers (`outcomeSuspendCatching`, `mapSuccess`, `handle`, etc.) from `core:outcome`.
+
+---
+
+### 4
+
+- **Rule:** Navigate only through `NavigatorContract` and `NavigationIntent`.
+- **Why it exists:** [client/AGENTS.md](../../client/AGENTS.md) standardizes Navigation3 on `NavigatorContract`; bypass breaks back stack and `App.kt` assembly.
+- **Bad pattern (short):** Direct platform navigation APIs, string routes, or stack mutation outside `NavigationIntent`.
+- **Correct pattern (short):** Inject `NavigatorContract`; use `NavigationIntent.NavigateTo` / `NavigateBack` / `ReplaceTopBy` with `@Serializable` `NavKey` types from the feature `api` module.
+
+---
+
+### 5
+
+- **Rule:** Gateway repositories must wrap service HTTP in `upstreamCall`.
+- **Why it exists:** [server/AGENTS.md](../../server/AGENTS.md) requires consistent dependency error mapping for gateway outbound calls.
+- **Bad pattern (short):** Raw `httpClient.post` / `httpClient.get` in `gateway/data/repository` without `upstreamCall`.
+- **Correct pattern (short):** `upstreamCall(dependency, request) { … }` and map failures with `toGatewayException` so GraphQL extensions stay consistent.
