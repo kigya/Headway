@@ -69,3 +69,4 @@ alwaysApply: true
 
 - After fixing a **user-reported** mistake: if the fix is **reusable** (would help future edits, not a one-off typo), append one concise entry to [lessons-learned.mdc](lessons-learned.mdc) using that file’s format (Rule / Why / Bad / Correct).
 - Do not duplicate an existing lesson; merge or extend if the root cause is the same.
+- When the user invokes `/capture-lesson` or `/finish-feature`, follow the corresponding Agent Skill under [`.cursor/skills/`](../skills/) for classification, deduplication, and wrap-up; do not edit `AGENTS.md` files as part of those workflows.

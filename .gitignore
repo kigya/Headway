@@ -26,3 +26,6 @@ captures
 !.cursor/rules/
 !.cursor/rules/**
 !.cursor/README.md
+!.cursor/WORKFLOWS.md
+!.cursor/skills/
+!.cursor/skills/**
