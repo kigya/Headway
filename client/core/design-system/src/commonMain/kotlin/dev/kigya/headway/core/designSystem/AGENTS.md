@@ -194,11 +194,11 @@ Guideline:
 - If something exists purely for previews or implementation convenience, keep it `internal` or `private`.
 - Only expose what you want other modules to depend on for a long time.
 
-### 4.2 “Defaults object” is private/internal
-Components often have a `private object XxxDefaults` containing default tokens and fixed spacings. This is a good pattern:
-- keeps the public API clean,
-- allows refactoring without breaking consumers,
-- centralizes component internal constants.
+### 4.2 “Defaults object” must be private
+Components MUST have a `private object XxxDefaults` (e.g., `FreudTopBarDefaults`) containing default tokens and fixed spacings. This is a critical pattern:
+- it prevents external modules from depending on component internal constants,
+- it keeps the public API surface minimal,
+- it allows internal refactoring without breaking consumers.
 
 ### 4.3 Avoid leaking Material types unless you intend to
 `FreudText` wraps Material3 `Text`, but the public API exposes `FreudDsToken<TextStyle>` rather than `TextStyle` directly.
@@ -510,7 +510,7 @@ Use:
     - `FreudX.kt`
     - Put public composables at top.
     - Keep helpers `private` or `internal`.
-    - Use a `private object FreudXDefaults` for internal constants and token defaults.
+    - Use a `private object FreudXDefaults` for internal constants and token defaults (refer to `FreudTopBarDefaults` as the prime example).
 
 2) Define a stable public signature:
     - Prefer DS tokens for colors/typography/sizes.

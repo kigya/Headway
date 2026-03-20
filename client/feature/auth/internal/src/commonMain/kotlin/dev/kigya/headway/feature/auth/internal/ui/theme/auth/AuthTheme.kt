@@ -1,4 +1,4 @@
-package dev.kigya.headway.feature.auth.internal.ui.theme
+package dev.kigya.headway.feature.auth.internal.ui.theme.auth
 
 import androidx.compose.runtime.Composable
 import dev.kigya.headway.core.designSystem.theme.FreudTheme
