@@ -29,6 +29,10 @@ import dev.kigya.headway.core.designSystem.theme.FreudTheme
 import dev.kigya.headway.core.designSystem.theme.color.FreudColorScheme
 import dev.kigya.headway.core.designSystem.theme.color.FreudDynamicColor
 import dev.kigya.headway.core.designSystem.theme.color.provides
+import dev.kigya.headway.core.designSystem.util.FreudTextSource
+import dev.kigya.headway.core.designSystem.util.FreudTextValue
+import headway.core.design_system.generated.resources.Res
+import headway.core.design_system.generated.resources.freud_preview_top_bar_title_resource
 
 private object FreudTopBarPreviewTheme : FreudTheme() {
 
@@ -59,7 +63,7 @@ private enum class FreudTopBarPreviewWidth {
 private data class FreudTopBarPreviewCase(
     val isDark: Boolean,
     val width: FreudTopBarPreviewWidth,
-    val title: String?,
+    val title: FreudTextValue?,
     val hasStartSlot: Boolean,
     val hasEndSlot: Boolean,
 )
@@ -70,21 +74,21 @@ private class FreudTopBarPreviewCaseProvider : PreviewParameterProvider<FreudTop
             FreudTopBarPreviewCase(
                 isDark = false,
                 width = FreudTopBarPreviewWidth.NARROW,
-                title = "Manage Invitations",
+                title = FreudTextValue.text("Manage Invitations"),
                 hasStartSlot = true,
                 hasEndSlot = false,
             ),
             FreudTopBarPreviewCase(
                 isDark = false,
                 width = FreudTopBarPreviewWidth.WIDE,
-                title = "Check",
+                title = FreudTextValue.text("Check"),
                 hasStartSlot = true,
                 hasEndSlot = true,
             ),
             FreudTopBarPreviewCase(
                 isDark = false,
                 width = FreudTopBarPreviewWidth.NARROW,
-                title = "Very long top bar title that should be ellipsized",
+                title = FreudTextValue.text("Very long top bar title that should be ellipsized"),
                 hasStartSlot = true,
                 hasEndSlot = true,
             ),
@@ -126,10 +130,19 @@ private fun FreudTopBarPreview(
             FreudTopBarPreviewWidth.NARROW -> "Narrow"
             FreudTopBarPreviewWidth.WIDE -> "Wide"
         }
-        val titleLabel = when {
-            case.title == null -> "title=null"
-            case.title.length > 24 -> "title=long"
-            else -> "title=short"
+        val titleLabel = when (val t = case.title) {
+            null -> "title=null"
+            is FreudTextValue.RichText -> "title=rich"
+            is FreudTextValue.PlainText -> when (t.source) {
+                is FreudTextSource.Raw ->
+                    if (t.source.value.length > 24) {
+                        "title=long"
+                    } else {
+                        "title=short"
+                    }
+
+                is FreudTextSource.Resource -> "title=resource"
+            }
         }
         val header = buildString {
             val delimiter = " • "
@@ -151,7 +164,7 @@ private fun FreudTopBarPreview(
                 .padding(ds.dimension.dp16.value),
         ) {
             FreudText(
-                value = header,
+                value = FreudTextValue.text(header),
                 color = text,
                 typography = ds.typography.labelSm,
                 align = TextAlign.Start,
@@ -187,6 +200,56 @@ private fun FreudTopBarPreview(
                     } else {
                         null
                     },
+                )
+            }
+        }
+    }
+}
+
+@Preview(
+    name = "FreudTopBar – StringResource title",
+    showBackground = false,
+)
+@Composable
+private fun FreudTopBarStringResourcePreview() {
+    FreudTheme(isDark = false) {
+        val ds = FreudTheme.DefaultFreudTheme
+
+        val surface = FreudTopBarPreviewTheme.colorScheme.surface.value
+        val block = FreudTopBarPreviewTheme.colorScheme.block.value
+        val text = FreudTopBarPreviewTheme.colorScheme.text
+
+        Column(
+            modifier = Modifier
+                .fillMaxWidth()
+                .background(surface)
+                .padding(ds.dimension.dp16.value),
+        ) {
+            FreudText(
+                value = FreudTextValue.text("StringResource title"),
+                color = text,
+                typography = ds.typography.labelSm,
+                align = TextAlign.Start,
+                maxLines = 2,
+                modifier = Modifier.fillMaxWidth(),
+            )
+
+            FreudSpacer(size = ds.dimension.dp12)
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        color = block,
+                        shape = ds.shape.rounding24.value,
+                    )
+                    .padding(ds.dimension.dp16.value),
+                contentAlignment = Alignment.Center,
+            ) {
+                FreudTopBar(
+                    modifier = Modifier.fillMaxWidth(),
+                    title = FreudTextValue.text(Res.string.freud_preview_top_bar_title_resource),
+                    startSlot = FreudTopBarStartSlot.Back(onClick = {}),
                 )
             }
         }

@@ -40,7 +40,10 @@ import dev.kigya.headway.core.designSystem.theme.FreudTheme
 import dev.kigya.headway.core.designSystem.theme.color.FreudColorScheme
 import dev.kigya.headway.core.designSystem.theme.color.FreudDynamicColor
 import dev.kigya.headway.core.designSystem.theme.color.provides
+import dev.kigya.headway.core.designSystem.util.FreudTextValue
 import headway.core.design_system.generated.resources.Res
+import headway.core.design_system.generated.resources.freud_preview_button_label_resource
+import headway.core.design_system.generated.resources.freud_preview_icon_content_description
 import headway.core.design_system.generated.resources.ic_el_baion
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.DrawableResource
@@ -245,7 +248,7 @@ private fun FreudButtonPreview(
                 .padding(ds.dimension.dp16.value),
         ) {
             FreudText(
-                value = header,
+                value = FreudTextValue.text(header),
                 color = text,
                 typography = ds.typography.labelSm,
                 align = TextAlign.Start,
@@ -265,7 +268,7 @@ private fun FreudButtonPreview(
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
                         FreudHorizontalButton(
-                            text = "Sign in",
+                            text = FreudTextValue.text("Sign in"),
                             onClick = {},
                             containerColor = container,
                             contentColor = content,
@@ -274,7 +277,11 @@ private fun FreudButtonPreview(
                             borderColor = border,
                             leadingIcon = iconSpec(kind = case.leading, isVisible = isVisible, tint = iconTint),
                             trailingIcon = iconSpec(kind = case.trailing, isVisible = isVisible, tint = iconTint),
-                            supportingText = if (case.supportingEnabled) "innowise.com only" else null,
+                            supportingText = if (case.supportingEnabled) {
+                                FreudTextValue.text("innowise.com only")
+                            } else {
+                                null
+                            },
                             supportingColor = supporting,
                             supportingIcon = if (case.supportingEnabled) {
                                 iconSpec(
@@ -297,7 +304,7 @@ private fun FreudButtonPreview(
                         horizontalAlignment = Alignment.CenterHorizontally,
                     ) {
                         FreudHorizontalButton(
-                            text = "Continue",
+                            text = FreudTextValue.text(Res.string.freud_preview_button_label_resource),
                             onClick = {},
                             containerColor = container,
                             contentColor = content,
@@ -306,7 +313,11 @@ private fun FreudButtonPreview(
                             borderColor = border,
                             leadingIcon = iconSpec(kind = case.leading, isVisible = isVisible, tint = iconTint),
                             trailingIcon = iconSpec(kind = case.trailing, isVisible = isVisible, tint = iconTint),
-                            supportingText = if (case.supportingEnabled) "Secondary action" else null,
+                            supportingText = if (case.supportingEnabled) {
+                                FreudTextValue.text("Secondary action")
+                            } else {
+                                null
+                            },
                             supportingColor = supporting,
                             supportingIcon = if (case.supportingEnabled) {
                                 iconSpec(
@@ -340,7 +351,7 @@ private fun FreudButtonPreview(
                                 horizontalArrangement = Arrangement.Center,
                             ) {
                                 FreudVerticalButton(
-                                    text = "Next",
+                                    text = FreudTextValue.text("Next"),
                                     onClick = {},
                                     containerColor = container,
                                     contentColor = content,
@@ -366,7 +377,7 @@ private fun iconSpec(
 
     FreudButtonPreviewIconKind.STATIC -> FreudButtonIconSpec.Static(
         resource = PreviewButtonIconRes,
-        contentDescription = null,
+        contentDescription = FreudTextValue.text(Res.string.freud_preview_icon_content_description),
         tint = tint,
     )
 

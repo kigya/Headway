@@ -42,6 +42,7 @@ import dev.kigya.headway.core.designSystem.component.FreudTopBar
 import dev.kigya.headway.core.designSystem.component.FreudTopBarStartSlot
 import dev.kigya.headway.core.designSystem.util.FreudBackgroundPattern
 import dev.kigya.headway.core.designSystem.util.FreudScreenByWidth
+import dev.kigya.headway.core.designSystem.util.FreudTextValue
 import dev.kigya.headway.core.designSystem.util.background
 import dev.kigya.headway.core.designSystem.util.isWide
 import dev.kigya.headway.feature.auth.internal.ui.theme.access.AuthNoAccessTheme
@@ -62,7 +63,6 @@ import headway.feature.auth.internal.generated.resources.auth_manager_hasnt_adde
 import headway.feature.auth.internal.generated.resources.auth_no_access
 import headway.feature.auth.internal.generated.resources.ic_report
 import kotlinx.coroutines.delay
-import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Suppress("ExplicitDependencies")
@@ -115,7 +115,7 @@ private fun NoAccessScreenContent(onBack: () -> Unit) {
                     ),
                 startSlot = FreudTopBarStartSlot.Back(
                     onClick = onBack,
-                    contentDescription = stringResource(Res.string.auth_back_icon_content_description),
+                    contentDescription = FreudTextValue.text(Res.string.auth_back_icon_content_description),
                 ),
             )
         },
@@ -295,7 +295,7 @@ private fun NoAccessTextAndButton(
     ) {
         FreudText(
             modifier = if (isWide) Modifier.fillMaxWidth() else Modifier,
-            value = stringResource(Res.string.auth_no_access),
+            value = FreudTextValue.text(Res.string.auth_no_access),
             color = AuthNoAccessTheme.colorScheme.title,
             typography = titleTypography,
             align = TextAlign.Center,
@@ -305,7 +305,7 @@ private fun NoAccessTextAndButton(
 
         FreudText(
             modifier = Modifier.fillMaxWidth(),
-            value = stringResource(Res.string.auth_manager_hasnt_added_to_the_system),
+            value = FreudTextValue.text(Res.string.auth_manager_hasnt_added_to_the_system),
             color = AuthNoAccessTheme.colorScheme.subtitle,
             typography = subtitleTypography,
             align = TextAlign.Center,
@@ -321,7 +321,7 @@ private fun NoAccessTextAndButton(
 
         FreudHorizontalButton(
             modifier = buttonModifier,
-            text = stringResource(Res.string.auth_ask_manager),
+            text = FreudTextValue.text(Res.string.auth_ask_manager),
             onClick = {},
             containerColor = AuthNoAccessTheme.colorScheme.buttonContainer,
             contentColor = AuthNoAccessTheme.colorScheme.buttonContent,

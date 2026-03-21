@@ -46,6 +46,7 @@ import dev.kigya.headway.core.designSystem.theme.color.FreudDynamicColor
 import dev.kigya.headway.core.designSystem.theme.color.provides
 import dev.kigya.headway.core.designSystem.util.FreudBackgroundPattern
 import dev.kigya.headway.core.designSystem.util.FreudScreenByWidth
+import dev.kigya.headway.core.designSystem.util.FreudTextValue
 import dev.kigya.headway.core.designSystem.util.background
 import headway.core.design_system.generated.resources.Res
 import headway.core.design_system.generated.resources.freud_fallback_error_body
@@ -202,7 +203,6 @@ private fun FreudFallbackStubContent(
         FreudFallbackStubKind.Error -> stringResource(Res.string.freud_fallback_error_body)
         FreudFallbackStubKind.Network -> stringResource(Res.string.freud_fallback_network_body)
     }
-    val retryLabel = stringResource(Res.string.freud_fallback_retry_button)
     val stubContentDescription = "$title. $body"
 
     FreudScreenByWidth(
@@ -221,7 +221,6 @@ private fun FreudFallbackStubContent(
                 FreudFallbackNarrowLayout(
                     title = title,
                     body = body,
-                    retryLabel = retryLabel,
                     onRetry = onRetry,
                     titleColor = titleColor,
                     bodyColor = bodyColor,
@@ -238,7 +237,6 @@ private fun FreudFallbackStubContent(
                 FreudFallbackWideLayout(
                     title = title,
                     body = body,
-                    retryLabel = retryLabel,
                     onRetry = onRetry,
                     titleColor = titleColor,
                     bodyColor = bodyColor,
@@ -254,7 +252,6 @@ private fun FreudFallbackStubContent(
 private fun FreudFallbackNarrowLayout(
     title: String,
     body: String,
-    retryLabel: String,
     onRetry: () -> Unit,
     titleColor: FreudDsToken<Color>,
     bodyColor: FreudDsToken<Color>,
@@ -282,7 +279,7 @@ private fun FreudFallbackNarrowLayout(
         FreudSpacer(size = FreudFallbackDefaults.spacingBodyToButton)
 
         FreudHorizontalButton(
-            text = retryLabel,
+            text = FreudTextValue.text(Res.string.freud_fallback_retry_button),
             onClick = onRetry,
             containerColor = buttonContainerColor,
             contentColor = buttonContentColor,
@@ -298,7 +295,6 @@ private fun FreudFallbackNarrowLayout(
 private fun FreudFallbackWideLayout(
     title: String,
     body: String,
-    retryLabel: String,
     onRetry: () -> Unit,
     titleColor: FreudDsToken<Color>,
     bodyColor: FreudDsToken<Color>,
@@ -334,7 +330,7 @@ private fun FreudFallbackWideLayout(
                 FreudSpacer(size = FreudFallbackDefaults.spacingBodyToButton)
 
                 FreudHorizontalButton(
-                    text = retryLabel,
+                    text = FreudTextValue.text(Res.string.freud_fallback_retry_button),
                     onClick = onRetry,
                     containerColor = buttonContainerColor,
                     contentColor = buttonContentColor,
@@ -369,7 +365,7 @@ private fun ColumnScope.FreudFallbackTextBlock(
     val ds = FreudTheme.DefaultFreudTheme
 
     FreudText(
-        value = title,
+        value = FreudTextValue.text(title),
         color = titleColor,
         typography = ds.typography.textLgExtraBold,
         align = TextAlign.Center,
@@ -378,7 +374,7 @@ private fun ColumnScope.FreudFallbackTextBlock(
     FreudSpacer(size = FreudFallbackDefaults.spacingTitleToBody)
 
     FreudText(
-        value = body,
+        value = FreudTextValue.text(body),
         color = bodyColor,
         typography = ds.typography.textSmSemiBold,
         align = TextAlign.Center,

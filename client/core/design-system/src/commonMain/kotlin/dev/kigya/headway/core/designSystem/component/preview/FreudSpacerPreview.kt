@@ -28,6 +28,7 @@ import dev.kigya.headway.core.designSystem.theme.FreudTheme
 import dev.kigya.headway.core.designSystem.theme.color.FreudColorScheme
 import dev.kigya.headway.core.designSystem.theme.color.FreudDynamicColor
 import dev.kigya.headway.core.designSystem.theme.color.provides
+import dev.kigya.headway.core.designSystem.util.FreudTextValue
 import dev.kigya.headway.core.designSystem.util.previewPixelGrid
 
 private object FreudSpacerPreviewTheme : FreudTheme() {
@@ -107,7 +108,7 @@ private fun FreudSpacerPreview(
         ) {
             Column(modifier = Modifier.fillMaxWidth()) {
                 FreudText(
-                    value = header,
+                    value = FreudTextValue.text(header),
                     color = text,
                     typography = ds.typography.labelSm,
                     align = TextAlign.Start,
@@ -186,7 +187,7 @@ private fun PreviewBlock(
         contentAlignment = Alignment.CenterStart,
     ) {
         FreudText(
-            value = label,
+            value = FreudTextValue.text(label),
             color = textColor,
             typography = ds.typography.labelSm,
             align = TextAlign.Start,

@@ -20,12 +20,12 @@ import dev.kigya.headway.core.designSystem.component.FreudLottieSource
 import dev.kigya.headway.core.designSystem.component.FreudSpacer
 import dev.kigya.headway.core.designSystem.component.FreudText
 import dev.kigya.headway.core.designSystem.util.FreudScreenByWidth
+import dev.kigya.headway.core.designSystem.util.FreudTextValue
 import dev.kigya.headway.feature.splash.internal.ui.theme.SplashTheme
 import dev.kigya.headway.feature.splash.internal.ui.theme.SplashTheme.brandTextColor
 import dev.kigya.headway.feature.splash.internal.ui.theme.SplashTheme.splashBackground
 import headway.feature.splash.internal.generated.resources.Res
 import headway.feature.splash.internal.generated.resources.splash_brand
-import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -57,7 +57,7 @@ private fun SplashScreenContent(state: State<SplashStore.State>) {
             ) {
                 FreudSpacer(size = SplashTheme.dimension.dp16)
                 FreudText(
-                    value = stringResource(Res.string.splash_brand),
+                    value = FreudTextValue.text(Res.string.splash_brand),
                     color = SplashTheme.colorScheme.brandTextColor,
                     typography = SplashTheme.typography.headingSmExtraBold,
                 )

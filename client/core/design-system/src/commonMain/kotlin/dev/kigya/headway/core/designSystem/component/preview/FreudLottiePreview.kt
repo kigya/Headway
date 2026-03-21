@@ -28,6 +28,7 @@ import dev.kigya.headway.core.designSystem.theme.FreudTheme
 import dev.kigya.headway.core.designSystem.theme.color.FreudColorScheme
 import dev.kigya.headway.core.designSystem.theme.color.FreudDynamicColor
 import dev.kigya.headway.core.designSystem.theme.color.provides
+import dev.kigya.headway.core.designSystem.util.FreudTextValue
 import dev.kigya.headway.core.designSystem.util.previewPixelGrid
 import headway.core.design_system.generated.resources.Res
 
@@ -126,7 +127,7 @@ private fun FreudLottiePreview(
         ) {
             Column(modifier = Modifier.fillMaxWidth()) {
                 FreudText(
-                    value = header,
+                    value = FreudTextValue.text(header),
                     color = text,
                     typography = ds.typography.labelSm,
                     align = TextAlign.Start,
@@ -137,7 +138,7 @@ private fun FreudLottiePreview(
                 Box(modifier = Modifier.height(ds.dimension.dp12.value))
 
                 FreudText(
-                    value = ".lottie • auto theme=$dotLottieThemeLabel",
+                    value = FreudTextValue.text(".lottie • auto theme=$dotLottieThemeLabel"),
                     color = text,
                     typography = ds.typography.textSmSemiBold,
                     align = TextAlign.Start,
@@ -171,7 +172,9 @@ private fun FreudLottiePreview(
                 if (case.iterations == 1) {
                     Box(modifier = Modifier.height(ds.dimension.dp8.value))
                     FreudText(
-                        value = if (dotLottieFinished) ".lottie onFinish() fired" else ".lottie playing…",
+                        value = FreudTextValue.text(
+                            if (dotLottieFinished) ".lottie onFinish() fired" else ".lottie playing…",
+                        ),
                         color = text,
                         typography = ds.typography.textSmSemiBold,
                         align = TextAlign.Start,
@@ -183,7 +186,7 @@ private fun FreudLottiePreview(
                 Box(modifier = Modifier.height(ds.dimension.dp16.value))
 
                 FreudText(
-                    value = ".json • no theme",
+                    value = FreudTextValue.text(".json • no theme"),
                     color = text,
                     typography = ds.typography.textSmSemiBold,
                     align = TextAlign.Start,
@@ -217,7 +220,9 @@ private fun FreudLottiePreview(
                 if (case.iterations == 1) {
                     Box(modifier = Modifier.height(ds.dimension.dp8.value))
                     FreudText(
-                        value = if (jsonFinished) ".json onFinish() fired" else ".json playing…",
+                        value = FreudTextValue.text(
+                            if (jsonFinished) ".json onFinish() fired" else ".json playing…",
+                        ),
                         color = text,
                         typography = ds.typography.textSmSemiBold,
                         align = TextAlign.Start,

@@ -56,3 +56,21 @@ alwaysApply: true
 - **Why it exists:** [server/AGENTS.md](../../server/AGENTS.md) requires consistent dependency error mapping for gateway outbound calls.
 - **Bad pattern (short):** Raw `httpClient.post` / `httpClient.get` in `gateway/data/repository` without `upstreamCall`.
 - **Correct pattern (short):** `upstreamCall(dependency, request) { … }` and map failures with `toGatewayException` so GraphQL extensions stay consistent.
+
+---
+
+### 6
+
+- **Rule:** In `core:design-system`, keep `component/` for UI components and their previews only; put shared cross-component helpers under `util/`.
+- **Why it exists:** Clear module layout: composables and preview files stay discoverable; reusable text/value types, screen helpers, and preview grids are not “components” and should not live beside `FreudText` / `FreudButton`.
+- **Bad pattern (short):** New shared types (e.g. text models, formatters) as sibling `.kt` files under `.../designSystem/component/` when multiple components import them.
+- **Correct pattern (short):** Components and `component/preview/*` in `component/`; shared utilities (e.g. `FreudTextValue`, `FreudScreenByWidth`, `PreviewText`) in `.../designSystem/util/`.
+
+---
+
+### 7
+
+- **Rule:** For `.cursor/` in `.gitignore`, prefer ignoring only local Cursor paths (e.g. `.cursor/projects/`) instead of `.cursor/*` plus many `!` exceptions.
+- **Why it exists:** Git applies negations correctly, but IDE source control often still dims paths under a broad `.cursor/*` rule as if they were ignored.
+- **Bad pattern (short):** `.cursor/*` with `!.cursor/rules/**` (and similar) while expecting tracked rules to look like normal SCM files in the editor.
+- **Correct pattern (short):** Ignore concrete local-only subtrees such as `.cursor/projects/`; keep committed `.cursor/rules`, `.cursor/skills`, and docs untargeted by parent ignore rules.

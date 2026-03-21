@@ -19,6 +19,7 @@ import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.kigya.headway.core.designSystem.component.FreudFallback
 import dev.kigya.headway.core.designSystem.component.FreudText
 import dev.kigya.headway.core.designSystem.util.FreudScreenByWidth
+import dev.kigya.headway.core.designSystem.util.FreudTextValue
 import dev.kigya.headway.feature.auth.internal.ui.theme.auth.AuthTheme
 import dev.kigya.headway.feature.auth.internal.ui.theme.auth.AuthTheme.authBackground
 import dev.kigya.headway.feature.auth.internal.ui.theme.auth.AuthTheme.brandTextColor
@@ -61,7 +62,7 @@ private fun AuthScreenContent(
                         interactionSource = remember { MutableInteractionSource() },
                         indication = null,
                     ) { isError = true },
-                    value = "Auth Screen",
+                    value = FreudTextValue.text("Auth Screen"),
                     color = AuthTheme.colorScheme.brandTextColor,
                     typography = AuthTheme.typography.headingSmExtraBold,
                 )

@@ -10,12 +10,14 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import dev.kigya.headway.core.designSystem.component.FreudText
+import dev.kigya.headway.core.designSystem.component.preview.FreudTextPreviewTheme.accentText
 import dev.kigya.headway.core.designSystem.component.preview.FreudTextPreviewTheme.primaryText
 import dev.kigya.headway.core.designSystem.theme.FreudDsToken
 import dev.kigya.headway.core.designSystem.theme.FreudTheme
 import dev.kigya.headway.core.designSystem.theme.color.FreudColorScheme
 import dev.kigya.headway.core.designSystem.theme.color.FreudDynamicColor
 import dev.kigya.headway.core.designSystem.theme.color.provides
+import dev.kigya.headway.core.designSystem.util.FreudTextValue
 import dev.kigya.headway.core.designSystem.util.PreviewText
 
 private object FreudTextPreviewTheme : FreudTheme() {
@@ -23,6 +25,12 @@ private object FreudTextPreviewTheme : FreudTheme() {
         @Composable get() = colorScheme provides FreudDynamicColor(
             light = super.color.brown30,
             dark = super.color.orange10,
+        )
+
+    val FreudColorScheme.accentText: FreudDsToken<Color>
+        @Composable get() = colorScheme provides FreudDynamicColor(
+            light = super.color.orange40,
+            dark = super.color.orange20,
         )
 }
 
@@ -59,11 +67,39 @@ private fun FreudTextPreview(
 ) {
     FreudTheme(isDark = case.isDark) {
         FreudText(
-            value = PreviewText.loremForMaxLines(maxLines = case.maxLines),
+            value = FreudTextValue.text(PreviewText.loremForMaxLines(maxLines = case.maxLines)),
             color = FreudTextPreviewTheme.colorScheme.primaryText,
             typography = FreudTextPreviewTheme.typography.textMdBold,
             align = TextAlign.Start,
             maxLines = case.maxLines,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(FreudTheme.DefaultFreudTheme.dimension.dp16.value),
+        )
+    }
+}
+
+@Preview(
+    name = "FreudText – Rich segments",
+    showBackground = false,
+)
+@Composable
+private fun FreudTextRichPreview() {
+    FreudTheme(isDark = false) {
+        val accentColor = FreudTextPreviewTheme.colorScheme.accentText
+
+        FreudText(
+            value = FreudTextValue.rich {
+                append("Plain segment · ")
+                colored(
+                    value = "accent segment",
+                    color = accentColor,
+                )
+                append(" · plain again")
+            },
+            color = FreudTextPreviewTheme.colorScheme.primaryText,
+            typography = FreudTextPreviewTheme.typography.textMdBold,
+            align = TextAlign.Start,
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(FreudTheme.DefaultFreudTheme.dimension.dp16.value),

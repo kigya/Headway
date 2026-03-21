@@ -36,6 +36,8 @@ import androidx.compose.ui.unit.IntOffset
 import androidx.compose.ui.unit.IntSize
 import dev.kigya.headway.core.designSystem.theme.FreudDsToken
 import dev.kigya.headway.core.designSystem.theme.FreudTheme
+import dev.kigya.headway.core.designSystem.util.FreudTextValue
+import dev.kigya.headway.core.designSystem.util.resolveToPlainStringOrNull
 import org.jetbrains.compose.resources.DrawableResource
 
 enum class FreudHorizontalButtonSize {
@@ -70,20 +72,20 @@ private object FreudButtonDefaults {
 @Immutable
 sealed interface FreudButtonIconSpec {
     val resource: DrawableResource
-    val contentDescription: String?
+    val contentDescription: FreudTextValue?
     val tint: FreudDsToken<Color>?
 
     @Immutable
     data class Static(
         override val resource: DrawableResource,
-        override val contentDescription: String? = null,
+        override val contentDescription: FreudTextValue? = null,
         override val tint: FreudDsToken<Color>? = null,
     ) : FreudButtonIconSpec
 
     @Immutable
     data class Animated(
         override val resource: DrawableResource,
-        override val contentDescription: String? = null,
+        override val contentDescription: FreudTextValue? = null,
         override val tint: FreudDsToken<Color>? = null,
         val isVisible: Boolean = true,
         val animation: FreudAnimatedIconAnimation = FreudIconDefaults.fadeInScale(),
@@ -94,7 +96,7 @@ sealed interface FreudButtonIconSpec {
     @Immutable
     data class Reveal(
         override val resource: DrawableResource,
-        override val contentDescription: String? = null,
+        override val contentDescription: FreudTextValue? = null,
         override val tint: FreudDsToken<Color>? = null,
         val isVisible: Boolean = true,
         val direction: RevealDirection = RevealDirection.LEFT_TO_RIGHT,
@@ -105,7 +107,7 @@ sealed interface FreudButtonIconSpec {
 
 @Composable
 fun FreudHorizontalButton(
-    text: String,
+    text: FreudTextValue,
     onClick: () -> Unit,
     containerColor: FreudDsToken<Color>,
     contentColor: FreudDsToken<Color>,
@@ -117,7 +119,7 @@ fun FreudHorizontalButton(
     horizontalPadding: FreudDsToken<Dp> = FreudButtonDefaults.horizontalDefaultHorizontalPadding,
     leadingIcon: FreudButtonIconSpec? = null,
     trailingIcon: FreudButtonIconSpec? = null,
-    supportingText: String? = null,
+    supportingText: FreudTextValue? = null,
     supportingColor: FreudDsToken<Color> = contentColor,
     supportingIcon: FreudButtonIconSpec? = null,
 ) {
@@ -216,7 +218,7 @@ fun FreudHorizontalButton(
 
 @Composable
 fun FreudVerticalButton(
-    text: String,
+    text: FreudTextValue,
     onClick: () -> Unit,
     containerColor: FreudDsToken<Color>,
     contentColor: FreudDsToken<Color>,
@@ -278,11 +280,13 @@ private fun FreudButtonIcon(
     icon: FreudButtonIconSpec,
     size: FreudDsToken<Dp>,
 ) {
+    val contentDescription = icon.contentDescription.resolveToPlainStringOrNull()
+
     when (icon) {
         is FreudButtonIconSpec.Static ->
             FreudIcon(
                 resource = icon.resource,
-                contentDescription = icon.contentDescription,
+                contentDescription = contentDescription,
                 size = size,
                 tint = icon.tint,
             )
@@ -290,7 +294,7 @@ private fun FreudButtonIcon(
         is FreudButtonIconSpec.Animated ->
             FreudAnimatedIcon(
                 resource = icon.resource,
-                contentDescription = icon.contentDescription,
+                contentDescription = contentDescription,
                 isVisible = icon.isVisible,
                 size = size,
                 tint = icon.tint,
@@ -346,7 +350,7 @@ private fun FreudButtonIcon(
             ) {
                 FreudIcon(
                     resource = icon.resource,
-                    contentDescription = icon.contentDescription,
+                    contentDescription = contentDescription,
                     size = size,
                     tint = icon.tint,
                 )
