@@ -9,14 +9,14 @@ For shared Kotlin conventions see the root [`AGENTS.md`](../AGENTS.md).
 
 | Area            | Stack                                                                      |
 |-----------------|----------------------------------------------------------------------------|
-| Language        | Kotlin 2.x, JVM 21                                                        |
+| Language        | Kotlin 2.x, JVM 17                                                        |
 | Framework       | Ktor + Netty                                                               |
 | API             | KGraphQL (gateway), REST (internal microservices)                          |
 | DI              | Koin                                                                       |
 | Database        | Exposed (ORM), PostgreSQL                                                  |
 | Serialization   | kotlinx.serialization                                                      |
 | Build           | Gradle convention plugins (`build-logic/`)                                 |
-| Runtime         | Docker (multi-stage: `gradle:8.14.0-jdk21` → `eclipse-temurin:21-jre`)     |
+| Runtime         | Docker (multi-stage: `gradle:8.14.0-jdk17` → `eclipse-temurin:17-jre`)     |
 | Static analysis | Detekt + ktlint formatting                                                |
 
 ---
@@ -41,10 +41,10 @@ cd server && ./gradlew :gateway:installDist
 cd server && ./gradlew detekt
 
 # Docker build
-docker compose -f docker-compose.yml build
+cd server && docker compose -f docker-compose.yml build
 
 # Docker run
-docker compose -f docker-compose.yml up
+cd server && docker compose -f docker-compose.yml up
 ```
 
 > **After completing any task the agent MUST run `./gradlew build` and `./gradlew detekt` to verify.**
@@ -485,12 +485,12 @@ Rule: new modules must be compatible with detekt and formatting; do not introduc
 ## Docker / runtime
 
 ### Multi-stage Dockerfile
-- Build stage on `gradle:8.14.0-jdk21`
+- Build stage on `gradle:8.14.0-jdk17`
 - Builds installDist:
     - `database:internal:installDist`
     - `auth:internal:installDist`
     - `gateway:installDist`
-- Runtime images on `eclipse-temurin:21-jre`
+- Runtime images on `eclipse-temurin:17-jre`
 - Each service is launched via `bin/<applicationName>`
 
 ### env files

@@ -39,7 +39,7 @@ internal class GithubEnvSyncPlugin : Plugin<Project> {
             failOnMissingVariables.set(ext.failOnMissingVariables)
         }
 
-        tasks.register("syncGithubEnv", SyncGithubEnvTask::class.java) {
+        val syncGithubEnv = tasks.register("syncGithubEnv", SyncGithubEnvTask::class.java) {
             group = "github env sync"
             owner.set(ext.owner)
             repo.set(ext.repo)
@@ -52,6 +52,12 @@ internal class GithubEnvSyncPlugin : Plugin<Project> {
             tokenPropertyName.set(ext.tokenPropertyName)
             usernamePropertyName.set(ext.usernamePropertyName)
             failOnMissingVariables.set(ext.failOnMissingVariables)
+        }
+
+        tasks.register("githubEnvSync") {
+            group = "github env sync"
+            description = "Alias for syncGithubEnv."
+            dependsOn(syncGithubEnv)
         }
 
         afterEvaluate {

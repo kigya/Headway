@@ -4,7 +4,7 @@ Shared conventions for **all** Kotlin code in this monorepo (client + server).
 Platform-specific rules live in nested files — follow the closest `AGENTS.md` to the code you are editing:
 - **Client:** `client/AGENTS.md` (KMP, Compose, MVIKotlin, design system)
 - **Server:** `server/AGENTS.md` (Ktor, microservices, Docker)
-- **Design System:** `client/core/design-system/.../AGENTS.md` (tokens, components, previews)
+- **Design System:** `client/core/design-system/src/commonMain/kotlin/dev/kigya/headway/core/designSystem/AGENTS.md` (tokens, components, previews)
 
 ---
 
