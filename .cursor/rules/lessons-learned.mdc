@@ -74,3 +74,12 @@ alwaysApply: true
 - **Why it exists:** Git applies negations correctly, but IDE source control often still dims paths under a broad `.cursor/*` rule as if they were ignored.
 - **Bad pattern (short):** `.cursor/*` with `!.cursor/rules/**` (and similar) while expecting tracked rules to look like normal SCM files in the editor.
 - **Correct pattern (short):** Ignore concrete local-only subtrees such as `.cursor/projects/`; keep committed `.cursor/rules`, `.cursor/skills`, and docs untargeted by parent ignore rules.
+
+---
+
+### 8
+
+- **Rule:** In `@Immutable` Compose-facing models, use `ImmutableList` / `ImmutableMap` / `ImmutableSet` from `kotlinx-collections-immutable`, not Kotlin `List` / `Map` / `Set`.
+- **Why it exists:** Plain collection interfaces are treated as unstable by the Compose compiler, so skip optimization is weaker and runtime stability checks increase.
+- **Bad pattern (short):** `@Immutable data class State(val items: List<Item>)` or `@Immutable data class X(val segments: List<Segment>)` passed into composable trees.
+- **Correct pattern (short):** `ImmutableList` built with `persistentListOf` / `toPersistentList`; Compose modules already pull `kotlinx-collections-immutable` via `convention.component.compose`.

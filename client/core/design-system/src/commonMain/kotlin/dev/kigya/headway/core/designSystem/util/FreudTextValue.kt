@@ -4,6 +4,9 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
 import dev.kigya.headway.core.designSystem.theme.FreudDsToken
+import kotlinx.collections.immutable.ImmutableList
+import kotlinx.collections.immutable.persistentListOf
+import kotlinx.collections.immutable.toPersistentList
 import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import kotlin.jvm.JvmInline
@@ -36,7 +39,7 @@ sealed interface FreudTextValue {
         ): PlainText = PlainText(
             source = FreudTextSource.Resource(
                 value = resource,
-                formatArgs = formatArgs.toList(),
+                formatArgs = persistentListOf(*formatArgs),
             ),
         )
 
@@ -63,7 +66,7 @@ class FreudRichTextBuilder internal constructor() {
         segments += FreudRichTextSegment(
             source = FreudTextSource.Resource(
                 value = resource,
-                formatArgs = formatArgs.toList(),
+                formatArgs = persistentListOf(*formatArgs),
             ),
             color = null,
         )
@@ -87,14 +90,14 @@ class FreudRichTextBuilder internal constructor() {
         segments += FreudRichTextSegment(
             source = FreudTextSource.Resource(
                 value = resource,
-                formatArgs = formatArgs.toList(),
+                formatArgs = persistentListOf(*formatArgs),
             ),
             color = color,
         )
     }
 
     internal fun build(): FreudTextValue.RichText = FreudTextValue.RichText.create(
-        content = FreudRichTextContent.Segments(value = segments.toList()),
+        content = FreudRichTextContent.Segments(value = segments.toPersistentList()),
     )
 }
 
@@ -128,7 +131,7 @@ internal fun resolveTextSource(source: FreudTextSource): String = when (source) 
 @Suppress("SpreadOperator")
 private fun freudStringResource(
     resource: StringResource,
-    formatArgs: List<Any>,
+    formatArgs: ImmutableList<Any>,
 ): String = stringResource(resource, *formatArgs.toTypedArray())
 
 internal sealed interface FreudTextSource {
@@ -139,7 +142,7 @@ internal sealed interface FreudTextSource {
     @Immutable
     data class Resource(
         val value: StringResource,
-        val formatArgs: List<Any>,
+        val formatArgs: ImmutableList<Any>,
     ) : FreudTextSource
 }
 
@@ -147,7 +150,7 @@ internal sealed interface FreudRichTextContent {
 
     @Immutable
     data class Segments(
-        val value: List<FreudRichTextSegment>,
+        val value: ImmutableList<FreudRichTextSegment>,
     ) : FreudRichTextContent
 }
 
