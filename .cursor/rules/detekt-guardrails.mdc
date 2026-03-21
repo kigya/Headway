@@ -1,0 +1,25 @@
+---
+description: Detekt and formatting — zero-tolerance, correct scope
+globs: "**/*.kt"
+alwaysApply: false
+---
+
+## Configs
+
+- Client: [config/detekt/client.yml](../../config/detekt/client.yml) and [config/detekt/compose.yml](../../config/detekt/compose.yml) via `client/build-logic`.
+- Server: [config/detekt/server.yml](../../config/detekt/server.yml) via `server/build-logic`.
+- Do not bypass team config with ad-hoc `detekt { }` overrides in module `build.gradle.kts` unless the user explicitly approves a deliberate change.
+
+## Policy
+
+- Client Detekt config uses `build.maxIssues: 0`—treat Detekt failures as blocking.
+- Prefer fixing code; avoid `@Suppress` and baseline churn unless there is a documented reason.
+
+## Scope
+
+- Run Detekt from `client/` or `server/` root as documented in the matching `AGENTS.md`.
+- Do not treat a task as done if Detekt was skipped for Kotlin you changed.
+
+## Overlap with AGENTS
+
+- Formatting, trailing commas, and complexity limits in root [AGENTS.md](../../AGENTS.md) still apply—generated Kotlin must pass Detekt **and** those rules.

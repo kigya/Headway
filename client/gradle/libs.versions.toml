@@ -15,21 +15,22 @@ kotlinxDatetime = { prefer = "0.7.1" }
 kotlinxCollectionsImmutable = { require = "0.4.0" }
 
 # Compose Multiplatform
-composeMultiplatform = { require = "1.10.2" }
+composeMultiplatform = { require = "1.10.3" }
 composeAndroidx = { require = "1.10.5" }
 composeActivity = { require = "1.13.0" }
 composeMaterial3 = { require = "1.10.0-alpha05" }
 composeMaterial3Adaptive = { require = "1.3.0-alpha06" }
 composeWindowSizeClass = { require = "1.9.0" }
-composeNavigation3 = { require = "1.0.0-alpha06" }
+composeNavigation3Ui = { require = "1.0.0-alpha06" }
+composeNavigation3Runtime = { require = "1.0.1" }
 compottie = { require = "2.1.0" }
 
 # AndroidX & Lifecycle
-lifecycle = { require = "2.10.0-beta01" }
+lifecycle = { require = "2.10.0" }
 annotation = { strictly = "1.9.1" }
 
 # Dependency Injection
-koin = { strictly = "4.1.1" }
+koin = { strictly = "4.2.0" }
 
 # Architecture (MVI)
 mviKotlin = { prefer = "4.3.0" }
@@ -81,8 +82,8 @@ compose-uiToolingPreview = { module = "org.jetbrains.compose.ui:ui-tooling-previ
 compose-androidxUiTooling = { module = "androidx.compose.ui:ui-tooling", version.ref = "composeAndroidx" }
 compose-componentsResources = { module = "org.jetbrains.compose.components:components-resources", version.ref = "composeMultiplatform" }
 compose-material3 = { module = "org.jetbrains.compose.material3:material3", version.ref = "composeMaterial3" }
-compose-navigation3-runtime = { module = "androidx.navigation3:navigation3-runtime", version.ref = "composeNavigation3" }
-compose-navigation3-ui = { module = "org.jetbrains.androidx.navigation3:navigation3-ui", version.ref = "composeNavigation3" }
+compose-navigation3-runtime = { module = "androidx.navigation3:navigation3-runtime", version.ref = "composeNavigation3Runtime" }
+compose-navigation3-ui = { module = "org.jetbrains.androidx.navigation3:navigation3-ui", version.ref = "composeNavigation3Ui" }
 compottie = { module = "io.github.alexzhirkevich:compottie", version.ref = "compottie" }
 compottie-dot = { module = "io.github.alexzhirkevich:compottie-dot", version.ref = "compottie" }
 

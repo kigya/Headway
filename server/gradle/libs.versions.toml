@@ -1,21 +1,21 @@
 [versions]
 # Basic Environment Setup
-googleApiClient = "2.8.1"
+googleApiClient = "2.9.0"
 hikaricp = "7.0.2"
-java = { strictly = "21" }
-kgraphqlKtor = "0.36.0"
-koinKtor = { strictly = "4.1.1" }
-postgresql = "42.7.8"
+java = { strictly = "17" }
+kgraphqlKtor = "0.40.0"
+koinKtor = { strictly = "4.2.0" }
+postgresql = "42.7.10"
 exposed = { strictly = "1.0.0-rc-4" }
 
 # Kotlin
-kotlin = { strictly = "2.3.10" }
+kotlin = { strictly = "2.3.20" }
 
 # Serialization
 kotlinxSerialization = { require = "1.10.0" }
 
 # DI
-koin = { strictly = "4.1.1" }
+koin = { strictly = "4.2.0" }
 
 # Network
 ktor = { require = "3.4.1" }
@@ -24,10 +24,10 @@ ktor = { require = "3.4.1" }
 detekt = { require = "1.23.8" }
 
 # Server
-logback = "1.5.23"
+logback = "1.5.32"
 
 # Jackson
-jackson = "2.18.2"
+jackson = "2.21.2"
 
 github-env-sync-plugin = "unspecified"
 
