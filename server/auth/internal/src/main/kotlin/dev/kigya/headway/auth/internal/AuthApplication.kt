@@ -28,5 +28,6 @@ internal fun Application.authApp() {
     installAuthApi(
         loginWithGoogle = get(),
         refreshToken = get(),
+        validateAccessToken = get(),
     )
 }

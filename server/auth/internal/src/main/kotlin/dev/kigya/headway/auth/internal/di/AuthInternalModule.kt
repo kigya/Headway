@@ -12,6 +12,7 @@ import dev.kigya.headway.auth.internal.domain.repository.DatabaseRepositoryContr
 import dev.kigya.headway.auth.internal.domain.repository.JWTRepositoryContract
 import dev.kigya.headway.auth.internal.domain.usecase.LoginWithGoogleUseCase
 import dev.kigya.headway.auth.internal.domain.usecase.RefreshTokenUseCase
+import dev.kigya.headway.auth.internal.domain.usecase.ValidateAccessTokenUseCase
 import dev.kigya.headway.common.extension.createServiceHttpClient
 import dev.kigya.headway.database.api.url.DatabaseKoinHttpClient
 import dev.kigya.headway.database.api.url.databaseServiceUrlHolder
@@ -47,4 +48,5 @@ internal val authInternalModule = module {
 
     singleOf(::LoginWithGoogleUseCase)
     singleOf(::RefreshTokenUseCase)
+    singleOf(::ValidateAccessTokenUseCase)
 }

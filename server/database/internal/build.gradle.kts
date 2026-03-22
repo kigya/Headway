@@ -35,6 +35,7 @@ microserviceDependencies {
         implementation(postgresql)
         implementation(hikaricp)
 
+        testImplementation(kotlin.test)
         testImplementation(ktor.serverTestHost)
     }
 }

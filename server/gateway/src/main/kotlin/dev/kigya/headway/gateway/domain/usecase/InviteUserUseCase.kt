@@ -3,6 +3,7 @@ package dev.kigya.headway.gateway.domain.usecase
 import dev.kigya.headway.gateway.core.exception.GatewayException
 import dev.kigya.headway.gateway.domain.repository.DatabaseRepositoryContract
 import dev.kigya.headway.gateway.model.GatewayUser
+import dev.kigya.headway.gateway.model.GatewayUserRole
 
 internal class InviteUserUseCase(
     private val databaseRepository: DatabaseRepositoryContract,
@@ -10,6 +11,7 @@ internal class InviteUserUseCase(
     suspend operator fun invoke(
         email: String,
         department: String,
+        role: GatewayUserRole? = null,
     ): GatewayUser {
         val trimmedEmail = email.trim()
         val trimmedDepartment = department.trim()
@@ -24,6 +26,7 @@ internal class InviteUserUseCase(
         return databaseRepository.inviteUser(
             email = trimmedEmail,
             department = trimmedDepartment,
+            role = role,
         )
     }
 }

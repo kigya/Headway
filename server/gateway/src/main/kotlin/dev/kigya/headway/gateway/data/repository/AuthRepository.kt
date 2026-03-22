@@ -2,10 +2,13 @@ package dev.kigya.headway.gateway.data.repository
 
 import dev.kigya.headway.auth.api.model.`in`.AuthGoogleLoginPayloadDto
 import dev.kigya.headway.auth.api.model.`in`.AuthRefreshTokenPayloadDto
+import dev.kigya.headway.auth.api.model.`in`.AuthValidateTokenPayloadDto
 import dev.kigya.headway.auth.api.model.out.AuthGoogleLoginResponse
 import dev.kigya.headway.auth.api.model.out.AuthRefreshAccessTokenResponse
+import dev.kigya.headway.auth.api.model.out.AuthValidateTokenResponse
 import dev.kigya.headway.auth.api.model.resource.AuthGoogleResource
 import dev.kigya.headway.auth.api.model.resource.AuthRefreshTokenResource
+import dev.kigya.headway.auth.api.model.resource.AuthValidateTokenResource
 import dev.kigya.headway.gateway.core.http.upstreamCall
 import dev.kigya.headway.gateway.domain.repository.AuthRepositoryContract
 import dev.kigya.headway.gateway.mapping.toDatabase
@@ -58,4 +61,16 @@ internal class AuthRepository(
         },
         onSuccess = { it.body<AuthRefreshAccessTokenResponse>().toGateway() },
     )
+
+    override suspend fun validateToken(accessToken: String): AuthValidateTokenResponse =
+        upstreamCall(
+            dependency = "auth",
+            request = {
+                httpClient.post(AuthValidateTokenResource()) {
+                    contentType(ContentType.Application.Json)
+                    setBody(AuthValidateTokenPayloadDto(accessToken = accessToken))
+                }
+            },
+            onSuccess = { it.body<AuthValidateTokenResponse>() },
+        )
 }

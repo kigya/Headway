@@ -33,6 +33,7 @@ microserviceDependencies {
         implementation(kgraphql.ktor)
         implementation(koin.ktor)
 
+        testImplementation(kotlin.test)
         testImplementation(ktor.serverTestHost)
     }
 }

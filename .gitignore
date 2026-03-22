@@ -23,3 +23,4 @@ captures
 **/.vscode
 
 .cursor/projects/
+.playwright-mcp/

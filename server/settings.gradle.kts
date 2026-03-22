@@ -38,6 +38,8 @@ dependencyResolutionManagement {
 includeBuild("build-logic")
 
 include(
+    ":admin:api",
+    ":admin:internal",
     ":gateway",
     ":common",
     ":database:api",

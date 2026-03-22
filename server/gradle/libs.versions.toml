@@ -37,6 +37,7 @@ google-api-client = { module = "com.google.api-client:google-api-client", versio
 hikaricp = { module = "com.zaxxer:HikariCP", version.ref = "hikaricp" }
 kgraphql-ktor = { module = "de.stuebingerb:kgraphql-ktor", version.ref = "kgraphqlKtor" }
 koin-ktor = { module = "io.insert-koin:koin-ktor", version.ref = "koinKtor" }
+kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
 postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql" }
 serializationJson = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
 

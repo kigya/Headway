@@ -35,8 +35,10 @@ internal class UsersRepository(
     override suspend fun inviteUser(
         email: String,
         department: String,
+        role: DatabaseUserRole?,
     ): DatabaseUser = database.dbQuery {
         val existingRow = readRowByEmailTx(email)
+        val targetRole = role ?: DatabaseUserRole.EMPLOYEE
 
         if (existingRow != null) {
             val currentId = existingRow[UsersTable.id].value
@@ -50,6 +52,7 @@ internal class UsersRepository(
                     ExposedAccountStatus.INVITED,
                     ExposedAccountStatus.REVOKED,
                     -> {
+                        it[this.role] = targetRole
                         it[this.status] = ExposedAccountStatus.INVITED
                         it[this.isActive] = false
                     }
@@ -67,7 +70,7 @@ internal class UsersRepository(
             it[this.email] = email
             it[this.fullName] = email
             it[this.department] = department.toExposedDepartment()
-            it[this.role] = DatabaseUserRole.EMPLOYEE
+            it[this.role] = targetRole
             it[this.status] = ExposedAccountStatus.INVITED
             it[this.isActive] = false
         }[UsersTable.id].value

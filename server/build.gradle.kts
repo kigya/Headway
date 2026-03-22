@@ -38,5 +38,4 @@ githubEnvSync {
     failOnMissingVariables.set(true)
 
     environments.set(listOf("dev", "prod"))
-    includeLocalEnvironment.set(true)
 }

@@ -1,6 +1,6 @@
 package dev.kigya.headway.auth.internal.core
 
-import dev.kigya.headway.common.config.CommonConfigurationValues.ENV
+import dev.kigya.headway.common.config.CommonConfigurationValues
 import dev.kigya.headway.common.util.intEnv
 import dev.kigya.headway.common.util.longEnv
 import dev.kigya.headway.common.util.stringEnv
@@ -37,7 +37,7 @@ internal object ConfigurationValues {
         .ifBlank { throw IllegalArgumentException("GOOGLE_TOKEN_AUDIENCE must be set") }
 
     fun validateSecrets() {
-        if (ENV == "prod") {
+        if (CommonConfigurationValues.environment.isProd) {
             require(JWT_ACCESS_SECRET != DefaultValues.JWT_ACCESS_SECRET) { "JWT_ACCESS_SECRET must be set in prod" }
             require(JWT_REFRESH_SECRET != DefaultValues.JWT_REFRESH_SECRET) { "JWT_REFRESH_SECRET must be set in prod" }
         }

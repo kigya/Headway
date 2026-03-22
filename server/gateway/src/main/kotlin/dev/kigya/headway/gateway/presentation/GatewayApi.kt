@@ -3,12 +3,15 @@ package dev.kigya.headway.gateway.presentation
 import com.apurebase.kgraphql.ExecutionException
 import com.apurebase.kgraphql.GraphQL
 import com.apurebase.kgraphql.GraphQLError
+import dev.kigya.headway.common.util.Environment
 import dev.kigya.headway.gateway.core.exception.GatewayErrorCode
 import dev.kigya.headway.gateway.core.exception.GatewayException
 import dev.kigya.headway.gateway.domain.usecase.CheckHealthStatusUseCase
 import dev.kigya.headway.gateway.domain.usecase.InviteUserUseCase
 import dev.kigya.headway.gateway.domain.usecase.LoginWithGoogleUseCase
 import dev.kigya.headway.gateway.domain.usecase.RefreshAccessTokenUseCase
+import dev.kigya.headway.gateway.domain.usecase.ResolveCallerUseCase
+import dev.kigya.headway.gateway.graphql.GraphqlRequestContext
 import dev.kigya.headway.gateway.graphql.stringScalarLong
 import dev.kigya.headway.gateway.graphql.stringScalarUUID
 import dev.kigya.headway.gateway.model.GatewayGoogleLoginResponse
@@ -27,14 +30,21 @@ import io.ktor.server.application.log
 import io.ktor.server.plugins.BadRequestException as KtorBadRequestException
 
 internal fun Application.installGatewayApi(
+    environment: Environment,
     checkHealthStatus: CheckHealthStatusUseCase,
     loginWithGoogle: LoginWithGoogleUseCase,
     refreshToken: RefreshAccessTokenUseCase,
     inviteUser: InviteUserUseCase,
+    resolveCaller: ResolveCallerUseCase,
 ) {
     install(GraphQL) {
-        playground = true
+        playground = !environment.isProd
         endpoint = GatewayHttpRoute.GraphQL.path
+        context { call ->
+            +GraphqlRequestContext(
+                authorizationHeader = call.request.headers["Authorization"],
+            )
+        }
 
         errorHandler { throwable ->
             val originalThrowable = unwrapGraphQlError(throwable)
@@ -92,7 +102,10 @@ internal fun Application.installGatewayApi(
 
             healthSchema(checkHealthStatus)
             authSchema(loginWithGoogle, refreshToken)
-            databaseSchema(inviteUser)
+            databaseSchema(
+                inviteUser = inviteUser,
+                resolveCaller = resolveCaller,
+            )
         }
     }
 }

@@ -1,5 +1,6 @@
 package dev.kigya.headway.gateway
 
+import dev.kigya.headway.common.config.CommonConfigurationValues
 import dev.kigya.headway.gateway.core.config.ConfigurationValues
 import dev.kigya.headway.gateway.di.gatewayDependencies
 import dev.kigya.headway.gateway.presentation.installGatewayApi
@@ -24,9 +25,11 @@ private fun Application.gatewayApp() {
         modules(gatewayDependencies)
     }
     installGatewayApi(
+        environment = CommonConfigurationValues.environment,
         checkHealthStatus = get(),
         loginWithGoogle = get(),
         refreshToken = get(),
         inviteUser = get(),
+        resolveCaller = get(),
     )
 }

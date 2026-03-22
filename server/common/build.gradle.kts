@@ -23,5 +23,7 @@ jvmLibraryDependencies {
         implementation(ktor.client.content.negotiation)
         implementation(koin.core)
         implementation(ktor.statusPages)
+
+        testImplementation(kotlin.test)
     }
 }
