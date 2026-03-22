@@ -1,5 +1,3 @@
-@file:Suppress("MagicNumber")
-
 package dev.kigya.headway.core.designSystem.theme.color
 
 import androidx.compose.runtime.Immutable

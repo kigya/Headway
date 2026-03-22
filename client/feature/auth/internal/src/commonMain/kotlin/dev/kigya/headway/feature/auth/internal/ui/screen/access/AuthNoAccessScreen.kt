@@ -18,11 +18,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
@@ -65,17 +62,13 @@ import headway.feature.auth.internal.generated.resources.ic_report
 import kotlinx.coroutines.delay
 import org.koin.compose.viewmodel.koinViewModel
 
-@Suppress("ExplicitDependencies")
 @Composable
-internal fun NoAccessScreen() {
-    val viewModel = koinViewModel<AuthNoAccessViewModel>()
-
+internal fun NoAccessScreen(viewModel: AuthNoAccessViewModel = koinViewModel()) {
     NoAccessScreenContent(
         onBack = viewModel::onBack,
     )
 }
 
-@Suppress("ModifierOrder")
 @Composable
 private fun NoAccessScreenContent(onBack: () -> Unit) {
     val wide = isWide()
@@ -252,7 +245,6 @@ private fun NoAccessArcOverlay(modifier: Modifier = Modifier) {
     )
 }
 
-@Suppress("EffectKeys")
 @Composable
 private fun NoAccessTextAndButton(
     modifier: Modifier = Modifier,
@@ -313,10 +305,9 @@ private fun NoAccessTextAndButton(
 
         FreudSpacer(size = spaceAfterSubtitle)
 
-        var isVisible by remember { mutableStateOf(false) }
-        LaunchedEffect(Unit) {
+        val isReportIconVisible by produceState(initialValue = false) {
             delay(REPORT_ANIMATION_DELAY_MILLIS)
-            isVisible = true
+            value = true
         }
 
         FreudHorizontalButton(
@@ -330,7 +321,7 @@ private fun NoAccessTextAndButton(
                 resource = Res.drawable.ic_report,
                 contentDescription = null,
                 tint = AuthNoAccessTheme.colorScheme.reportIconTint,
-                isVisible = isVisible,
+                isVisible = isReportIconVisible,
             ),
         )
     }

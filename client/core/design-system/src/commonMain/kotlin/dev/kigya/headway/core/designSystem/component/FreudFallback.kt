@@ -1,8 +1,8 @@
-@file:Suppress("MagicNumber", "LongMethod")
-
 package dev.kigya.headway.core.designSystem.component
 
 import androidx.compose.animation.AnimatedContent
+import androidx.compose.animation.AnimatedContentTransitionScope
+import androidx.compose.animation.ContentTransform
 import androidx.compose.animation.core.tween
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
@@ -63,9 +63,9 @@ private enum class FreudFallbackStubKind {
 }
 
 private object FreudFallbackDefaults {
-    val lottieSize = FreudDsToken(248.dp)
-    val contentMaxWidth = FreudDsToken(920.dp)
-    val textMaxWidth = FreudDsToken(320.dp)
+    val lottieSize = FreudDsToken(LOTTIE_SIZE_DP.dp)
+    val contentMaxWidth = FreudDsToken(CONTENT_MAX_WIDTH_DP.dp)
+    val textMaxWidth = FreudDsToken(TEXT_MAX_WIDTH_DP.dp)
     val buttonWidth = FreudTheme.DefaultFreudTheme.dimension.dp240
     val narrowPadding = FreudTheme.DefaultFreudTheme.dimension.dp24
     val widePadding = FreudTheme.DefaultFreudTheme.dimension.dp48
@@ -76,6 +76,7 @@ private object FreudFallbackDefaults {
 
     const val TRANSITION_DURATION_MILLIS = 350
     const val AUTO_RETRY_MILLIS = 10_000L
+    const val STUB_SLIDE_OFFSET_DIVISOR = 8
 }
 
 object FreudFallbackTestTags {
@@ -103,7 +104,6 @@ fun FreudFallback(
 }
 
 @Composable
-@Suppress("CyclomaticComplexMethod")
 internal fun FreudFallbackContent(
     isError: Boolean,
     isOnline: Boolean,
@@ -111,33 +111,17 @@ internal fun FreudFallbackContent(
     modifier: Modifier = Modifier,
     content: @Composable () -> Unit,
 ) {
-    val stubKind = when {
-        !isError -> null
-        isOnline -> FreudFallbackStubKind.Error
-        else -> FreudFallbackStubKind.Network
-    }
+    val stubKind = freudFallbackStubKind(isError = isError, isOnline = isOnline)
 
     val currentOnRetry by rememberUpdatedState(onRetry)
-    val currentIsOnline by rememberUpdatedState(isOnline)
     var isAutoRetryEnabled by remember(stubKind) { mutableStateOf(stubKind != null) }
 
-    LaunchedEffect(stubKind, isAutoRetryEnabled) {
-        if (stubKind == null || !isAutoRetryEnabled) return@LaunchedEffect
-
-        while (isAutoRetryEnabled) {
-            delay(FreudFallbackDefaults.AUTO_RETRY_MILLIS)
-
-            if (!isAutoRetryEnabled) break
-
-            when (stubKind) {
-                FreudFallbackStubKind.Error -> currentOnRetry()
-                FreudFallbackStubKind.Network ->
-                    if (currentIsOnline) {
-                        currentOnRetry()
-                    }
-            }
-        }
-    }
+    FreudFallbackAutoRetryEffect(
+        stubKind = stubKind,
+        isAutoRetryEnabled = isAutoRetryEnabled,
+        onRetry = onRetry,
+        isOnline = isOnline,
+    )
 
     val resolvedOnRetry: () -> Unit = {
         isAutoRetryEnabled = false
@@ -152,13 +136,7 @@ internal fun FreudFallbackContent(
 
     AnimatedContent(
         targetState = stubKind,
-        transitionSpec = {
-            val enter = fadeIn(tween(FreudFallbackDefaults.TRANSITION_DURATION_MILLIS)) +
-                slideInVertically(tween(FreudFallbackDefaults.TRANSITION_DURATION_MILLIS)) { it / 8 }
-            val exit = fadeOut(tween(FreudFallbackDefaults.TRANSITION_DURATION_MILLIS)) +
-                slideOutVertically(tween(FreudFallbackDefaults.TRANSITION_DURATION_MILLIS)) { -it / 8 }
-            enter togetherWith exit
-        },
+        transitionSpec = { freudFallbackStubContentTransform() },
         contentKey = { it },
         modifier = modifier,
         label = "FreudFallback",
@@ -413,7 +391,60 @@ private object FreudFallbackTheme : FreudTheme() {
         )
 }
 
+private fun freudFallbackStubKind(
+    isError: Boolean,
+    isOnline: Boolean,
+): FreudFallbackStubKind? = when {
+    !isError -> null
+    isOnline -> FreudFallbackStubKind.Error
+    else -> FreudFallbackStubKind.Network
+}
+
+@Composable
+private fun FreudFallbackAutoRetryEffect(
+    stubKind: FreudFallbackStubKind?,
+    isAutoRetryEnabled: Boolean,
+    onRetry: () -> Unit,
+    isOnline: Boolean,
+) {
+    val currentOnRetry by rememberUpdatedState(onRetry)
+    val currentIsOnline by rememberUpdatedState(isOnline)
+    LaunchedEffect(stubKind, isAutoRetryEnabled) {
+        if (stubKind == null || !isAutoRetryEnabled) return@LaunchedEffect
+
+        while (isAutoRetryEnabled) {
+            delay(FreudFallbackDefaults.AUTO_RETRY_MILLIS)
+
+            if (!isAutoRetryEnabled) break
+
+            when (stubKind) {
+                FreudFallbackStubKind.Error -> currentOnRetry()
+                FreudFallbackStubKind.Network ->
+                    if (currentIsOnline) {
+                        currentOnRetry()
+                    }
+            }
+        }
+    }
+}
+
+private typealias FreudFallbackStubTransitionScope =
+    AnimatedContentTransitionScope<FreudFallbackStubKind?>
+
+private fun FreudFallbackStubTransitionScope.freudFallbackStubContentTransform(): ContentTransform {
+    val durationMillis = FreudFallbackDefaults.TRANSITION_DURATION_MILLIS
+    val offsetDivisor = FreudFallbackDefaults.STUB_SLIDE_OFFSET_DIVISOR
+    val enter = fadeIn(tween(durationMillis)) +
+        slideInVertically(tween(durationMillis)) { it / offsetDivisor }
+    val exit = fadeOut(tween(durationMillis)) +
+        slideOutVertically(tween(durationMillis)) { -it / offsetDivisor }
+    return enter togetherWith exit
+}
+
 @Composable
 internal expect fun rememberIsOnline(): Boolean
 
+private const val LOTTIE_SIZE_DP = 248
+private const val CONTENT_MAX_WIDTH_DP = 920
+private const val TEXT_MAX_WIDTH_DP = 320
 private const val LOTTIE_STUB_ROBOT_PATH = "files/lottie_stub_robot.lottie"

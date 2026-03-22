@@ -1,5 +1,3 @@
-@file:Suppress("MagicNumber", "LongMethod", "TooManyFunctions")
-
 package dev.kigya.headway.core.designSystem.component.preview
 
 import androidx.compose.foundation.background
@@ -117,7 +115,6 @@ private class FreudFallbackPreviewCaseProvider : PreviewParameterProvider<FreudF
     showBackground = false,
 )
 @Composable
-@Suppress("UnusedPrivateMember")
 private fun FreudFallbackPreview(
     @PreviewParameter(FreudFallbackPreviewCaseProvider::class) case: FreudFallbackPreviewCase,
 ) {

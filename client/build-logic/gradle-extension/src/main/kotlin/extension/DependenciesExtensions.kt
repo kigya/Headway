@@ -1,5 +1,3 @@
-@file:Suppress("NOTHING_TO_INLINE")
-
 package extension
 
 import org.gradle.accessors.dm.LibrariesForLibs
@@ -17,7 +15,7 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinDependencyHandler
  *
  * @see [DependencyHandler.add]
  */
-public inline fun DependencyHandler.implementation(dependencyNotation: Any): Dependency? =
+public fun DependencyHandler.implementation(dependencyNotation: Any): Dependency? =
     add("implementation", dependencyNotation)
 
 /**
@@ -28,7 +26,7 @@ public inline fun DependencyHandler.implementation(dependencyNotation: Any): Dep
  *
  * @see [DependencyHandler.add]
  */
-public inline fun DependencyHandler.debugImplementation(dependencyNotation: Any): Dependency? =
+public fun DependencyHandler.debugImplementation(dependencyNotation: Any): Dependency? =
     add("debugImplementation", dependencyNotation)
 
 /**
@@ -39,7 +37,7 @@ public inline fun DependencyHandler.debugImplementation(dependencyNotation: Any)
  *
  * @see [DependencyHandler.add]
  */
-public inline fun DependencyHandler.ksp(dependencyNotation: Any): Dependency? =
+public fun DependencyHandler.ksp(dependencyNotation: Any): Dependency? =
     add("ksp", dependencyNotation)
 
 
@@ -51,7 +49,7 @@ public inline fun DependencyHandler.ksp(dependencyNotation: Any): Dependency? =
  *
  * @see [DependencyHandler.add]
  */
-public inline fun DependencyHandler.testImplementation(dependencyNotation: Any): Dependency? =
+public fun DependencyHandler.testImplementation(dependencyNotation: Any): Dependency? =
     add("testImplementation", dependencyNotation)
 
 /**
@@ -62,7 +60,7 @@ public inline fun DependencyHandler.testImplementation(dependencyNotation: Any):
  *
  * @see [DependencyHandler.add]
  */
-public inline fun DependencyHandler.androidTestImplementation(dependencyNotation: Any): Dependency? =
+public fun DependencyHandler.androidTestImplementation(dependencyNotation: Any): Dependency? =
     add("androidTestImplementation", dependencyNotation)
 
 /**
@@ -73,7 +71,7 @@ public inline fun DependencyHandler.androidTestImplementation(dependencyNotation
  *
  * @see [DependencyHandler.add]
  */
-public inline fun DependencyHandler.detektPlugins(dependencyNotation: Any): Dependency? =
+public fun DependencyHandler.detektPlugins(dependencyNotation: Any): Dependency? =
     add("detektPlugins", dependencyNotation)
 
 

@@ -180,7 +180,6 @@ private fun FreudIconPreview(
     }
 }
 
-@Suppress("EffectKeys")
 @Composable
 private fun TogglingAnimatedIcon(
     resource: DrawableResource,
@@ -190,7 +189,7 @@ private fun TogglingAnimatedIcon(
 ) {
     var isVisible by remember { mutableStateOf(false) }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(ANIMATED_ICON_DELAY) {
         while (true) {
             delay(ANIMATED_ICON_DELAY)
             isVisible = !isVisible

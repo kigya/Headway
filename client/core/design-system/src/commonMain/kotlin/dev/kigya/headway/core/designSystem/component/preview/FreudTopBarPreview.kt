@@ -1,5 +1,3 @@
-@file:Suppress("MagicNumber")
-
 package dev.kigya.headway.core.designSystem.component.preview
 
 import androidx.compose.foundation.background
@@ -113,7 +111,6 @@ private class FreudTopBarPreviewCaseProvider : PreviewParameterProvider<FreudTop
     name = "FreudTopBar – Theme x Width x Slots",
     showBackground = false,
 )
-@Suppress("CyclomaticComplexMethod")
 @Composable
 private fun FreudTopBarPreview(
     @PreviewParameter(FreudTopBarPreviewCaseProvider::class) case: FreudTopBarPreviewCase,

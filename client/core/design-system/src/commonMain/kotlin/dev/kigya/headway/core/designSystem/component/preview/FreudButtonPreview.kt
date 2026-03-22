@@ -193,7 +193,6 @@ private class FreudButtonPreviewCaseProvider : PreviewParameterProvider<FreudBut
     showBackground = false,
 )
 @Composable
-@Suppress("LongMethod", "CyclomaticComplexMethod")
 private fun FreudButtonPreview(
     @PreviewParameter(FreudButtonPreviewCaseProvider::class) case: FreudButtonPreviewCase,
 ) {

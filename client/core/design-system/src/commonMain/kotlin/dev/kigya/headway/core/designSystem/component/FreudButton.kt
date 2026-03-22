@@ -1,5 +1,3 @@
-@file:Suppress("MagicNumber", "ObjectPropertyNaming")
-
 package dev.kigya.headway.core.designSystem.component
 
 import androidx.compose.animation.AnimatedVisibility
@@ -65,8 +63,8 @@ private object FreudButtonDefaults {
     val iconSize = FreudTheme.DefaultFreudTheme.dimension.dp24
     val supportingIconSize = FreudTheme.DefaultFreudTheme.dimension.dp20
 
-    const val revealIconDurationMillis = 220
-    const val revealIconHiddenScale = 0.92f
+    const val REVEAL_ICON_DURATION_MILLIS = 220
+    const val REVEAL_ICON_HIDDEN_SCALE = 0.92f
 }
 
 @Immutable
@@ -100,8 +98,8 @@ sealed interface FreudButtonIconSpec {
         override val tint: FreudDsToken<Color>? = null,
         val isVisible: Boolean = true,
         val direction: RevealDirection = RevealDirection.LEFT_TO_RIGHT,
-        val durationMs: Int = FreudButtonDefaults.revealIconDurationMillis,
-        val hiddenScale: Float = FreudButtonDefaults.revealIconHiddenScale,
+        val durationMs: Int = FreudButtonDefaults.REVEAL_ICON_DURATION_MILLIS,
+        val hiddenScale: Float = FreudButtonDefaults.REVEAL_ICON_HIDDEN_SCALE,
     ) : FreudButtonIconSpec
 }
 

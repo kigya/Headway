@@ -2,7 +2,6 @@ package dev.kigya.headway.core.designSystem.util
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.composed
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithCache
 import androidx.compose.ui.graphics.Color
@@ -38,69 +37,88 @@ private object FreudBackgroundTheme : FreudTheme() {
         )
 }
 
+private object FreudBackgroundGeometry {
+    val strokeDp = 1.dp
+    val lineSpacingDp = 28.dp
+    val waveAmplitudeDp = 20.dp
+    val waveLengthDp = 104.dp
+}
+
+private data class FreudBackgroundWaveDrawSpec(
+    val strokeWidth: Float,
+    val lineSpacing: Float,
+    val waveAmplitude: Float,
+    val waveLength: Float,
+    val orientation: FreudBackgroundWaveOrientation,
+)
+
+@Composable
 fun Modifier.background(
     color: FreudDsToken<Color>,
     pattern: FreudBackgroundPattern = FreudBackgroundPattern.None,
     shape: Shape = RectangleShape,
-): Modifier = background(
-    color = color.value,
-    pattern = pattern,
-    shape = shape,
-)
-
-@Suppress("AvoidComposed")
-private fun Modifier.background(
-    color: Color,
-    pattern: FreudBackgroundPattern = FreudBackgroundPattern.None,
-    shape: Shape = RectangleShape,
-): Modifier = composed {
+): Modifier {
     val lineColor = FreudBackgroundTheme.colorScheme.line.value
     val density = LocalDensity.current
-    val isWide = isWide()
-
-    val strokeWidth = with(density) { 1.dp.toPx() }
-    val lineSpacing = with(density) { 28.dp.toPx() }
-    val waveAmplitude = with(density) { 20.dp.toPx() }
-    val waveLength = with(density) { 104.dp.toPx() }
-
-    val orientation = if (isWide) {
-        FreudBackgroundWaveOrientation.Horizontal
-    } else {
-        FreudBackgroundWaveOrientation.Vertical
-    }
-
-    Modifier
-        .clip(shape)
-        .drawWithCache {
-            onDrawWithContent {
-                drawRect(color = color)
-
-                if (pattern == FreudBackgroundPattern.Waves) {
-                    when (orientation) {
-                        FreudBackgroundWaveOrientation.Horizontal ->
-                            drawHorizontalWaves(
-                                lineColor = lineColor,
-                                strokeWidth = strokeWidth,
-                                lineSpacing = lineSpacing,
-                                waveAmplitude = waveAmplitude,
-                                waveLength = waveLength,
-                            )
-
-                        FreudBackgroundWaveOrientation.Vertical ->
-                            drawVerticalWaves(
-                                lineColor = lineColor,
-                                strokeWidth = strokeWidth,
-                                lineSpacing = lineSpacing,
-                                waveAmplitude = waveAmplitude,
-                                waveLength = waveLength,
-                            )
-                    }
-                }
-
-                drawContent()
-            }
-        }
+    val waveDrawSpec = FreudBackgroundWaveDrawSpec(
+        strokeWidth = with(density) { FreudBackgroundGeometry.strokeDp.toPx() },
+        lineSpacing = with(density) { FreudBackgroundGeometry.lineSpacingDp.toPx() },
+        waveAmplitude = with(density) { FreudBackgroundGeometry.waveAmplitudeDp.toPx() },
+        waveLength = with(density) { FreudBackgroundGeometry.waveLengthDp.toPx() },
+        orientation = if (isWide()) {
+            FreudBackgroundWaveOrientation.Horizontal
+        } else {
+            FreudBackgroundWaveOrientation.Vertical
+        },
+    )
+    return this.then(
+        freudPatternBackground(
+            color = color.value,
+            pattern = pattern,
+            shape = shape,
+            lineColor = lineColor,
+            waveDrawSpec = waveDrawSpec,
+        ),
+    )
 }
+
+private fun Modifier.freudPatternBackground(
+    color: Color,
+    pattern: FreudBackgroundPattern,
+    shape: Shape,
+    lineColor: Color,
+    waveDrawSpec: FreudBackgroundWaveDrawSpec,
+): Modifier = this
+    .clip(shape)
+    .drawWithCache {
+        onDrawWithContent {
+            drawRect(color = color)
+
+            if (pattern == FreudBackgroundPattern.Waves) {
+                when (waveDrawSpec.orientation) {
+                    FreudBackgroundWaveOrientation.Horizontal ->
+                        drawHorizontalWaves(
+                            lineColor = lineColor,
+                            strokeWidth = waveDrawSpec.strokeWidth,
+                            lineSpacing = waveDrawSpec.lineSpacing,
+                            waveAmplitude = waveDrawSpec.waveAmplitude,
+                            waveLength = waveDrawSpec.waveLength,
+                        )
+
+                    FreudBackgroundWaveOrientation.Vertical ->
+                        drawVerticalWaves(
+                            lineColor = lineColor,
+                            strokeWidth = waveDrawSpec.strokeWidth,
+                            lineSpacing = waveDrawSpec.lineSpacing,
+                            waveAmplitude = waveDrawSpec.waveAmplitude,
+                            waveLength = waveDrawSpec.waveLength,
+                        )
+                }
+            }
+
+            drawContent()
+        }
+    }
 
 private fun ContentDrawScope.drawHorizontalWaves(
     lineColor: Color,

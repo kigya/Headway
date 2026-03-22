@@ -96,7 +96,6 @@ private class FreudLottiePreviewCaseProvider : PreviewParameterProvider<FreudLot
     showBackground = false,
 )
 @Composable
-@Suppress("LongMethod")
 private fun FreudLottiePreview(
     @PreviewParameter(FreudLottiePreviewCaseProvider::class) case: FreudLottiePreviewCase,
 ) {

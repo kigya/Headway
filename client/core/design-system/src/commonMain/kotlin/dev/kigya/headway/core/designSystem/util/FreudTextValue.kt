@@ -127,9 +127,31 @@ internal fun resolveTextSource(source: FreudTextSource): String = when (source) 
         }
 }
 
+private const val FORMAT_ARGS_THREE = 3
+private const val FORMAT_ARGS_FOUR = 4
+
+@Composable
+private fun freudStringResource(
+    resource: StringResource,
+    formatArgs: ImmutableList<Any>,
+): String = when (formatArgs.size) {
+    0 -> stringResource(resource)
+    1 -> stringResource(resource, formatArgs[0])
+    2 -> stringResource(resource, formatArgs[0], formatArgs[1])
+    FORMAT_ARGS_THREE -> stringResource(resource, formatArgs[0], formatArgs[1], formatArgs[2])
+    FORMAT_ARGS_FOUR -> stringResource(
+        resource,
+        formatArgs[0],
+        formatArgs[1],
+        formatArgs[2],
+        formatArgs[formatArgs.lastIndex],
+    )
+    else -> freudStringResourceVararg(resource, formatArgs)
+}
+
 @Composable
 @Suppress("SpreadOperator")
-private fun freudStringResource(
+private fun freudStringResourceVararg(
     resource: StringResource,
     formatArgs: ImmutableList<Any>,
 ): String = stringResource(resource, *formatArgs.toTypedArray())

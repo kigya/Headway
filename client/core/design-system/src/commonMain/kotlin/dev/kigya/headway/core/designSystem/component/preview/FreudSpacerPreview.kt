@@ -82,7 +82,6 @@ private class FreudSpacerPreviewCaseProvider : PreviewParameterProvider<FreudSpa
     showBackground = false,
 )
 @Composable
-@Suppress("LongMethod")
 private fun FreudSpacerPreview(
     @PreviewParameter(FreudSpacerPreviewCaseProvider::class) case: FreudSpacerPreviewCase,
 ) {

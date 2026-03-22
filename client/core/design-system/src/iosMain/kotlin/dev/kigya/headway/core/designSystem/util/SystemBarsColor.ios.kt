@@ -1,5 +1,3 @@
-@file:Suppress("MagicNumber")
-
 package dev.kigya.headway.core.designSystem.util
 
 import androidx.compose.runtime.Composable
@@ -16,18 +14,22 @@ import platform.UIKit.UIWindow
 import platform.UIKit.setStatusBarStyle
 import platform.UIKit.statusBarManager
 
+private const val STATUS_BAR_VIEW_TAG = 3_848_245L
+private const val STATUS_BAR_Z_POSITION = 999_999.0
+private const val STATUS_BAR_STYLE_LIGHT_CONTENT = 1L
+private const val STATUS_BAR_STYLE_DEFAULT = 3L
+
 @Composable
 private fun rememberStatusBarView() = remember {
     val keyWindow: UIWindow? =
         UIApplication.sharedApplication.windows.firstOrNull { (it as? UIWindow)?.isKeyWindow() == true } as? UIWindow
-    val tag = 3_848_245L
 
-    keyWindow?.viewWithTag(tag) ?: run {
+    keyWindow?.viewWithTag(STATUS_BAR_VIEW_TAG) ?: run {
         val height =
             keyWindow?.windowScene?.statusBarManager?.statusBarFrame ?: zeroValue<CGRect>()
         val statusBarView = UIView(frame = height)
-        statusBarView.tag = tag
-        statusBarView.layer.zPosition = 999_999.0
+        statusBarView.tag = STATUS_BAR_VIEW_TAG
+        statusBarView.layer.zPosition = STATUS_BAR_Z_POSITION
         keyWindow?.addSubview(statusBarView)
         statusBarView
     }
@@ -41,7 +43,7 @@ actual fun SystemBarsColor(color: SystemBarsColor) {
         statusBar.backgroundColor = UIColor.clearColor
 
         UIApplication.sharedApplication.setStatusBarStyle(
-            if (isLightContent) 1L else 3L,
+            if (isLightContent) STATUS_BAR_STYLE_LIGHT_CONTENT else STATUS_BAR_STYLE_DEFAULT,
         )
 
         UINavigationBar.appearance().apply {

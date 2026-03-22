@@ -1,5 +1,3 @@
-@file:Suppress("NOTHING_TO_INLINE")
-
 package extension
 
 import org.gradle.accessors.dm.LibrariesForLibs
@@ -17,7 +15,7 @@ import org.jetbrains.kotlin.gradle.plugin.KotlinDependencyHandler
  *
  * @see [DependencyHandler.add]
  */
-public inline fun DependencyHandler.implementation(dependencyNotation: Any): Dependency? =
+public fun DependencyHandler.implementation(dependencyNotation: Any): Dependency? =
     add("implementation", dependencyNotation)
 
 
@@ -32,7 +30,7 @@ public inline fun DependencyHandler.implementation(dependencyNotation: Any): Dep
  *
  * @see [DependencyHandler.add]
  */
-public inline fun DependencyHandler.testImplementation(dependencyNotation: Any): Dependency? =
+public fun DependencyHandler.testImplementation(dependencyNotation: Any): Dependency? =
     add("testImplementation", dependencyNotation)
 
 
@@ -44,7 +42,7 @@ public inline fun DependencyHandler.testImplementation(dependencyNotation: Any):
  *
  * @see [DependencyHandler.add]
  */
-public inline fun DependencyHandler.detektPlugins(dependencyNotation: Any): Dependency? =
+public fun DependencyHandler.detektPlugins(dependencyNotation: Any): Dependency? =
     add("detektPlugins", dependencyNotation)
 
 
