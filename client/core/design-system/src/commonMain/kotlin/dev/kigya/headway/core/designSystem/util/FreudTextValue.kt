@@ -158,51 +158,21 @@ fun FreudTextValue?.resolveToPlainStringOrNull(): String? = this?.resolveToPlain
 @Composable
 internal fun resolveTextSource(source: FreudTextSource): String = when (source) {
     is FreudTextSource.Raw -> source.value
-    is FreudTextSource.Resource ->
-        if (source.formatArgs.isEmpty()) {
-            stringResource(source.value)
-        } else {
-            freudStringResource(source.value, source.formatArgs)
-        }
-}
-
-private const val FORMAT_ARGS_THREE = 3
-private const val FORMAT_ARGS_FOUR = 4
-
-@Composable
-private fun freudStringResource(
-    resource: StringResource,
-    formatArgs: ImmutableList<FreudTextFormatArg>,
-): String = when (formatArgs.size) {
-    0 -> stringResource(resource)
-    1 -> stringResource(resource, formatArgs[0].toPlatformFormatValue())
-    2 -> stringResource(
-        resource,
-        formatArgs[0].toPlatformFormatValue(),
-        formatArgs[1].toPlatformFormatValue(),
+    is FreudTextSource.Resource -> freudStringResource(
+        resource = source.value,
+        formatArgs = source.formatArgs,
     )
-    FORMAT_ARGS_THREE -> stringResource(
-        resource,
-        formatArgs[0].toPlatformFormatValue(),
-        formatArgs[1].toPlatformFormatValue(),
-        formatArgs[2].toPlatformFormatValue(),
-    )
-    FORMAT_ARGS_FOUR -> stringResource(
-        resource,
-        formatArgs[0].toPlatformFormatValue(),
-        formatArgs[1].toPlatformFormatValue(),
-        formatArgs[2].toPlatformFormatValue(),
-        formatArgs[formatArgs.lastIndex].toPlatformFormatValue(),
-    )
-    else -> freudStringResourceVararg(resource, formatArgs)
 }
 
 @Composable
 @Suppress("SpreadOperator")
-private fun freudStringResourceVararg(
+private fun freudStringResource(
     resource: StringResource,
     formatArgs: ImmutableList<FreudTextFormatArg>,
 ): String {
+    if (formatArgs.isEmpty()) {
+        return stringResource(resource)
+    }
     val platformArgs = Array(formatArgs.size) { index ->
         formatArgs[index].toPlatformFormatValue()
     }
