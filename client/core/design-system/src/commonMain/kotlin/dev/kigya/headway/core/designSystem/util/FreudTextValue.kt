@@ -11,6 +11,45 @@ import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import kotlin.jvm.JvmInline
 
+sealed interface FreudTextFormatArg {
+
+    companion object {
+
+        fun string(value: String): FreudTextFormatArg = FreudTextFormatString(value)
+
+        fun int(value: Int): FreudTextFormatArg = FreudTextFormatInt(value)
+
+        fun long(value: Long): FreudTextFormatArg = FreudTextFormatLong(value)
+
+        fun float(value: Float): FreudTextFormatArg = FreudTextFormatFloat(value)
+
+        fun double(value: Double): FreudTextFormatArg = FreudTextFormatDouble(value)
+    }
+}
+
+@JvmInline
+internal value class FreudTextFormatString(val value: String) : FreudTextFormatArg
+
+@JvmInline
+internal value class FreudTextFormatInt(val value: Int) : FreudTextFormatArg
+
+@JvmInline
+internal value class FreudTextFormatLong(val value: Long) : FreudTextFormatArg
+
+@JvmInline
+internal value class FreudTextFormatFloat(val value: Float) : FreudTextFormatArg
+
+@JvmInline
+internal value class FreudTextFormatDouble(val value: Double) : FreudTextFormatArg
+
+private fun FreudTextFormatArg.toPlatformFormatValue(): Any = when (this) {
+    is FreudTextFormatString -> value
+    is FreudTextFormatInt -> value
+    is FreudTextFormatLong -> value
+    is FreudTextFormatFloat -> value
+    is FreudTextFormatDouble -> value
+}
+
 sealed interface FreudTextValue {
 
     @JvmInline
@@ -35,7 +74,7 @@ sealed interface FreudTextValue {
 
         fun text(
             resource: StringResource,
-            vararg formatArgs: Any,
+            vararg formatArgs: FreudTextFormatArg,
         ): PlainText = PlainText(
             source = FreudTextSource.Resource(
                 value = resource,
@@ -61,7 +100,7 @@ class FreudRichTextBuilder internal constructor() {
 
     fun append(
         resource: StringResource,
-        vararg formatArgs: Any,
+        vararg formatArgs: FreudTextFormatArg,
     ) {
         segments += FreudRichTextSegment(
             source = FreudTextSource.Resource(
@@ -85,7 +124,7 @@ class FreudRichTextBuilder internal constructor() {
     fun colored(
         resource: StringResource,
         color: FreudDsToken<Color>,
-        vararg formatArgs: Any,
+        vararg formatArgs: FreudTextFormatArg,
     ) {
         segments += FreudRichTextSegment(
             source = FreudTextSource.Resource(
@@ -133,18 +172,27 @@ private const val FORMAT_ARGS_FOUR = 4
 @Composable
 private fun freudStringResource(
     resource: StringResource,
-    formatArgs: ImmutableList<Any>,
+    formatArgs: ImmutableList<FreudTextFormatArg>,
 ): String = when (formatArgs.size) {
     0 -> stringResource(resource)
-    1 -> stringResource(resource, formatArgs[0])
-    2 -> stringResource(resource, formatArgs[0], formatArgs[1])
-    FORMAT_ARGS_THREE -> stringResource(resource, formatArgs[0], formatArgs[1], formatArgs[2])
+    1 -> stringResource(resource, formatArgs[0].toPlatformFormatValue())
+    2 -> stringResource(
+        resource,
+        formatArgs[0].toPlatformFormatValue(),
+        formatArgs[1].toPlatformFormatValue(),
+    )
+    FORMAT_ARGS_THREE -> stringResource(
+        resource,
+        formatArgs[0].toPlatformFormatValue(),
+        formatArgs[1].toPlatformFormatValue(),
+        formatArgs[2].toPlatformFormatValue(),
+    )
     FORMAT_ARGS_FOUR -> stringResource(
         resource,
-        formatArgs[0],
-        formatArgs[1],
-        formatArgs[2],
-        formatArgs[formatArgs.lastIndex],
+        formatArgs[0].toPlatformFormatValue(),
+        formatArgs[1].toPlatformFormatValue(),
+        formatArgs[2].toPlatformFormatValue(),
+        formatArgs[formatArgs.lastIndex].toPlatformFormatValue(),
     )
     else -> freudStringResourceVararg(resource, formatArgs)
 }
@@ -153,8 +201,13 @@ private fun freudStringResource(
 @Suppress("SpreadOperator")
 private fun freudStringResourceVararg(
     resource: StringResource,
-    formatArgs: ImmutableList<Any>,
-): String = stringResource(resource, *formatArgs.toTypedArray())
+    formatArgs: ImmutableList<FreudTextFormatArg>,
+): String {
+    val platformArgs = Array(formatArgs.size) { index ->
+        formatArgs[index].toPlatformFormatValue()
+    }
+    return stringResource(resource, *platformArgs)
+}
 
 internal sealed interface FreudTextSource {
 
@@ -164,7 +217,7 @@ internal sealed interface FreudTextSource {
     @Immutable
     data class Resource(
         val value: StringResource,
-        val formatArgs: ImmutableList<Any>,
+        val formatArgs: ImmutableList<FreudTextFormatArg>,
     ) : FreudTextSource
 }
 

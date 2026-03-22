@@ -79,7 +79,25 @@ alwaysApply: true
 
 ### 8
 
-- **Rule:** In `@Immutable` Compose-facing models, use `ImmutableList` / `ImmutableMap` / `ImmutableSet` from `kotlinx-collections-immutable`, not Kotlin `List` / `Map` / `Set`.
-- **Why it exists:** Plain collection interfaces are treated as unstable by the Compose compiler, so skip optimization is weaker and runtime stability checks increase.
-- **Bad pattern (short):** `@Immutable data class State(val items: List<Item>)` or `@Immutable data class X(val segments: List<Segment>)` passed into composable trees.
-- **Correct pattern (short):** `ImmutableList` built with `persistentListOf` / `toPersistentList`; Compose modules already pull `kotlinx-collections-immutable` via `convention.component.compose`.
+- **Rule:** In `@Immutable` Compose-facing models, use `ImmutableList` / `ImmutableMap` / `ImmutableSet` from `kotlinx-collections-immutable`, not Kotlin `List` / `Map` / `Set`; the **type argument** must be Compose-stable too—`ImmutableList<Any>` stays unstable because `Any` is unstable.
+- **Why it exists:** Plain collection interfaces are treated as unstable by the Compose compiler, so skip optimization is weaker and runtime stability checks increase. A stable collection wrapper does not fix an unstable element type.
+- **Bad pattern (short):** `@Immutable data class State(val items: List<Item>)` or `@Immutable data class X(val segments: List<Segment>)` passed into composable trees; `ImmutableList<Any>` for formatted string args or similar unions.
+- **Correct pattern (short):** `ImmutableList` built with `persistentListOf` / `toPersistentList` with a **stable element type** (e.g. `sealed interface` + `@JvmInline value class` implementations for bounded unions); Compose modules already pull `kotlinx-collections-immutable` via `convention.component.compose`.
+
+---
+
+### 9
+
+- **Rule:** Prefer `sealed interface` over `sealed class` for bounded unions when subclasses do not need shared superclass state; implement with `@JvmInline value class` (or small data types) plus `companion object` factories returning the interface type.
+- **Why it exists:** Avoids an artificial abstract base; value-class implementations cut allocations for thin wrappers while keeping a single public contract type.
+- **Bad pattern (short):** `sealed class` with `private constructor()` only to host nested `data class` variants that carry no shared base behavior.
+- **Correct pattern (short):** `sealed interface` + `internal value class … : Interface` + public factories on the interface (see `FreudTextFormatArg`).
+
+---
+
+### 10
+
+- **Rule:** Place file-level `private const val` at the **bottom** of the file, after the declarations that reference them.
+- **Why it exists:** Project convention keeps literals and tags grouped at the end so the main API and behavior read top-down first.
+- **Bad pattern (short):** A block of `private const val` immediately after imports or above the primary `@Composable` / `actual` entry points.
+- **Correct pattern (short):** Package, imports, types and functions, then a trailing `private const val` section (e.g. `SystemBarsColor.ios.kt`).

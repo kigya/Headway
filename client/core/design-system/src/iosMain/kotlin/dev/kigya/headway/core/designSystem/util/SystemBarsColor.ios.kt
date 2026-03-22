@@ -14,27 +14,6 @@ import platform.UIKit.UIWindow
 import platform.UIKit.setStatusBarStyle
 import platform.UIKit.statusBarManager
 
-private const val STATUS_BAR_VIEW_TAG = 3_848_245L
-private const val STATUS_BAR_Z_POSITION = 999_999.0
-private const val STATUS_BAR_STYLE_LIGHT_CONTENT = 1L
-private const val STATUS_BAR_STYLE_DEFAULT = 3L
-
-@Composable
-private fun rememberStatusBarView() = remember {
-    val keyWindow: UIWindow? =
-        UIApplication.sharedApplication.windows.firstOrNull { (it as? UIWindow)?.isKeyWindow() == true } as? UIWindow
-
-    keyWindow?.viewWithTag(STATUS_BAR_VIEW_TAG) ?: run {
-        val height =
-            keyWindow?.windowScene?.statusBarManager?.statusBarFrame ?: zeroValue<CGRect>()
-        val statusBarView = UIView(frame = height)
-        statusBarView.tag = STATUS_BAR_VIEW_TAG
-        statusBarView.layer.zPosition = STATUS_BAR_Z_POSITION
-        keyWindow?.addSubview(statusBarView)
-        statusBarView
-    }
-}
-
 @Composable
 actual fun SystemBarsColor(color: SystemBarsColor) {
     val statusBar = rememberStatusBarView()
@@ -75,3 +54,24 @@ actual fun SystemBarsColor(color: SystemBarsColor) {
         }
     }
 }
+
+@Composable
+private fun rememberStatusBarView() = remember {
+    val keyWindow: UIWindow? =
+        UIApplication.sharedApplication.windows.firstOrNull { (it as? UIWindow)?.isKeyWindow() == true } as? UIWindow
+
+    keyWindow?.viewWithTag(STATUS_BAR_VIEW_TAG) ?: run {
+        val height =
+            keyWindow?.windowScene?.statusBarManager?.statusBarFrame ?: zeroValue<CGRect>()
+        val statusBarView = UIView(frame = height)
+        statusBarView.tag = STATUS_BAR_VIEW_TAG
+        statusBarView.layer.zPosition = STATUS_BAR_Z_POSITION
+        keyWindow?.addSubview(statusBarView)
+        statusBarView
+    }
+}
+
+private const val STATUS_BAR_VIEW_TAG = 3_848_245L
+private const val STATUS_BAR_Z_POSITION = 999_999.0
+private const val STATUS_BAR_STYLE_LIGHT_CONTENT = 1L
+private const val STATUS_BAR_STYLE_DEFAULT = 3L
