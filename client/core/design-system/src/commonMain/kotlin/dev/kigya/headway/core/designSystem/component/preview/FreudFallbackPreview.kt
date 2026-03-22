@@ -1,5 +1,3 @@
-@file:Suppress("MagicNumber", "LongMethod", "TooManyFunctions")
-
 package dev.kigya.headway.core.designSystem.component.preview
 
 import androidx.compose.foundation.background
@@ -33,6 +31,7 @@ import dev.kigya.headway.core.designSystem.theme.FreudTheme
 import dev.kigya.headway.core.designSystem.theme.color.FreudColorScheme
 import dev.kigya.headway.core.designSystem.theme.color.FreudDynamicColor
 import dev.kigya.headway.core.designSystem.theme.color.provides
+import dev.kigya.headway.core.designSystem.util.FreudTextValue
 
 private object FreudFallbackPreviewTheme : FreudTheme() {
     val FreudColorScheme.surface
@@ -116,7 +115,6 @@ private class FreudFallbackPreviewCaseProvider : PreviewParameterProvider<FreudF
     showBackground = false,
 )
 @Composable
-@Suppress("UnusedPrivateMember")
 private fun FreudFallbackPreview(
     @PreviewParameter(FreudFallbackPreviewCaseProvider::class) case: FreudFallbackPreviewCase,
 ) {
@@ -138,7 +136,7 @@ private fun FreudFallbackPreview(
                 .padding(ds.dimension.dp16.value),
         ) {
             FreudText(
-                value = case.label,
+                value = FreudTextValue.text(case.label),
                 color = text,
                 typography = ds.typography.labelSm,
                 align = TextAlign.Start,
@@ -175,7 +173,7 @@ private fun FreudFallbackPreview(
                             .padding(ds.dimension.dp24.value),
                     ) {
                         FreudText(
-                            value = "Screen content is visible here",
+                            value = FreudTextValue.text("Screen content is visible here"),
                             color = text,
                             typography = ds.typography.textMdBold,
                             align = TextAlign.Center,
@@ -185,7 +183,7 @@ private fun FreudFallbackPreview(
                         FreudSpacer(size = ds.dimension.dp16)
 
                         FreudHorizontalButton(
-                            text = "Simulate Error",
+                            text = FreudTextValue.text("Simulate Error"),
                             onClick = { isError = true },
                             containerColor = container,
                             contentColor = contentColor,

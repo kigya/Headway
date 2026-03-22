@@ -13,26 +13,8 @@ import dev.kigya.headway.core.designSystem.theme.color.FreudColor
 import dev.kigya.headway.core.designSystem.theme.dimension.FreudDimension
 
 internal object PreviewGrid {
-    private val palette = FreudColor()
-
     val defaultCellSize: Dp = FreudDimension.dp4.value
     val defaultBorderWidth: Dp = FreudDimension.dp1.value
-
-    @Composable
-    @Suppress("TopLevelComposableFunctions")
-    fun colors(): Colors = if (LocalTheme.current.isDark) {
-        Colors(
-            a = palette.brown60.value,
-            b = palette.brown50.value,
-            border = palette.brown40.value,
-        )
-    } else {
-        Colors(
-            a = palette.yellow10.value,
-            b = palette.yellow20.value,
-            border = palette.yellow30.value,
-        )
-    }
 
     data class Colors(
         val a: Color,
@@ -42,11 +24,29 @@ internal object PreviewGrid {
 }
 
 @Composable
+private fun previewGridColors(): PreviewGrid.Colors {
+    val palette = FreudColor()
+    return if (LocalTheme.current.isDark) {
+        PreviewGrid.Colors(
+            a = palette.brown60.value,
+            b = palette.brown50.value,
+            border = palette.brown40.value,
+        )
+    } else {
+        PreviewGrid.Colors(
+            a = palette.yellow10.value,
+            b = palette.yellow20.value,
+            border = palette.yellow30.value,
+        )
+    }
+}
+
+@Composable
 internal fun Modifier.previewPixelGrid(
     cellSize: Dp = PreviewGrid.defaultCellSize,
     borderWidth: Dp = PreviewGrid.defaultBorderWidth,
 ): Modifier {
-    val c = PreviewGrid.colors()
+    val c = previewGridColors()
 
     return drawWithCache {
         val cellPx = cellSize.toPx().coerceAtLeast(1f)

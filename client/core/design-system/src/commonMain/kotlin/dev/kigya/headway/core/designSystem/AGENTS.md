@@ -115,6 +115,10 @@ This codebase follows a "no comments" policy. Do not use single-line (`//`) or m
 
 Avoid redundant comments like: `// Derive the stub kind; null means "show normal content"`.
 
+### 2.7 Compose-stable collection fields in `@Immutable` models
+
+Fields of Kotlin `List`, `Map`, or `Set` inside `@Immutable` types used in composition are treated as unstable. Prefer `ImmutableList` (and siblings) from `kotlinx-collections-immutable`, built with `persistentListOf` / `toPersistentList` (already on the classpath for Compose modules via the compose convention). Example: `FreudTextValue` rich segments and string format args.
+
 ---
 
 ## 3. Theme and token system

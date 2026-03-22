@@ -35,6 +35,7 @@ import dev.kigya.headway.core.designSystem.theme.FreudTheme
 import dev.kigya.headway.core.designSystem.theme.color.FreudColorScheme
 import dev.kigya.headway.core.designSystem.theme.color.FreudDynamicColor
 import dev.kigya.headway.core.designSystem.theme.color.provides
+import dev.kigya.headway.core.designSystem.util.FreudTextValue
 import dev.kigya.headway.core.designSystem.util.previewPixelGrid
 import headway.core.design_system.generated.resources.Res
 import headway.core.design_system.generated.resources.ic_el_baion
@@ -139,7 +140,7 @@ private fun FreudIconPreview(
         ) {
             Column(modifier = Modifier.fillMaxWidth()) {
                 FreudText(
-                    value = header,
+                    value = FreudTextValue.text(header),
                     color = text,
                     typography = ds.typography.labelSm,
                     align = TextAlign.Start,
@@ -179,7 +180,6 @@ private fun FreudIconPreview(
     }
 }
 
-@Suppress("EffectKeys")
 @Composable
 private fun TogglingAnimatedIcon(
     resource: DrawableResource,
@@ -189,7 +189,7 @@ private fun TogglingAnimatedIcon(
 ) {
     var isVisible by remember { mutableStateOf(false) }
 
-    LaunchedEffect(Unit) {
+    LaunchedEffect(ANIMATED_ICON_DELAY) {
         while (true) {
             delay(ANIMATED_ICON_DELAY)
             isVisible = !isVisible

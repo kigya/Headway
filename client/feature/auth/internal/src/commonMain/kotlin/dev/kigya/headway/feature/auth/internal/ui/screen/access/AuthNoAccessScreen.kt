@@ -18,11 +18,8 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.windowInsetsPadding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
@@ -42,6 +39,7 @@ import dev.kigya.headway.core.designSystem.component.FreudTopBar
 import dev.kigya.headway.core.designSystem.component.FreudTopBarStartSlot
 import dev.kigya.headway.core.designSystem.util.FreudBackgroundPattern
 import dev.kigya.headway.core.designSystem.util.FreudScreenByWidth
+import dev.kigya.headway.core.designSystem.util.FreudTextValue
 import dev.kigya.headway.core.designSystem.util.background
 import dev.kigya.headway.core.designSystem.util.isWide
 import dev.kigya.headway.feature.auth.internal.ui.theme.access.AuthNoAccessTheme
@@ -62,20 +60,15 @@ import headway.feature.auth.internal.generated.resources.auth_manager_hasnt_adde
 import headway.feature.auth.internal.generated.resources.auth_no_access
 import headway.feature.auth.internal.generated.resources.ic_report
 import kotlinx.coroutines.delay
-import org.jetbrains.compose.resources.stringResource
 import org.koin.compose.viewmodel.koinViewModel
 
-@Suppress("ExplicitDependencies")
 @Composable
-internal fun NoAccessScreen() {
-    val viewModel = koinViewModel<AuthNoAccessViewModel>()
-
+internal fun NoAccessScreen(viewModel: AuthNoAccessViewModel = koinViewModel()) {
     NoAccessScreenContent(
         onBack = viewModel::onBack,
     )
 }
 
-@Suppress("ModifierOrder")
 @Composable
 private fun NoAccessScreenContent(onBack: () -> Unit) {
     val wide = isWide()
@@ -115,7 +108,7 @@ private fun NoAccessScreenContent(onBack: () -> Unit) {
                     ),
                 startSlot = FreudTopBarStartSlot.Back(
                     onClick = onBack,
-                    contentDescription = stringResource(Res.string.auth_back_icon_content_description),
+                    contentDescription = FreudTextValue.text(Res.string.auth_back_icon_content_description),
                 ),
             )
         },
@@ -252,7 +245,6 @@ private fun NoAccessArcOverlay(modifier: Modifier = Modifier) {
     )
 }
 
-@Suppress("EffectKeys")
 @Composable
 private fun NoAccessTextAndButton(
     modifier: Modifier = Modifier,
@@ -295,7 +287,7 @@ private fun NoAccessTextAndButton(
     ) {
         FreudText(
             modifier = if (isWide) Modifier.fillMaxWidth() else Modifier,
-            value = stringResource(Res.string.auth_no_access),
+            value = FreudTextValue.text(Res.string.auth_no_access),
             color = AuthNoAccessTheme.colorScheme.title,
             typography = titleTypography,
             align = TextAlign.Center,
@@ -305,7 +297,7 @@ private fun NoAccessTextAndButton(
 
         FreudText(
             modifier = Modifier.fillMaxWidth(),
-            value = stringResource(Res.string.auth_manager_hasnt_added_to_the_system),
+            value = FreudTextValue.text(Res.string.auth_manager_hasnt_added_to_the_system),
             color = AuthNoAccessTheme.colorScheme.subtitle,
             typography = subtitleTypography,
             align = TextAlign.Center,
@@ -313,15 +305,14 @@ private fun NoAccessTextAndButton(
 
         FreudSpacer(size = spaceAfterSubtitle)
 
-        var isVisible by remember { mutableStateOf(false) }
-        LaunchedEffect(Unit) {
+        val isReportIconVisible by produceState(initialValue = false) {
             delay(REPORT_ANIMATION_DELAY_MILLIS)
-            isVisible = true
+            value = true
         }
 
         FreudHorizontalButton(
             modifier = buttonModifier,
-            text = stringResource(Res.string.auth_ask_manager),
+            text = FreudTextValue.text(Res.string.auth_ask_manager),
             onClick = {},
             containerColor = AuthNoAccessTheme.colorScheme.buttonContainer,
             contentColor = AuthNoAccessTheme.colorScheme.buttonContent,
@@ -330,7 +321,7 @@ private fun NoAccessTextAndButton(
                 resource = Res.drawable.ic_report,
                 contentDescription = null,
                 tint = AuthNoAccessTheme.colorScheme.reportIconTint,
-                isVisible = isVisible,
+                isVisible = isReportIconVisible,
             ),
         )
     }

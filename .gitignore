@@ -22,10 +22,4 @@ captures
 **/lib/
 **/.vscode
 
-.cursor/*
-!.cursor/rules/
-!.cursor/rules/**
-!.cursor/README.md
-!.cursor/WORKFLOWS.md
-!.cursor/skills/
-!.cursor/skills/**
+.cursor/projects/

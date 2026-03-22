@@ -22,6 +22,8 @@ import dev.kigya.headway.core.designSystem.theme.FreudTheme
 import dev.kigya.headway.core.designSystem.theme.color.FreudColorScheme
 import dev.kigya.headway.core.designSystem.theme.color.FreudDynamicColor
 import dev.kigya.headway.core.designSystem.theme.color.provides
+import dev.kigya.headway.core.designSystem.util.FreudTextValue
+import dev.kigya.headway.core.designSystem.util.resolveToPlainStringOrNull
 import headway.core.design_system.generated.resources.Res
 import headway.core.design_system.generated.resources.ic_chevron_left
 import headway.core.design_system.generated.resources.ic_sign_out
@@ -43,28 +45,28 @@ private object FreudTopBarDefaults : FreudTheme() {
 
 sealed interface FreudTopBarStartSlot {
     val onClick: () -> Unit
-    val contentDescription: String?
+    val contentDescription: FreudTextValue?
 
     data class Back(
         override val onClick: () -> Unit,
-        override val contentDescription: String? = null,
+        override val contentDescription: FreudTextValue? = null,
     ) : FreudTopBarStartSlot
 }
 
 sealed interface FreudTopBarEndSlot {
     val onClick: () -> Unit
-    val contentDescription: String?
+    val contentDescription: FreudTextValue?
 
     data class SignOut(
         override val onClick: () -> Unit,
-        override val contentDescription: String? = null,
+        override val contentDescription: FreudTextValue? = null,
     ) : FreudTopBarEndSlot
 }
 
 @Composable
 fun FreudTopBar(
     modifier: Modifier = Modifier,
-    title: String? = null,
+    title: FreudTextValue? = null,
     startSlot: FreudTopBarStartSlot? = null,
     endSlot: FreudTopBarEndSlot? = null,
     contentColor: FreudDsToken<Color> = FreudTopBarDefaults.colorScheme.contentColor,
@@ -78,7 +80,7 @@ fun FreudTopBar(
         if (startSlot != null) {
             FreudTopBarIconButton(
                 resource = startSlot.toResource(),
-                contentDescription = startSlot.contentDescription,
+                contentDescription = startSlot.contentDescription.resolveToPlainStringOrNull(),
                 onClick = startSlot.onClick,
                 tint = contentColor,
                 borderColor = borderColor,
@@ -108,7 +110,7 @@ fun FreudTopBar(
 
             FreudTopBarIconButton(
                 resource = endSlot.toResource(),
-                contentDescription = endSlot.contentDescription,
+                contentDescription = endSlot.contentDescription.resolveToPlainStringOrNull(),
                 onClick = endSlot.onClick,
                 tint = contentColor,
                 borderColor = borderColor,

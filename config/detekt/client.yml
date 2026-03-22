@@ -103,6 +103,7 @@ complexity:
   CyclomaticComplexMethod:
     active: true
     threshold: 13
+    excludes: [ '**/component/preview/**' ]
     ignoreSingleWhenExpression: false
     ignoreSimpleWhenEntries: false
     ignoreNestingFunctions: false
@@ -125,6 +126,7 @@ complexity:
   LongMethod:
     active: true
     threshold: 100
+    excludes: [ '**/component/preview/**' ]
   LongParameterList:
     active: true
     functionThreshold: 6
@@ -164,7 +166,18 @@ complexity:
   #    ignoreAnnotated: [ 'Preview' ] #not exist
   TooManyFunctions:
     active: true
-    excludes: [ '**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/iosTest/**', '**/ui/**' ]
+    excludes:
+      [
+        '**/test/**',
+        '**/androidTest/**',
+        '**/commonTest/**',
+        '**/jvmTest/**',
+        '**/jsTest/**',
+        '**/iosTest/**',
+        '**/ui/**',
+        '**/component/preview/**',
+        '**/component/FreudFallback.kt',
+      ]
     thresholdInFiles: 11
     thresholdInClasses: 11
     thresholdInInterfaces: 11
@@ -595,7 +608,19 @@ style:
     maxJumpCount: 1
   MagicNumber:
     active: true
-    excludes: [ '**/test/**', '**/androidTest/**', '**/commonTest/**', '**/jvmTest/**', '**/jsTest/**', '**/iosTest/**', '**/*.kts' ]
+    excludes:
+      [
+        '**/test/**',
+        '**/androidTest/**',
+        '**/commonTest/**',
+        '**/jvmTest/**',
+        '**/jsTest/**',
+        '**/iosTest/**',
+        '**/*.kts',
+        '**/theme/color/FreudColor.kt',
+        '**/component/preview/**',
+        '**/SystemBarsColor.ios.kt',
+      ]
     ignoreNumbers:
       - '-1'
       - '0'
@@ -658,6 +683,7 @@ style:
     active: true
   RedundantVisibilityModifierRule:
     active: true
+    excludes: [ '**/generated/**' ]
   ReturnCount:
     active: true
     max: 4
@@ -718,6 +744,7 @@ style:
   UnusedPrivateMember:
     ignoreAnnotated: [ 'Preview', 'PreviewScreensFactory' ]
     active: true
+    excludes: [ '**/component/preview/**' ]
     allowedNames: '(_|ignored|expected|serialVersionUID)'
   UnusedPrivateProperty:
     active: true
