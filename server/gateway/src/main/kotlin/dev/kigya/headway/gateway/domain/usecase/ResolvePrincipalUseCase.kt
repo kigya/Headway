@@ -51,7 +51,14 @@ internal class ResolvePrincipalUseCase(
                         reason = GatewayErrorReason.INVALID_ACCESS_TOKEN,
                         message = AuthServicePlainText.INVALID_ACCESS_TOKEN,
                     )
-                GatewayPrincipal.User(databaseRepository.getUserById(uuid))
+                val user = databaseRepository.getUserById(uuid)
+                if (!user.isActive) {
+                    throw GatewayException.Unauthorized(
+                        reason = GatewayErrorReason.ACCOUNT_INACTIVE,
+                        message = "Account is inactive",
+                    )
+                }
+                GatewayPrincipal.User(user)
             }
 
             AuthPrincipalType.GUEST -> {

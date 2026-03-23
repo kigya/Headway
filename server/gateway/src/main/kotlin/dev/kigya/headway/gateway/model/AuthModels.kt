@@ -13,6 +13,7 @@ internal data class GatewayUser(
     @SerialName("role") val role: GatewayUserRole,
     @SerialName("avatarUrl") val avatarUrl: String? = null,
     @SerialName("department") val department: GatewayUserDepartment? = null,
+    @SerialName("is_active") val isActive: Boolean = true,
 )
 
 @Serializable

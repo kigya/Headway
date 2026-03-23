@@ -183,12 +183,12 @@ private fun Route.invite(
             AdminInviteUserResponse(
                 message = buildInviteMessage(
                     email = invitedUser.email,
-                    role = request.role,
-                    department = request.department,
+                    role = invitedUser.role,
+                    department = invitedUser.department,
                 ),
                 invitedEmail = invitedUser.email,
-                role = request.role,
-                department = request.department,
+                role = invitedUser.role,
+                department = invitedUser.department,
             ),
         )
     }

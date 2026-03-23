@@ -62,7 +62,8 @@ server/
 │   └── internal/     # Auth service implementation: routing, use cases, DI
 ├── database/
 │   ├── api/          # Database service contract: DTOs, Resources, URL holder
-│   └── internal/     # Database service implementation: Exposed tables, repositories
+│   ├── internal/     # Database service implementation: Exposed tables, repositories
+│   └── migrations/   # SQL migrations for hosted Postgres (apply when schema columns are added)
 ├── gateway/          # GraphQL orchestrator — single client entry point
 ├── common/           # Shared utilities: ENV helpers, Ktor defaults, healthz, serializers
 ├── docker/           # env.common, env.gateway, env.auth, env.database

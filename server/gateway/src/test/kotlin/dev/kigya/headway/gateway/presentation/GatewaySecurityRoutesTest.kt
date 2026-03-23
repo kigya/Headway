@@ -5,7 +5,6 @@ import dev.kigya.headway.auth.api.model.out.AuthValidateTokenResponse
 import dev.kigya.headway.common.util.Environment
 import dev.kigya.headway.gateway.core.exception.GatewayErrorReason
 import dev.kigya.headway.gateway.core.exception.GatewayException
-import dev.kigya.headway.gateway.data.probe.base.HttpProber
 import dev.kigya.headway.gateway.domain.repository.AuthRepositoryContract
 import dev.kigya.headway.gateway.domain.repository.DatabaseRepositoryContract
 import dev.kigya.headway.gateway.domain.usecase.CheckHealthStatusUseCase

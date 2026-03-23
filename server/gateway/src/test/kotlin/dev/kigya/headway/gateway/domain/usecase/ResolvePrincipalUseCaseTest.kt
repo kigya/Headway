@@ -101,6 +101,32 @@ class ResolvePrincipalUseCaseTest {
             }
         }
     }
+
+    @Test
+    fun `throws unauthorized when user account is inactive`() = runBlocking {
+        val inactiveUser = GatewayUser(
+            id = callerId,
+            email = "inactive@headway.test",
+            name = "Inactive",
+            role = GatewayUserRole.DEVELOPER,
+            department = GatewayUserDepartment.ANDROID,
+            isActive = false,
+        )
+        val useCase = ResolvePrincipalUseCase(
+            authRepository = FakeAuthRepository(
+                validationResponse = AuthValidateTokenResponse(
+                    principalType = AuthPrincipalType.USER,
+                    userUuid = callerId,
+                ),
+            ),
+            databaseRepository = FakeDatabaseRepository(userById = inactiveUser),
+        )
+
+        val unauthorized = assertFailsWith<GatewayException.Unauthorized> {
+            useCase("Bearer valid-token")
+        }
+        assertEquals(GatewayErrorReason.ACCOUNT_INACTIVE, unauthorized.reason)
+    }
 }
 
 private class FakeAuthRepository(

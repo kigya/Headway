@@ -14,6 +14,7 @@ internal fun DatabaseUser.toGateway(): GatewayUser = GatewayUser(
     role = role.toGateway(),
     avatarUrl = avatarUrl,
     department = department.toGateway(),
+    isActive = isActive,
 )
 
 internal fun DatabaseUserRole.toGateway(): GatewayUserRole =
