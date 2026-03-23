@@ -8,7 +8,13 @@ icon: seedling
 
 ## Установка git hooks (один раз)
 
-Хуки подключаются через Gradle **из каталога `server/`** (там подключён скрипт установки):
+Скрипт `config/git/hooks/installer.gradle.kts` подключён и в **`client/build.gradle.kts`**, и в **`server/build.gradle.kts`**. Установить хуки можно из **любого из этих каталогов**:
+
+```
+cd client && ./gradlew installGitHooks
+```
+
+или
 
 ```
 cd server && ./gradlew installGitHooks

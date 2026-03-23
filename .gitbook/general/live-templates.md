@@ -4,9 +4,15 @@ icon: forward
 
 # Live Templates
 
-Общие Live Templates лежат в репозитории; ставятся через Gradle **из `server/`** (подключён `config/templates/installer.gradle.kts`).
+Общие Live Templates лежат в репозитории. Задача `installLiveTemplates` объявлена в `config/templates/installer.gradle.kts`, скрипт подключён и в **`client/build.gradle.kts`**, и в **`server/build.gradle.kts`**, поэтому команду можно запускать **из каталога `client/` или `server/`** (с тем же эффектом).
 
 ## Установка
+
+```
+cd client && ./gradlew installLiveTemplates
+```
+
+или
 
 ```
 cd server && ./gradlew installLiveTemplates
@@ -19,8 +25,10 @@ cd server && ./gradlew installLiveTemplates
 Укажите каталог конфигурации вручную (пример для macOS):
 
 ```
-cd server && ./gradlew installLiveTemplates -PasConfigDir="$HOME/Library/Application Support/Google/AndroidStudio2025.1"
+cd client && ./gradlew installLiveTemplates -PasConfigDir="$HOME/Library/Application Support/Google/AndroidStudio2025.1"
 ```
+
+(аналогично с `cd server && …`.)
 
 ## Ручная установка
 
