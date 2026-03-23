@@ -1,7 +1,9 @@
 package dev.kigya.headway.gateway
 
+import dev.kigya.headway.common.config.CommonConfigurationValues
 import dev.kigya.headway.gateway.core.config.ConfigurationValues
 import dev.kigya.headway.gateway.di.gatewayDependencies
+import dev.kigya.headway.gateway.presentation.GatewayApiBindings
 import dev.kigya.headway.gateway.presentation.installGatewayApi
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
@@ -24,9 +26,14 @@ private fun Application.gatewayApp() {
         modules(gatewayDependencies)
     }
     installGatewayApi(
-        checkHealthStatus = get(),
-        loginWithGoogle = get(),
-        refreshToken = get(),
-        inviteUser = get(),
+        GatewayApiBindings(
+            environment = CommonConfigurationValues.environment,
+            checkHealthStatus = get(),
+            loginWithGoogle = get(),
+            loginAsGuest = get(),
+            refreshToken = get(),
+            inviteUser = get(),
+            resolvePrincipal = get(),
+        ),
     )
 }

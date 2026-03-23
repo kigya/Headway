@@ -14,6 +14,7 @@ internal fun DatabaseUser.toGateway(): GatewayUser = GatewayUser(
     role = role.toGateway(),
     avatarUrl = avatarUrl,
     department = department.toGateway(),
+    isActive = isActive,
 )
 
 internal fun DatabaseUserRole.toGateway(): GatewayUserRole =
@@ -21,3 +22,6 @@ internal fun DatabaseUserRole.toGateway(): GatewayUserRole =
 
 internal fun DatabaseUserDepartment.toGateway(): GatewayUserDepartment =
     GatewayUserDepartment.entries.firstOrNull { it.name == name } ?: GatewayUserDepartment.ANDROID
+
+internal fun GatewayUserRole.toDatabase(): DatabaseUserRole =
+    DatabaseUserRole.entries.firstOrNull { it.name == name } ?: DatabaseUserRole.GUEST

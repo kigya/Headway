@@ -40,6 +40,14 @@ jobs:
           GRADLE_OPTS: -Dorg.gradle.parallel=true -Dorg.gradle.caching=true
         run: ./gradlew auth:internal:installDist --stacktrace
 
+      - name: Build Admin Microservice
+        working-directory: ./server
+        env:
+          GPR_USER: ${{ secrets.GPR_USER }}
+          GPR_KEY: ${{ secrets.GPR_KEY }}
+          GRADLE_OPTS: -Dorg.gradle.parallel=true -Dorg.gradle.caching=true
+        run: ./gradlew admin:internal:installDist --stacktrace
+
       - name: Build Gateway Microservice
         working-directory: ./server
         env:

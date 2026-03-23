@@ -10,6 +10,8 @@ import org.postgresql.util.PGobject
 internal object UsersTable : UUIDTable(name = "public.users") {
     val authUserId = uuid(name = "auth_user_id").nullable()
 
+    val googleSubject = text(name = "google_subject").nullable()
+
     val email = text(name = "email").uniqueIndex()
     val fullName = text(name = "full_name").nullable()
 

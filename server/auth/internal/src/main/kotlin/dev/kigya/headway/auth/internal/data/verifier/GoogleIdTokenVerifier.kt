@@ -23,13 +23,23 @@ internal class GoogleIdTokenVerifier : GoogleTokenVerifierContract {
 
         val payload = idToken.payload
 
+        val subject = payload.subject?.trim().orEmpty()
+        if (subject.isBlank()) {
+            throw AuthException.Unauthorized("Invalid Google token")
+        }
+
+        val email = payload.email?.trim().orEmpty()
+        if (email.isBlank()) {
+            throw AuthException.Unauthorized("Invalid Google token")
+        }
+
         if (!payload.emailVerified) {
             throw AuthException.Forbidden("Email is not verified")
         }
 
         AuthGoogleUserPayloadDto(
-            googleId = payload.subject,
-            email = payload.email,
+            googleId = subject,
+            email = email,
             name = (payload[KEY_USER_NAME] as? String).orEmpty(),
             pictureUrl = payload[KEY_USER_PICTURE] as? String,
         )

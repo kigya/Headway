@@ -94,7 +94,11 @@ private fun Route.inviteUser(inviteUser: InviteUserUseCase) {
         if (email.isBlank()) throw BadRequestException("Email is blank")
         if (department.isBlank()) throw BadRequestException("Department is blank")
 
-        val user = inviteUser(email = email, department = department)
+        val user = inviteUser(
+            email = email,
+            department = department,
+            role = request.role,
+        )
         call.respond(HttpStatusCode.Created, user)
     }
 }

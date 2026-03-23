@@ -19,6 +19,8 @@ For shared Kotlin conventions see the root [`AGENTS.md`](../AGENTS.md).
 | Runtime         | Docker (multi-stage: `gradle:8.14.0-jdk17` → `eclipse-temurin:17-jre`)     |
 | Static analysis | Detekt + ktlint formatting                                                |
 
+Hosted Postgres (Supabase) dashboards and project refs for agents and MCP: see [`.cursor/RESOURCES.md`](../.cursor/RESOURCES.md) (dev/prod).
+
 ---
 
 ## Commands
@@ -60,7 +62,8 @@ server/
 │   └── internal/     # Auth service implementation: routing, use cases, DI
 ├── database/
 │   ├── api/          # Database service contract: DTOs, Resources, URL holder
-│   └── internal/     # Database service implementation: Exposed tables, repositories
+│   ├── internal/     # Database service implementation: Exposed tables, repositories
+│   └── migrations/   # SQL migrations for hosted Postgres (apply when schema columns are added)
 ├── gateway/          # GraphQL orchestrator — single client entry point
 ├── common/           # Shared utilities: ENV helpers, Ktor defaults, healthz, serializers
 ├── docker/           # env.common, env.gateway, env.auth, env.database

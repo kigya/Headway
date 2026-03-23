@@ -4,6 +4,7 @@ COPY . .
 
 RUN --mount=type=cache,target=/home/gradle/.gradle \
   ./gradlew --no-daemon -Dorg.gradle.vfs.watch=false -Dorg.gradle.configuration-cache=false \
+  admin:internal:installDist \
   database:internal:installDist \
   auth:internal:installDist \
   gateway:installDist
@@ -17,6 +18,11 @@ FROM eclipse-temurin:17-jre AS auth
 WORKDIR /app
 COPY --from=build /src/auth/internal/build/install/auth/ ./
 CMD ["build/auth"]
+
+FROM eclipse-temurin:17-jre AS admin
+WORKDIR /app
+COPY --from=build /src/admin/internal/build/install/admin/ ./
+CMD ["build/admin"]
 
 FROM eclipse-temurin:17-jre AS gateway
 WORKDIR /app

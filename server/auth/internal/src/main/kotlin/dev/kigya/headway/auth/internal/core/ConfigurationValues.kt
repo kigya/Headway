@@ -1,6 +1,6 @@
 package dev.kigya.headway.auth.internal.core
 
-import dev.kigya.headway.common.config.CommonConfigurationValues.ENV
+import dev.kigya.headway.common.config.CommonConfigurationValues
 import dev.kigya.headway.common.util.intEnv
 import dev.kigya.headway.common.util.longEnv
 import dev.kigya.headway.common.util.stringEnv
@@ -33,13 +33,20 @@ internal object ConfigurationValues {
     val JWT_ACCESS_TTL_SEC: Long
         get() = longEnv(EnvKeys.JWT_ACCESS_TTL_SEC).takeIf { it > 0 } ?: DefaultValues.JWT_ACCESS_TTL_SEC
 
+    val JWT_GUEST_SECRET: String
+        get() = stringEnv(EnvKeys.JWT_GUEST_SECRET).ifBlank { DefaultValues.JWT_GUEST_SECRET }
+
+    val JWT_GUEST_TTL_SEC: Long
+        get() = longEnv(EnvKeys.JWT_GUEST_TTL_SEC).takeIf { it > 0 } ?: DefaultValues.JWT_GUEST_TTL_SEC
+
     val GOOGLE_TOKEN_AUDIENCE: String = stringEnv(EnvKeys.GOOGLE_TOKEN_AUDIENCE)
         .ifBlank { throw IllegalArgumentException("GOOGLE_TOKEN_AUDIENCE must be set") }
 
     fun validateSecrets() {
-        if (ENV == "prod") {
+        if (CommonConfigurationValues.environment.isProd) {
             require(JWT_ACCESS_SECRET != DefaultValues.JWT_ACCESS_SECRET) { "JWT_ACCESS_SECRET must be set in prod" }
             require(JWT_REFRESH_SECRET != DefaultValues.JWT_REFRESH_SECRET) { "JWT_REFRESH_SECRET must be set in prod" }
+            require(JWT_GUEST_SECRET != DefaultValues.JWT_GUEST_SECRET) { "JWT_GUEST_SECRET must be set in prod" }
         }
     }
 
@@ -63,6 +70,10 @@ internal object ConfigurationValues {
 
         const val JWT_ACCESS_TTL_SEC = "JWT_ACCESS_TTL_SEC"
 
+        const val JWT_GUEST_SECRET = "JWT_GUEST_SECRET"
+
+        const val JWT_GUEST_TTL_SEC = "JWT_GUEST_TTL_SEC"
+
         const val GOOGLE_TOKEN_AUDIENCE = "GOOGLE_TOKEN_AUDIENCE"
     }
 
@@ -77,5 +88,9 @@ internal object ConfigurationValues {
         const val JWT_REFRESH_SECRET = "dev-refresh-secret"
 
         const val JWT_ACCESS_TTL_SEC = 300L
+
+        const val JWT_GUEST_SECRET = "dev-guest-secret"
+
+        const val JWT_GUEST_TTL_SEC = 86_400L
     }
 }

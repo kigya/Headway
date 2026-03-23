@@ -23,9 +23,6 @@ internal abstract class SyncGithubEnvTask : DefaultTask() {
     @get:Input
     abstract val environments: ListProperty<String>
 
-    @get:Input
-    abstract val includeLocalEnvironment: Property<Boolean>
-
     @get:InputDirectory
     abstract val templatesDir: DirectoryProperty
 
@@ -52,7 +49,6 @@ internal abstract class SyncGithubEnvTask : DefaultTask() {
             repo = repo.get(),
             environments = environments.orNull.orEmpty(),
             legacyEnvironment = environment.orNull,
-            includeLocalEnvironment = includeLocalEnvironment.get(),
             templatesDir = templatesDir.get().asFile,
             outputDir = outputDir.orNull?.asFile,
             generatedRootDir = generatedRootDir.get().asFile,
