@@ -26,5 +26,6 @@ captures
 !.cursor/rules/
 !.cursor/skills/
 !.cursor/README.md
+!.cursor/RESOURCES.md
 !.cursor/WORKFLOWS.md
 .playwright-mcp/

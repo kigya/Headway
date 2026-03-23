@@ -20,9 +20,15 @@ This repo layers **Agent Skills** on top of [`.cursor/rules/`](rules/) and root 
 
 ## `/commit`
 
-**When:** You have staged the files you want the message to reflect (IDE index / `git add` yourself).
+**When:** You want to record local changes on the current branch in one commit.
 
-**What happens:** The agent outputs a single copy-paste line `CLIENT-HEADWAY-<N>:` / `SERVER-HEADWAY-<N>:` / `FULLSTACK-HEADWAY-<N>:` from the branch name and staged paths. It does **not** run `git commit` or push.
+**What happens:** The agent runs `git add -A` (or `git add` on paths you named), builds the one-line message `CLIENT-HEADWAY-<N>:` / `SERVER-HEADWAY-<N>:` / `FULLSTACK-HEADWAY-<N>:` from the branch name and staged paths, then runs `git commit`. It does **not** push unless you ask in the same message.
+
+## `/pull-request`
+
+**When:** You want the branch on `origin` and an open PR into `trunk` (or to refresh an existing PR).
+
+**What happens:** The agent pushes the current branch, finds an open PR for that head → `trunk` or creates one, then updates **title**, **body** (including `Closes #<task>` for the Development sidebar when the task number is parsed from the branch), and **labels** (`headway-client` / `headway-server` / `headway-fullstack`, plus type labels). GitHub Projects (board columns) are optional via `gh` if available; otherwise it may ask you to update the project manually. **Note:** `Closes #N` closes the issue when the PR merges into the repo **default** branch.
 
 ## What “reusable” means here
 

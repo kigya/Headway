@@ -19,6 +19,8 @@ For shared Kotlin conventions see the root [`AGENTS.md`](../AGENTS.md).
 | Runtime         | Docker (multi-stage: `gradle:8.14.0-jdk17` → `eclipse-temurin:17-jre`)     |
 | Static analysis | Detekt + ktlint formatting                                                |
 
+Hosted Postgres (Supabase) dashboards and project refs for agents and MCP: see [`.cursor/RESOURCES.md`](../.cursor/RESOURCES.md) (dev/prod).
+
 ---
 
 ## Commands
