@@ -44,6 +44,22 @@ icon: code-branch
 
 **Ссылка:** [Headway project — view 2](https://github.com/users/kigya/projects/4/views/2)
 
+### Автоматизация статуса (Actions)
+
+В репозитории есть workflow [`.github/workflows/project-board-sync.yml`](../../.github/workflows/project-board-sync.yml):
+
+* PR в **`trunk`** не в черновике (**opened** / **reopened** / **ready_for_review**) → у связанных issue на [проекте пользователя #4](https://github.com/users/kigya/projects/4) поле **Status** становится **In Review** (если карточка уже добавлена в этот проект).
+* После **merge** PR в **`trunk`** → **Status** → **Done** для тех же issue.
+
+Связь с issue определяется так:
+
+* ветка по конвенции `client-headway/<НОМЕР>-…`, `server-headway/<НОМЕР>-…`, `fullstack-headway/<НОМЕР>-…`;
+* и/или в заголовке или теле PR есть `Closes #N` / `Fixes #N` / `Resolves #N` (регистр не важен).
+
+**Секрет репозитория:** `HEADWAY_PROJECT_V2_WRITE_TOKEN` — PAT владельца проекта с правом читать и менять **Projects** (для user project это токен пользователя `kigya`). Без секрета job завершится с ошибкой. PR из **форков** workflow не запускает (у форков нет доступа к секретам).
+
+В настройках самого проекта на GitHub по-прежнему можно включить встроенные **Workflows** (например закрытие issue → **Done**), они дополняют Actions и настраиваются только в UI проекта.
+
 ### Колонки и смысл
 
 | Колонка | Когда ставить | Что иметь в виду |
@@ -89,5 +105,5 @@ icon: code-branch
 * Имя ветки по конвенции.
 * Коммиты и заголовок PR с верным префиксом и номером задачи.
 * Нужные метки (домен + тип).
-* Карточка на доске обновлена (как минимум **In Review** при открытом PR).
+* Карточка на доске обновлена (при открытом PR в `trunk` статус **In Review** выставляет workflow, если issue уже в проекте и задан секрет PAT).
 * Локально прошли проверки: см. [Проверки перед push](pre-push-checks.md) и `AGENTS.md` для client/server.
