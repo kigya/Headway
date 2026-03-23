@@ -8,10 +8,11 @@ import org.jetbrains.exposed.v1.core.ResultRow
 
 internal fun ResultRow.toUser(): DatabaseUser {
     val authUserId = this[UsersTable.authUserId]
+    val googleSubject = this[UsersTable.googleSubject]
     val email = this[UsersTable.email]
     return DatabaseUser(
         id = this[UsersTable.id].value,
-        googleId = authUserId?.toString(),
+        googleId = googleSubject ?: authUserId?.toString(),
         email = email,
         name = this[UsersTable.fullName] ?: email,
         department = this[UsersTable.department],

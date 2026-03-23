@@ -4,9 +4,11 @@ import dev.kigya.headway.auth.api.model.`in`.AuthGoogleLoginPayloadDto
 import dev.kigya.headway.auth.api.model.`in`.AuthRefreshTokenPayloadDto
 import dev.kigya.headway.auth.api.model.`in`.AuthValidateTokenPayloadDto
 import dev.kigya.headway.auth.api.model.resource.AuthGoogleResource
+import dev.kigya.headway.auth.api.model.resource.AuthGuestResource
 import dev.kigya.headway.auth.api.model.resource.AuthRefreshTokenResource
 import dev.kigya.headway.auth.api.model.resource.AuthValidateTokenResource
 import dev.kigya.headway.auth.api.url.authServiceUrlHolder
+import dev.kigya.headway.auth.internal.domain.usecase.LoginAsGuestUseCase
 import dev.kigya.headway.auth.internal.domain.usecase.LoginWithGoogleUseCase
 import dev.kigya.headway.auth.internal.domain.usecase.RefreshTokenUseCase
 import dev.kigya.headway.auth.internal.domain.usecase.ValidateAccessTokenUseCase
@@ -22,6 +24,7 @@ import io.ktor.server.routing.routing
 
 internal fun Application.authRouting(
     loginWithGoogle: LoginWithGoogleUseCase,
+    loginAsGuest: LoginAsGuestUseCase,
     refreshToken: RefreshTokenUseCase,
     validateAccessToken: ValidateAccessTokenUseCase,
 ) {
@@ -29,9 +32,16 @@ internal fun Application.authRouting(
         route(authServiceUrlHolder.baseUrl) {
             healthzRouting()
             authByGoogle(loginWithGoogle = loginWithGoogle)
+            loginAsGuest(loginAsGuest = loginAsGuest)
             refreshToken(refreshToken = refreshToken)
             validateToken(validateAccessToken = validateAccessToken)
         }
+    }
+}
+
+private fun Route.loginAsGuest(loginAsGuest: LoginAsGuestUseCase) {
+    post<AuthGuestResource> {
+        call.respond(loginAsGuest())
     }
 }
 

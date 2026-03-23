@@ -5,6 +5,7 @@ plugins {
     alias(libs.plugins.convention.base.microserviceApplication)
     alias(libs.plugins.convention.component.serialization)
     alias(libs.plugins.ktor)
+    alias(libs.plugins.kover)
 }
 
 configureMicroserviceApplication {

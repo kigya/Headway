@@ -5,6 +5,7 @@ import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 plugins {
     alias(libs.plugins.convention.base.microserviceApplication)
     alias(libs.plugins.convention.component.serialization)
+    alias(libs.plugins.kover)
 }
 
 configureMicroserviceApplication {
@@ -34,6 +35,7 @@ microserviceDependencies {
         implementation(koin.ktor)
 
         testImplementation(kotlin.test)
+        testImplementation(kotlinx.coroutines.core)
         testImplementation(ktor.serverTestHost)
     }
 }

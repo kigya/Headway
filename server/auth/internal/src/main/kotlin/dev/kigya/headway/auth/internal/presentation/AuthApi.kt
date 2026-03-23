@@ -1,5 +1,6 @@
 package dev.kigya.headway.auth.internal.presentation
 
+import dev.kigya.headway.auth.internal.domain.usecase.LoginAsGuestUseCase
 import dev.kigya.headway.auth.internal.domain.usecase.LoginWithGoogleUseCase
 import dev.kigya.headway.auth.internal.domain.usecase.RefreshTokenUseCase
 import dev.kigya.headway.auth.internal.domain.usecase.ValidateAccessTokenUseCase
@@ -11,6 +12,7 @@ import io.ktor.server.application.Application
 
 internal fun Application.installAuthApi(
     loginWithGoogle: LoginWithGoogleUseCase,
+    loginAsGuest: LoginAsGuestUseCase,
     refreshToken: RefreshTokenUseCase,
     validateAccessToken: ValidateAccessTokenUseCase,
 ) {
@@ -19,6 +21,7 @@ internal fun Application.installAuthApi(
     authStatusPages()
     authRouting(
         loginWithGoogle = loginWithGoogle,
+        loginAsGuest = loginAsGuest,
         refreshToken = refreshToken,
         validateAccessToken = validateAccessToken,
     )

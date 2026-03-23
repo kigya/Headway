@@ -11,5 +11,6 @@ See [WORKFLOWS.md](WORKFLOWS.md) for when and how to use:
 - `/headway-rule-aware-workflow` — align edits with `AGENTS.md` and `.cursor/rules` while coding.
 - `/capture-lesson` — record a **reusable** mistake in [`rules/lessons-learned.mdc`](rules/lessons-learned.mdc) after a fix (merge or skip as appropriate).
 - `/finish-feature` — wrap-up: critical rules, verification commands, drift risks, optional promotion hints.
+- `/commit` — print a one-line commit message (`CLIENT-HEADWAY-` / `SERVER-HEADWAY-` / `FULLSTACK-HEADWAY-` + task number) from branch and **staged** diff; no `git commit` or push.
 
 Skills live under [`.cursor/skills/`](skills/). There are no hooks, watchers, or CI steps in this layer.

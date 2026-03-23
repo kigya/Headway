@@ -3,6 +3,29 @@ plugins {
     alias(libs.plugins.serialization) apply false
     alias(libs.plugins.kotlin.jvm) apply false
     alias(libs.plugins.convention.github.env.sync)
+    alias(libs.plugins.kover)
+}
+
+dependencies {
+    kover(project(":gateway"))
+    kover(project(":auth:internal"))
+    kover(project(":database:internal"))
+}
+
+kover {
+    reports {
+        verify {
+            rule("merged-auth-gateway-database-line-coverage") {
+                minBound(22)
+            }
+        }
+    }
+}
+
+tasks.register("verifyWithCoverage") {
+    group = "verification"
+    description = "Runs detekt and merged Kover line-coverage verification (auth, gateway, database/internal)"
+    dependsOn(tasks.named("detekt"), tasks.named("koverVerify"))
 }
 
 val gitHooksScript = file("../config/git/hooks/installer.gradle.kts")

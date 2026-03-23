@@ -1,5 +1,6 @@
 package dev.kigya.headway.gateway.core.http
 
+import dev.kigya.headway.gateway.core.exception.GatewayErrorReason
 import dev.kigya.headway.gateway.core.exception.GatewayException
 import io.ktor.client.statement.HttpResponse
 import io.ktor.client.statement.bodyAsText
@@ -10,19 +11,32 @@ internal suspend fun HttpResponse.toGatewayException(dependency: String): Gatewa
 
     return when (status) {
         HttpStatusCode.BadRequest ->
-            GatewayException.InvalidRequest(bodyMsg ?: "Bad request")
+            GatewayException.InvalidRequest(
+                reason = GatewayErrorReason.BAD_REQUEST,
+                message = bodyMsg ?: "Bad request",
+            )
 
         HttpStatusCode.Unauthorized ->
-            GatewayException.Unauthorized(bodyMsg ?: "Unauthorized")
+            GatewayException.Unauthorized(
+                reason = GatewayErrorReason.INVALID_ACCESS_TOKEN,
+                message = bodyMsg ?: "Unauthorized",
+            )
 
         HttpStatusCode.Forbidden ->
-            GatewayException.Forbidden(bodyMsg ?: "Forbidden")
+            GatewayException.Forbidden(
+                reason = GatewayErrorReason.INSUFFICIENT_ROLE,
+                message = bodyMsg ?: "Forbidden",
+            )
 
         HttpStatusCode.NotFound ->
-            GatewayException.NotFound(bodyMsg ?: "Not found")
+            GatewayException.NotFound(
+                message = bodyMsg ?: "Not found",
+            )
 
         HttpStatusCode.Conflict ->
-            GatewayException.Conflict(bodyMsg ?: "Conflict")
+            GatewayException.Conflict(
+                message = bodyMsg ?: "Conflict",
+            )
 
         HttpStatusCode.ServiceUnavailable ->
             GatewayException.DependencyUnavailable(

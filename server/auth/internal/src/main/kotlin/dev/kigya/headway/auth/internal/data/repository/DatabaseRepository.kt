@@ -47,7 +47,8 @@ class DatabaseRepository(
         }
 
         return when (val status = response.status) {
-            HttpStatusCode.OK, HttpStatusCode.Created, HttpStatusCode.Conflict -> response.body<DatabaseUser>()
+            HttpStatusCode.OK, HttpStatusCode.Created -> response.body<DatabaseUser>()
+            HttpStatusCode.Conflict -> throw AuthException.IdentityConflict()
             HttpStatusCode.Forbidden -> throw AuthException.UserNotInvited()
 
             else -> throw AuthException.UpstreamProtocol(

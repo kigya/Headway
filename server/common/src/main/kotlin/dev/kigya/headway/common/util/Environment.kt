@@ -2,7 +2,8 @@ package dev.kigya.headway.common.util
 
 enum class Environment(val rawValue: String) {
     DEV("dev"),
-    PROD("prod");
+    PROD("prod"),
+    ;
 
     val isDev: Boolean
         get() = this == DEV

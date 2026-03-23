@@ -10,6 +10,7 @@ exposed = { strictly = "1.0.0-rc-4" }
 
 # Kotlin
 kotlin = { strictly = "2.3.20" }
+kotlinxCoroutines = "1.10.2"
 
 # Serialization
 kotlinxSerialization = { require = "1.10.0" }
@@ -22,6 +23,9 @@ ktor = { require = "3.4.1" }
 
 # Detekt
 detekt = { require = "1.23.8" }
+
+# Coverage
+kover = "0.9.7"
 
 # Server
 logback = "1.5.32"
@@ -38,6 +42,7 @@ hikaricp = { module = "com.zaxxer:HikariCP", version.ref = "hikaricp" }
 kgraphql-ktor = { module = "de.stuebingerb:kgraphql-ktor", version.ref = "kgraphqlKtor" }
 koin-ktor = { module = "io.insert-koin:koin-ktor", version.ref = "koinKtor" }
 kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutines" }
 postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql" }
 serializationJson = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
 
@@ -84,6 +89,7 @@ ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
 
 convention-base-microserviceApplication = "base.microserviceApplication:1.0"
 convention-base-jvmLibrary = "base.jvmLibrary:1.0"

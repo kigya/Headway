@@ -1,5 +1,6 @@
 package dev.kigya.headway.gateway.domain.usecase
 
+import dev.kigya.headway.gateway.core.exception.GatewayErrorReason
 import dev.kigya.headway.gateway.core.exception.GatewayException
 import dev.kigya.headway.gateway.domain.repository.DatabaseRepositoryContract
 import dev.kigya.headway.gateway.model.GatewayUser
@@ -17,10 +18,16 @@ internal class InviteUserUseCase(
         val trimmedDepartment = department.trim()
 
         if (trimmedEmail.isBlank() || !trimmedEmail.contains("@")) {
-            throw GatewayException.InvalidRequest("Invalid email")
+            throw GatewayException.InvalidRequest(
+                reason = GatewayErrorReason.BAD_REQUEST,
+                message = "Invalid email",
+            )
         }
         if (trimmedDepartment.isBlank()) {
-            throw GatewayException.InvalidRequest("Invalid department")
+            throw GatewayException.InvalidRequest(
+                reason = GatewayErrorReason.BAD_REQUEST,
+                message = "Invalid department",
+            )
         }
 
         return databaseRepository.inviteUser(

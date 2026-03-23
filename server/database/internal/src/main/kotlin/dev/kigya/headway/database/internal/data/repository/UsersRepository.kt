@@ -25,8 +25,10 @@ internal class UsersRepository(
     override suspend fun readById(id: UUID): DatabaseUser? = database.dbQuery { readByIdTx(id) }
 
     override suspend fun readByGoogleId(googleId: String): DatabaseUser? = database.dbQuery {
-        val authUserId = parseUuidOrNull(googleId) ?: return@dbQuery null
-        readByAuthUserIdTx(authUserId)
+        val trimmed = googleId.trim()
+        if (trimmed.isEmpty()) return@dbQuery null
+        readRowByGoogleSubjectTx(trimmed)?.toUser()
+            ?: readByLegacyAuthUuidGoogleIdTx(trimmed)
     }
 
     override suspend fun readByEmail(email: String): DatabaseUser? =
@@ -58,7 +60,6 @@ internal class UsersRepository(
                     }
 
                     ExposedAccountStatus.ACTIVE -> {
-                        // keep ACTIVE as-is
                     }
                 }
             }
@@ -84,26 +85,25 @@ internal class UsersRepository(
         name: String,
         avatarUrl: String?,
     ): DatabaseUser = database.dbQuery {
-        val authUserId = parseUuidOrNull(googleId)
-
+        val subject = googleId.trim()
         val rowByEmail = readRowByEmailTx(email) ?: throw DatabaseException.UserNotInvited()
         val userByEmail = rowByEmail.toUser()
         val statusByEmail = rowByEmail[UsersTable.status]
         if (statusByEmail == ExposedAccountStatus.REVOKED) throw DatabaseException.UserNotInvited()
 
-        val userByAuth = authUserId?.let { readByAuthUserIdTx(it) }
+        val userBySubject = readRowByGoogleSubjectTx(subject)?.toUser()
 
-        if (userByAuth != null && userByAuth.id != userByEmail.id) {
+        if (userBySubject != null && userBySubject.id != userByEmail.id) {
             throw DatabaseException.UserAlreadyExists(
-                message = "User with authUserId=$authUserId already exists",
-                user = userByAuth,
+                message = "Google identity is already linked to another user",
+                user = userBySubject,
             )
         }
 
-        val existingAuthUserId = rowByEmail[UsersTable.authUserId]
-        if (existingAuthUserId != null && authUserId != null && existingAuthUserId != authUserId) {
+        val existingSubject = rowByEmail[UsersTable.googleSubject]
+        if (existingSubject != null && existingSubject != subject) {
             throw DatabaseException.UserAlreadyExists(
-                message = "User with email=$email already linked to a different authUserId",
+                message = "User with email=$email already linked to a different Google identity",
                 user = userByEmail,
             )
         }
@@ -111,9 +111,7 @@ internal class UsersRepository(
         UsersTable.update({ UsersTable.id eq userByEmail.id }) {
             it[this.fullName] = name
             if (avatarUrl != null) it[this.avatarUrl] = avatarUrl
-            if (authUserId != null && existingAuthUserId == null) {
-                it[this.authUserId] = authUserId
-            }
+            it[this.googleSubject] = subject
             if (statusByEmail == ExposedAccountStatus.INVITED) {
                 it[this.status] = ExposedAccountStatus.ACTIVE
                 it[this.isActive] = true
@@ -135,7 +133,7 @@ internal class UsersRepository(
         avatarUrl: String?,
         role: DatabaseUserRole,
     ): DatabaseUser = database.dbQuery {
-        val authUserId = parseUuidOrNull(googleId)
+        val subject = googleId.trim()
 
         val existingByEmail = readByEmailTx(email)
         if (existingByEmail != null) {
@@ -145,11 +143,11 @@ internal class UsersRepository(
             )
         }
 
-        val existingByAuth = authUserId?.let { readByAuthUserIdTx(it) }
-        if (existingByAuth != null) {
+        val existingBySubject = readRowByGoogleSubjectTx(subject)?.toUser()
+        if (existingBySubject != null) {
             throw DatabaseException.UserAlreadyExists(
-                user = existingByAuth,
-                message = "User with authUserId=$authUserId already exists",
+                user = existingBySubject,
+                message = "User with googleSubject=$subject already exists",
             )
         }
 
@@ -160,7 +158,7 @@ internal class UsersRepository(
             it[this.role] = role
             it[this.status] = ExposedAccountStatus.ACTIVE
             it[this.isActive] = true
-            if (authUserId != null) it[this.authUserId] = authUserId
+            it[this.googleSubject] = subject
         }[UsersTable.id].value
 
         UsersTable
@@ -188,9 +186,6 @@ internal class UsersRepository(
             .singleOrNull()
     }
 
-    private fun parseUuidOrNull(raw: String): UUID? =
-        runCatching { UUID.fromString(raw) }.getOrNull()
-
     private fun readRowByIdTx(id: UUID): ResultRow? = UsersTable
         .select(UsersTable.columns)
         .where { UsersTable.id eq id }
@@ -204,6 +199,19 @@ internal class UsersRepository(
         .singleOrNull()
 
     private fun readByEmailTx(email: String): DatabaseUser? = readRowByEmailTx(email)?.toUser()
+
+    private fun readRowByGoogleSubjectTx(subject: String): ResultRow? = UsersTable
+        .select(UsersTable.columns)
+        .where { UsersTable.googleSubject eq subject }
+        .singleOrNull()
+
+    private fun readByLegacyAuthUuidGoogleIdTx(googleId: String): DatabaseUser? {
+        val authUserId = parseUuidOrNull(googleId) ?: return null
+        return readByAuthUserIdTx(authUserId)
+    }
+
+    private fun parseUuidOrNull(raw: String): UUID? =
+        runCatching { UUID.fromString(raw) }.getOrNull()
 
     private fun readByAuthUserIdTx(authUserId: UUID): DatabaseUser? = UsersTable
         .select(UsersTable.columns)

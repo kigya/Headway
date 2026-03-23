@@ -6,15 +6,15 @@ import dev.kigya.headway.auth.internal.domain.error.AuthException
 import dev.kigya.headway.auth.internal.domain.repository.DatabaseRepositoryContract
 import dev.kigya.headway.auth.internal.domain.repository.JWTRepositoryContract
 import dev.kigya.headway.database.api.model.`in`.DatabaseSessionPlatform
+import java.time.Clock
 import java.time.ZoneOffset
-import java.util.Calendar
-
-private const val JWT_REFRESH_ALIVE_MONTHS = 3
+import java.util.Date
 
 internal class LoginWithGoogleUseCase(
     private val databaseRepository: DatabaseRepositoryContract,
     private val jwtRepository: JWTRepositoryContract,
     private val googleTokenVerifier: GoogleTokenVerifierContract,
+    private val clock: Clock,
 ) {
 
     suspend operator fun invoke(
@@ -35,14 +35,15 @@ internal class LoginWithGoogleUseCase(
             throw AuthException.UserNotActive()
         }
 
-        val expirationDate = Calendar.getInstance().apply { add(Calendar.MONTH, JWT_REFRESH_ALIVE_MONTHS) }
+        val expirationInstant = clock.instant().atZone(ZoneOffset.UTC).plusMonths(REFRESH_ALIVE_MONTHS).toInstant()
+        val expirationDate = Date.from(expirationInstant)
         val accessToken = jwtRepository.generateAccessToken(user.id)
-        val refreshToken = jwtRepository.generateRefreshToken(user.id, expirationDate.time)
+        val refreshToken = jwtRepository.generateRefreshToken(user.id, expirationDate)
 
         databaseRepository.createSession(
             userId = user.id,
             refreshToken = refreshToken,
-            expiresIn = expirationDate.toInstant().atOffset(ZoneOffset.UTC),
+            expiresIn = expirationInstant.atOffset(ZoneOffset.UTC),
             fingerprint = fingerprint,
             platform = platform,
         )
@@ -54,3 +55,5 @@ internal class LoginWithGoogleUseCase(
         )
     }
 }
+
+private const val REFRESH_ALIVE_MONTHS = 3L

@@ -5,6 +5,7 @@ import extension.microserviceDependencies
 plugins {
     alias(libs.plugins.convention.base.microserviceApplication)
     alias(libs.plugins.convention.component.serialization)
+    alias(libs.plugins.kover)
 }
 
 configureMicroserviceApplication {
@@ -33,6 +34,7 @@ microserviceDependencies {
         implementation(ktor.client.content.negotiation)
         implementation(ktor.clientResources)
 
+        testImplementation(kotlin.test)
         testImplementation(ktor.serverTestHost)
     }
 

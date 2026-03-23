@@ -16,9 +16,8 @@ internal object GatewayGraphqlErrorMapper {
 
     fun unwrapForLogging(throwable: Throwable): Throwable = unwrapGraphQlError(throwable)
 
-    fun map(throwable: Throwable): GraphQlErrorEnvelope {
-        val original = unwrapGraphQlError(throwable)
-        return when (original) {
+    fun map(throwable: Throwable): GraphQlErrorEnvelope =
+        when (val original = unwrapGraphQlError(throwable)) {
             is GatewayException -> GraphQlErrorEnvelope(
                 message = original.message ?: "Error",
                 code = original.code,
@@ -60,7 +59,6 @@ internal object GatewayGraphqlErrorMapper {
                 ),
             )
         }
-    }
 
     fun extensionsFor(exception: GatewayException): Map<String, Any?> = buildMap {
         put(EXT_CODE, exception.code.name)

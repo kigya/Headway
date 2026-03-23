@@ -18,6 +18,12 @@ This repo layers **Agent Skills** on top of [`.cursor/rules/`](rules/) and root 
 
 **What happens:** The agent summarizes which rules mattered for this change, what to verify (Gradle + detekt by area), drift risks, and—only if needed—a **suggestion** to promote stable guidance into `AGENTS.md`. It never edits `AGENTS.md` for you.
 
+## `/commit`
+
+**When:** You have staged the files you want the message to reflect (IDE index / `git add` yourself).
+
+**What happens:** The agent outputs a single copy-paste line `CLIENT-HEADWAY-<N>:` / `SERVER-HEADWAY-<N>:` / `FULLSTACK-HEADWAY-<N>:` from the branch name and staged paths. It does **not** run `git commit` or push.
+
 ## What “reusable” means here
 
 **Reusable (capture):** Violates boundaries or patterns already described in `AGENTS.md` or `.cursor/rules`; likely to recur; spans more than a one-off; can be stated as a short general rule.

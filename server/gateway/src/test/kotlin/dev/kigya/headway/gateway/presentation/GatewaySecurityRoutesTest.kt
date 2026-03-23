@@ -1,17 +1,21 @@
 package dev.kigya.headway.gateway.presentation
 
+import dev.kigya.headway.auth.api.model.out.AuthPrincipalType
 import dev.kigya.headway.auth.api.model.out.AuthValidateTokenResponse
 import dev.kigya.headway.common.util.Environment
+import dev.kigya.headway.gateway.core.exception.GatewayErrorReason
 import dev.kigya.headway.gateway.core.exception.GatewayException
 import dev.kigya.headway.gateway.data.probe.base.HttpProber
 import dev.kigya.headway.gateway.domain.repository.AuthRepositoryContract
 import dev.kigya.headway.gateway.domain.repository.DatabaseRepositoryContract
 import dev.kigya.headway.gateway.domain.usecase.CheckHealthStatusUseCase
 import dev.kigya.headway.gateway.domain.usecase.InviteUserUseCase
+import dev.kigya.headway.gateway.domain.usecase.LoginAsGuestUseCase
 import dev.kigya.headway.gateway.domain.usecase.LoginWithGoogleUseCase
 import dev.kigya.headway.gateway.domain.usecase.RefreshAccessTokenUseCase
-import dev.kigya.headway.gateway.domain.usecase.ResolveCallerUseCase
+import dev.kigya.headway.gateway.domain.usecase.ResolvePrincipalUseCase
 import dev.kigya.headway.gateway.model.GatewayGoogleLoginResponse
+import dev.kigya.headway.gateway.model.GatewayGuestLoginResponse
 import dev.kigya.headway.gateway.model.GatewayRefreshAccessTokenResponse
 import dev.kigya.headway.gateway.model.GatewayServiceStatus
 import dev.kigya.headway.gateway.model.GatewaySessionPlatform
@@ -27,18 +31,21 @@ import io.ktor.http.HttpHeaders
 import io.ktor.http.HttpStatusCode
 import io.ktor.http.contentType
 import io.ktor.server.testing.testApplication
+import kotlinx.serialization.json.Json
+import kotlinx.serialization.json.jsonArray
+import kotlinx.serialization.json.jsonObject
+import kotlinx.serialization.json.jsonPrimitive
 import java.util.UUID
 import kotlin.test.Test
 import kotlin.test.assertEquals
-import kotlin.test.assertTrue
 
 class GatewaySecurityRoutesTest {
     @Test
     fun `graphql inviteUser returns unauthorized without authorization header`() = testApplication {
         val authRepository = TestAuthRepository(
             validationResponse = AuthValidateTokenResponse(
+                principalType = AuthPrincipalType.USER,
                 userUuid = CALLER_ID,
-                isValid = true,
             ),
         )
         val databaseRepository = TestDatabaseRepository(
@@ -59,7 +66,10 @@ class GatewaySecurityRoutesTest {
         }
 
         assertEquals(HttpStatusCode.OK, response.status)
-        assertTrue(response.bodyAsText().contains("UNAUTHORIZED"))
+        val root = Json.parseToJsonElement(response.bodyAsText()).jsonObject
+        val error = root["errors"]!!.jsonArray.first().jsonObject
+        assertEquals("UNAUTHORIZED", error["extensions"]!!.jsonObject["code"]!!.jsonPrimitive.content)
+        assertEquals("MISSING_AUTH_HEADER", error["extensions"]!!.jsonObject["reason"]!!.jsonPrimitive.content)
         assertEquals(0, databaseRepository.inviteCalls)
     }
 
@@ -67,8 +77,8 @@ class GatewaySecurityRoutesTest {
     fun `graphql inviteUser returns forbidden for non admin roles`() = testApplication {
         val authRepository = TestAuthRepository(
             validationResponse = AuthValidateTokenResponse(
+                principalType = AuthPrincipalType.USER,
                 userUuid = CALLER_ID,
-                isValid = true,
             ),
         )
         val databaseRepository = TestDatabaseRepository(
@@ -90,7 +100,10 @@ class GatewaySecurityRoutesTest {
         }
 
         assertEquals(HttpStatusCode.OK, response.status)
-        assertTrue(response.bodyAsText().contains("FORBIDDEN"))
+        val root = Json.parseToJsonElement(response.bodyAsText()).jsonObject
+        val error = root["errors"]!!.jsonArray.first().jsonObject
+        assertEquals("FORBIDDEN", error["extensions"]!!.jsonObject["code"]!!.jsonPrimitive.content)
+        assertEquals("INSUFFICIENT_ROLE", error["extensions"]!!.jsonObject["reason"]!!.jsonPrimitive.content)
         assertEquals(0, databaseRepository.inviteCalls)
     }
 
@@ -98,8 +111,8 @@ class GatewaySecurityRoutesTest {
     fun `graphql inviteUser succeeds for developer role`() = testApplication {
         val authRepository = TestAuthRepository(
             validationResponse = AuthValidateTokenResponse(
+                principalType = AuthPrincipalType.USER,
                 userUuid = CALLER_ID,
-                isValid = true,
             ),
         )
         val databaseRepository = TestDatabaseRepository(
@@ -121,9 +134,44 @@ class GatewaySecurityRoutesTest {
         }
 
         assertEquals(HttpStatusCode.OK, response.status)
-        assertTrue(response.bodyAsText().contains(invitedUser.email))
+        assertEquals(true, response.bodyAsText().contains(invitedUser.email))
         assertEquals(1, databaseRepository.inviteCalls)
         assertEquals(null, databaseRepository.lastInvitedRole)
+    }
+
+    @Test
+    fun `graphql inviteUser returns guest not allowed for guest principal`() = testApplication {
+        val authRepository = TestAuthRepository(
+            validationResponse = AuthValidateTokenResponse(
+                principalType = AuthPrincipalType.GUEST,
+                guestSessionId = UUID.fromString("00000000-0000-0000-0000-00000000cafe"),
+                scopes = listOf("learn_guest"),
+            ),
+        )
+        val databaseRepository = TestDatabaseRepository(
+            caller = developerCaller,
+            invitedUser = invitedUser,
+        )
+
+        application {
+            installSecurityTestApplication(
+                authRepository = authRepository,
+                databaseRepository = databaseRepository,
+            )
+        }
+
+        val response = client.post("/api/v1/graphql") {
+            contentType(ContentType.Application.Json)
+            header(HttpHeaders.Authorization, "Bearer guest-token")
+            setBody(GRAPHQL_INVITE_MUTATION)
+        }
+
+        assertEquals(HttpStatusCode.OK, response.status)
+        val root = Json.parseToJsonElement(response.bodyAsText()).jsonObject
+        val error = root["errors"]!!.jsonArray.first().jsonObject
+        assertEquals("FORBIDDEN", error["extensions"]!!.jsonObject["code"]!!.jsonPrimitive.content)
+        assertEquals("GUEST_NOT_ALLOWED", error["extensions"]!!.jsonObject["reason"]!!.jsonPrimitive.content)
+        assertEquals(0, databaseRepository.inviteCalls)
     }
 
     private fun io.ktor.server.application.Application.installSecurityTestApplication(
@@ -131,15 +179,18 @@ class GatewaySecurityRoutesTest {
         databaseRepository: TestDatabaseRepository,
     ) {
         installGatewayApi(
-            environment = Environment.DEV,
-            checkHealthStatus = CheckHealthStatusUseCase(
-                authProbe = HttpProber { GatewayServiceStatus.OK },
-                databaseProbe = HttpProber { GatewayServiceStatus.OK },
+            GatewayApiBindings(
+                environment = Environment.DEV,
+                checkHealthStatus = CheckHealthStatusUseCase(
+                    authProbe = { GatewayServiceStatus.OK },
+                    databaseProbe = { GatewayServiceStatus.OK },
+                ),
+                loginWithGoogle = LoginWithGoogleUseCase(authRepository),
+                loginAsGuest = LoginAsGuestUseCase(authRepository),
+                refreshToken = RefreshAccessTokenUseCase(authRepository),
+                inviteUser = InviteUserUseCase(databaseRepository),
+                resolvePrincipal = ResolvePrincipalUseCase(authRepository, databaseRepository),
             ),
-            loginWithGoogle = LoginWithGoogleUseCase(authRepository),
-            refreshToken = RefreshAccessTokenUseCase(authRepository),
-            inviteUser = InviteUserUseCase(databaseRepository),
-            resolveCaller = ResolveCallerUseCase(authRepository, databaseRepository),
         )
     }
 }
@@ -158,6 +209,11 @@ private class TestAuthRepository(
         user = developerCaller,
     )
 
+    override suspend fun loginAsGuest(): GatewayGuestLoginResponse = GatewayGuestLoginResponse(
+        accessToken = "guest-access",
+        expiresAtEpochMs = 99L,
+    )
+
     override suspend fun refreshToken(
         refreshToken: String,
         fingerprint: String,
@@ -165,7 +221,10 @@ private class TestAuthRepository(
 
     override suspend fun validateToken(accessToken: String): AuthValidateTokenResponse {
         validationThrowable?.let { throw it }
-        return validationResponse ?: throw GatewayException.Unauthorized("Unauthorized")
+        return validationResponse ?: throw GatewayException.Unauthorized(
+            reason = GatewayErrorReason.INVALID_ACCESS_TOKEN,
+            message = "Invalid",
+        )
     }
 }
 
