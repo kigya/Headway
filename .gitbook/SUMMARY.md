@@ -1,11 +1,21 @@
-# Table of contents
+# Оглавление
 
-* [Welcome](README.md)
+* [Добро пожаловать](README.md)
 
-## Getting Started
+## Общее
 
-* [Quickstart](getting-started/quickstart.md)
-* [Pre-push checks](getting-started/pre-push-checks.md)
-* [Live Templates](getting-started/live-templates.md)
-* [Git Conventions](getting-started/git-conventions.md)
-* [NotebookLM](getting-started/notebooklm.md)
+* [Быстрый старт](general/quickstart.md)
+* [Git, PR, метки и доска задач](general/git-and-board.md)
+* [Проверки перед push](general/pre-push-checks.md)
+* [Live Templates](general/live-templates.md)
+* [NotebookLM](general/notebooklm.md)
+
+## Клиент
+
+* [Конвенции и рабочий процесс](client/conventions.md)
+
+## Сервер
+
+* [Конвенции и архитектура](server/conventions.md)
+* [githubEnvSync](server/github-env-sync.md)
+* [Supabase и окружения](server/supabase.md)

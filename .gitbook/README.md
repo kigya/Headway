@@ -2,10 +2,20 @@
 icon: hand-wave
 ---
 
-# Welcome
+# Добро пожаловать
 
-## Headway — Developer Documentation
+## Headway — документация для разработчиков
 
+Здесь собраны правила и подсказки по монорепозиторию **Headway**: клиент (Kotlin Multiplatform, Compose), сервер (Ktor, микросервисы) и общие процессы команды.
 
+**Редактировать сайт в GitBook:** [консоль проекта](https://app.gitbook.com/o/6LyMtZ4tklDUB9XxAiKu/sites/site_x3VE1).
 
-Welcome! These guidelines help you quickly onboard to the Headway project from both the client side (Kotlin Multiplatform: Android/iOS/Desktop/Web) and the backend. Here you’ll find prerequisites, conventions, checklists, and concise step-by-step guides to get started.
+**Исходный текст страниц** версионируется в репозитории в каталоге `.gitbook/`. После правок в GitBook или в репо важно не расходиться с актуальным `AGENTS.md` в корне, `client/` и `server/`.
+
+### Как пользоваться разделами
+
+* **Общее** — быстрый старт, Git, доска задач, метки, проверки перед отправкой кода, вспомогательные инструменты.
+* **Клиент** — архитектура фич, MVI, навигация, дизайн-система Freud, типовые команды Gradle.
+* **Сервер** — микросервисы, gateway, миграции, `githubEnvSync`, ссылки на Supabase.
+
+Точные правила кода и стиль Kotlin дублировать здесь полностью не нужно: канон — файлы `AGENTS.md` в репозитории; GitBook даёт краткую выжимку для людей.
