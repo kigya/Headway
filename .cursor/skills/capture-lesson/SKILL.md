@@ -2,7 +2,8 @@
 name: capture-lesson
 description: >-
   Captures a reusable Headway mistake into .cursor/rules/lessons-learned.mdc
-  after a fix, or skips when one-off. Use when the user runs /capture-lesson
+  after a fix (or skips when one-off) and updates .cursor/memory-bank/ when
+  the lesson changes ongoing context. Use when the user runs /capture-lesson
   or asks to record a lesson from a correction.
 disable-model-invocation: true
 ---
@@ -27,11 +28,14 @@ disable-model-invocation: true
      - **Correct pattern (short):**
    - Keep `---` separators between lessons consistent with the file.
    - After merge or insert, ensure headings are numbered **`### 1` through `### N`** in order with no gaps.
-6. Reply concisely: **added** (new lesson), **merged** (cite `### N`), or **skipped** (already covered or one-off).
+6. If **reusable**, evaluate **Memory Bank** ([`.cursor/memory-bank/`](../../memory-bank/)):
+   - If the lesson changes **ongoing project context** (e.g. stack fact, cross-cutting pattern, current focus), update the smallest set of files—typically [`activeContext.md`](../../memory-bank/activeContext.md), [`systemPatterns.md`](../../memory-bank/systemPatterns.md), or [`techContext.md`](../../memory-bank/techContext.md)—with **short** deltas. Do not paste the full lesson; link or restate one line.
+   - If Memory Bank already reflects it, skip.
+7. Reply concisely: **added** (new lesson), **merged** (cite `### N`), or **skipped** (already covered or one-off); note **Memory Bank** if touched.
 
 ## Output
 
-- One short paragraph: outcome + which lesson number if merged.
+- One short paragraph: outcome + which lesson number if merged + any Memory Bank file updated.
 
 ## Constraints
 

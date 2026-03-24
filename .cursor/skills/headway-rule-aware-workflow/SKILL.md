@@ -1,29 +1,31 @@
 ---
 name: headway-rule-aware-workflow
 description: >-
-  Aligns Headway Kotlin edits with the closest AGENTS.md and .cursor/rules
-  (global, client/server, detekt-guardrails, lessons-learned). Use for KMP
-  Compose, MVIKotlin Store vs ViewModel, Navigation3, Freud design system,
-  client Outcome, server gateway upstreamCall, and shared Kotlin style.
+  Aligns Headway Kotlin edits with .cursor/memory-bank context, the closest
+  AGENTS.md, and .cursor/rules (global, client/server, detekt-guardrails,
+  lessons-learned). Use for KMP Compose, MVIKotlin Store vs ViewModel,
+  Navigation3, Freud design system, client Outcome, server gateway
+  upstreamCall, and shared Kotlin style.
 ---
 
 # Headway rule-aware workflow
 
 ## Instructions
 
-1. Determine the **closest** source of truth by path:
+1. Skim [.cursor/memory-bank/activeContext.md](../../memory-bank/activeContext.md) and [.cursor/memory-bank/systemPatterns.md](../../memory-bank/systemPatterns.md) for current focus and cross-cutting patterns (do not treat Memory Bank as a substitute for `AGENTS.md`).
+2. Determine the **closest** source of truth by path:
    - Repo root / shared Kotlin → [AGENTS.md](../../../AGENTS.md)
    - `client/**` → [client/AGENTS.md](../../../client/AGENTS.md)
    - `server/**` → [server/AGENTS.md](../../../server/AGENTS.md)
    - Design-system code → [client/core/design-system/src/commonMain/kotlin/dev/kigya/headway/core/designSystem/AGENTS.md](../../../client/core/design-system/src/commonMain/kotlin/dev/kigya/headway/core/designSystem/AGENTS.md)
-2. Load matching Cursor rules from [.cursor/rules/](../../rules/):
+3. Load matching Cursor rules from [.cursor/rules/](../../rules/):
    - Always: [global.mdc](../../rules/global.mdc), [lessons-learned.mdc](../../rules/lessons-learned.mdc)
    - Under `client/**`: [client.mdc](../../rules/client.mdc), [detekt-guardrails.mdc](../../rules/detekt-guardrails.mdc)
    - Under `server/**`: [server.mdc](../../rules/server.mdc), [detekt-guardrails.mdc](../../rules/detekt-guardrails.mdc)
    - Kotlin anywhere: consider [detekt-guardrails.mdc](../../rules/detekt-guardrails.mdc)
-3. Prefer **existing** project patterns over inventing new ones; treat [lessons-learned.mdc](../../rules/lessons-learned.mdc) as cumulative anti-patterns to avoid.
-4. Do **not** duplicate long AGENTS text in chat—apply it. Do **not** add hooks, CI, or background automation.
-5. For recording a mistake after a fix, the user should run `/capture-lesson`. For pre-merge wrap-up, `/finish-feature`.
+4. Prefer **existing** project patterns over inventing new ones; treat [lessons-learned.mdc](../../rules/lessons-learned.mdc) as cumulative anti-patterns to avoid.
+5. Do **not** duplicate long AGENTS text in chat—apply it. Do **not** add hooks, CI, or background automation.
+6. For recording a mistake after a fix, the user should run `/capture-lesson`. For pre-merge wrap-up, `/finish-feature`. For spec-driven work, use `/speckit.*` commands from [`.cursor/commands/`](../../commands/) per [docs/ai-workflow.md](../../../docs/ai-workflow.md).
 
 ## When to use
 

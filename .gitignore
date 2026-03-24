@@ -23,10 +23,5 @@ captures
 **/lib/
 **/.vscode
 
-.cursor/*
-!.cursor/rules/
-!.cursor/skills/
-!.cursor/README.md
-!.cursor/RESOURCES.md
-!.cursor/WORKFLOWS.md
+.cursor/projects/
 .playwright-mcp/
