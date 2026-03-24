@@ -63,6 +63,7 @@ ktor-serverNetty = { module = "io.ktor:ktor-server-netty-jvm", version.ref = "kt
 ktor-serverTestHost = { module = "io.ktor:ktor-server-test-host-jvm", version.ref = "ktor" }
 ktor-serverResources = { module = "io.ktor:ktor-server-resources", version.ref = "ktor" }
 ktor-clientResources = { module = "io.ktor:ktor-client-resources", version.ref = "ktor" }
+ktor-client-mock-jvm = { module = "io.ktor:ktor-client-mock-jvm", version.ref = "ktor" }
 
 # Detekt Libraries
 detekt-formatting = { module = "io.gitlab.arturbosch.detekt:detekt-formatting", version.ref = "detekt" }

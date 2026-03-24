@@ -38,5 +38,6 @@ microserviceDependencies {
         testImplementation(kotlin.test)
         testImplementation(kotlinx.coroutines.core)
         testImplementation(ktor.serverTestHost)
+        testImplementation(ktor.client.mock.jvm)
     }
 }
