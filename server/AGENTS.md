@@ -32,11 +32,13 @@ cd server && ./gradlew build
 # Build a specific service
 cd server && ./gradlew :auth:internal:build
 cd server && ./gradlew :database:internal:build
+cd server && ./gradlew :home:internal:build
 cd server && ./gradlew :gateway:build
 
 # Create distribution archives
 cd server && ./gradlew :auth:internal:installDist
 cd server && ./gradlew :database:internal:installDist
+cd server && ./gradlew :home:internal:installDist
 cd server && ./gradlew :gateway:installDist
 
 # Run Detekt (run after every task)
@@ -64,9 +66,12 @@ server/
 │   ├── api/          # Database service contract: DTOs, Resources, URL holder
 │   ├── internal/     # Database service implementation: Exposed tables, repositories
 │   └── migrations/   # SQL migrations for hosted Postgres (apply when schema columns are added)
+├── home/
+│   ├── api/          # Home service contract: DTOs, Resources, URL holder
+│   └── internal/     # Home service implementation: routing, use cases, DI
 ├── gateway/          # GraphQL orchestrator — single client entry point
 ├── common/           # Shared utilities: ENV helpers, Ktor defaults, healthz, serializers
-├── docker/           # env.common, env.gateway, env.auth, env.database
+├── docker/           # env templates; per-ENV files e.g. env.gateway, env.auth, env.database, env.home
 ├── build-logic/      # Convention plugins: jvmLibrary, microserviceApplication, detekt
 └── docker-compose.yml
 ```
@@ -90,6 +95,7 @@ Each microservice follows this structure:
 Examples:
 - `auth/api` + `auth/internal`
 - `database/api` + `database/internal`
+- `home/api` + `home/internal`
 - `gateway` — a separate module (orchestrator), without an `api/internal` pair.
 
 ### Gateway is the single entry point for the client
@@ -316,7 +322,7 @@ So clients are more tolerant to schema changes and do not fail on extra fields.
 ## Gateway: orchestration and public GraphQL contract
 
 ### Gateway layers
-- `gateway/data/repository/*Repository` — HTTP clients to auth/database
+- `gateway/data/repository/*Repository` — HTTP clients to auth, database, home (e.g. `HomeRepository`)
 - `gateway/domain/repository/*Contract` — contracts
 - `gateway/domain/usecase/*UseCase` — business validation + repository invocation
 - `gateway/mapping/*Mappers` — conversion upstream DTO <-> gateway models
@@ -403,7 +409,7 @@ Rule: new error types in gateway must preserve this scheme (code + httpStatus + 
     - encodeDefaults = true
 - `defaultResources()` installs the Resources plugin
 
-This must be enabled in each service (auth/database) and in gateway as needed (gateway uses the GraphQL plugin; but types/serializers still apply in KGraphQL).
+This must be enabled in each service (auth, database, home, …) and in gateway as needed (gateway uses the GraphQL plugin; but types/serializers still apply in KGraphQL).
 
 ### Healthz
 - `HealthzResource` in `common/model/resource`
@@ -492,13 +498,13 @@ Rule: new modules must be compatible with detekt and formatting; do not introduc
 - Builds installDist:
     - `database:internal:installDist`
     - `auth:internal:installDist`
+    - `home:internal:installDist`
     - `gateway:installDist`
 - Runtime images on `eclipse-temurin:17-jre`
 - Each service is launched via `bin/<applicationName>`
 
 ### env files
-- `docker/env.common` (ENV)
-- `docker/env.gateway`, `docker/env.auth`, `docker/env.database`
+- `docker-compose.yml` loads `docker/${ENV}/env.common` plus service-specific files (for example `env.gateway`, `env.auth`, `env.database`, `env.home`).
 
 Rule: the service must start when required ENV vars are present. If ENV is missing, it should fail early (stringEnv/intEnv).
 
