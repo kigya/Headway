@@ -5,6 +5,7 @@ import com.apurebase.kgraphql.GraphQLError
 import dev.kigya.headway.gateway.core.exception.GatewayErrorCode
 import dev.kigya.headway.gateway.core.presentation.GatewayGraphqlErrorMapper
 import dev.kigya.headway.gateway.graphql.GraphqlRequestContext
+import dev.kigya.headway.gateway.graphql.parseGatewayAppLocale
 import dev.kigya.headway.gateway.graphql.stringScalarLong
 import dev.kigya.headway.gateway.graphql.stringScalarUUID
 import dev.kigya.headway.gateway.model.GatewayGoogleLoginResponse
@@ -17,6 +18,8 @@ import dev.kigya.headway.gateway.presentation.routes.GatewayHttpRoute
 import dev.kigya.headway.gateway.presentation.schema.authSchema
 import dev.kigya.headway.gateway.presentation.schema.databaseSchema
 import dev.kigya.headway.gateway.presentation.schema.healthSchema
+import dev.kigya.headway.gateway.presentation.schema.homeSchema
+import io.ktor.http.HttpHeaders
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
 import io.ktor.server.application.log
@@ -27,7 +30,11 @@ internal fun Application.installGatewayApi(bindings: GatewayApiBindings) {
         endpoint = GatewayHttpRoute.GraphQL.path
         context { call ->
             +GraphqlRequestContext(
-                authorizationHeader = call.request.headers["Authorization"],
+                authorizationHeader = call.request.headers[HttpHeaders.Authorization],
+                appLocale = parseGatewayAppLocale(
+                    xHeadwayLocale = call.request.headers[X_HEADWAY_LOCALE_HEADER],
+                    acceptLanguage = call.request.headers[HttpHeaders.AcceptLanguage],
+                ),
             )
         }
 
@@ -76,6 +83,12 @@ internal fun Application.installGatewayApi(bindings: GatewayApiBindings) {
                 inviteUser = bindings.inviteUser,
                 resolvePrincipal = bindings.resolvePrincipal,
             )
+            homeSchema(
+                resolvePrincipal = bindings.resolvePrincipal,
+                getHomeScreen = bindings.getHomeScreen,
+            )
         }
     }
 }
+
+private const val X_HEADWAY_LOCALE_HEADER: String = "X-Headway-Locale"

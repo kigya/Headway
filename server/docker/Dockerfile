@@ -7,6 +7,7 @@ RUN --mount=type=cache,target=/home/gradle/.gradle \
   admin:internal:installDist \
   database:internal:installDist \
   auth:internal:installDist \
+  home:internal:installDist \
   gateway:installDist
 
 FROM eclipse-temurin:17-jre AS database
@@ -23,6 +24,11 @@ FROM eclipse-temurin:17-jre AS admin
 WORKDIR /app
 COPY --from=build /src/admin/internal/build/install/admin/ ./
 CMD ["build/admin"]
+
+FROM eclipse-temurin:17-jre AS home
+WORKDIR /app
+COPY --from=build /src/home/internal/build/install/home/ ./
+CMD ["build/home"]
 
 FROM eclipse-temurin:17-jre AS gateway
 WORKDIR /app

@@ -1,4 +1,4 @@
-name: client
+name: server
 on:
   workflow_call: {}
 
@@ -6,6 +6,10 @@ jobs:
   build:
     if: ${{ true }}
     uses: ./.github/workflows/_build-server.yml
+    secrets: inherit
+  test:
+    if: ${{ true }}
+    uses: ./.github/workflows/_test-server.yml
     secrets: inherit
   detekt:
     if: ${{ true }}
