@@ -34,6 +34,7 @@ private fun Application.gatewayApp() {
             refreshToken = get(),
             inviteUser = get(),
             resolvePrincipal = get(),
+            getHomeScreen = get(),
         ),
     )
 }

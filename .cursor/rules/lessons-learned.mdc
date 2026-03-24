@@ -119,3 +119,21 @@ alwaysApply: true
 - **Why it exists:** Scattered `"prod"` string checks drift easily, duplicate parsing rules, and make it harder to keep runtime behavior, UI flags, and secret validation aligned across microservices.
 - **Bad pattern (short):** `CommonConfigurationValues.ENV == "prod"` or `environment != "prod"` in service config, routing, or UI gating.
 - **Correct pattern (short):** Parse once into `Environment`, use `environment.isProd` / `environment.isDev` for behavior checks, and use `environment.rawValue` only when serializing or displaying the active environment.
+
+---
+
+### 13
+
+- **Rule:** Name functions that compute or map a value with a **verb** (or Kotlin `toTargetType` for conversions), not a noun that reads like a property.
+- **Why it exists:** Root [AGENTS.md](../../AGENTS.md) uses `camelCase` for functions; noun-like names on call sites (`val x = jvmLocale(y)`) look like field access and hide that work is happening.
+- **Bad pattern (short):** `private fun jvmLocale(dto: LocaleDto): Locale` when the body maps or builds the result.
+- **Correct pattern (short):** `private fun toJvmLocale(dto: LocaleDto): Locale` or `private fun resolveJvmLocale(dto: LocaleDto): Locale` (and similar verb-led names for non-conversion helpers).
+
+---
+
+### 14
+
+- **Rule:** When syncing GitHub Actions variables into templates, paginate the REST list endpoints using GitHub’s real page size cap (**`per_page` max 30** for repo and environment variable lists); do not assume a single response contains every variable.
+- **Why it exists:** GitHub caps these lists at 30 items per page; requesting `per_page=100` still returns at most 30. If the loop treats “fewer than 100” as “done”, it stops after the first page and newer keys (e.g. `JWT_GUEST_*`) never load.
+- **Bad pattern (short):** One GET or a pagination loop whose “last page” check uses a limit higher than GitHub’s cap (e.g. break when `size < 100`).
+- **Correct pattern (short):** Use `per_page=30`, loop `page = 1, 2, …` until `variables.size < 30`, empty page, or `result.size >= total_count` (see `GithubApi.fetchAllActionVariables`).

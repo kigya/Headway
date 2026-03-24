@@ -19,6 +19,7 @@ microserviceDependencies {
         implementation(common)
         implementation(database.api)
         implementation(auth.api)
+        implementation(home.api)
     }
 
     libs {

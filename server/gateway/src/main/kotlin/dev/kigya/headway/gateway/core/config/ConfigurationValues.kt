@@ -22,4 +22,10 @@ internal object ConfigurationValues {
 
     val DATABASE_SERVICE_PORT: Int
         get() = intEnv("DATABASE_SERVICE_PORT")
+
+    val HOME_SERVICE_HOST: String
+        get() = stringEnv("HOME_SERVICE_HOST")
+
+    val HOME_SERVICE_PORT: Int
+        get() = intEnv("HOME_SERVICE_PORT")
 }

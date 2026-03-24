@@ -7,7 +7,9 @@ import dev.kigya.headway.gateway.core.exception.GatewayErrorReason
 import dev.kigya.headway.gateway.core.exception.GatewayException
 import dev.kigya.headway.gateway.domain.repository.AuthRepositoryContract
 import dev.kigya.headway.gateway.domain.repository.DatabaseRepositoryContract
+import dev.kigya.headway.gateway.domain.repository.HomeRepositoryContract
 import dev.kigya.headway.gateway.domain.usecase.CheckHealthStatusUseCase
+import dev.kigya.headway.gateway.domain.usecase.GetHomeScreenUseCase
 import dev.kigya.headway.gateway.domain.usecase.InviteUserUseCase
 import dev.kigya.headway.gateway.domain.usecase.LoginAsGuestUseCase
 import dev.kigya.headway.gateway.domain.usecase.LoginWithGoogleUseCase
@@ -21,6 +23,11 @@ import dev.kigya.headway.gateway.model.GatewaySessionPlatform
 import dev.kigya.headway.gateway.model.GatewayUser
 import dev.kigya.headway.gateway.model.GatewayUserDepartment
 import dev.kigya.headway.gateway.model.GatewayUserRole
+import dev.kigya.headway.home.api.model.`in`.HomeAppLocaleDto
+import dev.kigya.headway.home.api.model.`in`.HomeScreenRequestDto
+import dev.kigya.headway.home.api.model.`in`.HomeUserRoleDto
+import dev.kigya.headway.home.api.model.out.HomeScreenNextInterviewTypeDto
+import dev.kigya.headway.home.api.model.out.HomeScreenResponseDto
 import io.ktor.client.request.header
 import io.ktor.client.request.post
 import io.ktor.client.request.setBody
@@ -173,6 +180,203 @@ class GatewaySecurityRoutesTest {
         assertEquals(0, databaseRepository.inviteCalls)
     }
 
+    @Test
+    fun `graphql homeScreen returns unauthorized without authorization header`() = testApplication {
+        val authRepository = TestAuthRepository(
+            validationResponse = AuthValidateTokenResponse(
+                principalType = AuthPrincipalType.USER,
+                userUuid = CALLER_ID,
+            ),
+        )
+        val databaseRepository = TestDatabaseRepository(
+            caller = developerCaller,
+            invitedUser = invitedUser,
+        )
+
+        application {
+            installSecurityTestApplication(
+                authRepository = authRepository,
+                databaseRepository = databaseRepository,
+            )
+        }
+
+        val response = client.post("/api/v1/graphql") {
+            contentType(ContentType.Application.Json)
+            setBody(GRAPHQL_HOME_QUERY)
+        }
+
+        assertEquals(HttpStatusCode.OK, response.status)
+        val root = Json.parseToJsonElement(response.bodyAsText()).jsonObject
+        val error = root["errors"]!!.jsonArray.first().jsonObject
+        assertEquals("UNAUTHORIZED", error["extensions"]!!.jsonObject["code"]!!.jsonPrimitive.content)
+    }
+
+    @Test
+    fun `graphql homeScreen returns guest not allowed for guest principal`() = testApplication {
+        val authRepository = TestAuthRepository(
+            validationResponse = AuthValidateTokenResponse(
+                principalType = AuthPrincipalType.GUEST,
+                guestSessionId = UUID.fromString("00000000-0000-0000-0000-00000000cafe"),
+                scopes = listOf("learn_guest"),
+            ),
+        )
+        val databaseRepository = TestDatabaseRepository(
+            caller = developerCaller,
+            invitedUser = invitedUser,
+        )
+
+        application {
+            installSecurityTestApplication(
+                authRepository = authRepository,
+                databaseRepository = databaseRepository,
+            )
+        }
+
+        val response = client.post("/api/v1/graphql") {
+            contentType(ContentType.Application.Json)
+            header(HttpHeaders.Authorization, "Bearer guest-token")
+            setBody(GRAPHQL_HOME_QUERY)
+        }
+
+        assertEquals(HttpStatusCode.OK, response.status)
+        val root = Json.parseToJsonElement(response.bodyAsText()).jsonObject
+        val error = root["errors"]!!.jsonArray.first().jsonObject
+        assertEquals("FORBIDDEN", error["extensions"]!!.jsonObject["code"]!!.jsonPrimitive.content)
+        assertEquals("GUEST_NOT_ALLOWED", error["extensions"]!!.jsonObject["reason"]!!.jsonPrimitive.content)
+    }
+
+    @Test
+    fun `graphql homeScreen returns russian greeting for ru locale header`() = testApplication {
+        val authRepository = TestAuthRepository(
+            validationResponse = AuthValidateTokenResponse(
+                principalType = AuthPrincipalType.USER,
+                userUuid = CALLER_ID,
+            ),
+        )
+        val databaseRepository = TestDatabaseRepository(
+            caller = developerCaller,
+            invitedUser = invitedUser,
+        )
+
+        application {
+            installSecurityTestApplication(
+                authRepository = authRepository,
+                databaseRepository = databaseRepository,
+            )
+        }
+
+        val response = client.post("/api/v1/graphql") {
+            contentType(ContentType.Application.Json)
+            header(HttpHeaders.Authorization, "Bearer valid-token")
+            header("X-Headway-Locale", "ru")
+            setBody(GRAPHQL_HOME_QUERY)
+        }
+
+        assertEquals(HttpStatusCode.OK, response.status)
+        val root = Json.parseToJsonElement(response.bodyAsText()).jsonObject
+        val home = root["data"]!!.jsonObject["homeScreen"]!!.jsonObject
+        assertEquals("Привет, Developer!", home["greeting"]!!.jsonPrimitive.content)
+    }
+
+    @Test
+    fun `graphql homeScreen returns fixed english date label with test clock`() = testApplication {
+        val authRepository = TestAuthRepository(
+            validationResponse = AuthValidateTokenResponse(
+                principalType = AuthPrincipalType.USER,
+                userUuid = CALLER_ID,
+            ),
+        )
+        val databaseRepository = TestDatabaseRepository(
+            caller = developerCaller,
+            invitedUser = invitedUser,
+        )
+
+        application {
+            installGatewayApi(
+                GatewayApiBindings(
+                    environment = Environment.DEV,
+                    checkHealthStatus = CheckHealthStatusUseCase(
+                        authProbe = { GatewayServiceStatus.OK },
+                        databaseProbe = { GatewayServiceStatus.OK },
+                    ),
+                    loginWithGoogle = LoginWithGoogleUseCase(authRepository),
+                    loginAsGuest = LoginAsGuestUseCase(authRepository),
+                    refreshToken = RefreshAccessTokenUseCase(authRepository),
+                    inviteUser = InviteUserUseCase(databaseRepository),
+                    resolvePrincipal = ResolvePrincipalUseCase(authRepository, databaseRepository),
+                    getHomeScreen = GetHomeScreenUseCase(
+                        homeRepository = object : HomeRepositoryContract {
+                            override suspend fun getHomeScreen(
+                                request: HomeScreenRequestDto,
+                            ): HomeScreenResponseDto = developerHomeEnStub.copy(
+                                dateLabel = "Sat, 25 Jan 2025",
+                            )
+                        },
+                    ),
+                ),
+            )
+        }
+
+        val response = client.post("/api/v1/graphql") {
+            contentType(ContentType.Application.Json)
+            header(HttpHeaders.Authorization, "Bearer valid-token")
+            header("X-Headway-Locale", "en")
+            setBody(GRAPHQL_HOME_QUERY)
+        }
+
+        assertEquals(HttpStatusCode.OK, response.status)
+        val root = Json.parseToJsonElement(response.bodyAsText()).jsonObject
+        val home = root["data"]!!.jsonObject["homeScreen"]!!.jsonObject
+        assertEquals("Sat, 25 Jan 2025", home["dateLabel"]!!.jsonPrimitive.content)
+    }
+
+    @Test
+    fun `graphql homeScreen returns readiness and next interview for employee`() = testApplication {
+        val authRepository = TestAuthRepository(
+            validationResponse = AuthValidateTokenResponse(
+                principalType = AuthPrincipalType.USER,
+                userUuid = CALLER_ID,
+            ),
+        )
+        val databaseRepository = TestDatabaseRepository(
+            caller = employeeCaller,
+            invitedUser = invitedUser,
+        )
+
+        application {
+            installGatewayApi(
+                GatewayApiBindings(
+                    environment = Environment.DEV,
+                    checkHealthStatus = CheckHealthStatusUseCase(
+                        authProbe = { GatewayServiceStatus.OK },
+                        databaseProbe = { GatewayServiceStatus.OK },
+                    ),
+                    loginWithGoogle = LoginWithGoogleUseCase(authRepository),
+                    loginAsGuest = LoginAsGuestUseCase(authRepository),
+                    refreshToken = RefreshAccessTokenUseCase(authRepository),
+                    inviteUser = InviteUserUseCase(databaseRepository),
+                    resolvePrincipal = ResolvePrincipalUseCase(authRepository, databaseRepository),
+                    getHomeScreen = GetHomeScreenUseCase(
+                        homeRepository = EmployeeHomeReadinessTestHomeRepository,
+                    ),
+                ),
+            )
+        }
+
+        val response = client.post("/api/v1/graphql") {
+            contentType(ContentType.Application.Json)
+            header(HttpHeaders.Authorization, "Bearer valid-token")
+            setBody(GRAPHQL_HOME_QUERY)
+        }
+
+        assertEquals(HttpStatusCode.OK, response.status)
+        val root = Json.parseToJsonElement(response.bodyAsText()).jsonObject
+        val home = root["data"]!!.jsonObject["homeScreen"]!!.jsonObject
+        assertEquals("80", home["readinessPercent"]!!.jsonPrimitive.content)
+        assertEquals("MOCK", home["nextInterviewType"]!!.jsonPrimitive.content)
+        assertEquals("Mock", home["nextInterviewTypeLabel"]!!.jsonPrimitive.content)
+    }
+
     private fun io.ktor.server.application.Application.installSecurityTestApplication(
         authRepository: TestAuthRepository,
         databaseRepository: TestDatabaseRepository,
@@ -189,6 +393,9 @@ class GatewaySecurityRoutesTest {
                 refreshToken = RefreshAccessTokenUseCase(authRepository),
                 inviteUser = InviteUserUseCase(databaseRepository),
                 resolvePrincipal = ResolvePrincipalUseCase(authRepository, databaseRepository),
+                getHomeScreen = GetHomeScreenUseCase(
+                    homeRepository = LocaleAwareDeveloperTestHomeRepository,
+                ),
             ),
         )
     }
@@ -275,5 +482,48 @@ private val invitedUser = GatewayUser(
     department = GatewayUserDepartment.CROSSPLATFORM,
 )
 
+private val developerHomeEnStub: HomeScreenResponseDto = HomeScreenResponseDto(
+    dateLabel = "Mon, 1 Jan 2024",
+    greeting = "Hi, Developer!",
+    roleLabel = "Developer",
+    readinessPercent = null,
+    nextInterviewType = null,
+    nextInterviewTypeLabel = null,
+    sections = emptyList(),
+)
+
+private val developerHomeRuStub: HomeScreenResponseDto = developerHomeEnStub.copy(
+    greeting = "Привет, Developer!",
+)
+
+private object LocaleAwareDeveloperTestHomeRepository : HomeRepositoryContract {
+    override suspend fun getHomeScreen(request: HomeScreenRequestDto): HomeScreenResponseDto =
+        when (request.locale) {
+            HomeAppLocaleDto.RU -> developerHomeRuStub
+            HomeAppLocaleDto.EN -> developerHomeEnStub
+        }
+}
+
+private object EmployeeHomeReadinessTestHomeRepository : HomeRepositoryContract {
+    override suspend fun getHomeScreen(request: HomeScreenRequestDto): HomeScreenResponseDto =
+        when (request.userRole) {
+            HomeUserRoleDto.EMPLOYEE -> HomeScreenResponseDto(
+                dateLabel = "Mon, 1 Jan 2024",
+                greeting = "Hi, Employee!",
+                roleLabel = null,
+                readinessPercent = 80,
+                nextInterviewType = HomeScreenNextInterviewTypeDto.MOCK,
+                nextInterviewTypeLabel = "Mock",
+                sections = emptyList(),
+            )
+
+            else -> developerHomeEnStub
+        }
+}
+
 private const val GRAPHQL_INVITE_MUTATION =
     """{"query":"mutation { inviteUser(email: \"new.user@headway.test\", department: \"ANDROID\") { email role } }"}"""
+
+private const val GRAPHQL_HOME_QUERY: String =
+    """{"query":"query { homeScreen { dateLabel greeting roleLabel readinessPercent """ +
+        """ nextInterviewType nextInterviewTypeLabel sections { id title style iconUrl } } }"}"""

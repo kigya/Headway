@@ -5,6 +5,8 @@ import com.fasterxml.jackson.databind.PropertyNamingStrategies
 import com.fasterxml.jackson.module.kotlin.jacksonObjectMapper
 import com.fasterxml.jackson.module.kotlin.readValue
 import util.GithubApiException
+import java.net.URLEncoder
+import java.nio.charset.StandardCharsets
 
 internal class GithubApi(
     private val clientId: String? = null
@@ -139,71 +141,90 @@ internal class GithubApi(
     fun getRepositoryVariables(
         token: String,
         owner: String,
-        repo: String
+        repo: String,
     ): Map<String, String> {
-        val response = Http.get(
-            url = "https://api.github.com/repos/$owner/$repo/actions/variables?per_page=100",
-            headers = mapOf(
-                "Authorization" to "Bearer $token",
-                "Accept" to "application/vnd.github+json",
-                "X-GitHub-Api-Version" to "2022-11-28"
-            )
+        val baseUrl = "https://api.github.com/repos/$owner/$repo/actions/variables"
+        return fetchAllActionVariables(
+            token = token,
+            listBaseUrl = baseUrl,
+            notFoundReturnsEmpty = false,
+            errorLabel = "repository variables",
         )
-
-        if (response.code in setOf(429, 502, 503, 504)) {
-            throw GithubApiException(
-                message = "Transient GitHub error while loading repository variables: HTTP ${response.code}",
-                statusCode = response.code,
-                retryable = true
-            )
-        }
-
-        if (response.code !in 200..299) {
-            throw GithubApiException(
-                message = "Failed to fetch repository variables. HTTP ${response.code}: ${response.body}",
-                statusCode = response.code,
-                retryable = false
-            )
-        }
-
-        val parsed: VariablesListResponse = mapper.readValue(response.body)
-        return parsed.variables.associate { it.name to it.value }
     }
 
     fun getEnvironmentVariables(
         token: String,
         owner: String,
         repo: String,
-        environment: String
+        environment: String,
     ): Map<String, String> {
-        val response = Http.get(
-            url = "https://api.github.com/repos/$owner/$repo/environments/$environment/variables?per_page=100",
-            headers = mapOf(
-                "Authorization" to "Bearer $token",
-                "Accept" to "application/vnd.github+json",
-                "X-GitHub-Api-Version" to "2022-11-28"
-            )
+        val encodedEnv = encodePathSegment(environment)
+        val baseUrl = "https://api.github.com/repos/$owner/$repo/environments/$encodedEnv/variables"
+        return fetchAllActionVariables(
+            token = token,
+            listBaseUrl = baseUrl,
+            notFoundReturnsEmpty = true,
+            errorLabel = "environment variables for '$environment'",
         )
+    }
 
-        if (response.code == 404) return emptyMap()
+    private fun fetchAllActionVariables(
+        token: String,
+        listBaseUrl: String,
+        notFoundReturnsEmpty: Boolean,
+        errorLabel: String,
+    ): Map<String, String> {
+        val headers = mapOf(
+            "Authorization" to "Bearer $token",
+            "Accept" to "application/vnd.github+json",
+            "X-GitHub-Api-Version" to "2022-11-28",
+        )
+        val result = linkedMapOf<String, String>()
+        var page = 1
+        while (true) {
+            val url = "$listBaseUrl?per_page=$VARIABLES_PAGE_SIZE&page=$page"
+            val response = Http.get(url = url, headers = headers)
 
-        if (response.code in setOf(429, 502, 503, 504)) {
-            throw GithubApiException(
-                message = "Transient GitHub error while loading environment variables: HTTP ${response.code}",
-                statusCode = response.code,
-                retryable = true
-            )
+            if (notFoundReturnsEmpty && response.code == 404 && page == 1) {
+                return emptyMap()
+            }
+
+            if (response.code in setOf(429, 502, 503, 504)) {
+                throw GithubApiException(
+                    message = "Transient GitHub error while loading $errorLabel: HTTP ${response.code}",
+                    statusCode = response.code,
+                    retryable = true,
+                )
+            }
+
+            if (response.code !in 200..299) {
+                throw GithubApiException(
+                    message = "Failed to fetch $errorLabel. HTTP ${response.code}: ${response.body}",
+                    statusCode = response.code,
+                    retryable = false,
+                )
+            }
+
+            val parsed: VariablesListResponse = mapper.readValue(response.body)
+            parsed.variables.forEach { variable ->
+                result[variable.name] = variable.value
+            }
+
+            when {
+                parsed.variables.isEmpty() -> break
+                parsed.variables.size < VARIABLES_PAGE_SIZE -> break
+                parsed.totalCount > 0 && result.size >= parsed.totalCount -> break
+                else -> page += 1
+            }
         }
+        return result
+    }
 
-        if (response.code !in 200..299) {
-            throw GithubApiException(
-                message = "Failed to fetch environment variables. HTTP ${response.code}: ${response.body}",
-                statusCode = response.code,
-                retryable = false
-            )
-        }
+    private fun encodePathSegment(segment: String): String =
+        URLEncoder.encode(segment, StandardCharsets.UTF_8).replace("+", "%20")
 
-        val parsed: VariablesListResponse = mapper.readValue(response.body)
-        return parsed.variables.associate { it.name to it.value }
+    private companion object {
+
+        const val VARIABLES_PAGE_SIZE = 30
     }
 }
