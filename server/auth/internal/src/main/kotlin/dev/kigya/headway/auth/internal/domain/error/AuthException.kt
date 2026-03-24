@@ -40,4 +40,9 @@ sealed class AuthException(
         override val message: String = "Unexpected response from $dependency: $status",
         override val cause: Throwable? = null,
     ) : AuthException(message, cause)
+
+    data class IdentityConflict(
+        override val message: String = "Identity conflict",
+        override val cause: Throwable? = null,
+    ) : AuthException(message, cause)
 }

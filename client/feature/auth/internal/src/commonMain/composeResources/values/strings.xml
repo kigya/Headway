@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="auth_back_icon_content_description">Back</string>
+    <string name="auth_ask_manager">Ask manager</string>
+    <string name="auth_manager_hasnt_added_to_the_system">It looks like your manager hasn’t added you to the system</string>
+    <string name="auth_no_access">Oops, No Access!</string>
+</resources>

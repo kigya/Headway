@@ -1,5 +1,6 @@
 package dev.kigya.headway.auth.internal.domain.usecase
 
+import dev.kigya.headway.auth.api.AuthServicePlainText
 import dev.kigya.headway.auth.api.model.out.AuthRefreshAccessTokenResponse
 import dev.kigya.headway.auth.internal.domain.error.AuthException
 import dev.kigya.headway.auth.internal.domain.repository.DatabaseRepositoryContract
@@ -13,8 +14,13 @@ internal class RefreshTokenUseCase(
         refreshToken: String,
         fingerprint: String,
     ): AuthRefreshAccessTokenResponse {
+        val tokenFamily = jwtRepository.decodeTokenType(refreshToken)
+        if (tokenFamily == TOKEN_TYPE_GUEST_ACCESS || tokenFamily == TOKEN_TYPE_ACCESS) {
+            throw AuthException.Unauthorized(AuthServicePlainText.INVALID_REFRESH_TOKEN)
+        }
+
         if (!jwtRepository.isRefreshTokenValid(refreshToken)) {
-            throw AuthException.Unauthorized("Invalid refresh token")
+            throw AuthException.Unauthorized(AuthServicePlainText.INVALID_REFRESH_TOKEN)
         }
 
         databaseRepository.validateSession(
@@ -23,9 +29,12 @@ internal class RefreshTokenUseCase(
         )
 
         val userUUID = jwtRepository.getUserUUID(refreshToken)
-            ?: throw AuthException.Unauthorized("Invalid refresh token")
+            ?: throw AuthException.Unauthorized(AuthServicePlainText.INVALID_REFRESH_TOKEN)
 
         val accessToken = jwtRepository.generateAccessToken(userUUID)
         return AuthRefreshAccessTokenResponse(accessToken)
     }
 }
+
+private const val TOKEN_TYPE_ACCESS = "access"
+private const val TOKEN_TYPE_GUEST_ACCESS = "guest_access"

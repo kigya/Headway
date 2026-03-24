@@ -1,5 +1,3 @@
-@file:Suppress("MagicNumber")
-
 package dev.kigya.headway.core.designSystem.theme.color
 
 import androidx.compose.runtime.Immutable
@@ -75,4 +73,6 @@ data class FreudColor internal constructor(
     val purple30: FreudDsToken<Color> = FreudDsToken(Color(0xFFA18FFF)),
     val purple20: FreudDsToken<Color> = FreudDsToken(Color(0xFFCBC2FF)),
     val purple10: FreudDsToken<Color> = FreudDsToken(Color(0xFFEDEBFF)),
+    // — White
+    val white: FreudDsToken<Color> = FreudDsToken(Color(0xFFFFFFFF)),
 )

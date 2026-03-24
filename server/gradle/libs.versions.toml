@@ -1,21 +1,22 @@
 [versions]
 # Basic Environment Setup
-googleApiClient = "2.8.1"
+googleApiClient = "2.9.0"
 hikaricp = "7.0.2"
-java = { strictly = "21" }
-kgraphqlKtor = "0.36.0"
-koinKtor = { strictly = "4.1.1" }
-postgresql = "42.7.8"
+java = { strictly = "17" }
+kgraphqlKtor = "0.40.0"
+koinKtor = { strictly = "4.2.0" }
+postgresql = "42.7.10"
 exposed = { strictly = "1.0.0-rc-4" }
 
 # Kotlin
-kotlin = { strictly = "2.3.10" }
+kotlin = { strictly = "2.3.20" }
+kotlinxCoroutines = "1.10.2"
 
 # Serialization
 kotlinxSerialization = { require = "1.10.0" }
 
 # DI
-koin = { strictly = "4.1.1" }
+koin = { strictly = "4.2.0" }
 
 # Network
 ktor = { require = "3.4.1" }
@@ -23,8 +24,14 @@ ktor = { require = "3.4.1" }
 # Detekt
 detekt = { require = "1.23.8" }
 
+# Coverage
+kover = "0.9.7"
+
 # Server
-logback = "1.5.23"
+logback = "1.5.32"
+
+# Jackson
+jackson = "2.21.2"
 
 github-env-sync-plugin = "1.0.0"
 
@@ -34,6 +41,8 @@ google-api-client = { module = "com.google.api-client:google-api-client", versio
 hikaricp = { module = "com.zaxxer:HikariCP", version.ref = "hikaricp" }
 kgraphql-ktor = { module = "de.stuebingerb:kgraphql-ktor", version.ref = "kgraphqlKtor" }
 koin-ktor = { module = "io.insert-koin:koin-ktor", version.ref = "koinKtor" }
+kotlin-test = { module = "org.jetbrains.kotlin:kotlin-test", version.ref = "kotlin" }
+kotlinx-coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "kotlinxCoroutines" }
 postgresql = { module = "org.postgresql:postgresql", version.ref = "postgresql" }
 serializationJson = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
 
@@ -77,6 +86,7 @@ ktor = { id = "io.ktor.plugin", version.ref = "ktor" }
 detekt = { id = "io.gitlab.arturbosch.detekt", version.ref = "detekt" }
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 kotlin-jvm = { id = "org.jetbrains.kotlin.jvm", version.ref = "kotlin" }
+kover = { id = "org.jetbrains.kotlinx.kover", version.ref = "kover" }
 
 convention-base-microserviceApplication = "base.microserviceApplication:1.0"
 convention-base-jvmLibrary = "base.jvmLibrary:1.0"

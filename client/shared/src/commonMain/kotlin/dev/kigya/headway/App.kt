@@ -7,6 +7,8 @@ import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import dev.kigya.headway.core.designSystem.theme.FreudTheme
 import dev.kigya.headway.di.api.appModules
+import dev.kigya.headway.feature.auth.api.AuthNoAccessScreenKey
+import dev.kigya.headway.feature.auth.api.AuthNoAccessScreenRouteHolderContract
 import dev.kigya.headway.feature.auth.api.AuthScreenKey
 import dev.kigya.headway.feature.auth.api.AuthScreenRouteHolderContract
 import dev.kigya.headway.feature.splash.api.SplashScreenKey
@@ -36,6 +38,7 @@ private fun AppNavigationHost() {
     val navigator = koinScope.get<NavigatorContract>()
     val splashRoute = koinScope.get<SplashScreenRouteHolderContract>()
     val authRoute = koinScope.get<AuthScreenRouteHolderContract>()
+    val authNoAccessRoute = koinScope.get<AuthNoAccessScreenRouteHolderContract>()
 
     NavDisplay(
         backStack = navigator.backStack,
@@ -46,8 +49,8 @@ private fun AppNavigationHost() {
         ),
         entryProvider = entryProvider {
             entry<SplashScreenKey> { splashRoute.content() }
-
             entry<AuthScreenKey> { authRoute.content() }
+            entry<AuthNoAccessScreenKey> { authNoAccessRoute.content() }
         },
     )
 }

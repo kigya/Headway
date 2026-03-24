@@ -9,12 +9,11 @@ import androidx.compose.runtime.setValue
 import kotlinx.browser.window
 import org.w3c.dom.events.Event
 
-@Suppress("EffectKeys")
 @Composable
 internal actual fun rememberIsOnline(): Boolean {
     var isOnline by remember { mutableStateOf(window.navigator.onLine) }
 
-    DisposableEffect(Unit) {
+    DisposableEffect(window) {
         val onlineListener = { _: Event -> isOnline = true }
         val offlineListener = { _: Event -> isOnline = false }
 

@@ -12,6 +12,7 @@ internal interface UsersRepositoryContract {
     suspend fun inviteUser(
         email: String,
         department: String,
+        role: DatabaseUserRole? = null,
     ): DatabaseUser
 
     suspend fun upsertGoogleUser(

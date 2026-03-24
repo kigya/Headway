@@ -43,6 +43,8 @@ dependencyResolutionManagement {
 }
 
 include(
+    ":admin:api",
+    ":admin:internal",
     ":gateway",
     ":common",
     ":database:api",

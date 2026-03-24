@@ -10,8 +10,10 @@ import dev.kigya.headway.auth.internal.data.verifier.GoogleIdTokenVerifier
 import dev.kigya.headway.auth.internal.data.verifier.GoogleTokenVerifierContract
 import dev.kigya.headway.auth.internal.domain.repository.DatabaseRepositoryContract
 import dev.kigya.headway.auth.internal.domain.repository.JWTRepositoryContract
+import dev.kigya.headway.auth.internal.domain.usecase.LoginAsGuestUseCase
 import dev.kigya.headway.auth.internal.domain.usecase.LoginWithGoogleUseCase
 import dev.kigya.headway.auth.internal.domain.usecase.RefreshTokenUseCase
+import dev.kigya.headway.auth.internal.domain.usecase.ValidateAccessTokenUseCase
 import dev.kigya.headway.common.extension.createServiceHttpClient
 import dev.kigya.headway.database.api.url.DatabaseKoinHttpClient
 import dev.kigya.headway.database.api.url.databaseServiceUrlHolder
@@ -34,7 +36,9 @@ internal val authInternalModule = module {
             audience = ConfigurationValues.JWT_AUDIENCE,
             accessSecret = ConfigurationValues.JWT_ACCESS_SECRET,
             refreshSecret = ConfigurationValues.JWT_REFRESH_SECRET,
+            guestSecret = ConfigurationValues.JWT_GUEST_SECRET,
             accessTtlSec = ConfigurationValues.JWT_ACCESS_TTL_SEC,
+            guestTtlSec = ConfigurationValues.JWT_GUEST_TTL_SEC,
         )
     }
 
@@ -46,5 +50,7 @@ internal val authInternalModule = module {
     singleOf(::GoogleIdTokenVerifier) bind GoogleTokenVerifierContract::class
 
     singleOf(::LoginWithGoogleUseCase)
+    singleOf(::LoginAsGuestUseCase)
     singleOf(::RefreshTokenUseCase)
+    singleOf(::ValidateAccessTokenUseCase)
 }

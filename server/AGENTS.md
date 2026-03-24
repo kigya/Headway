@@ -1,3 +1,78 @@
+# AGENTS.md — Headway Server (Ktor + Microservices)
+
+This document is for agents working on the **server** codebase.
+For shared Kotlin conventions see the root [`AGENTS.md`](../AGENTS.md).
+
+---
+
+## Tech stack
+
+| Area            | Stack                                                                      |
+|-----------------|----------------------------------------------------------------------------|
+| Language        | Kotlin 2.x, JVM 17                                                        |
+| Framework       | Ktor + Netty                                                               |
+| API             | KGraphQL (gateway), REST (internal microservices)                          |
+| DI              | Koin                                                                       |
+| Database        | Exposed (ORM), PostgreSQL                                                  |
+| Serialization   | kotlinx.serialization                                                      |
+| Build           | Gradle convention plugins (`build-logic/`)                                 |
+| Runtime         | Docker (multi-stage: `gradle:8.14.0-jdk17` → `eclipse-temurin:17-jre`)     |
+| Static analysis | Detekt + ktlint formatting                                                |
+
+Hosted Postgres (Supabase) dashboards and project refs for agents and MCP: see [`.cursor/RESOURCES.md`](../.cursor/RESOURCES.md) (dev/prod).
+
+---
+
+## Commands
+
+```bash
+# Build all server services
+cd server && ./gradlew build
+
+# Build a specific service
+cd server && ./gradlew :auth:internal:build
+cd server && ./gradlew :database:internal:build
+cd server && ./gradlew :gateway:build
+
+# Create distribution archives
+cd server && ./gradlew :auth:internal:installDist
+cd server && ./gradlew :database:internal:installDist
+cd server && ./gradlew :gateway:installDist
+
+# Run Detekt (run after every task)
+cd server && ./gradlew detekt
+
+# Docker build
+cd server && docker compose -f docker-compose.yml build
+
+# Docker run
+cd server && docker compose -f docker-compose.yml up
+```
+
+> **After completing any task the agent MUST run `./gradlew build` and `./gradlew detekt` to verify.**
+
+---
+
+## Project structure
+
+```
+server/
+├── auth/
+│   ├── api/          # Auth service contract: DTOs, Resources, URL holder
+│   └── internal/     # Auth service implementation: routing, use cases, DI
+├── database/
+│   ├── api/          # Database service contract: DTOs, Resources, URL holder
+│   ├── internal/     # Database service implementation: Exposed tables, repositories
+│   └── migrations/   # SQL migrations for hosted Postgres (apply when schema columns are added)
+├── gateway/          # GraphQL orchestrator — single client entry point
+├── common/           # Shared utilities: ENV helpers, Ktor defaults, healthz, serializers
+├── docker/           # env.common, env.gateway, env.auth, env.database
+├── build-logic/      # Convention plugins: jvmLibrary, microserviceApplication, detekt
+└── docker-compose.yml
+```
+
+---
+
 ## Architecture and module boundaries
 
 ### A microservice = two modules: `api` and `internal`
@@ -44,7 +119,7 @@ This is enforced in build-logic (`configureJvmLibrary`, `configureMicroserviceAp
 
 Exceptions are allowed only when a type is truly needed outside. If not, keep it `internal` to avoid expanding the public surface.
 
-You should follow the “internal by default” rule even if it is historically violated somewhere.
+You should follow the "internal by default" rule even if it is historically violated somewhere.
 
 ### Package structure conventions inside `internal`
 Expected layout:
@@ -96,7 +171,7 @@ If service A uses types from service B — A adds a dependency on `B:api` and us
 Example:
 - `auth/api` uses `DatabaseSessionPlatform` and `DatabaseUser` from `database/api` (no platform/user duplicates in auth).
 
-Rule: if a model already exists in a downstream `api` module, **do not create** an identical model in another `api` module or in the gateway. Exception: if you need a different “public” contract (as in the gateway), then create a gateway model and mappers.
+Rule: if a model already exists in a downstream `api` module, **do not create** an identical model in another `api` module or in the gateway. Exception: if you need a different "public" contract (as in the gateway), then create a gateway model and mappers.
 
 ### Type-safe resources (Ktor Resources)
 - All paths are defined via `@Resource(...)`, and resources are grouped into classes/nested classes.
@@ -108,7 +183,7 @@ Examples:
 - On the server: `route(databaseServiceUrlHolder.baseUrl) { post<DatabaseResource.User.Invite> { ... } }`.
 - On the client (gateway or another service): `httpClient.post(DatabaseResource.User.Invite()) { ... }`.
 
-### ServiceUrlHolder and the typed Koin HttpClient “tag”
+### ServiceUrlHolder and the typed Koin HttpClient "tag"
 Each service declares:
 - `data object <Service>KoinHttpClient : KoinHttpClient`
 - `val <service>ServiceUrlHolder: ServiceUrlHolder<<Service>KoinHttpClient> = serviceUrlHolder("/internal/v1/<service>")`
@@ -166,7 +241,7 @@ Then the service adds its own mapping from domain exceptions to HttpStatusCode:
 
 Rule: new domain exceptions must be added to `handle<Service>Exceptions()`.
 
-### Domain exceptions: sealed class, “causes”, and upstream semantics
+### Domain exceptions: sealed class, "causes", and upstream semantics
 Service exceptions are `sealed class <Service>Exception : RuntimeException`.
 They include:
 - message
@@ -187,7 +262,7 @@ A use case is created for each specific business action:
 
 Conventions:
 - `internal class XUseCase(...) { suspend operator fun invoke(...) : ... }`
-- Contains business validation, repository orchestration, and domain decisions (e.g., “user not active”).
+- Contains business validation, repository orchestration, and domain decisions (e.g., "user not active").
 - Contains no HTTP code. HTTP belongs only to the routing layer.
 - Contains no SQL/Exposed code. SQL/Exposed belongs only to repositories.
 
@@ -263,13 +338,13 @@ All external calls from gateway use a single pattern:
 - 403 -> Forbidden
 - 404 -> NotFound
 - 409 -> Conflict
-- 503 -> DependencyUnavailable (with message “Service temporarily unavailable”)
+- 503 -> DependencyUnavailable (with message "Service temporarily unavailable")
 - else -> UpstreamProtocol (bad gateway)
 
 Additionally:
 - `safeBodyMessage()` reads `bodyAsText()`, normalizes whitespace, limits length to 2048.
 
-Rule: new gateway repositories must use this pattern; direct “raw” `httpClient.get/post` calls without `upstreamCall` are not allowed.
+Rule: new gateway repositories must use this pattern; direct "raw" `httpClient.get/post` calls without `upstreamCall` are not allowed.
 
 ### Public gateway models and mappers
 Gateway models are serialized and used as GraphQL types:
@@ -282,7 +357,7 @@ Mappers:
 - `DatabaseUser.toGateway()`
 - `GatewaySessionPlatform.toDatabase()` (platform translation for auth/api, which expects `DatabaseSessionPlatform`)
 
-Rule: any contract mismatches between services and gateway are resolved **via mappers**, not by “tweaking” DTOs in api modules.
+Rule: any contract mismatches between services and gateway are resolved **via mappers**, not by "tweaking" DTOs in api modules.
 
 ### Routes and GraphQL operation names
 Operations and HTTP routes in gateway are fixed via sealed interfaces:
@@ -398,27 +473,27 @@ Semantic aliases are used:
 - `libs { implementation(...) }`
 - `projects { implementation(common); api(database.api) ... }`
 
-Rule: keep this form; do not mix arbitrary `dependencies { ... }` with “custom” DSL without a reason.
+Rule: keep this form; do not mix arbitrary `dependencies { ... }` with "custom" DSL without a reason.
 
 ### Detekt conventions
 `internal.config.detekt.gradle.kts`:
-- enables detekt + formatting/compose rules plugins
+- enables detekt + formatting plugins
 - enables autocorrect via a system property
 - has path-based exclusions
 
-Rule: new modules must be compatible with detekt and formatting; do not introduce “quick hacks” without reasons.
+Rule: new modules must be compatible with detekt and formatting; do not introduce "quick hacks" without reasons.
 
 ---
 
 ## Docker / runtime
 
 ### Multi-stage Dockerfile
-- Build stage on `gradle:8.14.0-jdk21`
+- Build stage on `gradle:8.14.0-jdk17`
 - Builds installDist:
     - `database:internal:installDist`
     - `auth:internal:installDist`
     - `gateway:installDist`
-- Runtime images on `eclipse-temurin:21-jre`
+- Runtime images on `eclipse-temurin:17-jre`
 - Each service is launched via `bin/<applicationName>`
 
 ### env files
@@ -431,7 +506,39 @@ Important: secrets are validated in prod via `validateSecrets()`.
 
 ---
 
-## How to add new functionality (recommended checklist)
+## Boundaries
+
+### ✅ Always do
+- run `./gradlew build` and `./gradlew detekt` after every task
+- use the `api/internal` split for new microservices
+- use type-safe Ktor Resources for all HTTP paths
+- use `upstreamCall(...)` for all gateway-to-service calls
+- use the shared `StatusPages` + service-specific exception handlers
+- use convention plugins from `build-logic/`
+- keep everything `internal` by default in `*/internal` modules
+- validate input strings with `trim()` + `isBlank()` in routing
+- register new domain exceptions in `handle<Service>Exceptions()`
+
+### ⚠️ Ask first
+- adding new Gradle dependencies
+- modifying `build-logic/` convention plugins
+- modifying Docker/env configuration
+- modifying the `common` module public API surface
+- database schema changes (Exposed tables)
+
+### 🚫 Never do
+- put business logic in routing (belongs in use cases)
+- put HTTP/routing code in use cases (belongs in presentation layer)
+- put SQL/Exposed code in use cases (belongs in repositories)
+- duplicate models across `api` modules — reuse via dependency
+- use string literals for HTTP paths — use `@Resource` classes
+- make raw `httpClient.get/post` calls in gateway without `upstreamCall`
+- commit secrets or ENV values to version control
+- skip `healthz` for a new microservice
+
+---
+
+## Adding new functionality — checklists
 
 ### Add a new endpoint to a microservice
 1) In `service/api`:
@@ -468,7 +575,7 @@ Important: secrets are validated in prod via `validateSecrets()`.
 
 ---
 
-## Small but mandatory “style details” that must not be broken
+## Small but mandatory style details
 
 - Whenever reading strings from input — apply `trim()` before use.
 - In services, the routing layer throws Ktor BadRequestException for empty/invalid fields.
@@ -479,7 +586,7 @@ Important: secrets are validated in prod via `validateSecrets()`.
 - All microservices must have `/healthz` under their baseUrl.
 - Inter-service calls must use Ktor Resources (type-safe) and the shared HttpClient with baseUrl via `createServiceHttpClient`.
 - New wire (HTTP) models must live in the `api` module and be `@Serializable`.
-- Only the gateway defines “public” client-facing models; microservices must not pull client requirements directly.
+- Only the gateway defines "public" client-facing models; microservices must not pull client requirements directly.
 
 ---
 
@@ -496,15 +603,3 @@ Important: secrets are validated in prod via `validateSecrets()`.
 **RepositoryContract** — a port interface for data/infra access (HTTP, DB); implemented in `data`.
 
 **Type-safe resources** — Ktor Resources classes which are the single source of truth for paths.
-
----
-
-## What the agent must verify before a PR
-
-- Boundaries are respected: DTOs/Resources did not move into `internal`, business logic did not move into `api`.
-- No duplicated models (if a duplicate appears — replace with dependency on `*:api` and mapping).
-- New dependencies are added via `libs {}` / `projects {}` and to the correct module (api vs internal vs gateway).
-- New exceptions are correctly mapped in StatusPages (or in GraphQL errorHandler/extensions).
-- All new HTTP calls from gateway go through `upstreamCall`.
-- New paths are defined via `@Resource`, not string literals.
-- The service still starts with correct ENV vars and validateSecrets() is not broken.

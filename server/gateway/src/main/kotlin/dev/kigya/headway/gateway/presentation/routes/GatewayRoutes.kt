@@ -23,6 +23,10 @@ internal sealed interface GatewayGraphqlOperation {
         override val name: String = "refreshToken"
     }
 
+    data object LoginAsGuest : GatewayGraphqlOperation {
+        override val name: String = "loginAsGuest"
+    }
+
     data object InviteUser : GatewayGraphqlOperation {
         override val name: String = "inviteUser"
     }

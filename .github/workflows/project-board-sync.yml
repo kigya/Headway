@@ -1,0 +1,201 @@
+name: Sync Headway project board
+
+on:
+  pull_request:
+    types:
+      - opened
+      - reopened
+      - ready_for_review
+      - closed
+    branches:
+      - trunk
+
+concurrency:
+  group: project-board-sync-${{ github.event.pull_request.number }}
+  cancel-in-progress: true
+
+jobs:
+  sync:
+    name: Update project Status
+    runs-on: ubuntu-latest
+    if: >-
+      github.event.pull_request.head.repo.full_name == github.repository &&
+      ((github.event.action == 'closed' && github.event.pull_request.merged) ||
+      (github.event.action != 'closed' && github.event.pull_request.draft == false))
+    permissions:
+      contents: read
+      pull-requests: read
+      issues: read
+    env:
+      HEADWAY_PROJECT_OWNER: kigya
+      HEADWAY_PROJECT_NUMBER: "4"
+    steps:
+      - uses: actions/github-script@v7
+        env:
+          PROJECT_TOKEN: ${{ secrets.HEADWAY_PROJECT_V2_WRITE_TOKEN }}
+        with:
+          script: |
+            const pat = process.env.PROJECT_TOKEN;
+            if (!pat) {
+              core.setFailed("Missing repository secret HEADWAY_PROJECT_V2_WRITE_TOKEN");
+              return;
+            }
+
+            const projectOwner = process.env.HEADWAY_PROJECT_OWNER;
+            const projectNumber = parseInt(process.env.HEADWAY_PROJECT_NUMBER, 10);
+            const repoOwner = context.repo.owner;
+            const repoName = context.repo.repo;
+            const pr = context.payload.pull_request;
+
+            async function graphql(query, variables) {
+              const res = await fetch("https://api.github.com/graphql", {
+                method: "POST",
+                headers: {
+                  Authorization: `Bearer ${pat}`,
+                  "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ query, variables }),
+              });
+              const json = await res.json();
+              if (json.errors) {
+                throw new Error(JSON.stringify(json.errors));
+              }
+              return json.data;
+            }
+
+            const projectData = await graphql(
+              `query($login: String!, $number: Int!) {
+                user(login: $login) {
+                  projectV2(number: $number) {
+                    id
+                    fields(first: 50) {
+                      nodes {
+                        ... on ProjectV2SingleSelectField {
+                          id
+                          name
+                          options {
+                            id
+                            name
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }`,
+              { login: projectOwner, number: projectNumber },
+            );
+
+            const project = projectData.user?.projectV2;
+            if (!project) {
+              core.setFailed(`Project not found: user/${projectOwner}#${projectNumber}`);
+              return;
+            }
+
+            const statusField = project.fields.nodes.find((n) => n && n.name === "Status");
+            if (!statusField) {
+              core.setFailed('Project has no single-select field named "Status"');
+              return;
+            }
+
+            function optionIdFor(name) {
+              const opt = statusField.options.find((o) => o.name === name);
+              return opt?.id;
+            }
+
+            let targetStatusName = null;
+            if (context.payload.action === "closed" && pr.merged) {
+              targetStatusName = "Done";
+            } else if (["opened", "reopened", "ready_for_review"].includes(context.payload.action)) {
+              targetStatusName = "In Review";
+            } else {
+              core.info("No board update for this event");
+              return;
+            }
+
+            const optionId = optionIdFor(targetStatusName);
+            if (!optionId) {
+              core.setFailed(`Status option not found: ${targetStatusName}`);
+              return;
+            }
+
+            const nums = new Set();
+            const branch = pr.head.ref;
+            const branchMatch = branch.match(
+              /^(?:client-headway|server-headway|fullstack-headway)\/(\d+)-/,
+            );
+            if (branchMatch) {
+              nums.add(parseInt(branchMatch[1], 10));
+            }
+
+            const text = `${pr.title}\n${pr.body || ""}`;
+            const keywordRefs = text.matchAll(/(?:closes|fixes|resolves)\s*#(\d+)/gi);
+            for (const m of keywordRefs) {
+              nums.add(parseInt(m[1], 10));
+            }
+
+            if (nums.size === 0) {
+              core.info("No issue numbers found (branch convention or Closes/Fixes/Resolves #N)");
+              return;
+            }
+
+            for (const num of nums) {
+              const issueData = await graphql(
+                `query($repoOwner: String!, $repoName: String!, $issue: Int!) {
+                  repository(owner: $repoOwner, name: $repoName) {
+                    issue(number: $issue) {
+                      projectItems(first: 30) {
+                        nodes {
+                          id
+                          project {
+                            ... on ProjectV2 {
+                              number
+                            }
+                          }
+                        }
+                      }
+                    }
+                  }
+                }`,
+                { repoOwner, repoName, issue: num },
+              );
+
+              const issue = issueData.repository?.issue;
+              if (!issue) {
+                core.warning(`Issue #${num} not found in ${repoOwner}/${repoName}`);
+                continue;
+              }
+
+              const item = issue.projectItems.nodes.find(
+                (n) => n.project && n.project.number === projectNumber,
+              );
+              if (!item) {
+                core.warning(`Issue #${num} is not on user project #${projectNumber}`);
+                continue;
+              }
+
+              await graphql(
+                `mutation($projectId: ID!, $itemId: ID!, $fieldId: ID!, $optionId: String!) {
+                  updateProjectV2ItemFieldValue(
+                    input: {
+                      projectId: $projectId
+                      itemId: $itemId
+                      fieldId: $fieldId
+                      value: { singleSelectOptionId: $optionId }
+                    }
+                  ) {
+                    projectV2Item {
+                      id
+                    }
+                  }
+                }`,
+                {
+                  projectId: project.id,
+                  itemId: item.id,
+                  fieldId: statusField.id,
+                  optionId,
+                },
+              );
+
+              core.info(`Updated issue #${num} to ${targetStatusName}`);
+            }

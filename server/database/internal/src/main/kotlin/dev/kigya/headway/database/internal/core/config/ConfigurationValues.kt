@@ -1,6 +1,6 @@
 package dev.kigya.headway.database.internal.core.config
 
-import dev.kigya.headway.common.config.CommonConfigurationValues.ENV
+import dev.kigya.headway.common.config.CommonConfigurationValues
 import dev.kigya.headway.common.util.intEnv
 import dev.kigya.headway.common.util.stringEnv
 
@@ -23,7 +23,7 @@ internal object ConfigurationValues {
     } ?: DefaultValues.DATABASE_POOL_SIZE
 
     fun validateSecrets() {
-        if (ENV == "prod") {
+        if (CommonConfigurationValues.environment.isProd) {
             require(DATABASE_PASSWORD.isNotBlank()) { "DATABASE_PASSWORD must be set in prod" }
         }
     }

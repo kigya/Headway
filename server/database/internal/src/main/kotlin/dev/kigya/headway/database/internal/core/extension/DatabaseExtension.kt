@@ -11,7 +11,43 @@ internal suspend fun <T> Database.dbQuery(block: suspend () -> T): T = try {
 } catch (e: DatabaseException) {
     throw e
 } catch (e: ExposedSQLException) {
-    throw DatabaseException.DependencyUnavailable(dependency = "postgres", cause = e)
+    throw e.toDatabaseException()
 } catch (e: SQLException) {
-    throw DatabaseException.DependencyUnavailable(dependency = "postgres", cause = e)
+    throw e.toDatabaseException()
 }
+
+internal fun SQLException.toDatabaseException(): DatabaseException {
+    val normalizedMessage = message.orEmpty().normalizeSqlMessage()
+    return if (normalizedMessage.isInviteDomainViolation()) {
+        DatabaseException.InvalidRequest(
+            message = normalizedMessage,
+            cause = this,
+        )
+    } else {
+        DatabaseException.DependencyUnavailable(
+            dependency = POSTGRES_DEPENDENCY,
+            cause = this,
+        )
+    }
+}
+
+private fun ExposedSQLException.toDatabaseException(): DatabaseException =
+    (cause as? SQLException)?.toDatabaseException()
+        ?: DatabaseException.DependencyUnavailable(
+            dependency = POSTGRES_DEPENDENCY,
+            cause = this,
+        )
+
+private fun String.normalizeSqlMessage(): String = lineSequence()
+    .firstOrNull()
+    .orEmpty()
+    .removePrefix(ERROR_PREFIX)
+    .trim()
+
+private fun String.isInviteDomainViolation(): Boolean =
+    contains(INVITE_DOMAIN_SEGMENT) && endsWith(INVITE_DOMAIN_SUFFIX)
+
+private const val POSTGRES_DEPENDENCY = "postgres"
+private const val ERROR_PREFIX = "ERROR:"
+private const val INVITE_DOMAIN_SEGMENT = "Email domain \""
+private const val INVITE_DOMAIN_SUFFIX = "\" is not allowed"

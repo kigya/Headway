@@ -1,12 +1,11 @@
 package dev.kigya.headway.gateway.core.exception
 
-import io.ktor.http.HttpStatusCode
-
 internal enum class GatewayErrorCode(val rawName: String) {
     BAD_REQUEST("Bad Request"),
     UNAUTHORIZED("Unauthorized"),
     FORBIDDEN("Forbidden"),
     NOT_FOUND("Not Found"),
+    INVITATION_REQUIRED("Invitation Required"),
     CONFLICT("Conflict"),
     DEPENDENCY_UNAVAILABLE("Dependency Unavailable"),
     INTERNAL("Internal Server Error"),
@@ -14,71 +13,102 @@ internal enum class GatewayErrorCode(val rawName: String) {
 
 internal sealed class GatewayException(
     val code: GatewayErrorCode,
+    val category: GatewayErrorCategory,
+    val reason: GatewayErrorReason,
     val httpStatus: Int,
-    override val message: String,
+    message: String,
+    val retryable: Boolean = false,
     open val dependency: String? = null,
     open val upstreamStatus: Int? = null,
-    override val cause: Throwable? = null,
+    cause: Throwable? = null,
 ) : RuntimeException(message, cause) {
 
     class InvalidRequest(
-        override val message: String,
-        override val cause: Throwable? = null,
+        reason: GatewayErrorReason,
+        message: String,
+        cause: Throwable? = null,
     ) : GatewayException(
         code = GatewayErrorCode.BAD_REQUEST,
-        httpStatus = HttpStatusCode.BadRequest.value,
+        category = GatewayErrorCategory.VALIDATION,
+        reason = reason,
+        httpStatus = 400,
         message = message,
         cause = cause,
     )
 
     class Unauthorized(
-        override val message: String,
-        override val cause: Throwable? = null,
+        reason: GatewayErrorReason,
+        message: String,
+        cause: Throwable? = null,
     ) : GatewayException(
         code = GatewayErrorCode.UNAUTHORIZED,
-        httpStatus = HttpStatusCode.Unauthorized.value,
+        category = GatewayErrorCategory.AUTHENTICATION,
+        reason = reason,
+        httpStatus = 401,
         message = message,
         cause = cause,
     )
 
-    open class Forbidden(
-        override val message: String,
-        override val cause: Throwable? = null,
+    class Forbidden(
+        reason: GatewayErrorReason,
+        message: String,
+        cause: Throwable? = null,
     ) : GatewayException(
         code = GatewayErrorCode.FORBIDDEN,
-        httpStatus = HttpStatusCode.Forbidden.value,
+        category = GatewayErrorCategory.AUTHORIZATION,
+        reason = reason,
+        httpStatus = 403,
+        message = message,
+        cause = cause,
+    )
+
+    class InvitationRequired(
+        message: String = "This account is not invited yet",
+        cause: Throwable? = null,
+    ) : GatewayException(
+        code = GatewayErrorCode.INVITATION_REQUIRED,
+        category = GatewayErrorCategory.AUTHORIZATION,
+        reason = GatewayErrorReason.USER_NOT_INVITED,
+        httpStatus = 403,
         message = message,
         cause = cause,
     )
 
     class NotFound(
-        override val message: String,
-        override val cause: Throwable? = null,
+        message: String,
+        cause: Throwable? = null,
     ) : GatewayException(
         code = GatewayErrorCode.NOT_FOUND,
-        httpStatus = HttpStatusCode.NotFound.value,
+        category = GatewayErrorCategory.NOT_FOUND,
+        reason = GatewayErrorReason.NOT_FOUND,
+        httpStatus = 404,
         message = message,
         cause = cause,
     )
 
-    open class Conflict(
-        override val message: String,
-        override val cause: Throwable? = null,
+    class Conflict(
+        message: String,
+        cause: Throwable? = null,
     ) : GatewayException(
         code = GatewayErrorCode.CONFLICT,
-        httpStatus = HttpStatusCode.Conflict.value,
+        category = GatewayErrorCategory.CONFLICT,
+        reason = GatewayErrorReason.IDENTITY_CONFLICT,
+        httpStatus = 409,
         message = message,
         cause = cause,
     )
 
     class DependencyUnavailable(
         override val dependency: String,
-        override val message: String = "Service temporarily unavailable",
-        override val cause: Throwable? = null,
+        message: String = "Service temporarily unavailable",
+        cause: Throwable? = null,
     ) : GatewayException(
         code = GatewayErrorCode.DEPENDENCY_UNAVAILABLE,
-        httpStatus = HttpStatusCode.ServiceUnavailable.value,
+        category = GatewayErrorCategory.DEPENDENCY,
+        reason = GatewayErrorReason.DEPENDENCY_FAILURE,
+        httpStatus = 503,
         message = message,
+        retryable = true,
         dependency = dependency,
         cause = cause,
     )
@@ -86,23 +116,28 @@ internal sealed class GatewayException(
     class UpstreamProtocol(
         override val dependency: String,
         val status: Int,
-        override val message: String = "Service temporarily unavailable",
-        override val cause: Throwable? = null,
+        message: String = "Service temporarily unavailable",
+        cause: Throwable? = null,
     ) : GatewayException(
         code = GatewayErrorCode.DEPENDENCY_UNAVAILABLE,
-        httpStatus = HttpStatusCode.BadGateway.value,
+        category = GatewayErrorCategory.DEPENDENCY,
+        reason = GatewayErrorReason.UPSTREAM_PROTOCOL,
+        httpStatus = 502,
         message = message,
+        retryable = true,
         dependency = dependency,
         upstreamStatus = status,
         cause = cause,
     )
 
     class Internal(
-        override val message: String = "Internal server error",
-        override val cause: Throwable? = null,
+        message: String = "Internal server error",
+        cause: Throwable? = null,
     ) : GatewayException(
         code = GatewayErrorCode.INTERNAL,
-        httpStatus = HttpStatusCode.InternalServerError.value,
+        category = GatewayErrorCategory.INTERNAL,
+        reason = GatewayErrorReason.INTERNAL_ERROR,
+        httpStatus = 500,
         message = message,
         cause = cause,
     )
