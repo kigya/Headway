@@ -10,6 +10,7 @@ dependencies {
     kover(project(":gateway"))
     kover(project(":auth:internal"))
     kover(project(":database:internal"))
+    kover(project(":home:internal"))
 }
 
 kover {
@@ -24,7 +25,7 @@ kover {
 
 tasks.register("verifyWithCoverage") {
     group = "verification"
-    description = "Runs detekt and merged Kover line-coverage verification (auth, gateway, database/internal)"
+    description = "Runs detekt and merged Kover line-coverage verification (auth, gateway, database/internal, home/internal)"
     dependsOn(tasks.named("detekt"), tasks.named("koverVerify"))
 }
 

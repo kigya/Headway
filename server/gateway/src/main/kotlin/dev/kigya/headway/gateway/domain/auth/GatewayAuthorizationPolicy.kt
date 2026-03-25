@@ -14,6 +14,18 @@ internal object GatewayAuthorizationPolicy {
         when (operation) {
             GatewayOperation.HealthCheck -> return
             GatewayOperation.InviteUser -> ensureInviteUser(principal)
+            GatewayOperation.HomeScreen -> ensureHomeScreen(principal)
+        }
+    }
+
+    private fun ensureHomeScreen(principal: GatewayPrincipal) {
+        when (principal) {
+            is GatewayPrincipal.Guest -> throw GatewayException.Forbidden(
+                reason = GatewayErrorReason.GUEST_NOT_ALLOWED,
+                message = "Guests cannot access home screen",
+            )
+
+            is GatewayPrincipal.User -> Unit
         }
     }
 

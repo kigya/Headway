@@ -30,4 +30,8 @@ internal sealed interface GatewayGraphqlOperation {
     data object InviteUser : GatewayGraphqlOperation {
         override val name: String = "inviteUser"
     }
+
+    data object HomeScreen : GatewayGraphqlOperation {
+        override val name: String = "homeScreen"
+    }
 }

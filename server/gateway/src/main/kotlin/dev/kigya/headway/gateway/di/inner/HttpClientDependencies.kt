@@ -9,6 +9,10 @@ import dev.kigya.headway.gateway.core.config.ConfigurationValues.AUTH_SERVICE_HO
 import dev.kigya.headway.gateway.core.config.ConfigurationValues.AUTH_SERVICE_PORT
 import dev.kigya.headway.gateway.core.config.ConfigurationValues.DATABASE_SERVICE_HOST
 import dev.kigya.headway.gateway.core.config.ConfigurationValues.DATABASE_SERVICE_PORT
+import dev.kigya.headway.gateway.core.config.ConfigurationValues.HOME_SERVICE_HOST
+import dev.kigya.headway.gateway.core.config.ConfigurationValues.HOME_SERVICE_PORT
+import dev.kigya.headway.home.api.url.HomeKoinHttpClient
+import dev.kigya.headway.home.api.url.homeServiceUrlHolder
 import org.koin.core.module.Module
 
 internal fun Module.httpClients() {
@@ -22,5 +26,11 @@ internal fun Module.httpClients() {
         host = AUTH_SERVICE_HOST,
         port = AUTH_SERVICE_PORT,
         baseUrl = authServiceUrlHolder.baseUrl,
+    )
+
+    createServiceHttpClient<HomeKoinHttpClient>(
+        host = HOME_SERVICE_HOST,
+        port = HOME_SERVICE_PORT,
+        baseUrl = homeServiceUrlHolder.baseUrl,
     )
 }

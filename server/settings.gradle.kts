@@ -73,4 +73,6 @@ include(
     ":database:internal",
     ":auth:api",
     ":auth:internal",
+    ":home:api",
+    ":home:internal",
 )

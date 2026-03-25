@@ -41,7 +41,7 @@ git config --list --show-origin
 ## Где что лежит в монорепозитории
 
 * `client/` — KMP-приложение (Android, iOS, Desktop, Web), Compose, MVIKotlin.
-* `server/` — Ktor-сервисы (auth, database, gateway, admin и др.), Gradle, Docker.
+* `server/` — Ktor-сервисы (auth, database, home, gateway, admin и др.), Gradle, Docker.
 * `AGENTS.md` (корень) — общие правила Kotlin для всего репо.
 * `client/AGENTS.md` и `server/AGENTS.md` — детали по сторонам.
 * `.cursor/rules/` и `.cursor/skills/` — подсказки для IDE и агентов (не заменяют `AGENTS.md`).

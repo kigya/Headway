@@ -19,6 +19,7 @@ microserviceDependencies {
         implementation(common)
         implementation(database.api)
         implementation(auth.api)
+        implementation(home.api)
     }
 
     libs {
@@ -37,5 +38,6 @@ microserviceDependencies {
         testImplementation(kotlin.test)
         testImplementation(kotlinx.coroutines.core)
         testImplementation(ktor.serverTestHost)
+        testImplementation(ktor.client.mock.jvm)
     }
 }
