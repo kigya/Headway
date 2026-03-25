@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.detekt) apply false
     alias(libs.plugins.serialization) apply false
     alias(libs.plugins.kotlin.jvm) apply false
-    alias(libs.plugins.convention.github.env.sync)
+    alias(libs.plugins.github.env.sync)
     alias(libs.plugins.kover)
 }
 
@@ -54,8 +54,8 @@ githubEnvSync {
     templatesDir.set(layout.projectDirectory.dir("docker/template"))
     outputDir.set(layout.projectDirectory.dir("docker"))
 
-    tokenPropertyName.set("github.env.sync.token")
-    usernamePropertyName.set("github.env.sync.username")
+    tokenPropertyName.set("github.env.sync.plugin.token")
+    usernamePropertyName.set("github.env.sync.plugin.username")
 
     autoOpenBrowser.set(true)
     failOnMissingVariables.set(true)
