@@ -1,22 +1,24 @@
 # Headway Cursor agent workflows
 
-This repo layers **Agent Skills** on top of [`.cursor/rules/`](rules/) and root [`AGENTS.md`](../AGENTS.md), [`client/AGENTS.md`](../client/AGENTS.md), [`server/AGENTS.md`](../server/AGENTS.md). Nothing here runs in the background: you invoke workflows from chat.
+This repo layers **Agent Skills** on top of [`.cursor/rules/`](rules/), [`.cursor/memory-bank/`](memory-bank/), and root [`AGENTS.md`](../AGENTS.md), [`client/AGENTS.md`](../client/AGENTS.md), [`server/AGENTS.md`](../server/AGENTS.md). Nothing here runs in the background: you invoke workflows from chat.
+
+**How this fits Spec Kit:** Spec-driven commands live under [`.cursor/commands/`](commands/) (`speckit.*`). See [docs/ai-workflow.md](../docs/ai-workflow.md) for the full model.
 
 ## Skill: `headway-rule-aware-workflow`
 
-**What it does:** Steers implementation toward the closest `AGENTS.md` and the matching `.mdc` rules (`global`, `client` or `server` by path, `detekt-guardrails` for Kotlin, `lessons-learned` for cumulative mistakes). Use via `/headway-rule-aware-workflow` or `@headway-rule-aware-workflow` when you want explicit rule alignment while coding.
+**What it does:** Steers implementation toward the closest `AGENTS.md`, the matching `.mdc` rules (`global`, `client` or `server` by path, `detekt-guardrails` for Kotlin, `lessons-learned` for cumulative mistakes), and a quick read of **Memory Bank** (`activeContext.md`, `systemPatterns.md` when relevant). Use via `/headway-rule-aware-workflow` or `@headway-rule-aware-workflow` when you want explicit rule alignment while coding.
 
 ## `/capture-lesson`
 
 **When:** After a meaningful correction—especially when the same mistake could recur (architecture, boundaries, stable patterns).
 
-**What happens:** The agent classifies the mistake as reusable or one-off. Only reusable mistakes update [`rules/lessons-learned.mdc`](rules/lessons-learned.mdc), merging with an existing lesson when the root cause matches.
+**What happens:** The agent classifies the mistake as reusable or one-off. Only reusable mistakes update [`rules/lessons-learned.mdc`](rules/lessons-learned.mdc), merging with an existing lesson when the root cause matches. When the lesson implies ongoing context (e.g. a new stack rule or pattern), the agent updates the relevant **Memory Bank** file(s) briefly or notes what the human should promote—without duplicating the full lesson text.
 
 ## `/finish-feature`
 
 **When:** Before merge/PR or when wrapping a feature or fix.
 
-**What happens:** The agent summarizes which rules mattered for this change, what to verify (Gradle + detekt by area), drift risks, and—only if needed—a **suggestion** to promote stable guidance into `AGENTS.md`. It never edits `AGENTS.md` for you.
+**What happens:** The agent summarizes which rules mattered for this change, what to verify (Gradle + detekt by area), drift risks, and—only if needed—a **suggestion** to promote stable guidance into `AGENTS.md`. It never edits `AGENTS.md` for you. It also performs a **Memory Bank drift check**: refresh [`memory-bank/activeContext.md`](memory-bank/activeContext.md) when the branch or focus changed; append a line to [`memory-bank/progress.md`](memory-bank/progress.md) when workflow or integration work landed; update [`memory-bank/systemPatterns.md`](memory-bank/systemPatterns.md) or [`memory-bank/techContext.md`](memory-bank/techContext.md) only for stable, cross-cutting facts.
 
 ## `/commit`
 

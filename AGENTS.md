@@ -103,6 +103,12 @@ Platform-specific rules live in nested files — follow the closest `AGENTS.md` 
 
 ---
 
+## AI-assisted development
+
+Agent-oriented **workflow** (Spec Kit slash commands, Memory Bank, skills) is documented in [`docs/ai-workflow.md`](docs/ai-workflow.md). **Code policy** for edits remains this file and the closest nested `AGENTS.md` by path; persistent **project context** for agents lives in [`.cursor/memory-bank/`](.cursor/memory-bank/).
+
+---
+
 ## Self-checklist before finishing
 
 - [ ] Every file has a correct `package` declaration
