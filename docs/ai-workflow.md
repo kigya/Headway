@@ -34,6 +34,16 @@ Optional quality commands (see command descriptions): `/speckit.analyze`, `/spec
 
 **CLI:** Specify was installed with `uvx … specify init --here --ai cursor-agent --offline` (see `.specify/init-options.json`). If `specify init` hits GitHub API rate limits, use `--offline` or set `GH_TOKEN`.
 
+**Git branch names:** Default Spec Kit scripts only accept branches like `001-feature-name` or `YYYYMMDD-HHMMSS-feature-name`. Headway may use other conventions (for example `server-headway/79-training-session-flow`). Configure `.specify/init-options.json` → `feature_resolution`:
+
+| Field | Purpose |
+|-------|---------|
+| `validate_git_branch` | `false` — skip the Speckit branch-name check (still need a way to resolve `FEATURE_DIR`; see below). |
+| `extra_branch_regex` | POSIX extended regex; if set and `validate_git_branch` is `true`, branches matching this **or** the default Speckit patterns pass validation. |
+| `fixed_specs_subdir` | Basename of the folder under `specs/` to use when the current branch is **not** `001-…` or timestamp-prefixed (required for custom branch names unless you export `SPECIFY_FEATURE` to a Speckit-style name). |
+
+`check-prerequisites.sh --json --paths-only` reads the same rules. You can instead run with `SPECIFY_FEATURE=001-my-feature` (no init change) so `FEATURE_DIR` resolves to `specs/001-my-feature` while staying on any git branch.
+
 ## Memory Bank maintenance
 
 - **`/capture-lesson`:** Still appends or merges **lessons-learned.mdc** for reusable mistakes. Also evaluate whether the same insight should update **Memory Bank** (e.g. a new cross-cutting pattern in `systemPatterns.md`, or a correction in `techContext.md`). Do **not** duplicate long prose—link or summarize.

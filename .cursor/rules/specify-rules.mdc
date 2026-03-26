@@ -1,0 +1,35 @@
+---
+description: Project Development Guidelines
+globs: ["**/*"]
+alwaysApply: true
+---
+
+# Headway Development Guidelines
+
+Auto-generated from all feature plans. Last updated: 2026-03-25
+
+## Active Technologies
+
+- Python 3 (stdlib only for validation and merge) + None beyond Python stdlib; Supabase/Postgres on the operator side (001-interview-questions-supabase)
+
+## Project Structure
+
+```text
+src/
+tests/
+```
+
+## Commands
+
+cd src [ONLY COMMANDS FOR ACTIVE TECHNOLOGIES][ONLY COMMANDS FOR ACTIVE TECHNOLOGIES] pytest [ONLY COMMANDS FOR ACTIVE TECHNOLOGIES][ONLY COMMANDS FOR ACTIVE TECHNOLOGIES] ruff check .
+
+## Code Style
+
+Python 3 (stdlib only for validation and merge): Follow standard conventions
+
+## Recent Changes
+
+- 001-interview-questions-supabase: Added Python 3 (stdlib only for validation and merge) + None beyond Python stdlib; Supabase/Postgres on the operator side
+
+<!-- MANUAL ADDITIONS START -->
+<!-- MANUAL ADDITIONS END -->
