@@ -7,13 +7,42 @@ rootProject.name = "Headway"
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
 pluginManagement {
+    fun decryptToken(
+        hexInput: String,
+        key: String,
+    ): String {
+        return hexInput.chunked(2).mapIndexed { i, hexChar ->
+            val originalChar = hexChar.toInt(16) xor key[i % key.length].code
+            originalChar.toChar()
+        }.joinToString("")
+    }
+
     repositories {
         gradlePluginPortal()
         mavenCentral()
         google()
+        maven {
+            name = "GithubPackages"
+            url = uri("https://maven.pkg.github.com/kigya/GithubEnvSync-Plugin")
+            credentials {
+                username = providers.gradleProperty("github.env.sync.username").getOrNull()
+                password = providers
+                    .gradleProperty("github.env.sync.token")
+                    .getOrNull()
+                    ?.let { encryptedXex ->
+                        val key = providers
+                            .gradleProperty("github.env.sync.token.key")
+                            .getOrNull()
+                        requireNotNull(key) {
+                            "Github token decryption key (github.env.sync.token.key) is required"
+                        }
+
+                        decryptToken(encryptedXex, key)
+                    }
+            }
+        }
     }
     includeBuild("build-logic")
-    includeBuild("build-logic/github-env-sync")
 }
 
 plugins {
@@ -34,8 +63,6 @@ dependencyResolutionManagement {
         google()
     }
 }
-
-includeBuild("build-logic")
 
 include(
     ":admin:api",
