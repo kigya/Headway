@@ -73,6 +73,90 @@ has_git() {
     git rev-parse --show-toplevel >/dev/null 2>&1
 }
 
+# Reads one field from feature_resolution; prints a single line. Defaults: validate true, others empty.
+read_feature_resolution_field() {
+    local repo_root="$1"
+    local field="$2"
+    local file="$repo_root/.specify/init-options.json"
+    if [[ ! -f "$file" ]]; then
+        return 1
+    fi
+    if has_jq; then
+        case "$field" in
+            validate_git_branch)
+                jq -r '.feature_resolution.validate_git_branch // true' "$file"
+                ;;
+            extra_branch_regex)
+                jq -r '.feature_resolution.extra_branch_regex // "" | if type == "string" then . else "" end' "$file"
+                ;;
+            fixed_specs_subdir)
+                jq -r '.feature_resolution.fixed_specs_subdir // "" | if type == "string" then . else "" end' "$file"
+                ;;
+            *)
+                return 1
+                ;;
+        esac
+        return 0
+    fi
+    if command -v python3 >/dev/null 2>&1; then
+        SPECKIT_JSON="$file" SPECKIT_FIELD="$field" python3 -c "
+import json, os
+path = os.environ.get('SPECKIT_JSON', '')
+field = os.environ.get('SPECKIT_FIELD', '')
+with open(path, encoding='utf-8') as f:
+    data = json.load(f)
+fr = data.get('feature_resolution') or {}
+if field == 'validate_git_branch':
+    v = fr.get('validate_git_branch')
+    print('false' if v is False else 'true')
+elif field == 'extra_branch_regex':
+    v = fr.get('extra_branch_regex')
+    print(v if isinstance(v, str) else '')
+elif field == 'fixed_specs_subdir':
+    v = fr.get('fixed_specs_subdir')
+    print(v if isinstance(v, str) else '')
+else:
+    raise SystemExit(1)
+" 2>/dev/null
+        return 0
+    fi
+    return 1
+}
+
+read_validate_git_branch() {
+    local repo_root="$1"
+    local v
+    if ! v=$(read_feature_resolution_field "$repo_root" validate_git_branch 2>/dev/null); then
+        echo true
+        return 0
+    fi
+    if [[ "$v" == "false" ]]; then
+        echo false
+    else
+        echo true
+    fi
+}
+
+read_extra_branch_regex() {
+    local repo_root="$1"
+    local v
+    if ! v=$(read_feature_resolution_field "$repo_root" extra_branch_regex 2>/dev/null); then
+        echo ""
+        return 0
+    fi
+    printf '%s' "$v"
+}
+
+read_fixed_specs_subdir() {
+    local repo_root="$1"
+    local v
+    if ! v=$(read_feature_resolution_field "$repo_root" fixed_specs_subdir 2>/dev/null); then
+        echo ""
+        return 0
+    fi
+    printf '%s' "$v"
+}
+
 check_feature_branch() {
     local branch="$1"
     local has_git_repo="$2"
@@ -83,13 +167,26 @@ check_feature_branch() {
         return 0
     fi
 
-    if [[ ! "$branch" =~ ^[0-9]{3}- ]] && [[ ! "$branch" =~ ^[0-9]{8}-[0-9]{6}- ]]; then
-        echo "ERROR: Not on a feature branch. Current branch: $branch" >&2
-        echo "Feature branches should be named like: 001-feature-name or 20260319-143022-feature-name" >&2
-        return 1
+    local repo_root validate extra
+    repo_root=$(get_repo_root)
+    validate=$(read_validate_git_branch "$repo_root")
+    if [[ "$validate" == "false" ]]; then
+        return 0
     fi
 
-    return 0
+    if [[ "$branch" =~ ^[0-9]{3}- ]] || [[ "$branch" =~ ^[0-9]{8}-[0-9]{6}- ]]; then
+        return 0
+    fi
+
+    extra=$(read_extra_branch_regex "$repo_root")
+    if [[ -n "$extra" ]] && [[ "$branch" =~ $extra ]]; then
+        return 0
+    fi
+
+    echo "ERROR: Not on a feature branch. Current branch: $branch" >&2
+    echo "Feature branches should be named like: 001-feature-name or 20260319-143022-feature-name" >&2
+    echo "Or configure .specify/init-options.json → feature_resolution (validate_git_branch, extra_branch_regex), use SPECIFY_FEATURE, or fixed_specs_subdir for FEATURE_DIR resolution." >&2
+    return 1
 }
 
 get_feature_dir() { echo "$1/specs/$2"; }
@@ -138,6 +235,29 @@ find_feature_dir_by_prefix() {
     fi
 }
 
+# Resolves FEATURE_DIR: Speckit-style branch → prefix scan; otherwise fixed_specs_subdir or error.
+resolve_feature_dir() {
+    local repo_root="$1"
+    local branch_name="$2"
+    local specs_dir="$repo_root/specs"
+    local fixed
+
+    if [[ "$branch_name" =~ ^([0-9]{8}-[0-9]{6})- ]] || [[ "$branch_name" =~ ^([0-9]{3})- ]]; then
+        find_feature_dir_by_prefix "$repo_root" "$branch_name"
+        return $?
+    fi
+
+    fixed=$(read_fixed_specs_subdir "$repo_root")
+    if [[ -n "$fixed" ]]; then
+        echo "$specs_dir/$fixed"
+        return 0
+    fi
+
+    echo "ERROR: Branch '$branch_name' does not match Speckit patterns (001-name or timestamp-prefix)." >&2
+    echo "Set environment SPECIFY_FEATURE to a speckit-style name, or set feature_resolution.fixed_specs_subdir in .specify/init-options.json to your specs/ folder basename." >&2
+    return 1
+}
+
 get_feature_paths() {
     local repo_root=$(get_repo_root)
     local current_branch=$(get_current_branch)
@@ -147,9 +267,8 @@ get_feature_paths() {
         has_git_repo="true"
     fi
 
-    # Use prefix-based lookup to support multiple branches per spec
     local feature_dir
-    if ! feature_dir=$(find_feature_dir_by_prefix "$repo_root" "$current_branch"); then
+    if ! feature_dir=$(resolve_feature_dir "$repo_root" "$current_branch"); then
         echo "ERROR: Failed to resolve feature directory" >&2
         return 1
     fi

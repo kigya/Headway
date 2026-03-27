@@ -25,3 +25,4 @@ captures
 
 .cursor/projects/
 .playwright-mcp/
+specs/**

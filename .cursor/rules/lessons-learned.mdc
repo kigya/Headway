@@ -137,3 +137,30 @@ alwaysApply: true
 - **Why it exists:** GitHub caps these lists at 30 items per page; requesting `per_page=100` still returns at most 30. If the loop treats “fewer than 100” as “done”, it stops after the first page and newer keys (e.g. `JWT_GUEST_*`) never load.
 - **Bad pattern (short):** One GET or a pagination loop whose “last page” check uses a limit higher than GitHub’s cap (e.g. break when `size < 100`).
 - **Correct pattern (short):** Use `per_page=30`, loop `page = 1, 2, …` until `variables.size < 30`, empty page, or `result.size >= total_count` (see `GithubApi.fetchAllActionVariables`).
+
+---
+
+### 15
+
+- **Rule:** Reference Kotlin types by simple name with an explicit `import`; avoid fully qualified class names in expressions and generic arguments when unambiguous.
+- **Why it exists:** Root [AGENTS.md](../../AGENTS.md) requires explicit, ordered imports; FQCNs in the body obscure readability and duplicate the package at every use site.
+- **Bad pattern (short):** `type<dev.kigya.headway.gateway.model.GatewayPreparationEmployee>()` or other `dev.kigya...Type` sprinkled through call sites.
+- **Correct pattern (short):** `import dev.kigya.headway.gateway.model.GatewayPreparationEmployee` and `type<GatewayPreparationEmployee>()`.
+
+---
+
+### 16
+
+- **Rule:** Name Kotlin source files with **PascalCase** when they hold top-level declarations in presentation/routing-style modules, matching siblings in the same package (e.g. `UsersRouting.kt`, `SessionRouting.kt`).
+- **Why it exists:** Mixed `camelCase.kt` filenames break consistency with the rest of the server tree and with Kotlin’s usual convention of PascalCase file names aligned to the primary type or feature entry.
+- **Bad pattern (short):** `preparationRouting.kt` next to `UsersRouting.kt` / `SessionRouting.kt`.
+- **Correct pattern (short):** `PreparationRouting.kt`; keep top-level function names in `camelCase` (e.g. `Route.preparationRouting`) — only the **file** name uses PascalCase.
+
+---
+
+### 17
+
+- **Rule:** Every downstream microservice the gateway calls through a dedicated Koin `HttpClient` must have a matching **`BaseHttpProbe`** (or equivalent) wired into `CheckHealthStatusUseCase` so aggregated GraphQL health lists that dependency.
+- **Why it exists:** [server/AGENTS.md](../../server/AGENTS.md) documents gateway dependency probes via `HealthzResource`; skipping a wired service hides outages from operators and from the public health contract.
+- **Bad pattern (short):** `createServiceHttpClient<HomeKoinHttpClient>(…)` and `HomeRepository` calls exist, but health aggregation only checks auth and database.
+- **Correct pattern (short):** `HomeServiceProbe(httpClient)` plus `GatewayDependencyHealth(name = "home", …)` and include its status when computing overall `GatewayServiceStatus`.

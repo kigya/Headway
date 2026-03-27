@@ -7,5 +7,10 @@
   "offline": true,
   "preset": null,
   "script": "sh",
-  "speckit_version": "0.4.0"
+  "speckit_version": "0.4.0",
+  "feature_resolution": {
+    "validate_git_branch": true,
+    "extra_branch_regex": "^server-headway/[0-9]+-.+",
+    "fixed_specs_subdir": "002-training-session-backend"
+  }
 }

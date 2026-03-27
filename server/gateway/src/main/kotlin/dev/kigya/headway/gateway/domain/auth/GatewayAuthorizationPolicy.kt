@@ -15,6 +15,7 @@ internal object GatewayAuthorizationPolicy {
             GatewayOperation.HealthCheck -> return
             GatewayOperation.InviteUser -> ensureInviteUser(principal)
             GatewayOperation.HomeScreen -> ensureHomeScreen(principal)
+            GatewayOperation.Preparation -> ensurePreparation(principal)
         }
     }
 
@@ -26,6 +27,25 @@ internal object GatewayAuthorizationPolicy {
             )
 
             is GatewayPrincipal.User -> Unit
+        }
+    }
+
+    private fun ensurePreparation(principal: GatewayPrincipal) {
+        when (principal) {
+            is GatewayPrincipal.Guest -> throw GatewayException.Forbidden(
+                reason = GatewayErrorReason.GUEST_NOT_ALLOWED,
+                message = "Guests cannot access preparation",
+            )
+
+            is GatewayPrincipal.User -> {
+                val role = principal.user.role
+                if (role == GatewayUserRole.GUEST || role == GatewayUserRole.EMPLOYEE) {
+                    throw GatewayException.Forbidden(
+                        reason = GatewayErrorReason.INSUFFICIENT_ROLE,
+                        message = "Insufficient role for preparation",
+                    )
+                }
+            }
         }
     }
 

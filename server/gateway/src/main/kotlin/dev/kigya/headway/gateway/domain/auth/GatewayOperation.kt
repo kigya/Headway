@@ -4,4 +4,5 @@ internal enum class GatewayOperation {
     HealthCheck,
     InviteUser,
     HomeScreen,
+    Preparation,
 }

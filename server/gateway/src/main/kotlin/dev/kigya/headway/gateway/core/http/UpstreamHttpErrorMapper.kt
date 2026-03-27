@@ -1,5 +1,6 @@
 package dev.kigya.headway.gateway.core.http
 
+import dev.kigya.headway.database.api.model.DatabasePreparationErrorCodes
 import dev.kigya.headway.gateway.core.exception.GatewayErrorReason
 import dev.kigya.headway.gateway.core.exception.GatewayException
 import io.ktor.client.statement.HttpResponse
@@ -24,7 +25,7 @@ internal suspend fun HttpResponse.toGatewayException(dependency: String): Gatewa
 
         HttpStatusCode.Forbidden ->
             GatewayException.Forbidden(
-                reason = GatewayErrorReason.INSUFFICIENT_ROLE,
+                reason = forbiddenReason(bodyMsg),
                 message = bodyMsg ?: "Forbidden",
             )
 
@@ -36,6 +37,7 @@ internal suspend fun HttpResponse.toGatewayException(dependency: String): Gatewa
         HttpStatusCode.Conflict ->
             GatewayException.Conflict(
                 message = bodyMsg ?: "Conflict",
+                reason = conflictReason(bodyMsg),
             )
 
         HttpStatusCode.ServiceUnavailable ->
@@ -51,6 +53,17 @@ internal suspend fun HttpResponse.toGatewayException(dependency: String): Gatewa
                 message = "Service temporarily unavailable",
             )
     }
+}
+
+private fun conflictReason(bodyMsg: String?): GatewayErrorReason = when (bodyMsg?.trim()) {
+    DatabasePreparationErrorCodes.SCOPE_SESSION_CLOSED -> GatewayErrorReason.PREPARATION_SCOPE_SESSION_CLOSED
+    else -> GatewayErrorReason.IDENTITY_CONFLICT
+}
+
+private fun forbiddenReason(bodyMsg: String?): GatewayErrorReason = when (bodyMsg?.trim()) {
+    DatabasePreparationErrorCodes.SUMMARY_REQUIRES_COMPLETED_SESSION ->
+        GatewayErrorReason.PREPARATION_SUMMARY_REQUIRES_COMPLETED_SESSION
+    else -> GatewayErrorReason.INSUFFICIENT_ROLE
 }
 
 private suspend fun HttpResponse.safeBodyMessage(): String? {

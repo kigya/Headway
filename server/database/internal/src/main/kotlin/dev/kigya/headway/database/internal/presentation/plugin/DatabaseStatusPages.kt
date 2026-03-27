@@ -38,6 +38,27 @@ private fun StatusPagesConfig.handleDatabaseExceptions() {
         )
     }
 
+    exception<DatabaseException.NotFound> { call, exception ->
+        call.respond(
+            status = HttpStatusCode.NotFound,
+            message = exception.message,
+        )
+    }
+
+    exception<DatabaseException.PreparationForbidden> { call, exception ->
+        call.respond(
+            status = HttpStatusCode.Forbidden,
+            message = exception.message,
+        )
+    }
+
+    exception<DatabaseException.PreparationConflict> { call, exception ->
+        call.respond(
+            status = HttpStatusCode.Conflict,
+            message = exception.message,
+        )
+    }
+
     exception<DatabaseException.Forbidden> { call, exception ->
         call.respond(
             status = HttpStatusCode.Forbidden,

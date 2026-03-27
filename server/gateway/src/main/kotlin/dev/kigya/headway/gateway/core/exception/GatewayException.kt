@@ -88,11 +88,12 @@ internal sealed class GatewayException(
 
     class Conflict(
         message: String,
+        reason: GatewayErrorReason = GatewayErrorReason.IDENTITY_CONFLICT,
         cause: Throwable? = null,
     ) : GatewayException(
         code = GatewayErrorCode.CONFLICT,
         category = GatewayErrorCategory.CONFLICT,
-        reason = GatewayErrorReason.IDENTITY_CONFLICT,
+        reason = reason,
         httpStatus = 409,
         message = message,
         cause = cause,

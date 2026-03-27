@@ -1,5 +1,6 @@
 package dev.kigya.headway.database.internal.domain.error
 
+import dev.kigya.headway.database.api.model.DatabasePreparationErrorCodes
 import dev.kigya.headway.database.api.model.out.DatabaseUser
 
 sealed class DatabaseException(
@@ -41,4 +42,24 @@ sealed class DatabaseException(
         override val message: String = "Dependency unavailable: $dependency",
         override val cause: Throwable? = null,
     ) : DatabaseException(message, cause)
+
+    data class NotFound(
+        override val message: String = "Not found",
+        override val cause: Throwable? = null,
+    ) : DatabaseException(message, cause)
+
+    data class PreparationForbidden(
+        override val message: String = "Preparation not allowed for this principal",
+        override val cause: Throwable? = null,
+    ) : Forbidden(message, cause)
+
+    data class PreparationConflict(
+        override val message: String,
+        override val cause: Throwable? = null,
+    ) : Conflict(message, cause)
+
+    data class PreparationScopeSessionClosed(
+        override val message: String = DatabasePreparationErrorCodes.SCOPE_SESSION_CLOSED,
+        override val cause: Throwable? = null,
+    ) : Conflict(message, cause)
 }

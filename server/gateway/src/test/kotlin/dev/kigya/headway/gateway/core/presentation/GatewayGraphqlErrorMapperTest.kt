@@ -57,4 +57,16 @@ class GatewayGraphqlErrorMapperTest {
         assertEquals(GatewayErrorCategory.AUTHORIZATION.name.lowercase(), envelope.extensions["category"])
         assertEquals("GUEST_NOT_ALLOWED", envelope.extensions["reason"])
     }
+
+    @Test
+    fun `maps preparation scope session closed conflict reason`() {
+        val ex = GatewayException.Conflict(
+            message = "closed",
+            reason = GatewayErrorReason.PREPARATION_SCOPE_SESSION_CLOSED,
+        )
+        val envelope = GatewayGraphqlErrorMapper.map(ex)
+
+        assertEquals(GatewayErrorCode.CONFLICT, envelope.code)
+        assertEquals("PREPARATION_SCOPE_SESSION_CLOSED", envelope.extensions["reason"])
+    }
 }

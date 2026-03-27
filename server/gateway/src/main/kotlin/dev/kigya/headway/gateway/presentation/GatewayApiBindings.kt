@@ -10,6 +10,7 @@ import dev.kigya.headway.gateway.domain.usecase.LoginAsGuestUseCase
 import dev.kigya.headway.gateway.domain.usecase.LoginWithGoogleUseCase
 import dev.kigya.headway.gateway.domain.usecase.RefreshAccessTokenUseCase
 import dev.kigya.headway.gateway.domain.usecase.ResolvePrincipalUseCase
+import dev.kigya.headway.gateway.presentation.schema.PreparationGraphqlServices
 
 internal data class GatewayApiBindings(
     val environment: Environment,
@@ -20,4 +21,5 @@ internal data class GatewayApiBindings(
     val inviteUser: InviteUserUseCase,
     val resolvePrincipal: ResolvePrincipalUseCase,
     val getHomeScreen: GetHomeScreenUseCase,
+    val preparation: PreparationGraphqlServices,
 )

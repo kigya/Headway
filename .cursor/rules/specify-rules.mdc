@@ -1,0 +1,38 @@
+---
+description: Project Development Guidelines
+globs: ["**/*"]
+alwaysApply: true
+---
+
+# Headway Development Guidelines
+
+Auto-generated from all feature plans. Last updated: 2026-03-26
+
+## Active Technologies
+- Kotlin 2.x, JVM 17 + Ktor + Netty; KGraphQL (gateway); Koin; kotlinx.serialization; Exposed (database service) (002-training-session-backend)
+- PostgreSQL (hosted Supabase in env templates); preparation session tables: sessions, outcomes, catalog, mentorships, preparation plan (`specs/002-training-session-backend/data-model.md`) (002-training-session-backend)
+
+- Python 3 (stdlib only for validation and merge) + None beyond Python stdlib; Supabase/Postgres on the operator side (001-interview-questions-supabase)
+
+## Project Structure
+
+```text
+src/
+tests/
+```
+
+## Commands
+
+cd src [ONLY COMMANDS FOR ACTIVE TECHNOLOGIES][ONLY COMMANDS FOR ACTIVE TECHNOLOGIES] pytest [ONLY COMMANDS FOR ACTIVE TECHNOLOGIES][ONLY COMMANDS FOR ACTIVE TECHNOLOGIES] ruff check .
+
+## Code Style
+
+Python 3 (stdlib only for validation and merge): Follow standard conventions
+
+## Recent Changes
+- 002-training-session-backend: Added Kotlin 2.x, JVM 17 + Ktor + Netty; KGraphQL (gateway); Koin; kotlinx.serialization; Exposed (database service)
+
+- 001-interview-questions-supabase: Added Python 3 (stdlib only for validation and merge) + None beyond Python stdlib; Supabase/Postgres on the operator side
+
+<!-- MANUAL ADDITIONS START -->
+<!-- MANUAL ADDITIONS END -->

@@ -78,49 +78,134 @@ function Test-HasGit {
     }
 }
 
+function Read-FeatureResolutionFromInitOptions {
+    param([string]$RepoRoot)
+    $defaults = [PSCustomObject]@{
+        ValidateGitBranch = $true
+        ExtraBranchRegex  = ''
+        FixedSpecsSubdir  = ''
+    }
+    $path = Join-Path $RepoRoot '.specify/init-options.json'
+    if (-not (Test-Path $path)) {
+        return $defaults
+    }
+    try {
+        $j = Get-Content $path -Raw -Encoding UTF8 | ConvertFrom-Json
+        $fr = $j.feature_resolution
+        if (-not $fr) {
+            return $defaults
+        }
+        $validate = $true
+        if ($null -ne $fr.PSObject.Properties['validate_git_branch']) {
+            $validate = [bool]$fr.validate_git_branch
+        }
+        $extra = ''
+        if ($fr.extra_branch_regex -is [string]) {
+            $extra = $fr.extra_branch_regex
+        }
+        $fixed = ''
+        if ($fr.fixed_specs_subdir -is [string]) {
+            $fixed = $fr.fixed_specs_subdir
+        }
+        return [PSCustomObject]@{
+            ValidateGitBranch = $validate
+            ExtraBranchRegex  = $extra
+            FixedSpecsSubdir  = $fixed
+        }
+    } catch {
+        return $defaults
+    }
+}
+
 function Test-FeatureBranch {
     param(
         [string]$Branch,
-        [bool]$HasGit = $true
+        [bool]$HasGit
     )
-    
-    # For non-git repos, we can't enforce branch naming but still provide output
+
     if (-not $HasGit) {
         Write-Warning "[specify] Warning: Git repository not detected; skipped branch validation"
         return $true
     }
-    
-    if ($Branch -notmatch '^[0-9]{3}-' -and $Branch -notmatch '^\d{8}-\d{6}-') {
-        Write-Output "ERROR: Not on a feature branch. Current branch: $Branch"
-        Write-Output "Feature branches should be named like: 001-feature-name or 20260319-143022-feature-name"
-        return $false
+
+    $repoRoot = Get-RepoRoot
+    $fr = Read-FeatureResolutionFromInitOptions -RepoRoot $repoRoot
+    if (-not $fr.ValidateGitBranch) {
+        return $true
     }
-    return $true
+
+    if ($Branch -match '^[0-9]{3}-' -or $Branch -match '^\d{8}-\d{6}-') {
+        return $true
+    }
+
+    if ($fr.ExtraBranchRegex -and ($Branch -match $fr.ExtraBranchRegex)) {
+        return $true
+    }
+
+    Write-Output "ERROR: Not on a feature branch. Current branch: $Branch"
+    Write-Output "Feature branches should be named like: 001-feature-name or 20260319-143022-feature-name"
+    Write-Output "Or configure .specify/init-options.json feature_resolution, SPECIFY_FEATURE, or fixed_specs_subdir."
+    return $false
 }
 
-function Get-FeatureDir {
-    param([string]$RepoRoot, [string]$Branch)
-    Join-Path $RepoRoot "specs/$Branch"
+function Find-FeatureDirByPrefix {
+    param([string]$RepoRoot, [string]$BranchName)
+    $specsDir = Join-Path $RepoRoot 'specs'
+    $prefix = $null
+    if ($BranchName -match '^(\d{8}-\d{6})-') {
+        $prefix = $Matches[1]
+    } elseif ($BranchName -match '^(\d{3})-') {
+        $prefix = $Matches[1]
+    } else {
+        return (Join-Path $specsDir $BranchName)
+    }
+
+    $matchesDirs = @(Get-ChildItem -Path $specsDir -Directory -ErrorAction SilentlyContinue | Where-Object { $_.Name -like "$prefix-*" })
+    if ($matchesDirs.Count -eq 0) {
+        return (Join-Path $specsDir $BranchName)
+    }
+    if ($matchesDirs.Count -eq 1) {
+        return $matchesDirs[0].FullName
+    }
+    Write-Error "Multiple spec directories found with prefix '$prefix': $($matchesDirs.Name -join ', ')"
+    return $null
+}
+
+function Resolve-FeatureDir {
+    param([string]$RepoRoot, [string]$BranchName)
+    $specsDir = Join-Path $RepoRoot 'specs'
+    if ($BranchName -match '^(\d{8}-\d{6})-' -or $BranchName -match '^(\d{3})-') {
+        return Find-FeatureDirByPrefix -RepoRoot $RepoRoot -BranchName $BranchName
+    }
+    $fr = Read-FeatureResolutionFromInitOptions -RepoRoot $RepoRoot
+    if ($fr.FixedSpecsSubdir) {
+        return (Join-Path $specsDir $fr.FixedSpecsSubdir)
+    }
+    Write-Error "Branch '$BranchName' does not match Speckit patterns. Set SPECIFY_FEATURE or feature_resolution.fixed_specs_subdir in .specify/init-options.json."
+    return $null
 }
 
 function Get-FeaturePathsEnv {
     $repoRoot = Get-RepoRoot
     $currentBranch = Get-CurrentBranch
     $hasGit = Test-HasGit
-    $featureDir = Get-FeatureDir -RepoRoot $repoRoot -Branch $currentBranch
-    
+    $featureDir = Resolve-FeatureDir -RepoRoot $repoRoot -BranchName $currentBranch
+    if ($null -eq $featureDir) {
+        throw "Failed to resolve feature directory"
+    }
+
     [PSCustomObject]@{
-        REPO_ROOT     = $repoRoot
+        REPO_ROOT      = $repoRoot
         CURRENT_BRANCH = $currentBranch
-        HAS_GIT       = $hasGit
-        FEATURE_DIR   = $featureDir
-        FEATURE_SPEC  = Join-Path $featureDir 'spec.md'
-        IMPL_PLAN     = Join-Path $featureDir 'plan.md'
-        TASKS         = Join-Path $featureDir 'tasks.md'
-        RESEARCH      = Join-Path $featureDir 'research.md'
-        DATA_MODEL    = Join-Path $featureDir 'data-model.md'
-        QUICKSTART    = Join-Path $featureDir 'quickstart.md'
-        CONTRACTS_DIR = Join-Path $featureDir 'contracts'
+        HAS_GIT        = $hasGit
+        FEATURE_DIR    = $featureDir
+        FEATURE_SPEC   = Join-Path $featureDir 'spec.md'
+        IMPL_PLAN      = Join-Path $featureDir 'plan.md'
+        TASKS          = Join-Path $featureDir 'tasks.md'
+        RESEARCH       = Join-Path $featureDir 'research.md'
+        DATA_MODEL     = Join-Path $featureDir 'data-model.md'
+        QUICKSTART     = Join-Path $featureDir 'quickstart.md'
+        CONTRACTS_DIR  = Join-Path $featureDir 'contracts'
     }
 }
 
