@@ -3,6 +3,10 @@ package dev.kigya.headway.core.designSystem.util
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import dev.kigya.headway.core.designSystem.theme.FreudDsToken
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -141,6 +145,29 @@ class FreudRichTextBuilder internal constructor() {
 }
 
 @Composable
+fun FreudTextValue.resolveAnnotatedString(): AnnotatedString = when (this) {
+    is FreudTextValue.PlainText -> AnnotatedString(
+        text = resolveTextSource(source = source),
+    )
+
+    is FreudTextValue.RichText -> {
+        val segments = (content as FreudRichTextContent.Segments).value
+        buildAnnotatedString {
+            segments.forEach { segment ->
+                val resolvedText = resolveTextSource(source = segment.source)
+                if (segment.color == null) {
+                    append(resolvedText)
+                } else {
+                    withStyle(style = SpanStyle(color = segment.color.value)) {
+                        append(resolvedText)
+                    }
+                }
+            }
+        }
+    }
+}
+
+@Composable
 fun FreudTextValue.resolveToPlainString(): String = when (this) {
     is FreudTextValue.PlainText -> resolveTextSource(source = source)
     is FreudTextValue.RichText -> when (val c = content) {
@@ -193,8 +220,8 @@ internal sealed interface FreudTextSource {
 
 internal sealed interface FreudRichTextContent {
 
-    @Immutable
-    data class Segments(
+    @JvmInline
+    value class Segments(
         val value: ImmutableList<FreudRichTextSegment>,
     ) : FreudRichTextContent
 }
