@@ -2,14 +2,14 @@
 
 ## Current branch intent
 
-- `chore/spec-kit-memory-bank` — integrate **GitHub Spec Kit** (Specify 0.4.0) and a **Memory Bank** under `.cursor/memory-bank/`, without changing application or CI code.
+- `003-learning-questions-server` — deliver **spec 003** learning-questions flow: database service (catalog, progress, remarks, guest sessions), gateway GraphQL + auth policy, JWT guest integration, and related API contracts.
 
 ## Immediate next steps (for the human)
 
-- Review `.gitignore` change (`.cursor/projects/` only; `.cursor/commands/` and `.cursor/memory-bank/` are tracked).
-- Skim [docs/ai-workflow.md](../../docs/ai-workflow.md) and run a Spec Kit command when starting the next spec (e.g. `/speckit.constitution` or `/speckit.specify`).
-- After merge: delete stale local-only paths under `.cursor/` if your machine still has old ignored clutter.
+- Open or refresh the PR against `trunk`; run CI if required beyond local `./gradlew build` / `detekt`.
+- Apply DB migration `server/database/migrations/V001_learning_questions.sql` in the target Postgres environment when deploying.
+- Align GitHub issue number with `Closes #…` in the PR if it is not **#3**.
 
 ## Notes
 
-- `specify init --offline` avoids GitHub API rate limits; use `GH_TOKEN` if you need online template refresh later.
+- Agent rules: `.cursor/rules/` + closest `AGENTS.md`; cumulative lessons in `lessons-learned.mdc` (now includes §18 serialization, §19 `data/` layout vs `repository/`).

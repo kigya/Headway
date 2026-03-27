@@ -3,6 +3,12 @@ package dev.kigya.headway.auth.internal.domain.repository
 import java.util.Date
 import java.util.UUID
 
+internal data class GeneratedGuestAccessToken(
+    val accessToken: String,
+    val expiresAtEpochMs: Long,
+    val sessionId: UUID,
+)
+
 internal interface JWTRepositoryContract {
 
     fun generateAccessToken(userUUID: UUID): String
@@ -12,7 +18,7 @@ internal interface JWTRepositoryContract {
         expirationDate: Date,
     ): String
 
-    fun generateGuestAccessToken(): Pair<String, Long>
+    fun generateGuestAccessToken(): GeneratedGuestAccessToken
 
     fun isAccessTokenValid(token: String): Boolean
 

@@ -6,8 +6,8 @@ import kotlinx.serialization.Serializable
 import java.util.UUID
 
 @Serializable
-data class DatabasePreparationSelectQuestionRequestDto(
-    @SerialName("sessionQuestionId")
+data class DatabaseGuestSessionRegisterRequestDto(
+    @SerialName("id")
     @Serializable(UUIDSerializer::class)
-    val sessionQuestionId: UUID,
+    val id: UUID,
 )

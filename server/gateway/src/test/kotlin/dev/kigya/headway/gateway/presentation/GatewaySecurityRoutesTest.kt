@@ -3,9 +3,17 @@ package dev.kigya.headway.gateway.presentation
 import dev.kigya.headway.auth.api.model.out.AuthPrincipalType
 import dev.kigya.headway.auth.api.model.out.AuthValidateTokenResponse
 import dev.kigya.headway.common.util.Environment
+import dev.kigya.headway.database.api.model.`in`.DatabaseLearningFacilitatedPageQuery
+import dev.kigya.headway.database.api.model.`in`.DatabaseLearningRemarkCreateRequestDto
 import dev.kigya.headway.database.api.model.`in`.DatabasePreparationSelectQuestionRequestDto
 import dev.kigya.headway.database.api.model.`in`.DatabasePreparationStartSessionRequestDto
 import dev.kigya.headway.database.api.model.`in`.DatabasePreparationSubmitOutcomeRequestDto
+import dev.kigya.headway.database.api.model.out.DatabaseLearningCatalogResponseDto
+import dev.kigya.headway.database.api.model.out.DatabaseLearningPageResponseDto
+import dev.kigya.headway.database.api.model.out.DatabaseLearningQuestionDto
+import dev.kigya.headway.database.api.model.out.DatabaseLearningRemarkDto
+import dev.kigya.headway.database.api.model.out.DatabaseLearningSearchResponseDto
+import dev.kigya.headway.database.api.model.out.DatabaseLearningSkillGroup
 import dev.kigya.headway.database.api.model.out.DatabasePreparationCatalogResponseDto
 import dev.kigya.headway.database.api.model.out.DatabasePreparationEmployeesResponseDto
 import dev.kigya.headway.database.api.model.out.DatabasePreparationReadinessResponseDto
@@ -18,6 +26,7 @@ import dev.kigya.headway.gateway.core.exception.GatewayException
 import dev.kigya.headway.gateway.domain.repository.AuthRepositoryContract
 import dev.kigya.headway.gateway.domain.repository.DatabaseRepositoryContract
 import dev.kigya.headway.gateway.domain.repository.HomeRepositoryContract
+import dev.kigya.headway.gateway.domain.repository.LearningQuestionsRepositoryContract
 import dev.kigya.headway.gateway.domain.repository.PreparationRepositoryContract
 import dev.kigya.headway.gateway.domain.usecase.CheckHealthStatusUseCase
 import dev.kigya.headway.gateway.domain.usecase.FinishPreparationSessionUseCase
@@ -28,6 +37,7 @@ import dev.kigya.headway.gateway.domain.usecase.GetPreparationSessionStateUseCas
 import dev.kigya.headway.gateway.domain.usecase.GetPreparationSessionSummaryUseCase
 import dev.kigya.headway.gateway.domain.usecase.GetPreparationSetupEmployeesUseCase
 import dev.kigya.headway.gateway.domain.usecase.InviteUserUseCase
+import dev.kigya.headway.gateway.domain.usecase.LearningQuestionsGraphqlUseCases
 import dev.kigya.headway.gateway.domain.usecase.LoginAsGuestUseCase
 import dev.kigya.headway.gateway.domain.usecase.LoginWithGoogleUseCase
 import dev.kigya.headway.gateway.domain.usecase.RefreshAccessTokenUseCase
@@ -98,6 +108,9 @@ class GatewaySecurityRoutesTest {
                 preparationRepository = StubPreparationRepositoryContract,
             ),
         )
+
+    private val stubLearningQuestionsGraphqlUseCases: LearningQuestionsGraphqlUseCases =
+        LearningQuestionsGraphqlUseCases(repository = StubLearningQuestionsRepositoryContract)
 
     @Test
     fun `graphql inviteUser returns unauthorized without authorization header`() = testApplication {
@@ -403,6 +416,7 @@ class GatewaySecurityRoutesTest {
                         },
                     ),
                     preparation = stubPreparationGraphqlServices,
+                    learningQuestions = stubLearningQuestionsGraphqlUseCases,
                 ),
             )
         }
@@ -451,6 +465,7 @@ class GatewaySecurityRoutesTest {
                         homeRepository = EmployeeHomeReadinessTestHomeRepository,
                     ),
                     preparation = stubPreparationGraphqlServices,
+                    learningQuestions = stubLearningQuestionsGraphqlUseCases,
                 ),
             )
         }
@@ -490,8 +505,77 @@ class GatewaySecurityRoutesTest {
                     homeRepository = LocaleAwareDeveloperTestHomeRepository,
                 ),
                 preparation = stubPreparationGraphqlServices,
+                learningQuestions = stubLearningQuestionsGraphqlUseCases,
             ),
         )
+    }
+}
+
+private object StubLearningQuestionsRepositoryContract : LearningQuestionsRepositoryContract {
+
+    override suspend fun getPublicCatalog(locale: String): DatabaseLearningCatalogResponseDto =
+        throw AssertionError("stub")
+
+    override suspend fun getCatalog(
+        facilitatorUserId: UUID,
+        facilitatorRole: DatabaseUserRole,
+        locale: String,
+        subjectUserId: UUID?,
+    ): DatabaseLearningCatalogResponseDto = throw AssertionError("stub")
+
+    override suspend fun getPublicPage(
+        locale: String,
+        skillGroup: DatabaseLearningSkillGroup,
+        limit: Int,
+        afterQuestionId: Long?,
+    ): DatabaseLearningPageResponseDto = throw AssertionError("stub")
+
+    override suspend fun getPage(
+        query: DatabaseLearningFacilitatedPageQuery,
+    ): DatabaseLearningPageResponseDto = throw AssertionError("stub")
+
+    override suspend fun getPublicSearch(
+        locale: String,
+        query: String,
+    ): DatabaseLearningSearchResponseDto = throw AssertionError("stub")
+
+    override suspend fun getSearch(
+        facilitatorUserId: UUID,
+        facilitatorRole: DatabaseUserRole,
+        locale: String,
+        query: String,
+        subjectUserId: UUID?,
+    ): DatabaseLearningSearchResponseDto = throw AssertionError("stub")
+
+    override suspend fun getPublicQuestion(
+        questionId: Long,
+        locale: String,
+    ): DatabaseLearningQuestionDto = throw AssertionError("stub")
+
+    override suspend fun getQuestion(
+        facilitatorUserId: UUID,
+        facilitatorRole: DatabaseUserRole,
+        questionId: Long,
+        locale: String,
+        subjectUserId: UUID?,
+    ): DatabaseLearningQuestionDto = throw AssertionError("stub")
+
+    override suspend fun listRemarks(
+        questionId: Long,
+        subjectUserId: UUID,
+        facilitatorUserId: UUID,
+        facilitatorRole: DatabaseUserRole,
+    ): List<DatabaseLearningRemarkDto> = throw AssertionError("stub")
+
+    override suspend fun addRemark(
+        questionId: Long,
+        facilitatorUserId: UUID,
+        facilitatorRole: DatabaseUserRole,
+        body: DatabaseLearningRemarkCreateRequestDto,
+    ): DatabaseLearningRemarkDto = throw AssertionError("stub")
+
+    override suspend fun revokeGuestSession(sessionId: UUID) {
+        throw AssertionError("stub")
     }
 }
 
