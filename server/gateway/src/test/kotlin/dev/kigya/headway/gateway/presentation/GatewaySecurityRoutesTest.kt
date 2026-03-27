@@ -299,6 +299,41 @@ class GatewaySecurityRoutesTest {
     }
 
     @Test
+    fun `graphql preparationSetupEmployees returns guest not allowed for guest principal`() =
+        testApplication {
+            val authRepository = TestAuthRepository(
+                validationResponse = AuthValidateTokenResponse(
+                    principalType = AuthPrincipalType.GUEST,
+                    guestSessionId = UUID.fromString("00000000-0000-0000-0000-00000000cafe"),
+                    scopes = listOf("learn_guest"),
+                ),
+            )
+            val databaseRepository = TestDatabaseRepository(
+                caller = developerCaller,
+                invitedUser = invitedUser,
+            )
+
+            application {
+                installSecurityTestApplication(
+                    authRepository = authRepository,
+                    databaseRepository = databaseRepository,
+                )
+            }
+
+            val response = client.post("/api/v1/graphql") {
+                contentType(ContentType.Application.Json)
+                header(HttpHeaders.Authorization, "Bearer guest-token")
+                setBody(GRAPHQL_PREPARATION_SETUP_EMPLOYEES_QUERY)
+            }
+
+            assertEquals(HttpStatusCode.OK, response.status)
+            val root = Json.parseToJsonElement(response.bodyAsText()).jsonObject
+            val error = root["errors"]!!.jsonArray.first().jsonObject
+            assertEquals("FORBIDDEN", error["extensions"]!!.jsonObject["code"]!!.jsonPrimitive.content)
+            assertEquals("GUEST_NOT_ALLOWED", error["extensions"]!!.jsonObject["reason"]!!.jsonPrimitive.content)
+        }
+
+    @Test
     fun `graphql homeScreen returns russian greeting for ru locale header`() = testApplication {
         val authRepository = TestAuthRepository(
             validationResponse = AuthValidateTokenResponse(
@@ -647,3 +682,6 @@ private const val GRAPHQL_INVITE_MUTATION =
 private const val GRAPHQL_HOME_QUERY: String =
     """{"query":"query { homeScreen { dateLabel greeting roleLabel readinessPercent """ +
         """ nextInterviewType nextInterviewTypeLabel sections { id title style iconUrl } } }"}"""
+
+private const val GRAPHQL_PREPARATION_SETUP_EMPLOYEES_QUERY =
+    """{"query":"query { preparationSetupEmployees { id displayName } }"}"""

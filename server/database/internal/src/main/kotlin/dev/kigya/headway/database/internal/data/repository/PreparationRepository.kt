@@ -25,6 +25,8 @@ import dev.kigya.headway.database.internal.data.table.UsersTable
 import dev.kigya.headway.database.internal.domain.error.DatabaseException
 import dev.kigya.headway.database.internal.domain.repository.PreparationRepositoryContract
 import dev.kigya.headway.database.internal.domain.usecase.BuildSessionQuestionSnapshotUseCase
+import kotlinx.serialization.builtins.ListSerializer
+import kotlinx.serialization.builtins.serializer
 import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.jsonArray
 import kotlinx.serialization.json.jsonPrimitive
@@ -703,18 +705,8 @@ private fun normalizeCatalogLocale(locale: String): String {
     }
 }
 
-private fun topicTagKeysToJson(keys: List<String>): String = buildString {
-    append('[')
-    keys.forEachIndexed { index, key ->
-        if (index > 0) {
-            append(',')
-        }
-        append('"')
-        append(key.replace("\\", "\\\\").replace("\"", "\\\""))
-        append('"')
-    }
-    append(']')
-}
+private fun topicTagKeysToJson(keys: List<String>): String =
+    Json.encodeToString(ListSerializer(String.serializer()), keys)
 
 private const val STATUS_ACTIVE: String = "ACTIVE"
 private const val STATUS_COMPLETED: String = "COMPLETED"

@@ -57,11 +57,10 @@ private fun SchemaBuilder.registerPreparationQueries(
     query(GatewayGraphqlOperation.PreparationSetupEmployees.name) {
         resolver { ctx: Context ->
             val requestContext = ctx.graphqlRequestContext()
-            val user = ctx.resolveAuthenticatedUser(
+            val user = ensurePreparationAndResolveUser(
                 resolvePrincipal = resolvePrincipal,
-                authorizationHeader = requestContext.authorizationHeader,
+                requestContext = requestContext,
             )
-            GatewayAuthorizationPolicy.ensure(user.toPrincipal(), GatewayOperation.Preparation)
             preparation.getPreparationSetupEmployees(user)
         }
     }
@@ -69,11 +68,10 @@ private fun SchemaBuilder.registerPreparationQueries(
     query(GatewayGraphqlOperation.PreparationEmployeeReadiness.name) {
         resolver { subjectUserId: UUID, ctx: Context ->
             val requestContext = ctx.graphqlRequestContext()
-            val user = ctx.resolveAuthenticatedUser(
+            val user = ensurePreparationAndResolveUser(
                 resolvePrincipal = resolvePrincipal,
-                authorizationHeader = requestContext.authorizationHeader,
+                requestContext = requestContext,
             )
-            GatewayAuthorizationPolicy.ensure(user.toPrincipal(), GatewayOperation.Preparation)
             preparation.getPreparationEmployeeReadiness(user, subjectUserId)
         }
     }
@@ -81,11 +79,10 @@ private fun SchemaBuilder.registerPreparationQueries(
     query(GatewayGraphqlOperation.PreparationFormatCatalog.name) {
         resolver { ctx: Context ->
             val requestContext = ctx.graphqlRequestContext()
-            val user = ctx.resolveAuthenticatedUser(
+            val user = ensurePreparationAndResolveUser(
                 resolvePrincipal = resolvePrincipal,
-                authorizationHeader = requestContext.authorizationHeader,
+                requestContext = requestContext,
             )
-            GatewayAuthorizationPolicy.ensure(user.toPrincipal(), GatewayOperation.Preparation)
             preparation.getPreparationFormatCatalog(user, requestContext.appLocale)
         }
     }
@@ -93,11 +90,10 @@ private fun SchemaBuilder.registerPreparationQueries(
     query(GatewayGraphqlOperation.PreparationSession.name) {
         resolver { sessionId: UUID, ctx: Context ->
             val requestContext = ctx.graphqlRequestContext()
-            val user = ctx.resolveAuthenticatedUser(
+            val user = ensurePreparationAndResolveUser(
                 resolvePrincipal = resolvePrincipal,
-                authorizationHeader = requestContext.authorizationHeader,
+                requestContext = requestContext,
             )
-            GatewayAuthorizationPolicy.ensure(user.toPrincipal(), GatewayOperation.Preparation)
             preparation.getPreparationSessionState(user, sessionId)
         }
     }
@@ -105,11 +101,10 @@ private fun SchemaBuilder.registerPreparationQueries(
     query(GatewayGraphqlOperation.PreparationSessionSummary.name) {
         resolver { sessionId: UUID, ctx: Context ->
             val requestContext = ctx.graphqlRequestContext()
-            val user = ctx.resolveAuthenticatedUser(
+            val user = ensurePreparationAndResolveUser(
                 resolvePrincipal = resolvePrincipal,
-                authorizationHeader = requestContext.authorizationHeader,
+                requestContext = requestContext,
             )
-            GatewayAuthorizationPolicy.ensure(user.toPrincipal(), GatewayOperation.Preparation)
             preparation.getPreparationSessionSummary(user, sessionId, requestContext.appLocale)
         }
     }
@@ -128,11 +123,10 @@ private fun SchemaBuilder.registerPreparationMutations(
                 ctx: Context,
             ->
             val requestContext = ctx.graphqlRequestContext()
-            val user = ctx.resolveAuthenticatedUser(
+            val user = ensurePreparationAndResolveUser(
                 resolvePrincipal = resolvePrincipal,
-                authorizationHeader = requestContext.authorizationHeader,
+                requestContext = requestContext,
             )
-            GatewayAuthorizationPolicy.ensure(user.toPrincipal(), GatewayOperation.Preparation)
             preparation.startPreparationSession(
                 user = user,
                 subjectUserId = subjectUserId,
@@ -152,11 +146,10 @@ private fun SchemaBuilder.registerPreparationMutations(
                 ctx: Context,
             ->
             val requestContext = ctx.graphqlRequestContext()
-            val user = ctx.resolveAuthenticatedUser(
+            val user = ensurePreparationAndResolveUser(
                 resolvePrincipal = resolvePrincipal,
-                authorizationHeader = requestContext.authorizationHeader,
+                requestContext = requestContext,
             )
-            GatewayAuthorizationPolicy.ensure(user.toPrincipal(), GatewayOperation.Preparation)
             preparation.submitPreparationOutcome(
                 user = user,
                 sessionId = sessionId,
@@ -170,11 +163,10 @@ private fun SchemaBuilder.registerPreparationMutations(
     mutation(GatewayGraphqlOperation.PreparationSelectQuestion.name) {
         resolver { sessionId: UUID, sessionQuestionId: UUID, ctx: Context ->
             val requestContext = ctx.graphqlRequestContext()
-            val user = ctx.resolveAuthenticatedUser(
+            val user = ensurePreparationAndResolveUser(
                 resolvePrincipal = resolvePrincipal,
-                authorizationHeader = requestContext.authorizationHeader,
+                requestContext = requestContext,
             )
-            GatewayAuthorizationPolicy.ensure(user.toPrincipal(), GatewayOperation.Preparation)
             preparation.selectPreparationSessionQuestion(user, sessionId, sessionQuestionId)
         }
     }
@@ -182,11 +174,10 @@ private fun SchemaBuilder.registerPreparationMutations(
     mutation(GatewayGraphqlOperation.PreparationFinishSession.name) {
         resolver { sessionId: UUID, ctx: Context ->
             val requestContext = ctx.graphqlRequestContext()
-            val user = ctx.resolveAuthenticatedUser(
+            val user = ensurePreparationAndResolveUser(
                 resolvePrincipal = resolvePrincipal,
-                authorizationHeader = requestContext.authorizationHeader,
+                requestContext = requestContext,
             )
-            GatewayAuthorizationPolicy.ensure(user.toPrincipal(), GatewayOperation.Preparation)
             preparation.finishPreparationSession(user, sessionId)
         }
     }
@@ -195,13 +186,15 @@ private fun SchemaBuilder.registerPreparationMutations(
 private fun Context.graphqlRequestContext(): GraphqlRequestContext =
     get<GraphqlRequestContext>() ?: throw GatewayException.Internal("Missing GraphQL request context")
 
-private suspend fun Context.resolveAuthenticatedUser(
+private suspend fun ensurePreparationAndResolveUser(
     resolvePrincipal: ResolvePrincipalUseCase,
-    authorizationHeader: String?,
-): GatewayUser = when (val principal = resolvePrincipal(authorizationHeader)) {
-    is GatewayPrincipal.User -> principal.user
-    is GatewayPrincipal.Guest ->
-        throw GatewayException.Internal("Unexpected guest principal")
+    requestContext: GraphqlRequestContext,
+): GatewayUser {
+    val principal = resolvePrincipal(requestContext.authorizationHeader)
+    GatewayAuthorizationPolicy.ensure(principal, GatewayOperation.Preparation)
+    return when (principal) {
+        is GatewayPrincipal.User -> principal.user
+        is GatewayPrincipal.Guest ->
+            throw GatewayException.Internal("Unexpected guest principal")
+    }
 }
-
-private fun GatewayUser.toPrincipal(): GatewayPrincipal = GatewayPrincipal.User(this)
