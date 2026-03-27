@@ -2,6 +2,7 @@ package dev.kigya.headway.database.internal
 
 import dev.kigya.headway.database.internal.core.config.ConfigurationValues
 import dev.kigya.headway.database.internal.di.databaseModule
+import dev.kigya.headway.database.internal.presentation.DatabaseApplicationUseCases
 import dev.kigya.headway.database.internal.presentation.installDatabaseApi
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
@@ -26,11 +27,14 @@ private fun Application.databaseApp() {
         modules(databaseModule)
     }
     installDatabaseApi(
-        getUser = get(),
-        createGoogleUser = get(),
-        upsertGoogleUser = get(),
-        inviteUser = get(),
-        createSession = get(),
-        validateSession = get(),
+        useCases = DatabaseApplicationUseCases(
+            getUser = get(),
+            createGoogleUser = get(),
+            upsertGoogleUser = get(),
+            inviteUser = get(),
+            createSession = get(),
+            validateSession = get(),
+            preparation = get(),
+        ),
     )
 }

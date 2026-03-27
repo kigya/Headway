@@ -5,6 +5,7 @@ import dev.kigya.headway.gateway.core.config.ConfigurationValues
 import dev.kigya.headway.gateway.di.gatewayDependencies
 import dev.kigya.headway.gateway.presentation.GatewayApiBindings
 import dev.kigya.headway.gateway.presentation.installGatewayApi
+import dev.kigya.headway.gateway.presentation.schema.PreparationGraphqlServices
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
 import io.ktor.server.engine.embeddedServer
@@ -35,6 +36,17 @@ private fun Application.gatewayApp() {
             inviteUser = get(),
             resolvePrincipal = get(),
             getHomeScreen = get(),
+            preparation = PreparationGraphqlServices(
+                getPreparationSetupEmployees = get(),
+                getPreparationEmployeeReadiness = get(),
+                getPreparationFormatCatalog = get(),
+                startPreparationSession = get(),
+                getPreparationSessionState = get(),
+                submitPreparationOutcome = get(),
+                selectPreparationSessionQuestion = get(),
+                finishPreparationSession = get(),
+                getPreparationSessionSummary = get(),
+            ),
         ),
     )
 }

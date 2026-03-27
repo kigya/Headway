@@ -11,6 +11,6 @@
   "feature_resolution": {
     "validate_git_branch": true,
     "extra_branch_regex": "^server-headway/[0-9]+-.+",
-    "fixed_specs_subdir": "001-interview-questions-supabase"
+    "fixed_specs_subdir": "002-training-session-backend"
   }
 }

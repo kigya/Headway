@@ -19,6 +19,7 @@ import dev.kigya.headway.gateway.presentation.schema.authSchema
 import dev.kigya.headway.gateway.presentation.schema.databaseSchema
 import dev.kigya.headway.gateway.presentation.schema.healthSchema
 import dev.kigya.headway.gateway.presentation.schema.homeSchema
+import dev.kigya.headway.gateway.presentation.schema.preparationSchema
 import io.ktor.http.HttpHeaders
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
@@ -86,6 +87,10 @@ internal fun Application.installGatewayApi(bindings: GatewayApiBindings) {
             homeSchema(
                 resolvePrincipal = bindings.resolvePrincipal,
                 getHomeScreen = bindings.getHomeScreen,
+            )
+            preparationSchema(
+                resolvePrincipal = bindings.resolvePrincipal,
+                preparation = bindings.preparation,
             )
         }
     }
