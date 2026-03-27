@@ -5,4 +5,7 @@ internal enum class GatewayOperation {
     InviteUser,
     HomeScreen,
     Preparation,
+    LearningRead,
+    LearningRemarkWrite,
+    LogoutGuest,
 }

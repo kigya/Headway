@@ -1,5 +1,6 @@
 package dev.kigya.headway.admin.internal.core.session
 
+import kotlinx.serialization.SerialName
 import kotlinx.serialization.Serializable
 import kotlinx.serialization.json.Json
 import java.security.MessageDigest
@@ -9,9 +10,13 @@ import javax.crypto.spec.SecretKeySpec
 
 @Serializable
 internal data class AdminSession(
+    @SerialName("githubLogin")
     val githubLogin: String,
+    @SerialName("githubAvatarUrl")
     val githubAvatarUrl: String? = null,
+    @SerialName("hasRepositoryAccess")
     val hasRepositoryAccess: Boolean,
+    @SerialName("createdAt")
     val createdAt: Long,
 ) {
     companion object {

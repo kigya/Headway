@@ -14,6 +14,7 @@ import dev.kigya.headway.database.api.model.out.DatabasePreparationSessionSummar
 import dev.kigya.headway.database.api.model.out.DatabasePreparationStartSessionResponseDto
 import dev.kigya.headway.database.api.model.out.DatabaseUserRole
 import dev.kigya.headway.database.internal.core.extension.dbQuery
+import dev.kigya.headway.database.internal.data.learning.LearningQuestionPreparationSync
 import dev.kigya.headway.database.internal.data.model.ExposedAccountStatus
 import dev.kigya.headway.database.internal.data.table.EmployeePreparationPlanTable
 import dev.kigya.headway.database.internal.data.table.MentorshipsTable
@@ -50,6 +51,7 @@ import java.util.UUID
 internal class PreparationRepository(
     private val database: Database,
     private val buildSessionQuestionSnapshot: BuildSessionQuestionSnapshotUseCase,
+    private val learningQuestionPreparationSync: LearningQuestionPreparationSync,
 ) : PreparationRepositoryContract {
 
     override suspend fun listSetupEmployees(
@@ -246,6 +248,14 @@ internal class PreparationRepository(
             outcome = outcome,
             comment = comment?.trim()?.takeIf(String::isNotEmpty),
         )
+        val bankQuestionId = questionRow[SessionQuestionTable.sourceQuestionId]
+        if (bankQuestionId != null) {
+            learningQuestionPreparationSync.recordPreparationOutcome(
+                subjectUserId = sessionRow[PreparationSessionTable.subjectUserId].value,
+                bankQuestionId = bankQuestionId,
+                outcome = outcome,
+            )
+        }
         when (formatCode) {
             DatabasePreparationFormatCode.CUSTOM ->
                 PreparationSessionTable.update({ PreparationSessionTable.id eq sessionId }) {

@@ -6,8 +6,10 @@ import kotlinx.serialization.Serializable
 import java.util.UUID
 
 @Serializable
-data class DatabasePreparationSelectQuestionRequestDto(
-    @SerialName("sessionQuestionId")
+data class DatabaseLearningRemarkCreateRequestDto(
+    @SerialName("subject_user_id")
     @Serializable(UUIDSerializer::class)
-    val sessionQuestionId: UUID,
+    val subjectUserId: UUID,
+    @SerialName("body")
+    val body: String,
 )
