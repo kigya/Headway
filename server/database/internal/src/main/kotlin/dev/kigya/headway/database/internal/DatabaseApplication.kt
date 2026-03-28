@@ -35,6 +35,8 @@ private fun Application.databaseApp() {
             createSession = get(),
             validateSession = get(),
             preparation = get(),
+            learningQuestions = get(),
+            guestSessions = get(),
         ),
     )
 }

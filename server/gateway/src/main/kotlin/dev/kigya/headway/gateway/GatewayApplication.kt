@@ -3,6 +3,7 @@ package dev.kigya.headway.gateway
 import dev.kigya.headway.common.config.CommonConfigurationValues
 import dev.kigya.headway.gateway.core.config.ConfigurationValues
 import dev.kigya.headway.gateway.di.gatewayDependencies
+import dev.kigya.headway.gateway.domain.usecase.LearningQuestionsGraphqlUseCases
 import dev.kigya.headway.gateway.presentation.GatewayApiBindings
 import dev.kigya.headway.gateway.presentation.installGatewayApi
 import dev.kigya.headway.gateway.presentation.schema.PreparationGraphqlServices
@@ -47,6 +48,7 @@ private fun Application.gatewayApp() {
                 finishPreparationSession = get(),
                 getPreparationSessionSummary = get(),
             ),
+            learningQuestions = get<LearningQuestionsGraphqlUseCases>(),
         ),
     )
 }

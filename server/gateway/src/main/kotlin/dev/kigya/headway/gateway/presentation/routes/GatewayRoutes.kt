@@ -70,4 +70,32 @@ internal sealed interface GatewayGraphqlOperation {
     data object PreparationSessionSummary : GatewayGraphqlOperation {
         override val name: String = "preparationSessionSummary"
     }
+
+    data object LearningQuestionsCatalog : GatewayGraphqlOperation {
+        override val name: String = "learningQuestionsCatalog"
+    }
+
+    data object LearningQuestionsPage : GatewayGraphqlOperation {
+        override val name: String = "learningQuestionsPage"
+    }
+
+    data object LearningQuestionsSearch : GatewayGraphqlOperation {
+        override val name: String = "learningQuestionsSearch"
+    }
+
+    data object LearningQuestion : GatewayGraphqlOperation {
+        override val name: String = "learningQuestion"
+    }
+
+    data object LearningQuestionRemarks : GatewayGraphqlOperation {
+        override val name: String = "learningQuestionRemarks"
+    }
+
+    data object AddLearningQuestionRemark : GatewayGraphqlOperation {
+        override val name: String = "addLearningQuestionRemark"
+    }
+
+    data object LogoutGuest : GatewayGraphqlOperation {
+        override val name: String = "logoutGuest"
+    }
 }

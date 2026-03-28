@@ -28,8 +28,9 @@ class JWTRepositoryTest {
     fun `guest token validates and carries session and scope`() {
         val clock = Clock.systemUTC()
         val jwt: JWTRepositoryContract = JWTRepository(config = config, clock = clock)
-        val (token, expMs) = jwt.generateGuestAccessToken()
-        assertTrue(expMs > clock.instant().toEpochMilli())
+        val issued = jwt.generateGuestAccessToken()
+        val token = issued.accessToken
+        assertTrue(issued.expiresAtEpochMs > clock.instant().toEpochMilli())
 
         val payload = jwt.validateGuestAccessToken(token)
         assertNotNull(payload)
@@ -52,7 +53,7 @@ class JWTRepositoryTest {
     fun `guest token is not valid as user access`() {
         val clock = Clock.systemUTC()
         val jwt: JWTRepositoryContract = JWTRepository(config = config, clock = clock)
-        val (guestToken, _) = jwt.generateGuestAccessToken()
+        val guestToken = jwt.generateGuestAccessToken().accessToken
         assertFalse(jwt.isAccessTokenValid(guestToken))
     }
 

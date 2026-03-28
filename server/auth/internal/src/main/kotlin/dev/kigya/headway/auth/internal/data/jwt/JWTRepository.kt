@@ -4,6 +4,7 @@ import com.auth0.jwt.JWT
 import com.auth0.jwt.algorithms.Algorithm
 import com.auth0.jwt.exceptions.JWTDecodeException
 import com.auth0.jwt.exceptions.TokenExpiredException
+import dev.kigya.headway.auth.internal.domain.repository.GeneratedGuestAccessToken
 import dev.kigya.headway.auth.internal.domain.repository.GuestAccessTokenPayload
 import dev.kigya.headway.auth.internal.domain.repository.JWTRepositoryContract
 import java.time.Clock
@@ -50,7 +51,7 @@ internal class JWTRepository(
             .sign(refreshAlgorithm)
     }
 
-    override fun generateGuestAccessToken(): Pair<String, Long> {
+    override fun generateGuestAccessToken(): GeneratedGuestAccessToken {
         val sessionId = UUID.randomUUID()
         val now = Instant.now(clock)
         val expiresAt = now.plusSeconds(config.guestTtlSec)
@@ -64,7 +65,11 @@ internal class JWTRepository(
             .withIssuedAt(Date.from(now))
             .withExpiresAt(Date.from(expiresAt))
             .sign(guestAlgorithm)
-        return token to expiresAt.toEpochMilli()
+        return GeneratedGuestAccessToken(
+            accessToken = token,
+            expiresAtEpochMs = expiresAt.toEpochMilli(),
+            sessionId = sessionId,
+        )
     }
 
     override fun isAccessTokenValid(token: String): Boolean = try {
