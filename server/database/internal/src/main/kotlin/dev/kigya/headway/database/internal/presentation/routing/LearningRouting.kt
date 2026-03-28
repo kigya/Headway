@@ -126,6 +126,7 @@ private fun Route.registerLearningRemarks(learning: LearningQuestionsService) {
         call.respond(
             learning.addRemark(
                 questionId = params.questionId,
+                routeSubjectUserId = params.subjectUserId,
                 facilitatorUserId = params.facilitatorUserId,
                 facilitatorRole = params.facilitatorRole,
                 body = body,

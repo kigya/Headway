@@ -34,15 +34,17 @@ Optional quality commands (see command descriptions): `/speckit.analyze`, `/spec
 
 **CLI:** Specify was installed with `uvx … specify init --here --ai cursor-agent --offline` (see `.specify/init-options.json`). If `specify init` hits GitHub API rate limits, use `--offline` or set `GH_TOKEN`.
 
-**Git branch names:** Default Spec Kit scripts only accept branches like `001-feature-name` or `YYYYMMDD-HHMMSS-feature-name`. Headway may use other conventions (for example `server-headway/79-training-session-flow`). Configure `.specify/init-options.json` → `feature_resolution`:
+**Git branch names:** In this repo, `.specify/init-options.json` sets `branch_numbering` to **`headway`**: `/speckit.specify` creates a branch like `server-headway/<N>-short-name` and a matching spec folder `specs/<N>-short-name`, where `<N>` is the next free board/issue-style id (from existing `specs/<digits>-*` and matching git branches). That matches `/commit` task numbers (`SERVER-HEADWAY-<N>:` / `CLIENT-HEADWAY-<N>:` / `FULLSTACK-HEADWAY-<N>:`). To use Speckit’s original `001-feature` or timestamp branches instead, set `branch_numbering` to `sequential` or `timestamp`.
+
+`feature_resolution` in the same file still controls validation and fallbacks:
 
 | Field | Purpose |
 |-------|---------|
 | `validate_git_branch` | `false` — skip the Speckit branch-name check (still need a way to resolve `FEATURE_DIR`; see below). |
-| `extra_branch_regex` | POSIX extended regex; if set and `validate_git_branch` is `true`, branches matching this **or** the default Speckit patterns pass validation. |
-| `fixed_specs_subdir` | Basename of the folder under `specs/` to use when the current branch is **not** `001-…` or timestamp-prefixed (required for custom branch names unless you export `SPECIFY_FEATURE` to a Speckit-style name). |
+| `extra_branch_regex` | POSIX extended regex; if set and `validate_git_branch` is `true`, branches matching this **or** the default Speckit / headway patterns pass validation. |
+| `fixed_specs_subdir` | Optional: basename under `specs/` when the current branch does not map to a folder (rare if you use headway or `001-…` / timestamp names). |
 
-`check-prerequisites.sh --json --paths-only` reads the same rules. You can instead run with `SPECIFY_FEATURE=001-my-feature` (no init change) so `FEATURE_DIR` resolves to `specs/001-my-feature` while staying on any git branch.
+`check-prerequisites.sh --json --paths-only` reads the same rules. You can run with `SPECIFY_FEATURE=<branch-or-spec-folder-name>` so `FEATURE_DIR` resolves while on another git branch.
 
 ## Memory Bank maintenance
 

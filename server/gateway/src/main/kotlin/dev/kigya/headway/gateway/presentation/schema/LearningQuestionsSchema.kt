@@ -152,13 +152,8 @@ private fun SchemaBuilder.registerLearningMutations(
             val requestContext = ctx.graphqlRequestContext()
             val principal = resolvePrincipal(requestContext.authorizationHeader)
             GatewayAuthorizationPolicy.ensure(principal, GatewayOperation.LogoutGuest)
-            when (principal) {
-                is GatewayPrincipal.Guest ->
-                    learningQuestions.logoutGuest(sessionId = principal.guestSessionId)
-
-                is GatewayPrincipal.User ->
-                    throw GatewayException.Internal("Unexpected user principal for logoutGuest")
-            }
+            val guestPrincipal = principal as GatewayPrincipal.Guest
+            learningQuestions.logoutGuest(sessionId = guestPrincipal.guestSessionId)
             true
         }
     }

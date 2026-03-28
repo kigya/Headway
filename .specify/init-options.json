@@ -2,7 +2,10 @@
   "ai": "cursor-agent",
   "ai_commands_dir": null,
   "ai_skills": false,
-  "branch_numbering": "sequential",
+  "branch_numbering": "headway",
+  "headway": {
+    "track": "server-headway"
+  },
   "here": true,
   "offline": true,
   "preset": null,
@@ -10,7 +13,6 @@
   "speckit_version": "0.4.0",
   "feature_resolution": {
     "validate_git_branch": true,
-    "extra_branch_regex": "^server-headway/[0-9]+-.+",
-    "fixed_specs_subdir": "002-training-session-backend"
+    "extra_branch_regex": "^(client|server|fullstack)-headway/[0-9]+-.+"
   }
 }

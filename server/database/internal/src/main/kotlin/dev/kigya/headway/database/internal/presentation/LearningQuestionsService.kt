@@ -11,8 +11,7 @@ import dev.kigya.headway.database.api.model.out.DatabaseLearningSkillGroup
 import dev.kigya.headway.database.api.model.out.DatabaseUserRole
 import dev.kigya.headway.database.internal.data.repository.LearningQuestionRemarksRepository
 import dev.kigya.headway.database.internal.data.repository.LearningQuestionsReadRepository
-import dev.kigya.headway.database.internal.data.scope.ensureEmployeeSelfSubject
-import dev.kigya.headway.database.internal.data.scope.isSubjectInFacilitatorLearningScope
+import dev.kigya.headway.database.internal.data.scope.ensureFacilitatorLearningSubjectAccess
 import dev.kigya.headway.database.internal.domain.error.DatabaseException
 import java.util.UUID
 
@@ -102,8 +101,8 @@ internal class LearningQuestionsService(
         facilitatorUserId: UUID,
         facilitatorRole: DatabaseUserRole,
     ): List<DatabaseLearningRemarkDto> {
-        resolveSubjectForRemarks(
-            facilitatorUserId = facilitatorUserId,
+        ensureFacilitatorLearningSubjectAccess(
+            facilitatorId = facilitatorUserId,
             facilitatorRole = facilitatorRole,
             subjectUserId = subjectUserId,
         )
@@ -115,13 +114,19 @@ internal class LearningQuestionsService(
 
     suspend fun addRemark(
         questionId: Long,
+        routeSubjectUserId: UUID,
         facilitatorUserId: UUID,
         facilitatorRole: DatabaseUserRole,
         body: DatabaseLearningRemarkCreateRequestDto,
     ): DatabaseLearningRemarkDto {
+        if (routeSubjectUserId != body.subjectUserId) {
+            throw DatabaseException.InvalidRequest(
+                message = "Subject user id does not match route",
+            )
+        }
         val subjectUserId = body.subjectUserId
-        resolveSubjectForRemarks(
-            facilitatorUserId = facilitatorUserId,
+        ensureFacilitatorLearningSubjectAccess(
+            facilitatorId = facilitatorUserId,
             facilitatorRole = facilitatorRole,
             subjectUserId = subjectUserId,
         )
@@ -141,28 +146,6 @@ internal class LearningQuestionsService(
             subjectUserId = subjectUserId,
             authorUserId = facilitatorUserId,
             body = trimmed,
-        )
-    }
-}
-
-private fun resolveSubjectForRemarks(
-    facilitatorUserId: UUID,
-    facilitatorRole: DatabaseUserRole,
-    subjectUserId: UUID,
-) {
-    ensureEmployeeSelfSubject(
-        facilitatorId = facilitatorUserId,
-        facilitatorRole = facilitatorRole,
-        subjectUserId = subjectUserId,
-    )
-    if (!isSubjectInFacilitatorLearningScope(
-            facilitatorId = facilitatorUserId,
-            facilitatorRole = facilitatorRole,
-            subjectUserId = subjectUserId,
-        )
-    ) {
-        throw DatabaseException.Forbidden(
-            message = "Subject not in facilitator scope",
         )
     }
 }

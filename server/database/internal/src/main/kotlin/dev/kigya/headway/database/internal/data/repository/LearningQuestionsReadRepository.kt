@@ -12,8 +12,7 @@ import dev.kigya.headway.database.api.model.out.DatabaseLearningSkillGroup
 import dev.kigya.headway.database.api.model.out.DatabaseLearningTagDto
 import dev.kigya.headway.database.api.model.out.DatabaseUserRole
 import dev.kigya.headway.database.internal.core.extension.dbQuery
-import dev.kigya.headway.database.internal.data.scope.ensureEmployeeSelfSubject
-import dev.kigya.headway.database.internal.data.scope.isSubjectInFacilitatorLearningScope
+import dev.kigya.headway.database.internal.data.scope.ensureFacilitatorLearningSubjectAccess
 import dev.kigya.headway.database.internal.data.table.LearningQuestionProgressState
 import dev.kigya.headway.database.internal.data.table.LearningQuestionProgressTable
 import dev.kigya.headway.database.internal.data.table.QuestionLocaleCode
@@ -159,19 +158,11 @@ private fun resolveSubjectUserId(
     subjectUserId: UUID?,
 ): UUID {
     val subject = subjectUserId ?: facilitatorUserId
-    ensureEmployeeSelfSubject(
+    ensureFacilitatorLearningSubjectAccess(
         facilitatorId = facilitatorUserId,
         facilitatorRole = facilitatorRole,
         subjectUserId = subject,
     )
-    if (!isSubjectInFacilitatorLearningScope(
-            facilitatorId = facilitatorUserId,
-            facilitatorRole = facilitatorRole,
-            subjectUserId = subject,
-        )
-    ) {
-        throw DatabaseException.Forbidden(message = "Subject not in facilitator scope")
-    }
     return subject
 }
 
@@ -336,10 +327,19 @@ private fun rankedSearchHits(
     limit: Int,
 ): List<Long> {
     val rows = loadActiveQuestionRows(skillGroup)
+    if (rows.isEmpty()) {
+        return emptyList()
+    }
+    val questionIds = rows.map { row -> row[QuestionsTable.id] }
+    val texts = localizedQuestionTextsForQuestions(
+        questionIds = questionIds,
+        preferredLocale = preferredLocale,
+    )
+    val tagKeysByQuestion = tagKeysByQuestionIds(questionIds = questionIds)
     val scored = rows.mapNotNull { row ->
         val qId = row[QuestionsTable.id]
-        val text = localizedQuestionText(questionId = qId, preferredLocale = preferredLocale).lowercase()
-        val tagKeys = tagKeysForQuestion(qId).map { key -> key.lowercase() }
+        val text = texts.getValue(qId).lowercase()
+        val tagKeys = tagKeysByQuestion[qId].orEmpty().map { key -> key.lowercase() }
         var score = 0
         for (token in tokens) {
             if (text.contains(token)) {
@@ -464,6 +464,28 @@ private fun localizedQuestionText(
     return "Question $questionId"
 }
 
+private fun localizedQuestionTextsForQuestions(
+    questionIds: List<Long>,
+    preferredLocale: QuestionLocaleCode,
+): Map<Long, String> {
+    if (questionIds.isEmpty()) {
+        return emptyMap()
+    }
+    val qp: Op<Boolean> = questionIds.toDisjunction { qId -> QuestionLocalesTable.questionId eq qId }
+    val localeRows = QuestionLocalesTable.selectAll().where { qp }.toList()
+    val byQuestion = localeRows.groupBy { r -> r[QuestionLocalesTable.questionId] }
+        .mapValues { (_, rows) ->
+            rows.associate { r -> r[QuestionLocalesTable.locale] to r[QuestionLocalesTable.questionText] }
+        }
+    return questionIds.distinct().associateWith { qId ->
+        val localeMap = byQuestion[qId] ?: emptyMap()
+        localeMap[preferredLocale]
+            ?: localeMap[QuestionLocaleCode.EN]
+            ?: localeMap[QuestionLocaleCode.RU]
+            ?: "Question $qId"
+    }
+}
+
 private fun loadTagDtosByQuestionId(
     questionIds: List<Long>,
     preferredLocale: QuestionLocaleCode,
@@ -491,16 +513,24 @@ private fun loadTagDtosByQuestionId(
         }
 }
 
-private fun tagKeysForQuestion(questionId: Long): List<String> {
-    val links = QuestionTagsTable.selectAll()
-        .where { QuestionTagsTable.questionId eq questionId }
-        .toList()
+private fun tagKeysByQuestionIds(questionIds: List<Long>): Map<Long, List<String>> {
+    if (questionIds.isEmpty()) {
+        return emptyMap()
+    }
+    val qp: Op<Boolean> = questionIds.toDisjunction { qId -> QuestionTagsTable.questionId eq qId }
+    val links = QuestionTagsTable.selectAll().where { qp }.toList()
     if (links.isEmpty()) {
-        return emptyList()
+        return emptyMap()
     }
     val tagIds = links.map { l -> l[QuestionTagsTable.tagId] }.distinct()
     val tp: Op<Boolean> = tagIds.toDisjunction { tid -> TagsTable.id eq tid }
-    return TagsTable.selectAll().where { tp }.map { r -> r[TagsTable.key] }
+    val idToKey = TagsTable.selectAll().where { tp }.associate { r ->
+        r[TagsTable.id] to r[TagsTable.key]
+    }
+    return links.groupBy { l -> l[QuestionTagsTable.questionId] }
+        .mapValues { (_, linkRows) ->
+            linkRows.mapNotNull { link -> idToKey[link[QuestionTagsTable.tagId]] }
+        }
 }
 
 private fun resumePair(

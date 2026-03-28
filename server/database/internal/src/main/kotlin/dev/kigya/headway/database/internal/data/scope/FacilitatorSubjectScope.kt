@@ -66,3 +66,25 @@ internal fun ensureEmployeeSelfSubject(
         )
     }
 }
+
+internal fun ensureFacilitatorLearningSubjectAccess(
+    facilitatorId: UUID,
+    facilitatorRole: DatabaseUserRole,
+    subjectUserId: UUID,
+) {
+    ensureEmployeeSelfSubject(
+        facilitatorId = facilitatorId,
+        facilitatorRole = facilitatorRole,
+        subjectUserId = subjectUserId,
+    )
+    if (!isSubjectInFacilitatorLearningScope(
+            facilitatorId = facilitatorId,
+            facilitatorRole = facilitatorRole,
+            subjectUserId = subjectUserId,
+        )
+    ) {
+        throw DatabaseException.Forbidden(
+            message = "Subject not in facilitator scope",
+        )
+    }
+}

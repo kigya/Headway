@@ -70,11 +70,12 @@ Given that feature description, do this:
      - "Create a dashboard for analytics" → "analytics-dashboard"
      - "Fix payment processing timeout bug" → "fix-payment-timeout"
 
-2. **Create the feature branch** by running the script with `--short-name` (and `--json`). In sequential mode, do NOT pass `--number` — the script auto-detects the next available number. In timestamp mode, the script generates a `YYYYMMDD-HHMMSS` prefix automatically:
+2. **Create the feature branch** by running the script with `--short-name` (and `--json`). Do not pass `--number` unless the user asked for a specific task/issue id — the script picks the next free id automatically.
 
    **Branch numbering mode**: Before running the script, check if `.specify/init-options.json` exists and read the `branch_numbering` value.
+   - If `"headway"` (Headway default): the script creates `specs/<N>-<short-name>` and checks out git branch `<track>/<N>-<short-name>`, where `<track>` is `headway.track` (e.g. `server-headway`) and `<N>` is one greater than the highest issue id already used in `specs/<digits>-*` dirs or in `(client|server|fullstack)-headway/<digits>-*` branches. Aligns with `/commit` prefixes (`SERVER-HEADWAY-<N>:` etc.).
    - If `"timestamp"`, add `--timestamp` (Bash) or `-Timestamp` (PowerShell) to the script invocation
-   - If `"sequential"` or absent, do not add any extra flag (default behavior)
+   - If `"sequential"`, do not add any extra flag (Speckit `001-feature-name` style)
 
    - Bash example: `.specify/scripts/bash/create-new-feature.sh "$ARGUMENTS" --json --short-name "user-auth" "Add user authentication"`
    - Bash (timestamp): `.specify/scripts/bash/create-new-feature.sh "$ARGUMENTS" --json --timestamp --short-name "user-auth" "Add user authentication"`
