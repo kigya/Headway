@@ -150,6 +150,7 @@ You **MUST** consider the user input before proceeding (if not empty).
    - **Core development**: Implement models, services, CLI commands, endpoints
    - **Integration work**: Database connections, middleware, logging, external services
    - **Polish and validation**: Unit tests, performance optimization, documentation
+   - **Git commits**: When committing implementation steps, use Headway’s one-line convention from the current branch name (task number after `client-headway/`, `server-headway/`, or `fullstack-headway/`): `CLIENT-HEADWAY-<N>:`, `SERVER-HEADWAY-<N>:`, or `FULLSTACK-HEADWAY-<N>:` plus a short English summary — same rules as the `/commit` skill and [`.cursor/WORKFLOWS.md`](../WORKFLOWS.md).
 
 8. Progress tracking and error handling:
    - Report progress after each completed task

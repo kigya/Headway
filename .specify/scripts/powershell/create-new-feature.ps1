@@ -165,6 +165,66 @@ Set-Location $repoRoot
 $specsDir = Join-Path $repoRoot 'specs'
 New-Item -ItemType Directory -Path $specsDir -Force | Out-Null
 
+function Get-SpecifyBranchMode {
+    param([string]$RepoRoot)
+    $numbering = 'sequential'
+    $track = 'server-headway'
+    $initFile = Join-Path $RepoRoot '.specify/init-options.json'
+    if (Test-Path $initFile) {
+        try {
+            $j = Get-Content $initFile -Raw -Encoding UTF8 | ConvertFrom-Json
+            if ($null -ne $j.branch_numbering -and $j.branch_numbering -is [string]) {
+                $numbering = $j.branch_numbering
+            }
+            $hw = $j.headway
+            if ($null -ne $hw -and $hw.track -is [string] -and $hw.track.Trim()) {
+                $track = $hw.track.Trim()
+            }
+        } catch {
+            # keep defaults
+        }
+    }
+    return [PSCustomObject]@{
+        Numbering    = $numbering
+        HeadwayTrack = $track
+    }
+}
+
+function Get-NextHeadwayIssueNumber {
+    param(
+        [string]$SpecsDir,
+        [bool]$HasGit
+    )
+    $highest = 0
+    if (Test-Path $SpecsDir) {
+        Get-ChildItem -Path $SpecsDir -Directory -ErrorAction SilentlyContinue | ForEach-Object {
+            if ($_.Name -match '^(\d+)-') {
+                $num = [int]$matches[1]
+                if ($num -gt $highest) { $highest = $num }
+            }
+        }
+    }
+    if ($HasGit) {
+        try {
+            $branches = git branch -a 2>$null
+            if ($LASTEXITCODE -eq 0) {
+                foreach ($branch in $branches) {
+                    $cleanBranch = $branch.Trim() -replace '^\*?\s+', '' -replace '^remotes/[^/]+/', ''
+                    if ($cleanBranch -match '^(client|server|fullstack)-headway/(\d+)-') {
+                        $num = [int]$matches[2]
+                        if ($num -gt $highest) { $highest = $num }
+                    }
+                }
+            }
+        } catch {
+            Write-Verbose "Could not scan branches for headway issue numbers: $_"
+        }
+    }
+    return $highest + 1
+}
+
+$specifyBranchMode = Get-SpecifyBranchMode -RepoRoot $repoRoot
+
 # Function to generate branch name with stop word filtering and length filtering
 function Get-BranchName {
     param([string]$Description)
@@ -225,10 +285,22 @@ if ($Timestamp -and $Number -ne 0) {
     $Number = 0
 }
 
+if ($Timestamp -and $specifyBranchMode.Numbering -eq 'headway') {
+    Write-Warning "[specify] Warning: -Timestamp overrides headway branch_numbering; using timestamp branch"
+}
+
 # Determine branch prefix
 if ($Timestamp) {
     $featureNum = Get-Date -Format 'yyyyMMdd-HHmmss'
     $branchName = "$featureNum-$branchSuffix"
+} elseif ($specifyBranchMode.Numbering -eq 'headway') {
+    if ($Number -ne 0) {
+        $featureNum = [string]$Number
+    } else {
+        $n = Get-NextHeadwayIssueNumber -SpecsDir $specsDir -HasGit:$hasGit
+        $featureNum = [string]$n
+    }
+    $branchName = "$($specifyBranchMode.HeadwayTrack)/$featureNum-$branchSuffix"
 } else {
     # Determine branch number
     if ($Number -eq 0) {
@@ -248,19 +320,27 @@ if ($Timestamp) {
 # GitHub enforces a 244-byte limit on branch names
 # Validate and truncate if necessary
 $maxBranchLength = 244
+$specPathSuffix = $branchSuffix
 if ($branchName.Length -gt $maxBranchLength) {
-    # Calculate how much we need to trim from suffix
-    # Account for prefix length: timestamp (15) + hyphen (1) = 16, or sequential (3) + hyphen (1) = 4
-    $prefixLength = $featureNum.Length + 1
+    if ($specifyBranchMode.Numbering -eq 'headway' -and -not $Timestamp) {
+        $prefixLength = $specifyBranchMode.HeadwayTrack.Length + 1 + $featureNum.Length + 1
+    } else {
+        $prefixLength = $featureNum.Length + 1
+    }
     $maxSuffixLength = $maxBranchLength - $prefixLength
     
     # Truncate suffix
     $truncatedSuffix = $branchSuffix.Substring(0, [Math]::Min($branchSuffix.Length, $maxSuffixLength))
     # Remove trailing hyphen if truncation created one
     $truncatedSuffix = $truncatedSuffix -replace '-$', ''
+    $specPathSuffix = $truncatedSuffix
     
     $originalBranchName = $branchName
-    $branchName = "$featureNum-$truncatedSuffix"
+    if ($specifyBranchMode.Numbering -eq 'headway' -and -not $Timestamp) {
+        $branchName = "$($specifyBranchMode.HeadwayTrack)/$featureNum-$truncatedSuffix"
+    } else {
+        $branchName = "$featureNum-$truncatedSuffix"
+    }
     
     Write-Warning "[specify] Branch name exceeded GitHub's 244-byte limit"
     Write-Warning "[specify] Original: $originalBranchName ($($originalBranchName.Length) bytes)"
@@ -297,7 +377,11 @@ if ($hasGit) {
     Write-Warning "[specify] Warning: Git repository not detected; skipped branch creation for $branchName"
 }
 
-$featureDir = Join-Path $specsDir $branchName
+if ($specifyBranchMode.Numbering -eq 'headway' -and -not $Timestamp) {
+    $featureDir = Join-Path $specsDir "$featureNum-$specPathSuffix"
+} else {
+    $featureDir = Join-Path $specsDir $branchName
+}
 New-Item -ItemType Directory -Path $featureDir -Force | Out-Null
 
 $template = Resolve-Template -TemplateName 'spec-template' -RepoRoot $repoRoot

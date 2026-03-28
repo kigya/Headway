@@ -3,6 +3,7 @@ package dev.kigya.headway.auth.internal.data.repository
 import dev.kigya.headway.auth.internal.domain.error.AuthException
 import dev.kigya.headway.auth.internal.domain.repository.DatabaseRepositoryContract
 import dev.kigya.headway.database.api.model.`in`.DatabaseCreateSessionPayloadDto
+import dev.kigya.headway.database.api.model.`in`.DatabaseGuestSessionRegisterRequestDto
 import dev.kigya.headway.database.api.model.`in`.DatabaseSessionPlatform
 import dev.kigya.headway.database.api.model.`in`.DatabaseUpsertGoogleUserPayloadDto
 import dev.kigya.headway.database.api.model.`in`.DatabaseValidateSessionPayloadDto
@@ -10,6 +11,7 @@ import dev.kigya.headway.database.api.model.out.DatabaseUser
 import dev.kigya.headway.database.api.model.resource.DatabaseResource
 import io.ktor.client.HttpClient
 import io.ktor.client.call.body
+import io.ktor.client.plugins.resources.get
 import io.ktor.client.plugins.resources.post
 import io.ktor.client.request.setBody
 import io.ktor.http.ContentType
@@ -116,6 +118,49 @@ class DatabaseRepository(
             HttpStatusCode.NotFound,
             HttpStatusCode.Forbidden,
             -> throw AuthException.Unauthorized("Invalid session")
+
+            else -> throw AuthException.UpstreamProtocol(
+                dependency = DATABASE_DEPENDENCY_NAME,
+                status = status.value,
+            )
+        }
+    }
+
+    override suspend fun registerGuestSession(sessionId: UUID) {
+        val response = try {
+            httpClient.post(DatabaseResource.GuestSessions.Register()) {
+                contentType(ContentType.Application.Json)
+                setBody(DatabaseGuestSessionRegisterRequestDto(id = sessionId))
+            }
+        } catch (t: Throwable) {
+            throw AuthException.DependencyUnavailable(DATABASE_DEPENDENCY_NAME, cause = t)
+        }
+
+        when (val status = response.status) {
+            HttpStatusCode.Created -> return
+            else -> throw AuthException.UpstreamProtocol(
+                dependency = DATABASE_DEPENDENCY_NAME,
+                status = status.value,
+            )
+        }
+    }
+
+    override suspend fun ensureGuestSessionActive(sessionId: UUID) {
+        val response = try {
+            httpClient.get(
+                DatabaseResource.GuestSessions.Validate(
+                    sessionId = sessionId,
+                ),
+            )
+        } catch (t: Throwable) {
+            throw AuthException.DependencyUnavailable(DATABASE_DEPENDENCY_NAME, cause = t)
+        }
+
+        when (val status = response.status) {
+            HttpStatusCode.OK -> return
+            HttpStatusCode.Forbidden,
+            HttpStatusCode.NotFound,
+            -> throw AuthException.Unauthorized("Guest session is not active")
 
             else -> throw AuthException.UpstreamProtocol(
                 dependency = DATABASE_DEPENDENCY_NAME,

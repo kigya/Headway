@@ -164,3 +164,21 @@ alwaysApply: true
 - **Why it exists:** [server/AGENTS.md](../../server/AGENTS.md) documents gateway dependency probes via `HealthzResource`; skipping a wired service hides outages from operators and from the public health contract.
 - **Bad pattern (short):** `createServiceHttpClient<HomeKoinHttpClient>(…)` and `HomeRepository` calls exist, but health aggregation only checks auth and database.
 - **Correct pattern (short):** `HomeServiceProbe(httpClient)` plus `GatewayDependencyHealth(name = "home", …)` and include its status when computing overall `GatewayServiceStatus`.
+
+---
+
+### 18
+
+- **Rule:** On the server, every serializable **property** on `@Serializable` types (DTOs, gateway GraphQL models, nested Ktor `@Resource` parameter classes, enums) must be annotated with `@SerialName("…")` using the **actual wire key** (query/path/JSON) for that type.
+- **Why it exists:** Explicit keys document the contract and prevent silent renames when Kotlin property names change; mixed annotated/unannotated fields are easy to miss in review and drift from inter-service expectations.
+- **Bad pattern (short):** `@Serializable data class X( @SerialName("a") val a: String, val b: String )` or omitting `@SerialName` on Ktor resource `parent` / path parameters while other fields use snake_case query keys.
+- **Correct pattern (short):** Annotate **each** constructor property (including `parent` on resources and UUID/custom-serialized fields); when formalizing legacy DTOs, set `@SerialName` to match the **previous** implicit kotlinx name (often camelCase) or the established snake_case API—never rename keys in the same edit unless intentionally versioning the contract.
+
+---
+
+### 19
+
+- **Rule:** In `*/internal/data`, keep **`repository/`** for types that implement a **`…RepositoryContract`** (or are clearly named `*Repository` HTTP/DB facades). Put other persistence helpers—Exposed query/scoping functions, cross-domain sync writers, one-off SQL utilities—in a **sibling subpackage** under `data/` (e.g. `data/scope`, `data/learning`), not beside repositories in the same directory.
+- **Why it exists:** [server/AGENTS.md](../../server/AGENTS.md) maps `data/repository` to repository implementations; mixing non-repositories there blurs the port/adapter boundary and makes discovery harder.
+- **Bad pattern (short):** `LearningQuestionPreparationSync` or `FacilitatorSubjectScopeQueries.kt` (top-level scope checks) living under `data/repository/` next to `UsersRepository`.
+- **Correct pattern (short):** `data/learning/LearningQuestionPreparationSync.kt`, `data/scope/FacilitatorSubjectScope.kt` (or another purposeful name); repositories stay in `data/repository/` and import those helpers.

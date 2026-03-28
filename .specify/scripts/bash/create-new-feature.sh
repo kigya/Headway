@@ -194,6 +194,72 @@ cd "$REPO_ROOT"
 SPECS_DIR="$REPO_ROOT/specs"
 mkdir -p "$SPECS_DIR"
 
+read_specify_branch_mode() {
+    local init_file="$REPO_ROOT/.specify/init-options.json"
+    if [[ ! -f "$init_file" ]] || ! command -v python3 >/dev/null 2>&1; then
+        printf '%s\n' "sequential" "server-headway"
+        return 0
+    fi
+    SPECIFY_INIT_JSON="$init_file" python3 -c "
+import json
+import os
+path = os.environ.get('SPECIFY_INIT_JSON', '')
+with open(path, encoding='utf-8') as f:
+    d = json.load(f)
+bn = d.get('branch_numbering') or 'sequential'
+track = (d.get('headway') or {}).get('track') or 'server-headway'
+if not isinstance(track, str) or not track.strip():
+    track = 'server-headway'
+print(bn)
+print(track)
+"
+}
+
+get_next_headway_issue_number() {
+    local specs_dir="$1"
+    local highest=0
+
+    if [[ -d "$specs_dir" ]]; then
+        for dir in "$specs_dir"/*; do
+            [[ -d "$dir" ]] || continue
+            local bn
+            bn=$(basename "$dir")
+            if [[ "$bn" =~ ^([0-9]+)- ]]; then
+                local num=$((10#${BASH_REMATCH[1]}))
+                if [[ "$num" -gt "$highest" ]]; then
+                    highest=$num
+                fi
+            fi
+        done
+    fi
+
+    if [[ "$HAS_GIT" == true ]]; then
+        local branches
+        branches=$(git branch -a 2>/dev/null || echo "")
+        while IFS= read -r branch; do
+            [[ -z "$branch" ]] && continue
+            local clean_branch
+            clean_branch=$(echo "$branch" | sed 's/^[* ]*//; s|^remotes/[^/]*/||')
+            if [[ "$clean_branch" =~ ^(client|server|fullstack)-headway/([0-9]+)- ]]; then
+                local num=$((10#${BASH_REMATCH[2]}))
+                if [[ "$num" -gt "$highest" ]]; then
+                    highest=$num
+                fi
+            fi
+        done <<< "$branches"
+    fi
+
+    echo $((highest + 1))
+}
+
+specify_branch_mode_lines=()
+while IFS= read -r line; do
+    specify_branch_mode_lines+=("$line")
+done < <(read_specify_branch_mode)
+
+SPECIFY_BRANCH_NUMBERING="${specify_branch_mode_lines[0]:-sequential}"
+HEADWAY_TRACK="${specify_branch_mode_lines[1]:-server-headway}"
+
 # Function to generate branch name with stop word filtering and length filtering
 generate_branch_name() {
     local description="$1"
@@ -257,10 +323,21 @@ if [ "$USE_TIMESTAMP" = true ] && [ -n "$BRANCH_NUMBER" ]; then
     BRANCH_NUMBER=""
 fi
 
+if [ "$USE_TIMESTAMP" = true ] && [ "$SPECIFY_BRANCH_NUMBERING" = "headway" ]; then
+    >&2 echo "[specify] Warning: --timestamp overrides headway branch_numbering; using timestamp branch"
+fi
+
 # Determine branch prefix
 if [ "$USE_TIMESTAMP" = true ]; then
     FEATURE_NUM=$(date +%Y%m%d-%H%M%S)
     BRANCH_NAME="${FEATURE_NUM}-${BRANCH_SUFFIX}"
+elif [ "$SPECIFY_BRANCH_NUMBERING" = "headway" ]; then
+    if [ -n "$BRANCH_NUMBER" ]; then
+        FEATURE_NUM=$((10#$BRANCH_NUMBER))
+    else
+        FEATURE_NUM=$(get_next_headway_issue_number "$SPECS_DIR")
+    fi
+    BRANCH_NAME="${HEADWAY_TRACK}/${FEATURE_NUM}-${BRANCH_SUFFIX}"
 else
     # Determine branch number
     if [ -z "$BRANCH_NUMBER" ]; then
@@ -282,19 +359,29 @@ fi
 # GitHub enforces a 244-byte limit on branch names
 # Validate and truncate if necessary
 MAX_BRANCH_LENGTH=244
+SPEC_PATH_SUFFIX="$BRANCH_SUFFIX"
 if [ ${#BRANCH_NAME} -gt $MAX_BRANCH_LENGTH ]; then
     # Calculate how much we need to trim from suffix
-    # Account for prefix length: timestamp (15) + hyphen (1) = 16, or sequential (3) + hyphen (1) = 4
-    PREFIX_LENGTH=$(( ${#FEATURE_NUM} + 1 ))
+    # Timestamp: FEATURE_NUM length + hyphen; sequential: 3 + hyphen; headway: track + / + issue + hyphen
+    if [ "$SPECIFY_BRANCH_NUMBERING" = "headway" ] && [ "$USE_TIMESTAMP" != true ]; then
+        PREFIX_LENGTH=$(( ${#HEADWAY_TRACK} + 1 + ${#FEATURE_NUM} + 1 ))
+    else
+        PREFIX_LENGTH=$(( ${#FEATURE_NUM} + 1 ))
+    fi
     MAX_SUFFIX_LENGTH=$((MAX_BRANCH_LENGTH - PREFIX_LENGTH))
     
     # Truncate suffix at word boundary if possible
     TRUNCATED_SUFFIX=$(echo "$BRANCH_SUFFIX" | cut -c1-$MAX_SUFFIX_LENGTH)
     # Remove trailing hyphen if truncation created one
     TRUNCATED_SUFFIX=$(echo "$TRUNCATED_SUFFIX" | sed 's/-$//')
+    SPEC_PATH_SUFFIX="$TRUNCATED_SUFFIX"
     
     ORIGINAL_BRANCH_NAME="$BRANCH_NAME"
-    BRANCH_NAME="${FEATURE_NUM}-${TRUNCATED_SUFFIX}"
+    if [ "$SPECIFY_BRANCH_NUMBERING" = "headway" ] && [ "$USE_TIMESTAMP" != true ]; then
+        BRANCH_NAME="${HEADWAY_TRACK}/${FEATURE_NUM}-${TRUNCATED_SUFFIX}"
+    else
+        BRANCH_NAME="${FEATURE_NUM}-${TRUNCATED_SUFFIX}"
+    fi
     
     >&2 echo "[specify] Warning: Branch name exceeded GitHub's 244-byte limit"
     >&2 echo "[specify] Original: $ORIGINAL_BRANCH_NAME (${#ORIGINAL_BRANCH_NAME} bytes)"
@@ -320,7 +407,11 @@ else
     >&2 echo "[specify] Warning: Git repository not detected; skipped branch creation for $BRANCH_NAME"
 fi
 
-FEATURE_DIR="$SPECS_DIR/$BRANCH_NAME"
+if [ "$SPECIFY_BRANCH_NUMBERING" = "headway" ] && [ "$USE_TIMESTAMP" != true ]; then
+    FEATURE_DIR="$SPECS_DIR/${FEATURE_NUM}-${SPEC_PATH_SUFFIX}"
+else
+    FEATURE_DIR="$SPECS_DIR/$BRANCH_NAME"
+fi
 mkdir -p "$FEATURE_DIR"
 
 TEMPLATE=$(resolve_template "spec-template" "$REPO_ROOT") || true

@@ -8,6 +8,8 @@ Patterns called out in `AGENTS.md` / `client/AGENTS.md` / `server/AGENTS.md` and
 - **Client errors:** model expected failures with **`Outcome`**, not ad-hoc exceptions for domain cases.
 - **Client navigation:** use **`NavigatorContract`** / `NavigationIntent`, not ad-hoc platform navigation.
 - **Server gateways:** wrap outbound HTTP in **`upstreamCall`** with consistent dependency error mapping.
+- **Server serialization:** every `@Serializable` property uses `@SerialName` with the real wire key; when annotating existing types, match the current JSON/query names (see `.cursor/rules/lessons-learned.mdc` §18).
+- **Server `data` layout:** `data/repository` holds only repository implementations; scope queries, sync helpers, and similar live under sibling `data/<role>/` packages (see lessons-learned §19).
 - **Gateway health:** `CheckHealthStatusUseCase` probes each downstream service’s **`/healthz`** (under that service’s base URL) via `BaseHttpProbe`; add a probe for every Koin-tagged `HttpClient` the gateway uses for microservices (auth, database, home, …).
 - **Lessons:** cumulative anti-patterns live in `.cursor/rules/lessons-learned.mdc` (curated, not a dump of every chat).
 

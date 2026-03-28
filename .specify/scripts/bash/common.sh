@@ -45,12 +45,11 @@ get_current_branch() {
                         latest_timestamp="$ts"
                         latest_feature=$dirname
                     fi
-                elif [[ "$dirname" =~ ^([0-9]{3})- ]]; then
+                elif [[ "$dirname" =~ ^([0-9]+)- ]]; then
                     local number=${BASH_REMATCH[1]}
                     number=$((10#$number))
                     if [[ "$number" -gt "$highest" ]]; then
                         highest=$number
-                        # Only update if no timestamp branch found yet
                         if [[ -z "$latest_timestamp" ]]; then
                             latest_feature=$dirname
                         fi
@@ -235,7 +234,7 @@ find_feature_dir_by_prefix() {
     fi
 }
 
-# Resolves FEATURE_DIR: Speckit-style branch → prefix scan; otherwise fixed_specs_subdir or error.
+# Resolves FEATURE_DIR: Speckit-style branch → prefix scan; Headway track → specs/<N-slug>; else fixed_specs_subdir or error.
 resolve_feature_dir() {
     local repo_root="$1"
     local branch_name="$2"
@@ -245,6 +244,11 @@ resolve_feature_dir() {
     if [[ "$branch_name" =~ ^([0-9]{8}-[0-9]{6})- ]] || [[ "$branch_name" =~ ^([0-9]{3})- ]]; then
         find_feature_dir_by_prefix "$repo_root" "$branch_name"
         return $?
+    fi
+
+    if [[ "$branch_name" =~ ^(client|server|fullstack)-headway/(.+)$ ]]; then
+        echo "$specs_dir/${BASH_REMATCH[2]}"
+        return 0
     fi
 
     fixed=$(read_fixed_specs_subdir "$repo_root")

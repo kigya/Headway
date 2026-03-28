@@ -48,11 +48,10 @@ function Get-CurrentBranch {
                     $latestTimestamp = $ts
                     $latestFeature = $_.Name
                 }
-            } elseif ($_.Name -match '^(\d{3})-') {
+            } elseif ($_.Name -match '^(\d+)-') {
                 $num = [int]$matches[1]
                 if ($num -gt $highest) {
                     $highest = $num
-                    # Only update if no timestamp branch found yet
                     if (-not $latestTimestamp) {
                         $latestFeature = $_.Name
                     }
@@ -176,6 +175,9 @@ function Resolve-FeatureDir {
     $specsDir = Join-Path $RepoRoot 'specs'
     if ($BranchName -match '^(\d{8}-\d{6})-' -or $BranchName -match '^(\d{3})-') {
         return Find-FeatureDirByPrefix -RepoRoot $RepoRoot -BranchName $BranchName
+    }
+    if ($BranchName -match '^(client|server|fullstack)-headway/(.+)$') {
+        return (Join-Path $specsDir $matches[2])
     }
     $fr = Read-FeatureResolutionFromInitOptions -RepoRoot $RepoRoot
     if ($fr.FixedSpecsSubdir) {

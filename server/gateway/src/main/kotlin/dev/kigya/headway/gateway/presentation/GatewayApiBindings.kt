@@ -6,6 +6,7 @@ import dev.kigya.headway.common.util.Environment
 import dev.kigya.headway.gateway.domain.usecase.CheckHealthStatusUseCase
 import dev.kigya.headway.gateway.domain.usecase.GetHomeScreenUseCase
 import dev.kigya.headway.gateway.domain.usecase.InviteUserUseCase
+import dev.kigya.headway.gateway.domain.usecase.LearningQuestionsGraphqlUseCases
 import dev.kigya.headway.gateway.domain.usecase.LoginAsGuestUseCase
 import dev.kigya.headway.gateway.domain.usecase.LoginWithGoogleUseCase
 import dev.kigya.headway.gateway.domain.usecase.RefreshAccessTokenUseCase
@@ -22,4 +23,5 @@ internal data class GatewayApiBindings(
     val resolvePrincipal: ResolvePrincipalUseCase,
     val getHomeScreen: GetHomeScreenUseCase,
     val preparation: PreparationGraphqlServices,
+    val learningQuestions: LearningQuestionsGraphqlUseCases,
 )

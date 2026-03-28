@@ -25,4 +25,8 @@ internal interface DatabaseRepositoryContract {
         refreshToken: String,
         fingerprint: String,
     )
+
+    suspend fun registerGuestSession(sessionId: UUID)
+
+    suspend fun ensureGuestSessionActive(sessionId: UUID)
 }

@@ -4,12 +4,14 @@ import dev.kigya.headway.auth.api.AuthServicePlainText
 import dev.kigya.headway.auth.api.model.out.AuthPrincipalType
 import dev.kigya.headway.auth.api.model.out.AuthValidateTokenResponse
 import dev.kigya.headway.auth.internal.domain.error.AuthException
+import dev.kigya.headway.auth.internal.domain.repository.DatabaseRepositoryContract
 import dev.kigya.headway.auth.internal.domain.repository.JWTRepositoryContract
 
 internal class ValidateAccessTokenUseCase(
     private val jwtRepository: JWTRepositoryContract,
+    private val databaseRepository: DatabaseRepositoryContract,
 ) {
-    operator fun invoke(accessToken: String): AuthValidateTokenResponse {
+    suspend operator fun invoke(accessToken: String): AuthValidateTokenResponse {
         val trimmedToken = accessToken.trim()
         if (trimmedToken.isBlank()) {
             throw AuthException.Unauthorized(AuthServicePlainText.INVALID_ACCESS_TOKEN)
@@ -17,7 +19,7 @@ internal class ValidateAccessTokenUseCase(
         if (jwtRepository.isAccessTokenValid(trimmedToken)) {
             return userPrincipal(trimmedToken)
         }
-        return guestOrReject(trimmedToken)
+        return guestOrReject(token = trimmedToken)
     }
 
     private fun userPrincipal(token: String): AuthValidateTokenResponse {
@@ -29,10 +31,10 @@ internal class ValidateAccessTokenUseCase(
         )
     }
 
-    private fun guestOrReject(token: String): AuthValidateTokenResponse {
+    private suspend fun guestOrReject(token: String): AuthValidateTokenResponse {
         val tokenType = jwtRepository.decodeTokenType(token)
         if (tokenType == TOKEN_TYPE_GUEST_ACCESS) {
-            return guestPrincipal(token)
+            return guestPrincipal(token = token)
         }
         if (tokenType == TOKEN_TYPE_ACCESS && jwtRepository.isUserAccessTokenExpiredByClaims(token)) {
             throw AuthException.Unauthorized(AuthServicePlainText.ACCESS_TOKEN_EXPIRED)
@@ -40,12 +42,13 @@ internal class ValidateAccessTokenUseCase(
         throw AuthException.Unauthorized(AuthServicePlainText.INVALID_ACCESS_TOKEN)
     }
 
-    private fun guestPrincipal(token: String): AuthValidateTokenResponse {
+    private suspend fun guestPrincipal(token: String): AuthValidateTokenResponse {
         if (jwtRepository.isGuestAccessTokenExpiredByClaims(token)) {
             throw AuthException.Unauthorized(AuthServicePlainText.GUEST_TOKEN_EXPIRED)
         }
         val guestPayload = jwtRepository.validateGuestAccessToken(token)
             ?: throw AuthException.Unauthorized(AuthServicePlainText.INVALID_GUEST_TOKEN)
+        databaseRepository.ensureGuestSessionActive(sessionId = guestPayload.sessionId)
         return AuthValidateTokenResponse(
             principalType = AuthPrincipalType.GUEST,
             guestSessionId = guestPayload.sessionId,

@@ -4,7 +4,11 @@ import com.zaxxer.hikari.HikariConfig
 import com.zaxxer.hikari.HikariDataSource
 import dev.kigya.headway.database.internal.core.config.ConfigurationValues
 import dev.kigya.headway.database.internal.core.config.DatabaseConfig
+import dev.kigya.headway.database.internal.data.learning.LearningQuestionPreparationSync
+import dev.kigya.headway.database.internal.data.repository.GuestSessionsRepository
 import dev.kigya.headway.database.internal.data.repository.InterviewQuestionBankRepository
+import dev.kigya.headway.database.internal.data.repository.LearningQuestionRemarksRepository
+import dev.kigya.headway.database.internal.data.repository.LearningQuestionsReadRepository
 import dev.kigya.headway.database.internal.data.repository.PreparationRepository
 import dev.kigya.headway.database.internal.data.repository.RefreshSessionsRepository
 import dev.kigya.headway.database.internal.data.repository.UsersRepository
@@ -27,6 +31,7 @@ import dev.kigya.headway.database.internal.domain.usecase.StartPreparationSessio
 import dev.kigya.headway.database.internal.domain.usecase.SubmitPreparationOutcomeUseCase
 import dev.kigya.headway.database.internal.domain.usecase.UpsertGoogleUserUseCase
 import dev.kigya.headway.database.internal.domain.usecase.ValidateSessionUseCase
+import dev.kigya.headway.database.internal.presentation.LearningQuestionsService
 import dev.kigya.headway.database.internal.presentation.PreparationUseCases
 import org.jetbrains.exposed.v1.jdbc.Database
 import org.koin.core.module.dsl.singleOf
@@ -52,7 +57,18 @@ internal val databaseModule = module {
     singleOf(::RefreshSessionsRepository) bind RefreshSessionsRepositoryContract::class
     singleOf(::InterviewQuestionBankRepository)
     singleOf(::BuildSessionQuestionSnapshotUseCase)
-    singleOf(::PreparationRepository) bind PreparationRepositoryContract::class
+    singleOf(::LearningQuestionPreparationSync)
+    singleOf(::LearningQuestionsReadRepository)
+    singleOf(::LearningQuestionRemarksRepository)
+    singleOf(::GuestSessionsRepository)
+    single {
+        PreparationRepository(
+            database = get(),
+            buildSessionQuestionSnapshot = get(),
+            learningQuestionPreparationSync = get(),
+        )
+    } bind PreparationRepositoryContract::class
+    singleOf(::LearningQuestionsService)
 
     singleOf(::GetGoogleUserUseCase)
     singleOf(::CreateGoogleUserUseCase)
