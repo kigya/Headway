@@ -14,11 +14,13 @@ import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.ColumnScope
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.wrapContentHeight
 import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -139,79 +141,97 @@ fun FreudHorizontalButton(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        Row(
-            modifier = Modifier
-                .fillMaxWidth()
-                .heightIn(min = minHeight)
-                .clip(shape)
-                .background(containerColor.value)
-                .then(
-                    if (borderColor != null) {
-                        Modifier.border(
-                            width = borderWidth.value,
-                            color = borderColor.value,
-                            shape = shape,
-                        )
-                    } else {
-                        Modifier
-                    },
-                )
-                .clickable(
-                    enabled = isEnabled,
-                    role = Role.Button,
-                    onClick = onClick,
-                )
-                .padding(
-                    horizontal = resolvedHorizontalPadding,
-                    vertical = resolvedVerticalPadding,
-                ),
-            horizontalArrangement = Arrangement.Center,
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            if (leadingIcon != null) {
-                FreudButtonIcon(icon = leadingIcon, size = FreudButtonDefaults.iconSize)
-                FreudSpacer(size = FreudButtonDefaults.contentSpacing)
+        BoxWithConstraints {
+            val rowWidthModifier = if (constraints.hasBoundedWidth) {
+                Modifier.width(width = maxWidth)
+            } else {
+                Modifier
             }
+            Row(
+                modifier = rowWidthModifier
+                    .heightIn(min = minHeight)
+                    .clip(shape)
+                    .background(containerColor.value)
+                    .then(
+                        if (borderColor != null) {
+                            Modifier.border(
+                                width = borderWidth.value,
+                                color = borderColor.value,
+                                shape = shape,
+                            )
+                        } else {
+                            Modifier
+                        },
+                    )
+                    .clickable(
+                        enabled = isEnabled,
+                        role = Role.Button,
+                        onClick = onClick,
+                    )
+                    .padding(
+                        horizontal = resolvedHorizontalPadding,
+                        vertical = resolvedVerticalPadding,
+                    ),
+                horizontalArrangement = Arrangement.Center,
+                verticalAlignment = Alignment.CenterVertically,
+            ) {
+                if (leadingIcon != null) {
+                    FreudButtonIcon(icon = leadingIcon, size = FreudButtonDefaults.iconSize)
+                    FreudSpacer(size = FreudButtonDefaults.contentSpacing)
+                }
 
-            FreudText(
-                value = text,
-                color = contentColor,
-                typography = FreudTheme.DefaultFreudTheme.typography.textLgExtraBold,
-                maxLines = 1,
-            )
+                FreudText(
+                    value = text,
+                    color = contentColor,
+                    typography = FreudTheme.DefaultFreudTheme.typography.textLgExtraBold,
+                    maxLines = 1,
+                )
 
-            if (trailingIcon != null) {
-                FreudSpacer(size = FreudButtonDefaults.contentSpacing)
-                FreudButtonIcon(icon = trailingIcon, size = FreudButtonDefaults.iconSize)
+                if (trailingIcon != null) {
+                    FreudSpacer(size = FreudButtonDefaults.contentSpacing)
+                    FreudButtonIcon(icon = trailingIcon, size = FreudButtonDefaults.iconSize)
+                }
             }
         }
 
-        if (supportingText != null || supportingIcon != null) {
-            FreudSpacer(size = FreudButtonDefaults.supportingTopSpacing)
+        FreudHorizontalButtonSupportingBlock(
+            supportingText = supportingText,
+            supportingIcon = supportingIcon,
+            supportingColor = supportingColor,
+        )
+    }
+}
 
-            Row(
-                modifier = Modifier
-                    .wrapContentWidth()
-                    .wrapContentHeight(),
-                verticalAlignment = Alignment.CenterVertically,
-                horizontalArrangement = Arrangement.Center,
-            ) {
-                if (supportingIcon != null) {
-                    FreudButtonIcon(icon = supportingIcon, size = FreudButtonDefaults.supportingIconSize)
-                    if (supportingText != null) {
-                        FreudSpacer(size = FreudButtonDefaults.supportingContentSpacing)
-                    }
-                }
-
-                if (supportingText != null) {
-                    FreudText(
-                        value = supportingText,
-                        color = supportingColor,
-                        typography = FreudTheme.DefaultFreudTheme.typography.textXsExtraBold,
-                        maxLines = 1,
-                    )
-                }
+@Composable
+private fun ColumnScope.FreudHorizontalButtonSupportingBlock(
+    supportingText: FreudTextValue?,
+    supportingIcon: FreudButtonIconSpec?,
+    supportingColor: FreudDsToken<Color>,
+) {
+    if (supportingText == null && supportingIcon == null) {
+        return
+    }
+    FreudSpacer(size = FreudButtonDefaults.supportingTopSpacing)
+    Row(
+        modifier = Modifier
+            .wrapContentWidth()
+            .wrapContentHeight(),
+        verticalAlignment = Alignment.CenterVertically,
+        horizontalArrangement = Arrangement.Center,
+    ) {
+        if (supportingIcon != null) {
+            FreudButtonIcon(icon = supportingIcon, size = FreudButtonDefaults.supportingIconSize)
+            if (supportingText != null) {
+                FreudSpacer(size = FreudButtonDefaults.supportingContentSpacing)
             }
+        }
+        if (supportingText != null) {
+            FreudText(
+                value = supportingText,
+                color = supportingColor,
+                typography = FreudTheme.DefaultFreudTheme.typography.textXsExtraBold,
+                maxLines = 1,
+            )
         }
     }
 }

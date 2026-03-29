@@ -1,6 +1,5 @@
 package dev.kigya.headway.feature.auth.internal.ui.screen.auth
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -11,12 +10,9 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.widthIn
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
-import androidx.compose.runtime.getValue
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
@@ -53,9 +49,9 @@ import headway.feature.auth.internal.generated.resources.auth_learn_as_guest_but
 import headway.feature.auth.internal.generated.resources.auth_sing_in_google_button
 import headway.feature.auth.internal.generated.resources.auth_substring_for_colorized_header
 import headway.feature.auth.internal.generated.resources.auth_under_button_text
-import headway.feature.auth.internal.generated.resources.ic_freud_google
-import headway.feature.auth.internal.generated.resources.ic_freud_logo
-import headway.feature.auth.internal.generated.resources.ic_freud_warning
+import headway.feature.auth.internal.generated.resources.ic_google
+import headway.feature.auth.internal.generated.resources.ic_headway_logo
+import headway.feature.auth.internal.generated.resources.ic_warning
 import org.koin.compose.viewmodel.koinViewModel
 
 @Composable
@@ -74,8 +70,6 @@ private fun AuthScreenContent(
     state: State<AuthStore.State>,
     onOpenNoAccess: () -> Unit,
 ) {
-    var isError by remember { mutableStateOf(false) }
-
     FreudScreenByWidth(
         modifier = Modifier.background(
             color = AuthTheme.colorScheme.authBackground,
@@ -83,30 +77,29 @@ private fun AuthScreenContent(
         ),
         narrow = {
             FreudFallback(
-                isError = isError,
-                onRetry = { isError = false },
+                isError = false,
+                onRetry = { },
             ) {
-                AuthScreenNarrowContent(onOpenNoAccess = onOpenNoAccess)
+                AuthScreenNarrowContent()
             }
         },
         wide = {
             FreudFallback(
-                isError = isError,
-                onRetry = { isError = false },
+                isError = false,
+                onRetry = { },
             ) {
-                AuthScreenWideContent(onOpenNoAccess = onOpenNoAccess)
+                AuthScreenWideContent()
             }
         },
     )
 }
 
 @Composable
-private fun AuthScreenNarrowContent(onOpenNoAccess: () -> Unit) {
+private fun AuthScreenNarrowContent() {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = AuthTheme.dimension.dp24.value)
-            .clickable { onOpenNoAccess() },
+            .padding(horizontal = AuthTheme.dimension.dp24.value),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         FreudSpacer(size = AuthTheme.dimension.dp64)
@@ -133,11 +126,12 @@ private fun AuthScreenNarrowContent(onOpenNoAccess: () -> Unit) {
 }
 
 @Composable
-private fun AuthScreenWideContent(onOpenNoAccess: () -> Unit) {
+private fun AuthScreenWideContent() {
     Row(modifier = Modifier.fillMaxSize()) {
         Box(
             modifier = Modifier
-                .weight(weight = 1f)
+                .fillMaxHeight()
+                .widthIn(max = WIDE_LOTTIE_MAX_WIDTH)
                 .fillMaxHeight(),
             contentAlignment = Alignment.BottomStart,
         ) {
@@ -152,9 +146,9 @@ private fun AuthScreenWideContent(onOpenNoAccess: () -> Unit) {
         Column(
             modifier = Modifier
                 .weight(weight = 1f)
+                .fillMaxWidth()
                 .fillMaxHeight()
-                .padding(horizontal = AuthTheme.dimension.dp24.value)
-                .clickable { onOpenNoAccess() },
+                .padding(horizontal = AuthTheme.dimension.dp24.value),
             horizontalAlignment = Alignment.CenterHorizontally,
             verticalArrangement = Arrangement.Center,
         ) {
@@ -170,7 +164,7 @@ private fun AuthScreenWideContent(onOpenNoAccess: () -> Unit) {
 @Composable
 private fun AuthLogo() {
     FreudIcon(
-        resource = Res.drawable.ic_freud_logo,
+        resource = Res.drawable.ic_headway_logo,
         contentDescription = null,
         size = AuthTheme.dimension.dp64,
     )
@@ -179,20 +173,23 @@ private fun AuthLogo() {
 @Composable
 private fun AuthHeaderTexts(isWide: Boolean) {
     val titleTypography = if (isWide) {
-        AuthTheme.typography.headingMdExtraBold
+        AuthTheme.typography.headingXlExtraBold
     } else {
         AuthTheme.typography.headingSmExtraBold
     }
 
     val subtitleTypography = if (isWide) {
-        AuthTheme.typography.textXlSemiBold
+        AuthTheme.typography.paragraphXl
     } else {
-        AuthTheme.typography.textLgSemiBold
+        AuthTheme.typography.paragraphLg
     }
 
     val highlightColor = AuthTheme.colorScheme.greetingHighlight
 
-    Column(horizontalAlignment = Alignment.CenterHorizontally) {
+    Column(
+        modifier = if (isWide) Modifier.fillMaxWidth() else Modifier,
+        horizontalAlignment = Alignment.CenterHorizontally,
+    ) {
         FreudText(
             value = FreudTextValue.rich {
                 append(resource = Res.string.auth_greeting_text)
@@ -227,7 +224,7 @@ private fun AuthActionButtons(modifier: Modifier = Modifier) {
             borderColor = AuthTheme.colorScheme.learnAsGuestButtonColor,
             size = FreudHorizontalButtonSize.LARGE,
         )
-        FreudSpacer(size = AuthTheme.dimension.dp24)
+        FreudSpacer(size = AuthTheme.dimension.dp20)
         FreudHorizontalButton(
             modifier = Modifier.fillMaxWidth(),
             text = FreudTextValue.text(resource = Res.string.auth_sing_in_google_button),
@@ -236,13 +233,13 @@ private fun AuthActionButtons(modifier: Modifier = Modifier) {
             contentColor = AuthTheme.colorScheme.googleSingInButtonTextColor,
             size = FreudHorizontalButtonSize.LARGE,
             leadingIcon = FreudButtonIconSpec.Static(
-                resource = Res.drawable.ic_freud_google,
+                resource = Res.drawable.ic_google,
                 tint = null,
             ),
             supportingText = FreudTextValue.text(resource = Res.string.auth_under_button_text),
             supportingColor = AuthTheme.colorScheme.authUnderButtonTextColor,
             supportingIcon = FreudButtonIconSpec.Static(
-                resource = Res.drawable.ic_freud_warning,
+                resource = Res.drawable.ic_warning,
                 tint = AuthTheme.colorScheme.authUnderButtonTextColor,
             ),
         )
@@ -251,3 +248,4 @@ private fun AuthActionButtons(modifier: Modifier = Modifier) {
 
 private val ACTION_BUTTON_WIDTH_WIDE = 348.dp
 private const val LOTTIE_ASPECT_RATIO = 1f
+private val WIDE_LOTTIE_MAX_WIDTH = 520.dp

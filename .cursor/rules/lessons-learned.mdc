@@ -182,3 +182,12 @@ alwaysApply: true
 - **Why it exists:** [server/AGENTS.md](../../server/AGENTS.md) maps `data/repository` to repository implementations; mixing non-repositories there blurs the port/adapter boundary and makes discovery harder.
 - **Bad pattern (short):** `LearningQuestionPreparationSync` or `FacilitatorSubjectScopeQueries.kt` (top-level scope checks) living under `data/repository/` next to `UsersRepository`.
 - **Correct pattern (short):** `data/learning/LearningQuestionPreparationSync.kt`, `data/scope/FacilitatorSubjectScope.kt` (or another purposeful name); repositories stay in `data/repository/` and import those helpers.
+
+---
+
+### 20
+
+- **Rule:** Treat `collectAsStateWithLifecycle()` (or `collectAsState()`) on a `StateFlow` as **the** subscription while the composable is in the lifecycle window; do not add no-op `SideEffect { state.field }` (or similar) to “hold” the collection or to silence unused-state warnings.
+- **Why it exists:** Those APIs already start collecting when the composable is active; an extra read in `SideEffect` does not change subscription behavior, hides real intent, and invites dead code.
+- **Bad pattern (short):** `val state by viewModel.uiState.collectAsStateWithLifecycle()` plus `SideEffect { state.shouldDisplayText }` (or any field) when nothing in the tree uses `state` for UI or side effects.
+- **Correct pattern (short):** If the screen has no UI tied to store state yet, skip collection until it does; otherwise read the fields where they matter (parameters to child composables, `when`, etc.) and rely on `collectAsStateWithLifecycle()` alone for lifecycle-aware collection.

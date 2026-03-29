@@ -145,22 +145,23 @@ class FreudRichTextBuilder internal constructor() {
 }
 
 @Composable
-fun FreudTextValue.resolveAnnotatedString(): AnnotatedString = when (this) {
+internal fun FreudTextValue.resolveAnnotatedString(
+    defaultContentColor: FreudDsToken<Color>,
+): AnnotatedString = when (this) {
     is FreudTextValue.PlainText -> AnnotatedString(
         text = resolveTextSource(source = source),
     )
 
     is FreudTextValue.RichText -> {
-        val segments = (content as FreudRichTextContent.Segments).value
+        val segments = when (val richContent = content) {
+            is FreudRichTextContent.Segments -> richContent.value
+        }
         buildAnnotatedString {
             segments.forEach { segment ->
                 val resolvedText = resolveTextSource(source = segment.source)
-                if (segment.color == null) {
+                val segmentColor = segment.color?.value ?: defaultContentColor.value
+                withStyle(style = SpanStyle(color = segmentColor)) {
                     append(resolvedText)
-                } else {
-                    withStyle(style = SpanStyle(color = segment.color.value)) {
-                        append(resolvedText)
-                    }
                 }
             }
         }

@@ -21,10 +21,11 @@ fun FreudText(
     maxLines: Int = Int.MAX_VALUE,
     minLines: Int = 1,
 ) {
+    val isRich = value is FreudTextValue.RichText
     Text(
-        text = value.resolveAnnotatedString(),
+        text = value.resolveAnnotatedString(defaultContentColor = color),
         modifier = modifier,
-        color = color.value,
+        color = if (isRich) Color.Unspecified else color.value,
         style = typography.value,
         maxLines = maxLines,
         minLines = minLines,

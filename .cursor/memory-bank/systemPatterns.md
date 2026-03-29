@@ -5,6 +5,7 @@ Patterns called out in `AGENTS.md` / `client/AGENTS.md` / `server/AGENTS.md` and
 - **Policy by path:** use the **closest** `AGENTS.md` to edited files (root, `client/`, `server/`, design-system `AGENTS.md`).
 - **Client UI:** Freud design system tokens and components — avoid raw Material3 or hard-coded theme values in features.
 - **Client architecture:** MVIKotlin **Store** owns behavior; ViewModel stays a thin bridge to the store.
+- **Compose lifecycle state:** `collectAsStateWithLifecycle()` on a ViewModel `StateFlow` already performs lifecycle-aware collection; do not add no-op `SideEffect` reads of the same state to “keep” the subscription (see `.cursor/rules/lessons-learned.mdc` §20).
 - **Client errors:** model expected failures with **`Outcome`**, not ad-hoc exceptions for domain cases.
 - **Client navigation:** use **`NavigatorContract`** / `NavigationIntent`, not ad-hoc platform navigation.
 - **Server gateways:** wrap outbound HTTP in **`upstreamCall`** with consistent dependency error mapping.
