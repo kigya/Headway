@@ -2,21 +2,29 @@ package dev.kigya.headway.feature.auth.internal.ui.screen.auth
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
-import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.heightIn
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
+import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
+import androidx.compose.ui.graphics.RectangleShape
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
 import dev.kigya.headway.core.designSystem.component.FreudButtonIconSpec
@@ -29,9 +37,9 @@ import dev.kigya.headway.core.designSystem.component.FreudLottieSource
 import dev.kigya.headway.core.designSystem.component.FreudSpacer
 import dev.kigya.headway.core.designSystem.component.FreudText
 import dev.kigya.headway.core.designSystem.util.FreudBackgroundPattern
-import dev.kigya.headway.core.designSystem.util.FreudScreenByWidth
 import dev.kigya.headway.core.designSystem.util.FreudTextValue
 import dev.kigya.headway.core.designSystem.util.background
+import dev.kigya.headway.core.designSystem.util.rememberWindowSizeClass
 import dev.kigya.headway.feature.auth.internal.ui.theme.auth.AuthTheme
 import dev.kigya.headway.feature.auth.internal.ui.theme.auth.AuthTheme.authBackground
 import dev.kigya.headway.feature.auth.internal.ui.theme.auth.AuthTheme.authUnderButtonTextColor
@@ -65,40 +73,49 @@ internal fun AuthScreen() {
     )
 }
 
+@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
 private fun AuthScreenContent(
     state: State<AuthStore.State>,
     onOpenNoAccess: () -> Unit,
 ) {
-    FreudScreenByWidth(
-        modifier = Modifier.background(
-            color = AuthTheme.colorScheme.authBackground,
-            pattern = FreudBackgroundPattern.Waves,
-        ),
-        narrow = {
-            FreudFallback(
-                isError = false,
-                onRetry = { },
-            ) {
-                AuthScreenNarrowContent()
+    val windowSizeClass = rememberWindowSizeClass()
+    BoxWithConstraints(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(
+                color = AuthTheme.colorScheme.authBackground,
+                pattern = FreudBackgroundPattern.Waves,
+            ),
+    ) {
+        val horizontalPaddingWide = AuthTheme.dimension.dp24.value * 2
+        val lottieSideBudget = resolveWideLottieColumnWidth(maxWidth = maxWidth)
+        val useSideBySide = shouldUseAuthSideBySideLayout(
+            containerWidth = maxWidth,
+            widthSizeClass = windowSizeClass.widthSizeClass,
+            lottieSideBudget = lottieSideBudget,
+            textColumnHorizontalPadding = horizontalPaddingWide,
+        )
+        FreudFallback(
+            isError = false,
+            onRetry = { },
+        ) {
+            if (useSideBySide) {
+                AuthScreenWideContent(lottieColumnWidth = lottieSideBudget)
+            } else {
+                AuthScreenStackedContent(containerWidth = maxWidth)
             }
-        },
-        wide = {
-            FreudFallback(
-                isError = false,
-                onRetry = { },
-            ) {
-                AuthScreenWideContent()
-            }
-        },
-    )
+        }
+    }
 }
 
 @Composable
-private fun AuthScreenNarrowContent() {
+private fun AuthScreenStackedContent(containerWidth: Dp) {
+    val scrollState = rememberScrollState()
     Column(
         modifier = Modifier
             .fillMaxSize()
+            .verticalScroll(state = scrollState)
             .padding(horizontal = AuthTheme.dimension.dp24.value),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -106,39 +123,46 @@ private fun AuthScreenNarrowContent() {
         AuthLogo()
         FreudSpacer(size = AuthTheme.dimension.dp36)
         AuthHeaderTexts(isWide = false)
-        Box(
-            modifier = Modifier
-                .weight(weight = 1f)
-                .fillMaxWidth(),
-            contentAlignment = Alignment.Center,
-        ) {
-            FreudLottie(
-                reader = { Res.readBytes("files/lottie_auth_narrow.lottie") },
-                source = FreudLottieSource.DotLottie,
+        if (containerWidth > STACKED_LOTTIE_HIDE_BELOW_WIDTH) {
+            FreudSpacer(size = AuthTheme.dimension.dp24)
+            Box(
                 modifier = Modifier
-                    .fillMaxWidth(fraction = 1f)
-                    .aspectRatio(ratio = LOTTIE_ASPECT_RATIO),
-            )
+                    .fillMaxWidth()
+                    .heightIn(max = resolveStackedLottieMaxHeight(containerWidth = containerWidth))
+                    .clip(shape = RectangleShape),
+                contentAlignment = Alignment.Center,
+            ) {
+                FreudLottie(
+                    reader = { Res.readBytes("files/lottie_auth_narrow.lottie") },
+                    source = FreudLottieSource.DotLottie,
+                    modifier = Modifier.fillMaxWidth(),
+                    contentScale = ContentScale.Fit,
+                )
+            }
         }
+        FreudSpacer(size = AuthTheme.dimension.dp36)
         AuthActionButtons(modifier = Modifier.fillMaxWidth())
         FreudSpacer(size = AuthTheme.dimension.dp36)
     }
 }
 
 @Composable
-private fun AuthScreenWideContent() {
+private fun AuthScreenWideContent(lottieColumnWidth: Dp) {
     Row(modifier = Modifier.fillMaxSize()) {
         Box(
             modifier = Modifier
                 .fillMaxHeight()
-                .widthIn(max = WIDE_LOTTIE_MAX_WIDTH)
-                .fillMaxHeight(),
+                .width(width = lottieColumnWidth)
+                .clip(shape = RectangleShape),
             contentAlignment = Alignment.BottomStart,
         ) {
             FreudLottie(
                 reader = { Res.readBytes("files/lottie_auth_wide.lottie") },
                 source = FreudLottieSource.DotLottie,
-                modifier = Modifier.fillMaxHeight(),
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .fillMaxWidth(),
+                alignment = Alignment.BottomStart,
                 contentScale = ContentScale.FillHeight,
             )
         }
@@ -146,7 +170,7 @@ private fun AuthScreenWideContent() {
         Column(
             modifier = Modifier
                 .weight(weight = 1f)
-                .fillMaxWidth()
+                .widthIn(min = MIN_WIDE_TEXT_COLUMN_WIDTH)
                 .fillMaxHeight()
                 .padding(horizontal = AuthTheme.dimension.dp24.value),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -187,7 +211,7 @@ private fun AuthHeaderTexts(isWide: Boolean) {
     val highlightColor = AuthTheme.colorScheme.greetingHighlight
 
     Column(
-        modifier = if (isWide) Modifier.fillMaxWidth() else Modifier,
+        modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
         FreudText(
@@ -246,6 +270,29 @@ private fun AuthActionButtons(modifier: Modifier = Modifier) {
     }
 }
 
+private fun resolveWideLottieColumnWidth(maxWidth: Dp): Dp =
+    minOf(WIDE_LOTTIE_MAX_WIDTH, maxWidth * WIDE_LOTTIE_WIDTH_FRACTION)
+
+private fun shouldUseAuthSideBySideLayout(
+    containerWidth: Dp,
+    widthSizeClass: WindowWidthSizeClass,
+    lottieSideBudget: Dp,
+    textColumnHorizontalPadding: Dp,
+): Boolean {
+    if (widthSizeClass != WindowWidthSizeClass.Expanded) {
+        return false
+    }
+    val minTotal = lottieSideBudget + MIN_WIDE_TEXT_COLUMN_WIDTH + textColumnHorizontalPadding
+    return containerWidth >= minTotal
+}
+
+private fun resolveStackedLottieMaxHeight(containerWidth: Dp): Dp =
+    minOf(STACKED_LOTTIE_MAX_HEIGHT_CAP, containerWidth * STACKED_LOTTIE_MAX_HEIGHT_WIDTH_FACTOR)
+
 private val ACTION_BUTTON_WIDTH_WIDE = 348.dp
-private const val LOTTIE_ASPECT_RATIO = 1f
 private val WIDE_LOTTIE_MAX_WIDTH = 520.dp
+private const val WIDE_LOTTIE_WIDTH_FRACTION = 0.42f
+private val MIN_WIDE_TEXT_COLUMN_WIDTH = 320.dp
+private val STACKED_LOTTIE_HIDE_BELOW_WIDTH = 340.dp
+private val STACKED_LOTTIE_MAX_HEIGHT_CAP = 260.dp
+private const val STACKED_LOTTIE_MAX_HEIGHT_WIDTH_FACTOR = 0.65f

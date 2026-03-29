@@ -9,6 +9,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
 import dev.kigya.headway.core.designSystem.theme.LocalTheme
@@ -28,6 +29,7 @@ fun FreudLottie(
     reader: suspend () -> ByteArray,
     source: FreudLottieSource,
     modifier: Modifier = Modifier,
+    alignment: Alignment = Alignment.Center,
     isRestartable: Boolean = false,
     shouldBeReversedOnRepeat: Boolean = false,
     speed: Float = 1f,
@@ -99,6 +101,7 @@ fun FreudLottie(
         ),
         contentDescription = null,
         modifier = modifier,
+        alignment = alignment,
         contentScale = contentScale,
     )
 }
