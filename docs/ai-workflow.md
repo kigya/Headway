@@ -11,6 +11,7 @@ This document describes how **AI-assisted development** is wired in Headway. It 
 | **`.cursor/memory-bank/`** | Canonical **project context** for agents: orientation, current focus, stack summary, pattern reminders. |
 | **`.cursor/rules/lessons-learned.mdc`** | Curated **reusable mistakes** (Rule / Why / Bad / Correct). |
 | **`.cursor/skills/`** | Invoked workflows: rule alignment, lesson capture, feature wrap-up, commit, PR. |
+| **`.cursor/agents/*.md`** | **Cursor Subagents:** CI-parity Gradle/Detekt/build checks in an isolated agent context; see [`.cursor/WORKFLOWS.md`](../.cursor/WORKFLOWS.md). |
 | **`.cursor/commands/speckit.*.md`** | **Spec Kit** slash commands (Specify 0.4.0, `cursor-agent` target). |
 | **`.specify/`** | Spec Kit templates, constitution scaffold (`memory/constitution.md`), and helper scripts. |
 | **`.gitbook/`** | Human-oriented handbook (not the agent’s primary runtime context). |
@@ -55,6 +56,10 @@ Optional quality commands (see command descriptions): `/speckit.analyze`, `/spec
 
 - **`/headway-rule-aware-workflow`** — while coding, align with the closest `AGENTS.md`, `.cursor/rules/`, and skim **Memory Bank** for current focus.
 - **`/commit`**, **`/pull-request`** — unchanged; see [`.cursor/WORKFLOWS.md`](../.cursor/WORKFLOWS.md).
+
+## Subagents
+
+Subagents (`.cursor/agents/`) are for **noisy or scoped verification** (full Gradle output, platform builds). Invoke with `/headway-detekt`, `/headway-client-android-build`, `/headway-pre-merge-verify`, etc. **Commit and PR** stay on the **`/commit`** and **`/pull-request`** Skills, not a parallel git subagent. Full list: [`.cursor/WORKFLOWS.md`](../.cursor/WORKFLOWS.md) → *Subagents*.
 
 ## Recommended habit
 

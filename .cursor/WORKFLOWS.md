@@ -4,6 +4,22 @@ This repo layers **Agent Skills** on top of [`.cursor/rules/`](rules/), [`.curso
 
 **How this fits Spec Kit:** Spec-driven commands live under [`.cursor/commands/`](commands/) (`speckit.*`). See [docs/ai-workflow.md](../docs/ai-workflow.md) for the full model.
 
+## Subagents ([`.cursor/agents/`](agents/))
+
+Cursor **Subagents** are separate agent contexts for noisy or scoped work (Gradle logs, CI-parity checks). Invoke with `/name` (e.g. `/headway-detekt`) or natural language. They complement built-in Explore / Bash / Browser; they do **not** replace **Skills** for one-shot git flows.
+
+| Subagent | Role |
+|----------|------|
+| `headway-detekt` | Client + server `./gradlew detekt` |
+| `headway-server-verify` | Server `installDist` targets + `test` (CI parity); optional server detekt |
+| `headway-client-android-build` | `:app:headwayAndroid:assembleDebug` |
+| `headway-client-desktop-build` | `:app:headwayDesktop:packageDistributionForCurrentOS` + OS prereqs |
+| `headway-client-web-build` | `:app:headwayWeb:wasmJsBrowserDistribution` + Node/Corepack/Yarn |
+| `headway-client-ios-build` | `xcodebuild` simulator, no signing (macOS) |
+| `headway-pre-merge-verify` | Scope-based checks before git; **does not** commit or open PRs |
+
+**Git:** Use **`/commit`** and **`/pull-request`** (Skills), not a duplicate subagent. `headway-pre-merge-verify` ends by pointing to those when appropriate.
+
 ## Skill: `headway-rule-aware-workflow`
 
 **What it does:** Steers implementation toward the closest `AGENTS.md`, the matching `.mdc` rules (`global`, `client` or `server` by path, `detekt-guardrails` for Kotlin, `lessons-learned` for cumulative mistakes), and a quick read of **Memory Bank** (`activeContext.md`, `systemPatterns.md` when relevant). Use via `/headway-rule-aware-workflow` or `@headway-rule-aware-workflow` when you want explicit rule alignment while coding.
