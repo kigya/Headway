@@ -1,5 +1,6 @@
 package dev.kigya.headway.feature.auth.internal.ui.screen.auth
 
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -15,7 +16,6 @@ import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
-import androidx.compose.material3.windowsizeclass.WindowWidthSizeClass
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
 import androidx.compose.ui.Alignment
@@ -40,6 +40,10 @@ import dev.kigya.headway.core.designSystem.util.FreudBackgroundPattern
 import dev.kigya.headway.core.designSystem.util.FreudTextValue
 import dev.kigya.headway.core.designSystem.util.background
 import dev.kigya.headway.core.designSystem.util.rememberWindowSizeClass
+import dev.kigya.headway.feature.auth.internal.ui.layout.authSideBySideActionButtonWidth
+import dev.kigya.headway.feature.auth.internal.ui.layout.authSideBySideMinTextColumnWidth
+import dev.kigya.headway.feature.auth.internal.ui.layout.resolveAuthSideBySideLottieColumnWidth
+import dev.kigya.headway.feature.auth.internal.ui.layout.shouldUseAuthSideBySideLayout
 import dev.kigya.headway.feature.auth.internal.ui.theme.auth.AuthTheme
 import dev.kigya.headway.feature.auth.internal.ui.theme.auth.AuthTheme.authBackground
 import dev.kigya.headway.feature.auth.internal.ui.theme.auth.AuthTheme.authUnderButtonTextColor
@@ -83,13 +87,14 @@ private fun AuthScreenContent(
     BoxWithConstraints(
         modifier = Modifier
             .fillMaxSize()
+            .clickable { onOpenNoAccess() }
             .background(
                 color = AuthTheme.colorScheme.authBackground,
                 pattern = FreudBackgroundPattern.Waves,
             ),
     ) {
         val horizontalPaddingWide = AuthTheme.dimension.dp24.value * 2
-        val lottieSideBudget = resolveWideLottieColumnWidth(maxWidth = maxWidth)
+        val lottieSideBudget = resolveAuthSideBySideLottieColumnWidth(maxWidth = maxWidth)
         val useSideBySide = shouldUseAuthSideBySideLayout(
             containerWidth = maxWidth,
             widthSizeClass = windowSizeClass.widthSizeClass,
@@ -141,7 +146,11 @@ private fun AuthScreenStackedContent(containerWidth: Dp) {
             }
         }
         FreudSpacer(size = AuthTheme.dimension.dp36)
-        AuthActionButtons(modifier = Modifier.fillMaxWidth())
+        AuthActionButtons(
+            modifier = Modifier
+                .widthIn(max = authSideBySideActionButtonWidth)
+                .fillMaxWidth(),
+        )
         FreudSpacer(size = AuthTheme.dimension.dp36)
     }
 }
@@ -170,7 +179,7 @@ private fun AuthScreenWideContent(lottieColumnWidth: Dp) {
         Column(
             modifier = Modifier
                 .weight(weight = 1f)
-                .widthIn(min = MIN_WIDE_TEXT_COLUMN_WIDTH)
+                .widthIn(min = authSideBySideMinTextColumnWidth)
                 .fillMaxHeight()
                 .padding(horizontal = AuthTheme.dimension.dp24.value),
             horizontalAlignment = Alignment.CenterHorizontally,
@@ -180,7 +189,7 @@ private fun AuthScreenWideContent(lottieColumnWidth: Dp) {
             FreudSpacer(size = AuthTheme.dimension.dp36)
             AuthHeaderTexts(isWide = true)
             FreudSpacer(size = AuthTheme.dimension.dp48)
-            AuthActionButtons(modifier = Modifier.width(width = ACTION_BUTTON_WIDTH_WIDE))
+            AuthActionButtons(modifier = Modifier.width(width = authSideBySideActionButtonWidth))
         }
     }
 }
@@ -270,29 +279,9 @@ private fun AuthActionButtons(modifier: Modifier = Modifier) {
     }
 }
 
-private fun resolveWideLottieColumnWidth(maxWidth: Dp): Dp =
-    minOf(WIDE_LOTTIE_MAX_WIDTH, maxWidth * WIDE_LOTTIE_WIDTH_FRACTION)
-
-private fun shouldUseAuthSideBySideLayout(
-    containerWidth: Dp,
-    widthSizeClass: WindowWidthSizeClass,
-    lottieSideBudget: Dp,
-    textColumnHorizontalPadding: Dp,
-): Boolean {
-    if (widthSizeClass != WindowWidthSizeClass.Expanded) {
-        return false
-    }
-    val minTotal = lottieSideBudget + MIN_WIDE_TEXT_COLUMN_WIDTH + textColumnHorizontalPadding
-    return containerWidth >= minTotal
-}
-
 private fun resolveStackedLottieMaxHeight(containerWidth: Dp): Dp =
     minOf(STACKED_LOTTIE_MAX_HEIGHT_CAP, containerWidth * STACKED_LOTTIE_MAX_HEIGHT_WIDTH_FACTOR)
 
-private val ACTION_BUTTON_WIDTH_WIDE = 348.dp
-private val WIDE_LOTTIE_MAX_WIDTH = 520.dp
-private const val WIDE_LOTTIE_WIDTH_FRACTION = 0.42f
-private val MIN_WIDE_TEXT_COLUMN_WIDTH = 320.dp
 private val STACKED_LOTTIE_HIDE_BELOW_WIDTH = 340.dp
 private val STACKED_LOTTIE_MAX_HEIGHT_CAP = 260.dp
 private const val STACKED_LOTTIE_MAX_HEIGHT_WIDTH_FACTOR = 0.65f

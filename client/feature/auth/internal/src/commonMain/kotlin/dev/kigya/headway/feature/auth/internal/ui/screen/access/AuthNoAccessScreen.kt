@@ -2,6 +2,7 @@ package dev.kigya.headway.feature.auth.internal.ui.screen.access
 
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.BoxWithConstraints
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.WindowInsets
@@ -17,6 +18,7 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
@@ -27,6 +29,7 @@ import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import dev.kigya.headway.core.designSystem.component.FreudButtonIconSpec
 import dev.kigya.headway.core.designSystem.component.FreudHorizontalButton
@@ -38,10 +41,13 @@ import dev.kigya.headway.core.designSystem.component.FreudText
 import dev.kigya.headway.core.designSystem.component.FreudTopBar
 import dev.kigya.headway.core.designSystem.component.FreudTopBarStartSlot
 import dev.kigya.headway.core.designSystem.util.FreudBackgroundPattern
-import dev.kigya.headway.core.designSystem.util.FreudScreenByWidth
 import dev.kigya.headway.core.designSystem.util.FreudTextValue
 import dev.kigya.headway.core.designSystem.util.background
-import dev.kigya.headway.core.designSystem.util.isWide
+import dev.kigya.headway.core.designSystem.util.rememberWindowSizeClass
+import dev.kigya.headway.feature.auth.internal.ui.layout.authSideBySideActionButtonWidth
+import dev.kigya.headway.feature.auth.internal.ui.layout.authSideBySideMinTextColumnWidth
+import dev.kigya.headway.feature.auth.internal.ui.layout.resolveAuthSideBySideLottieColumnWidth
+import dev.kigya.headway.feature.auth.internal.ui.layout.shouldUseAuthSideBySideLayout
 import dev.kigya.headway.feature.auth.internal.ui.theme.access.AuthNoAccessTheme
 import dev.kigya.headway.feature.auth.internal.ui.theme.access.AuthNoAccessTheme.arcOverlay
 import dev.kigya.headway.feature.auth.internal.ui.theme.access.AuthNoAccessTheme.buttonContainer
@@ -69,32 +75,43 @@ internal fun NoAccessScreen(viewModel: AuthNoAccessViewModel = koinViewModel()) 
     )
 }
 
+@OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
 private fun NoAccessScreenContent(onBack: () -> Unit) {
-    val wide = isWide()
-    val backgroundColor = if (wide) {
-        AuthNoAccessTheme.colorScheme.screenBackgroundWide
-    } else {
-        AuthNoAccessTheme.colorScheme.screenBackgroundNarrow
-    }
-    val backgroundPattern = if (wide) {
-        FreudBackgroundPattern.Waves
-    } else {
-        FreudBackgroundPattern.None
-    }
+    val windowSizeClass = rememberWindowSizeClass()
+    BoxWithConstraints(modifier = Modifier.fillMaxSize()) {
+        val textColumnHorizontalPadding = AuthNoAccessTheme.dimension.dp24.value * 2
+        val lottieSideBudget = resolveAuthSideBySideLottieColumnWidth(maxWidth = maxWidth)
+        val useSideBySide = shouldUseAuthSideBySideLayout(
+            containerWidth = maxWidth,
+            widthSizeClass = windowSizeClass.widthSizeClass,
+            lottieSideBudget = lottieSideBudget,
+            textColumnHorizontalPadding = textColumnHorizontalPadding,
+        )
+        val backgroundColor = if (useSideBySide) {
+            AuthNoAccessTheme.colorScheme.screenBackgroundWide
+        } else {
+            AuthNoAccessTheme.colorScheme.screenBackgroundNarrow
+        }
+        val backgroundPattern = if (useSideBySide) {
+            FreudBackgroundPattern.Waves
+        } else {
+            FreudBackgroundPattern.None
+        }
 
-    FreudScreenByWidth(
-        modifier = Modifier.background(
-            color = backgroundColor,
-            pattern = backgroundPattern,
-        ),
-        narrow = {
-            NarrowNoAccessLayout()
-        },
-        wide = {
-            WideNoAccessLayout()
-        },
-        overlay = {
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .background(
+                    color = backgroundColor,
+                    pattern = backgroundPattern,
+                ),
+        ) {
+            if (useSideBySide) {
+                WideNoAccessLayout(lottieColumnWidth = lottieSideBudget)
+            } else {
+                NarrowNoAccessLayout()
+            }
             FreudTopBar(
                 modifier = Modifier
                     .fillMaxWidth()
@@ -111,8 +128,8 @@ private fun NoAccessScreenContent(onBack: () -> Unit) {
                     contentDescription = FreudTextValue.text(Res.string.auth_back_icon_content_description),
                 ),
             )
-        },
-    )
+        }
+    }
 }
 
 @Composable
@@ -164,7 +181,7 @@ private fun NarrowNoAccessLayout() {
 }
 
 @Composable
-private fun WideNoAccessLayout() {
+private fun WideNoAccessLayout(lottieColumnWidth: Dp) {
     Row(
         modifier = Modifier.fillMaxSize(),
         verticalAlignment = Alignment.CenterVertically,
@@ -172,7 +189,7 @@ private fun WideNoAccessLayout() {
         Box(
             modifier = Modifier
                 .fillMaxHeight()
-                .widthIn(max = WIDE_LOTTIE_MAX_WIDTH)
+                .width(width = lottieColumnWidth)
                 .background(
                     color = AuthNoAccessTheme.colorScheme.cardBackgroundWide,
                     pattern = FreudBackgroundPattern.None,
@@ -189,7 +206,8 @@ private fun WideNoAccessLayout() {
         Box(
             modifier = Modifier
                 .weight(1f)
-                .fillMaxHeight(),
+                .fillMaxHeight()
+                .widthIn(min = authSideBySideMinTextColumnWidth),
             contentAlignment = Alignment.Center,
         ) {
             NoAccessTextAndButton(
@@ -275,9 +293,11 @@ private fun NoAccessTextAndButton(
     }
 
     val buttonModifier = if (isWide) {
-        Modifier.width(WIDE_BUTTON_WIDTH)
+        Modifier.width(width = authSideBySideActionButtonWidth)
     } else {
-        Modifier.fillMaxWidth()
+        Modifier
+            .widthIn(max = authSideBySideActionButtonWidth)
+            .fillMaxWidth()
     }
 
     Column(
@@ -332,7 +352,5 @@ private val NARROW_OVERLAY_HEIGHT = 334.dp
 private const val ARC_START_Y_RATIO = 0.42f
 private const val ARC_CONTROL_Y_RATIO = -0.18f
 private const val ARC_VISIBLE_TOP_RATIO = (ARC_START_Y_RATIO + ARC_CONTROL_Y_RATIO) / 2f
-private val WIDE_LOTTIE_MAX_WIDTH = 520.dp
 private val WIDE_CONTENT_MAX_WIDTH = 560.dp
-private val WIDE_BUTTON_WIDTH = 336.dp
 private val WIDE_CONTENT_HORIZONTAL_PADDING = 48.dp
