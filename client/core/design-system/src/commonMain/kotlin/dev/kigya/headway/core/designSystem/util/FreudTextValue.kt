@@ -55,34 +55,62 @@ private fun FreudTextFormatArg.toPlatformFormatValue(): Any = when (this) {
 }
 
 sealed interface FreudTextValue {
+    val animation: FreudTextAnimation?
+    val onFinishTrigger: FreudAnimationTrigger?
 
     @JvmInline
     value class PlainText internal constructor(
-        internal val source: FreudTextSource,
-    ) : FreudTextValue
+        internal val data: PlainTextData,
+    ) : FreudTextValue {
+        override val animation: FreudTextAnimation? get() = data.animation
+        override val onFinishTrigger: FreudAnimationTrigger? get() = data.onFinishTrigger
+        internal val source: FreudTextSource get() = data.source
+    }
 
     @JvmInline
     value class RichText internal constructor(
-        internal val content: FreudRichTextContent,
+        internal val data: RichTextData,
     ) : FreudTextValue {
+        override val animation: FreudTextAnimation? get() = data.animation
+        override val onFinishTrigger: FreudAnimationTrigger? get() = data.onFinishTrigger
+        internal val content: FreudRichTextContent get() = data.content
+
         internal companion object {
-            fun create(content: FreudRichTextContent): RichText = RichText(content)
+            fun create(
+                content: FreudRichTextContent,
+                animation: FreudTextAnimation? = null,
+                onFinishTrigger: FreudAnimationTrigger? = null,
+            ): RichText = RichText(RichTextData(content, animation, onFinishTrigger))
         }
     }
 
     companion object {
 
-        fun text(value: String): PlainText = PlainText(
-            source = FreudTextSource.Raw(value = value),
+        fun text(
+            value: String,
+            animation: FreudTextAnimation? = null,
+            onFinishTrigger: FreudAnimationTrigger? = null,
+        ): PlainText = PlainText(
+            data = PlainTextData(
+                source = FreudTextSource.Raw(value = value),
+                animation = animation,
+                onFinishTrigger = onFinishTrigger,
+            ),
         )
 
         fun text(
             resource: StringResource,
+            animation: FreudTextAnimation? = null,
+            onFinishTrigger: FreudAnimationTrigger? = null,
             vararg formatArgs: FreudTextFormatArg,
         ): PlainText = PlainText(
-            source = FreudTextSource.Resource(
-                value = resource,
-                formatArgs = persistentListOf(*formatArgs),
+            data = PlainTextData(
+                source = FreudTextSource.Resource(
+                    value = resource,
+                    formatArgs = persistentListOf(*formatArgs),
+                ),
+                animation = animation,
+                onFinishTrigger = onFinishTrigger,
             ),
         )
 
@@ -92,8 +120,24 @@ sealed interface FreudTextValue {
     }
 }
 
+@Immutable
+internal data class PlainTextData(
+    val source: FreudTextSource,
+    val animation: FreudTextAnimation? = null,
+    val onFinishTrigger: FreudAnimationTrigger? = null,
+)
+
+@Immutable
+internal data class RichTextData(
+    val content: FreudRichTextContent,
+    val animation: FreudTextAnimation? = null,
+    val onFinishTrigger: FreudAnimationTrigger? = null,
+)
+
 class FreudRichTextBuilder internal constructor() {
     private val segments = mutableListOf<FreudRichTextSegment>()
+    private var animation: FreudTextAnimation? = null
+    private var onFinishTrigger: FreudAnimationTrigger? = null
 
     fun append(value: String) {
         segments += FreudRichTextSegment(
@@ -139,8 +183,18 @@ class FreudRichTextBuilder internal constructor() {
         )
     }
 
+    fun animate(
+        animation: FreudTextAnimation,
+        onFinish: FreudAnimationTrigger? = null,
+    ) {
+        this.animation = animation
+        this.onFinishTrigger = onFinish
+    }
+
     internal fun build(): FreudTextValue.RichText = FreudTextValue.RichText.create(
         content = FreudRichTextContent.Segments(value = segments.toPersistentList()),
+        animation = animation,
+        onFinishTrigger = onFinishTrigger,
     )
 }
 

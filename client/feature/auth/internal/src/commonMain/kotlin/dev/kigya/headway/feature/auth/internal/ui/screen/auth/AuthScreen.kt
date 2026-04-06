@@ -18,6 +18,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.State
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -27,6 +28,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import dev.kigya.headway.core.designSystem.component.FreudAnimatedText
 import dev.kigya.headway.core.designSystem.component.FreudButtonIconSpec
 import dev.kigya.headway.core.designSystem.component.FreudFallback
 import dev.kigya.headway.core.designSystem.component.FreudHorizontalButton
@@ -35,8 +37,9 @@ import dev.kigya.headway.core.designSystem.component.FreudIcon
 import dev.kigya.headway.core.designSystem.component.FreudLottie
 import dev.kigya.headway.core.designSystem.component.FreudLottieSource
 import dev.kigya.headway.core.designSystem.component.FreudSpacer
-import dev.kigya.headway.core.designSystem.component.FreudText
+import dev.kigya.headway.core.designSystem.util.FreudAnimationTrigger
 import dev.kigya.headway.core.designSystem.util.FreudBackgroundPattern
+import dev.kigya.headway.core.designSystem.util.FreudTextAnimation
 import dev.kigya.headway.core.designSystem.util.FreudTextValue
 import dev.kigya.headway.core.designSystem.util.background
 import dev.kigya.headway.core.designSystem.util.rememberWindowSizeClass
@@ -133,6 +136,7 @@ private fun AuthScreenStackedContent(containerWidth: Dp) {
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
+                    .weight(1f)
                     .heightIn(max = resolveStackedLottieMaxHeight(containerWidth = containerWidth))
                     .clip(shape = RectangleShape),
                 contentAlignment = Alignment.Center,
@@ -140,7 +144,7 @@ private fun AuthScreenStackedContent(containerWidth: Dp) {
                 FreudLottie(
                     reader = { Res.readBytes("files/lottie_auth_narrow.lottie") },
                     source = FreudLottieSource.DotLottie,
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Fit,
                 )
             }
@@ -218,26 +222,39 @@ private fun AuthHeaderTexts(isWide: Boolean) {
     }
 
     val highlightColor = AuthTheme.colorScheme.greetingHighlight
+    val titleFinishedTrigger = remember { FreudAnimationTrigger() }
 
     Column(
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        FreudText(
+        FreudAnimatedText(
             value = FreudTextValue.rich {
                 append(resource = Res.string.auth_greeting_text)
                 colored(
                     resource = Res.string.auth_substring_for_colorized_header,
                     color = highlightColor,
                 )
+                animate(
+                    animation = FreudTextAnimation.FadeIn(GREETING_ANIMATION_DURATION),
+                    onFinish = titleFinishedTrigger,
+                )
             },
             color = AuthTheme.colorScheme.greetingTextColor,
             typography = titleTypography,
             align = TextAlign.Center,
         )
+
         FreudSpacer(size = AuthTheme.dimension.dp24)
-        FreudText(
-            value = FreudTextValue.text(resource = Res.string.auth_greeting_subtext),
+
+        FreudAnimatedText(
+            value = FreudTextValue.text(
+                resource = Res.string.auth_greeting_subtext,
+                animation = FreudTextAnimation.SlideIn(
+                    startTrigger = titleFinishedTrigger,
+                    durationMs = SUBTEXT_GREETING_ANIMATION_DURATION,
+                ),
+            ),
             color = AuthTheme.colorScheme.greetingSubTextColor,
             typography = subtitleTypography,
             align = TextAlign.Center,
@@ -285,3 +302,5 @@ private fun resolveStackedLottieMaxHeight(containerWidth: Dp): Dp =
 private val STACKED_LOTTIE_HIDE_BELOW_WIDTH = 340.dp
 private val STACKED_LOTTIE_MAX_HEIGHT_CAP = 260.dp
 private const val STACKED_LOTTIE_MAX_HEIGHT_WIDTH_FACTOR = 0.65f
+private const val GREETING_ANIMATION_DURATION = 1000
+private const val SUBTEXT_GREETING_ANIMATION_DURATION = 600

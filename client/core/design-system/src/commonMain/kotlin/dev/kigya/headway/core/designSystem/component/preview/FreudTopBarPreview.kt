@@ -130,9 +130,9 @@ private fun FreudTopBarPreview(
         val titleLabel = when (val t = case.title) {
             null -> "title=null"
             is FreudTextValue.RichText -> "title=rich"
-            is FreudTextValue.PlainText -> when (t.source) {
+            is FreudTextValue.PlainText -> when (val source = t.source) {
                 is FreudTextSource.Raw ->
-                    if (t.source.value.length > 24) {
+                    if (source.value.length > 24) {
                         "title=long"
                     } else {
                         "title=short"
