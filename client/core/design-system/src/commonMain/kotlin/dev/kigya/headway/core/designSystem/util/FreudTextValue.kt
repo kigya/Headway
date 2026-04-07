@@ -58,29 +58,27 @@ sealed interface FreudTextValue {
     val animation: FreudTextAnimation?
     val onFinishTrigger: FreudAnimationTrigger?
 
-    @JvmInline
-    value class PlainText internal constructor(
-        internal val data: PlainTextData,
-    ) : FreudTextValue {
-        override val animation: FreudTextAnimation? get() = data.animation
-        override val onFinishTrigger: FreudAnimationTrigger? get() = data.onFinishTrigger
-        internal val source: FreudTextSource get() = data.source
-    }
+    @Immutable
+    @ConsistentCopyVisibility
+    data class PlainText internal constructor(
+        internal val source: FreudTextSource,
+        override val animation: FreudTextAnimation? = null,
+        override val onFinishTrigger: FreudAnimationTrigger? = null,
+    ) : FreudTextValue
 
-    @JvmInline
-    value class RichText internal constructor(
-        internal val data: RichTextData,
+    @Immutable
+    @ConsistentCopyVisibility
+    data class RichText internal constructor(
+        internal val content: FreudRichTextContent,
+        override val animation: FreudTextAnimation? = null,
+        override val onFinishTrigger: FreudAnimationTrigger? = null,
     ) : FreudTextValue {
-        override val animation: FreudTextAnimation? get() = data.animation
-        override val onFinishTrigger: FreudAnimationTrigger? get() = data.onFinishTrigger
-        internal val content: FreudRichTextContent get() = data.content
-
         internal companion object {
             fun create(
                 content: FreudRichTextContent,
                 animation: FreudTextAnimation? = null,
                 onFinishTrigger: FreudAnimationTrigger? = null,
-            ): RichText = RichText(RichTextData(content, animation, onFinishTrigger))
+            ): RichText = RichText(content, animation, onFinishTrigger)
         }
     }
 
@@ -91,11 +89,9 @@ sealed interface FreudTextValue {
             animation: FreudTextAnimation? = null,
             onFinishTrigger: FreudAnimationTrigger? = null,
         ): PlainText = PlainText(
-            data = PlainTextData(
-                source = FreudTextSource.Raw(value = value),
-                animation = animation,
-                onFinishTrigger = onFinishTrigger,
-            ),
+            source = FreudTextSource.Raw(value = value),
+            animation = animation,
+            onFinishTrigger = onFinishTrigger,
         )
 
         fun text(
@@ -104,14 +100,12 @@ sealed interface FreudTextValue {
             onFinishTrigger: FreudAnimationTrigger? = null,
             vararg formatArgs: FreudTextFormatArg,
         ): PlainText = PlainText(
-            data = PlainTextData(
-                source = FreudTextSource.Resource(
-                    value = resource,
-                    formatArgs = persistentListOf(*formatArgs),
-                ),
-                animation = animation,
-                onFinishTrigger = onFinishTrigger,
+            source = FreudTextSource.Resource(
+                value = resource,
+                formatArgs = persistentListOf(*formatArgs),
             ),
+            animation = animation,
+            onFinishTrigger = onFinishTrigger,
         )
 
         fun rich(builder: FreudRichTextBuilder.() -> Unit): RichText = FreudRichTextBuilder()
@@ -119,20 +113,6 @@ sealed interface FreudTextValue {
             .build()
     }
 }
-
-@Immutable
-internal data class PlainTextData(
-    val source: FreudTextSource,
-    val animation: FreudTextAnimation? = null,
-    val onFinishTrigger: FreudAnimationTrigger? = null,
-)
-
-@Immutable
-internal data class RichTextData(
-    val content: FreudRichTextContent,
-    val animation: FreudTextAnimation? = null,
-    val onFinishTrigger: FreudAnimationTrigger? = null,
-)
 
 class FreudRichTextBuilder internal constructor() {
     private val segments = mutableListOf<FreudRichTextSegment>()

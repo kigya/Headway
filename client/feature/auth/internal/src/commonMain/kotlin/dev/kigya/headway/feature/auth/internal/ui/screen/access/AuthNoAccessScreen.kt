@@ -22,6 +22,7 @@ import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSiz
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clipToBounds
@@ -40,7 +41,9 @@ import dev.kigya.headway.core.designSystem.component.FreudSpacer
 import dev.kigya.headway.core.designSystem.component.FreudText
 import dev.kigya.headway.core.designSystem.component.FreudTopBar
 import dev.kigya.headway.core.designSystem.component.FreudTopBarStartSlot
+import dev.kigya.headway.core.designSystem.util.FreudAnimationTrigger
 import dev.kigya.headway.core.designSystem.util.FreudBackgroundPattern
+import dev.kigya.headway.core.designSystem.util.FreudTextAnimation
 import dev.kigya.headway.core.designSystem.util.FreudTextValue
 import dev.kigya.headway.core.designSystem.util.background
 import dev.kigya.headway.core.designSystem.util.rememberWindowSizeClass
@@ -300,6 +303,8 @@ private fun NoAccessTextAndButton(
             .fillMaxWidth()
     }
 
+    val titleFinishedTrigger = remember { FreudAnimationTrigger() }
+
     Column(
         modifier = modifier,
         horizontalAlignment = Alignment.CenterHorizontally,
@@ -307,7 +312,11 @@ private fun NoAccessTextAndButton(
     ) {
         FreudText(
             modifier = if (isWide) Modifier.fillMaxWidth() else Modifier,
-            value = FreudTextValue.text(Res.string.auth_no_access),
+            value = FreudTextValue.text(
+                resource = Res.string.auth_no_access,
+                animation = FreudTextAnimation.FadeIn(durationMs = TITLE_ANIM_DURATION),
+                onFinishTrigger = titleFinishedTrigger,
+            ),
             color = AuthNoAccessTheme.colorScheme.title,
             typography = titleTypography,
             align = TextAlign.Center,
@@ -317,7 +326,13 @@ private fun NoAccessTextAndButton(
 
         FreudText(
             modifier = Modifier.fillMaxWidth(),
-            value = FreudTextValue.text(Res.string.auth_manager_hasnt_added_to_the_system),
+            value = FreudTextValue.text(
+                resource = Res.string.auth_manager_hasnt_added_to_the_system,
+                animation = FreudTextAnimation.SlideIn(
+                    startTrigger = titleFinishedTrigger,
+                    durationMs = SUBTITLE_ANIM_DURATION,
+                ),
+            ),
             color = AuthNoAccessTheme.colorScheme.subtitle,
             typography = subtitleTypography,
             align = TextAlign.Center,
@@ -354,3 +369,5 @@ private const val ARC_CONTROL_Y_RATIO = -0.18f
 private const val ARC_VISIBLE_TOP_RATIO = (ARC_START_Y_RATIO + ARC_CONTROL_Y_RATIO) / 2f
 private val WIDE_CONTENT_MAX_WIDTH = 560.dp
 private val WIDE_CONTENT_HORIZONTAL_PADDING = 48.dp
+private const val TITLE_ANIM_DURATION = 1500
+private const val SUBTITLE_ANIM_DURATION = 600
