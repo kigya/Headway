@@ -43,6 +43,7 @@ import dev.kigya.headway.core.designSystem.util.FreudTextAnimation
 import dev.kigya.headway.core.designSystem.util.FreudTextValue
 import dev.kigya.headway.core.designSystem.util.background
 import dev.kigya.headway.core.designSystem.util.rememberWindowSizeClass
+import dev.kigya.headway.feature.auth.internal.ui.layout.AuthSideBySideLottieColumn
 import dev.kigya.headway.feature.auth.internal.ui.layout.authSideBySideActionButtonWidth
 import dev.kigya.headway.feature.auth.internal.ui.layout.authSideBySideMinTextColumnWidth
 import dev.kigya.headway.feature.auth.internal.ui.layout.resolveAuthSideBySideLottieColumnWidth
@@ -162,13 +163,7 @@ private fun AuthScreenStackedContent(containerWidth: Dp) {
 @Composable
 private fun AuthScreenWideContent(lottieColumnWidth: Dp) {
     Row(modifier = Modifier.fillMaxSize()) {
-        Box(
-            modifier = Modifier
-                .fillMaxHeight()
-                .width(width = lottieColumnWidth)
-                .clip(shape = RectangleShape),
-            contentAlignment = Alignment.BottomStart,
-        ) {
+        AuthSideBySideLottieColumn(lottieColumnWidth = lottieColumnWidth) {
             FreudLottie(
                 reader = { Res.readBytes("files/lottie_auth_wide.lottie") },
                 source = FreudLottieSource.DotLottie,

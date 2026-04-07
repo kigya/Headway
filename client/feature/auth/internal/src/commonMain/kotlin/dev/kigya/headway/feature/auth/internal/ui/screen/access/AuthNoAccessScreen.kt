@@ -24,7 +24,6 @@ import androidx.compose.runtime.getValue
 import androidx.compose.runtime.produceState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clipToBounds
 import androidx.compose.ui.draw.drawBehind
 import androidx.compose.ui.graphics.Path
 import androidx.compose.ui.layout.ContentScale
@@ -44,6 +43,7 @@ import dev.kigya.headway.core.designSystem.util.FreudBackgroundPattern
 import dev.kigya.headway.core.designSystem.util.FreudTextValue
 import dev.kigya.headway.core.designSystem.util.background
 import dev.kigya.headway.core.designSystem.util.rememberWindowSizeClass
+import dev.kigya.headway.feature.auth.internal.ui.layout.AuthSideBySideLottieColumn
 import dev.kigya.headway.feature.auth.internal.ui.layout.authSideBySideActionButtonWidth
 import dev.kigya.headway.feature.auth.internal.ui.layout.authSideBySideMinTextColumnWidth
 import dev.kigya.headway.feature.auth.internal.ui.layout.resolveAuthSideBySideLottieColumnWidth
@@ -186,19 +186,18 @@ private fun WideNoAccessLayout(lottieColumnWidth: Dp) {
         modifier = Modifier.fillMaxSize(),
         verticalAlignment = Alignment.CenterVertically,
     ) {
-        Box(
-            modifier = Modifier
-                .fillMaxHeight()
-                .width(width = lottieColumnWidth)
-                .background(
-                    color = AuthNoAccessTheme.colorScheme.cardBackgroundWide,
-                    pattern = FreudBackgroundPattern.None,
-                )
-                .clipToBounds(),
-            contentAlignment = Alignment.CenterStart,
+        AuthSideBySideLottieColumn(
+            lottieColumnWidth = lottieColumnWidth,
+            modifier = Modifier.background(
+                color = AuthNoAccessTheme.colorScheme.cardBackgroundWide,
+                pattern = FreudBackgroundPattern.None,
+            ),
         ) {
             NoAccessLottie(
-                modifier = Modifier.fillMaxHeight(),
+                modifier = Modifier
+                    .fillMaxHeight()
+                    .fillMaxWidth(),
+                alignment = Alignment.BottomStart,
                 contentScale = ContentScale.FillHeight,
             )
         }
@@ -223,6 +222,7 @@ private fun WideNoAccessLayout(lottieColumnWidth: Dp) {
 @Composable
 private fun NoAccessLottie(
     modifier: Modifier = Modifier,
+    alignment: Alignment = Alignment.Center,
     contentScale: ContentScale = ContentScale.Fit,
 ) {
     FreudLottie(
@@ -230,6 +230,7 @@ private fun NoAccessLottie(
         source = FreudLottieSource.DotLottie,
         iterations = 1,
         modifier = modifier,
+        alignment = alignment,
         contentScale = contentScale,
     )
 }
