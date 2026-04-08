@@ -12,4 +12,4 @@
 
 ## Notes
 
-- Agent rules: `.cursor/rules/` + closest `AGENTS.md`; cumulative lessons in `lessons-learned.mdc` (now includes §18 serialization, §19 `data/` layout vs `repository/`).
+- Agent rules: `.cursor/rules/` + closest `AGENTS.md`; cumulative lessons in `lessons-learned.mdc` (includes §18 serialization, §19 `data/` layout vs `repository/`, §20 Compose `collectAsStateWithLifecycle` vs no-op `SideEffect`).

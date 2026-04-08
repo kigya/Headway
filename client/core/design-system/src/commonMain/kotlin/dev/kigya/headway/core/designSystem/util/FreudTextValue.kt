@@ -3,6 +3,10 @@ package dev.kigya.headway.core.designSystem.util
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.AnnotatedString
+import androidx.compose.ui.text.SpanStyle
+import androidx.compose.ui.text.buildAnnotatedString
+import androidx.compose.ui.text.withStyle
 import dev.kigya.headway.core.designSystem.theme.FreudDsToken
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
@@ -51,35 +55,57 @@ private fun FreudTextFormatArg.toPlatformFormatValue(): Any = when (this) {
 }
 
 sealed interface FreudTextValue {
+    val animation: FreudTextAnimation?
+    val onFinishTrigger: FreudAnimationTrigger?
 
-    @JvmInline
-    value class PlainText internal constructor(
+    @Immutable
+    @ConsistentCopyVisibility
+    data class PlainText internal constructor(
         internal val source: FreudTextSource,
+        override val animation: FreudTextAnimation? = null,
+        override val onFinishTrigger: FreudAnimationTrigger? = null,
     ) : FreudTextValue
 
-    @JvmInline
-    value class RichText internal constructor(
+    @Immutable
+    @ConsistentCopyVisibility
+    data class RichText internal constructor(
         internal val content: FreudRichTextContent,
+        override val animation: FreudTextAnimation? = null,
+        override val onFinishTrigger: FreudAnimationTrigger? = null,
     ) : FreudTextValue {
         internal companion object {
-            fun create(content: FreudRichTextContent): RichText = RichText(content)
+            fun create(
+                content: FreudRichTextContent,
+                animation: FreudTextAnimation? = null,
+                onFinishTrigger: FreudAnimationTrigger? = null,
+            ): RichText = RichText(content, animation, onFinishTrigger)
         }
     }
 
     companion object {
 
-        fun text(value: String): PlainText = PlainText(
+        fun text(
+            value: String,
+            animation: FreudTextAnimation? = null,
+            onFinishTrigger: FreudAnimationTrigger? = null,
+        ): PlainText = PlainText(
             source = FreudTextSource.Raw(value = value),
+            animation = animation,
+            onFinishTrigger = onFinishTrigger,
         )
 
         fun text(
             resource: StringResource,
+            animation: FreudTextAnimation? = null,
+            onFinishTrigger: FreudAnimationTrigger? = null,
             vararg formatArgs: FreudTextFormatArg,
         ): PlainText = PlainText(
             source = FreudTextSource.Resource(
                 value = resource,
                 formatArgs = persistentListOf(*formatArgs),
             ),
+            animation = animation,
+            onFinishTrigger = onFinishTrigger,
         )
 
         fun rich(builder: FreudRichTextBuilder.() -> Unit): RichText = FreudRichTextBuilder()
@@ -90,6 +116,8 @@ sealed interface FreudTextValue {
 
 class FreudRichTextBuilder internal constructor() {
     private val segments = mutableListOf<FreudRichTextSegment>()
+    private var animation: FreudTextAnimation? = null
+    private var onFinishTrigger: FreudAnimationTrigger? = null
 
     fun append(value: String) {
         segments += FreudRichTextSegment(
@@ -135,9 +163,43 @@ class FreudRichTextBuilder internal constructor() {
         )
     }
 
+    fun animate(
+        animation: FreudTextAnimation,
+        onFinish: FreudAnimationTrigger? = null,
+    ) {
+        this.animation = animation
+        this.onFinishTrigger = onFinish
+    }
+
     internal fun build(): FreudTextValue.RichText = FreudTextValue.RichText.create(
         content = FreudRichTextContent.Segments(value = segments.toPersistentList()),
+        animation = animation,
+        onFinishTrigger = onFinishTrigger,
     )
+}
+
+@Composable
+internal fun FreudTextValue.resolveAnnotatedString(
+    defaultContentColor: FreudDsToken<Color>,
+): AnnotatedString = when (this) {
+    is FreudTextValue.PlainText -> AnnotatedString(
+        text = resolveTextSource(source = source),
+    )
+
+    is FreudTextValue.RichText -> {
+        val segments = when (val richContent = content) {
+            is FreudRichTextContent.Segments -> richContent.value
+        }
+        buildAnnotatedString {
+            segments.forEach { segment ->
+                val resolvedText = resolveTextSource(source = segment.source)
+                val segmentColor = segment.color?.value ?: defaultContentColor.value
+                withStyle(style = SpanStyle(color = segmentColor)) {
+                    append(resolvedText)
+                }
+            }
+        }
+    }
 }
 
 @Composable
@@ -193,8 +255,8 @@ internal sealed interface FreudTextSource {
 
 internal sealed interface FreudRichTextContent {
 
-    @Immutable
-    data class Segments(
+    @JvmInline
+    value class Segments(
         val value: ImmutableList<FreudRichTextSegment>,
     ) : FreudRichTextContent
 }

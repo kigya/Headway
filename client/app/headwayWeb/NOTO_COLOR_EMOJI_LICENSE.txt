@@ -1,0 +1,6 @@
+Noto Color Emoji (bundled at src/wasmJsMain/composeResources/font/NotoColorEmoji.ttf)
+Copyright 2013–2026 Google LLC
+
+Licensed under the SIL Open Font License, Version 1.1.
+Full license: https://openfontlicense.org/open-font-license-official-text/
+Project: https://github.com/googlefonts/noto-emoji

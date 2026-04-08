@@ -18,6 +18,7 @@ disable-model-invocation: true
 4. **Checks / expected before completion** (state that the agent does not run CI; these are for the human or an explicit agent run):
    - **Client substantive work:** `cd client && ./gradlew app:headwayAndroid:assembleDebug` and `cd client && ./gradlew detekt` per [client/AGENTS.md](../../../client/AGENTS.md).
    - **Server substantive work:** `cd server && ./gradlew build` and `cd server && ./gradlew detekt` per [server/AGENTS.md](../../../server/AGENTS.md). If the diff is narrowly scoped to one module and [server/AGENTS.md](../../../server/AGENTS.md) lists a tighter task, you may mention that alternative.
+   - **Isolated verification:** Optional Cursor subagents under [.cursor/agents/](../../agents/) (e.g. `/headway-pre-merge-verify`, `/headway-detekt`, `/headway-server-verify`) per [.cursor/WORKFLOWS.md](../../WORKFLOWS.md).
 5. **Drift risks:** If the change pattern conflicts with a cited rule, add 1–3 bullets; otherwise omit this section.
 6. **Memory Bank drift:** Update [.cursor/memory-bank/](../../memory-bank/) when this session changed durable context:
    - [`activeContext.md`](../../memory-bank/activeContext.md) — current branch intent / next steps if they shifted.

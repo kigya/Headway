@@ -1,7 +1,16 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <!--AuthNoAccessScreen strings-->
     <string name="auth_back_icon_content_description">Back</string>
     <string name="auth_ask_manager">Ask manager</string>
     <string name="auth_manager_hasnt_added_to_the_system">It looks like your manager hasn’t added you to the system</string>
     <string name="auth_no_access">Oops, No Access!</string>
+
+    <!--AuthScreen strings-->
+    <string name="auth_greeting_text">Welcome to </string>
+    <string name="auth_greeting_subtext">Your pocket assistant for interview preparation 🍃</string>
+    <string name="auth_learn_as_guest_button">Learn As A Guest</string>
+    <string name="auth_sing_in_google_button">Sign In</string>
+    <string name="auth_under_button_text">innowise.com only</string>
+    <string name="auth_substring_for_colorized_header">Headway!</string>
 </resources>

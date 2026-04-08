@@ -106,3 +106,29 @@ private fun FreudTextRichPreview() {
         )
     }
 }
+
+private class FreudTextAlignProvider : PreviewParameterProvider<TextAlign> {
+    override val values: Sequence<TextAlign> = sequenceOf(
+        TextAlign.Start,
+        TextAlign.Center,
+        TextAlign.End,
+    )
+}
+
+@Preview(name = "FreudText – Alignment Variants")
+@Composable
+private fun FreudTextAlignPreview(
+    @PreviewParameter(FreudTextAlignProvider::class) alignment: TextAlign,
+) {
+    FreudTheme(isDark = false) {
+        FreudText(
+            value = FreudTextValue.text(value = "Text aligned to $alignment"),
+            color = FreudTextPreviewTheme.colorScheme.primaryText,
+            typography = FreudTextPreviewTheme.typography.textMdBold,
+            align = alignment,
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(all = FreudTheme.DefaultFreudTheme.dimension.dp16.value),
+        )
+    }
+}
