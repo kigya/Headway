@@ -16,8 +16,8 @@ import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import dev.kigya.headway.core.designSystem.theme.FreudDsToken
-import dev.kigya.headway.core.designSystem.util.HandleAnimationFinishEffect
 import dev.kigya.headway.core.designSystem.util.FreudTextValue
+import dev.kigya.headway.core.designSystem.util.HandleAnimationFinishEffect
 import dev.kigya.headway.core.designSystem.util.rememberFreudTextVisualState
 import dev.kigya.headway.core.designSystem.util.resolveAnnotatedString
 

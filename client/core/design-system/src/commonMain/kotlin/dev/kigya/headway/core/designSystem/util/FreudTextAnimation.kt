@@ -71,7 +71,7 @@ internal fun HandleAnimationFinishEffect(
     onFinishTrigger: FreudAnimationTrigger?,
 ) {
     val isEffectivelyFinished = animation == null ||
-            (transition.currentState == transition.targetState && transition.currentState)
+        (transition.currentState == transition.targetState && transition.currentState)
 
     if (isEffectivelyFinished) {
         SideEffect {
