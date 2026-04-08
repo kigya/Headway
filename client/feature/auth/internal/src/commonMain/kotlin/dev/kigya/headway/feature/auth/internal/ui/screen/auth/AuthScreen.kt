@@ -28,7 +28,6 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
-import dev.kigya.headway.core.designSystem.component.FreudAnimatedText
 import dev.kigya.headway.core.designSystem.component.FreudButtonIconSpec
 import dev.kigya.headway.core.designSystem.component.FreudFallback
 import dev.kigya.headway.core.designSystem.component.FreudHorizontalButton
@@ -37,6 +36,7 @@ import dev.kigya.headway.core.designSystem.component.FreudIcon
 import dev.kigya.headway.core.designSystem.component.FreudLottie
 import dev.kigya.headway.core.designSystem.component.FreudLottieSource
 import dev.kigya.headway.core.designSystem.component.FreudSpacer
+import dev.kigya.headway.core.designSystem.component.FreudText
 import dev.kigya.headway.core.designSystem.util.FreudAnimationTrigger
 import dev.kigya.headway.core.designSystem.util.FreudBackgroundPattern
 import dev.kigya.headway.core.designSystem.util.FreudTextAnimation
@@ -223,7 +223,7 @@ private fun AuthHeaderTexts(isWide: Boolean) {
         modifier = Modifier.fillMaxWidth(),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
-        FreudAnimatedText(
+        FreudText(
             value = FreudTextValue.rich {
                 append(resource = Res.string.auth_greeting_text)
                 colored(
@@ -242,7 +242,7 @@ private fun AuthHeaderTexts(isWide: Boolean) {
 
         FreudSpacer(size = AuthTheme.dimension.dp24)
 
-        FreudAnimatedText(
+        FreudText(
             value = FreudTextValue.text(
                 resource = Res.string.auth_greeting_subtext,
                 animation = FreudTextAnimation.SlideIn(
