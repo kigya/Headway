@@ -18,6 +18,7 @@ import androidx.compose.foundation.layout.systemBars
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.foundation.layout.windowInsetsPadding
+import androidx.compose.foundation.layout.wrapContentWidth
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -191,18 +192,25 @@ private fun WideNoAccessLayout(lottieColumnWidth: Dp) {
     ) {
         AuthSideBySideLottieColumn(
             lottieColumnWidth = lottieColumnWidth,
-            modifier = Modifier.background(
-                color = AuthNoAccessTheme.colorScheme.cardBackgroundWide,
-                pattern = FreudBackgroundPattern.None,
-            ),
         ) {
-            NoAccessLottie(
+            Box(
                 modifier = Modifier
+                    .align(alignment = Alignment.BottomStart)
                     .fillMaxHeight()
-                    .fillMaxWidth(),
-                alignment = Alignment.BottomStart,
-                contentScale = ContentScale.FillHeight,
-            )
+                    .wrapContentWidth(align = Alignment.Start)
+                    .background(
+                        color = AuthNoAccessTheme.colorScheme.cardBackgroundWide,
+                        pattern = FreudBackgroundPattern.None,
+                    ),
+            ) {
+                NoAccessLottie(
+                    modifier = Modifier
+                        .fillMaxHeight()
+                        .wrapContentWidth(align = Alignment.Start),
+                    alignment = Alignment.BottomStart,
+                    contentScale = ContentScale.FillHeight,
+                )
+            }
         }
 
         Box(
