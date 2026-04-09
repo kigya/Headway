@@ -25,31 +25,34 @@ internal object GatewayGraphqlErrorMapper {
             )
 
             is KtorBadRequestException -> {
-                val msg = original.message ?: DEFAULT_BAD_REQUEST
+                val badRequestMessage = original.message ?: DEFAULT_BAD_REQUEST
                 GraphQlErrorEnvelope(
-                    message = msg,
+                    message = badRequestMessage,
                     code = GatewayErrorCode.BAD_REQUEST,
                     extensions = extensionsFor(
                         GatewayException.InvalidRequest(
                             reason = GatewayErrorReason.BAD_REQUEST,
-                            message = msg,
+                            message = badRequestMessage,
                             cause = original,
                         ),
                     ),
                 )
             }
 
-            is IllegalArgumentException -> GraphQlErrorEnvelope(
-                message = DEFAULT_BAD_REQUEST,
-                code = GatewayErrorCode.BAD_REQUEST,
-                extensions = extensionsFor(
-                    GatewayException.InvalidRequest(
-                        reason = GatewayErrorReason.BAD_REQUEST,
-                        message = DEFAULT_BAD_REQUEST,
-                        cause = original,
+            is IllegalArgumentException -> {
+                val detail = illegalArgumentDetail(original)
+                GraphQlErrorEnvelope(
+                    message = detail,
+                    code = GatewayErrorCode.BAD_REQUEST,
+                    extensions = extensionsFor(
+                        GatewayException.InvalidRequest(
+                            reason = GatewayErrorReason.BAD_REQUEST,
+                            message = detail,
+                            cause = original,
+                        ),
                     ),
-                ),
-            )
+                )
+            }
 
             else -> GraphQlErrorEnvelope(
                 message = "Internal server error",
@@ -74,6 +77,14 @@ internal object GatewayGraphqlErrorMapper {
         val exception = t as? ExecutionException
         return exception?.originalError ?: t
     }
+}
+
+private fun illegalArgumentDetail(exception: IllegalArgumentException): String {
+    val fromMessage = exception.message?.trim().orEmpty()
+    if (fromMessage.isNotEmpty()) {
+        return fromMessage
+    }
+    return exception::class.simpleName ?: DEFAULT_BAD_REQUEST
 }
 
 private const val DEFAULT_BAD_REQUEST = "Bad request"

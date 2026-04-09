@@ -1,5 +1,6 @@
 package dev.kigya.headway.common.extension
 
+import io.ktor.http.ContentType
 import io.ktor.http.HttpStatusCode
 import io.ktor.server.plugins.BadRequestException
 import io.ktor.server.plugins.CannotTransformContentToTypeException
@@ -9,76 +10,94 @@ import io.ktor.server.plugins.ParameterConversionException
 import io.ktor.server.plugins.PayloadTooLargeException
 import io.ktor.server.plugins.UnsupportedMediaTypeException
 import io.ktor.server.plugins.statuspages.StatusPagesConfig
-import io.ktor.server.response.respond
+import io.ktor.server.response.respondText
 
 fun StatusPagesConfig.handleDefaultExceptions() {
     exception<BadRequestException> { call, exception ->
-        call.respond(
+        call.respondText(
+            text = exception.describeForHttpStatusText("Bad request"),
+            contentType = ContentType.Text.Plain,
             status = HttpStatusCode.BadRequest,
-            message = exception.message.orEmpty(),
         )
     }
 
     exception<NotFoundException> { call, exception ->
-        call.respond(
+        call.respondText(
+            text = exception.describeForHttpStatusText("Not found"),
+            contentType = ContentType.Text.Plain,
             status = HttpStatusCode.NotFound,
-            message = exception.message.orEmpty(),
         )
     }
 
     exception<MissingRequestParameterException> { call, exception ->
-        call.respond(
+        call.respondText(
+            text = exception.describeForHttpStatusText("Bad request"),
+            contentType = ContentType.Text.Plain,
             status = HttpStatusCode.BadRequest,
-            message = exception.message.orEmpty(),
         )
     }
 
     exception<ParameterConversionException> { call, exception ->
-        call.respond(
+        call.respondText(
+            text = exception.describeForHttpStatusText("Bad request"),
+            contentType = ContentType.Text.Plain,
             status = HttpStatusCode.BadRequest,
-            message = exception.message.orEmpty(),
         )
     }
 
     exception<CannotTransformContentToTypeException> { call, exception ->
-        call.respond(
+        call.respondText(
+            text = exception.describeForHttpStatusText("Bad request"),
+            contentType = ContentType.Text.Plain,
             status = HttpStatusCode.BadRequest,
-            message = exception.message.orEmpty(),
         )
     }
 
     exception<UnsupportedMediaTypeException> { call, exception ->
-        call.respond(
+        call.respondText(
+            text = exception.describeForHttpStatusText("Unsupported media type"),
+            contentType = ContentType.Text.Plain,
             status = HttpStatusCode.UnsupportedMediaType,
-            message = exception.message.orEmpty(),
         )
     }
 
     exception<PayloadTooLargeException> { call, exception ->
-        call.respond(
+        call.respondText(
+            text = exception.describeForHttpStatusText("Payload too large"),
+            contentType = ContentType.Text.Plain,
             status = HttpStatusCode.PayloadTooLarge,
-            message = exception.message.orEmpty(),
         )
     }
 
     exception<IllegalStateException> { call, exception ->
-        call.respond(
+        call.respondText(
+            text = exception.describeForHttpStatusText("Internal server error"),
+            contentType = ContentType.Text.Plain,
             status = HttpStatusCode.InternalServerError,
-            message = exception.message.orEmpty(),
         )
     }
 
     exception<SecurityException> { call, exception ->
-        call.respond(
+        call.respondText(
+            text = exception.describeForHttpStatusText("Unauthorized"),
+            contentType = ContentType.Text.Plain,
             status = HttpStatusCode.Unauthorized,
-            message = exception.message.orEmpty(),
         )
     }
 
     exception<Throwable> { call, exception ->
-        call.respond(
+        call.respondText(
+            text = exception.describeForHttpStatusText("Internal server error"),
+            contentType = ContentType.Text.Plain,
             status = HttpStatusCode.InternalServerError,
-            message = exception.message.orEmpty(),
         )
     }
+}
+
+fun Throwable.describeForHttpStatusText(fallback: String): String {
+    val trimmed = message?.trim().orEmpty()
+    if (trimmed.isNotEmpty()) {
+        return trimmed
+    }
+    return this::class.simpleName ?: fallback
 }

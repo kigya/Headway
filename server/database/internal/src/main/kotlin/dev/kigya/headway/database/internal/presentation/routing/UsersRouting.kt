@@ -68,11 +68,14 @@ private fun Route.upsertGoogleUser(upsertGoogleUser: UpsertGoogleUserUseCase) {
 
         val googleId = body.googleId.trim()
         val email = body.email.trim()
-        val name = body.name.trim()
         val avatarUrl = body.avatarUrl?.trim()
         if (googleId.isBlank()) throw BadRequestException("GoogleId is blank")
         if (email.isBlank()) throw BadRequestException("Email is blank")
-        if (name.isBlank()) throw BadRequestException("Name is blank")
+
+        val name = resolveUpsertGoogleDisplayName(
+            rawName = body.name,
+            email = email,
+        )
 
         val user = upsertGoogleUser(
             googleId = googleId,
@@ -102,3 +105,20 @@ private fun Route.inviteUser(inviteUser: InviteUserUseCase) {
         call.respond(HttpStatusCode.Created, user)
     }
 }
+
+private fun resolveUpsertGoogleDisplayName(
+    rawName: String,
+    email: String,
+): String {
+    val trimmedName = rawName.trim()
+    if (trimmedName.isNotEmpty()) {
+        return trimmedName
+    }
+    val localPart = email.substringBefore('@').trim()
+    if (localPart.isNotEmpty()) {
+        return localPart
+    }
+    return DEFAULT_UPSERT_GOOGLE_DISPLAY_NAME
+}
+
+private const val DEFAULT_UPSERT_GOOGLE_DISPLAY_NAME: String = "User"

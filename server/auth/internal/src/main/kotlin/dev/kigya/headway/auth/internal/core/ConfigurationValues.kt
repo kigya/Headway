@@ -39,8 +39,16 @@ internal object ConfigurationValues {
     val JWT_GUEST_TTL_SEC: Long
         get() = longEnv(EnvKeys.JWT_GUEST_TTL_SEC).takeIf { it > 0 } ?: DefaultValues.JWT_GUEST_TTL_SEC
 
-    val GOOGLE_TOKEN_AUDIENCE: String = stringEnv(EnvKeys.GOOGLE_TOKEN_AUDIENCE)
+    val GOOGLE_TOKEN_AUDIENCES: List<String> = stringEnv(EnvKeys.GOOGLE_TOKEN_AUDIENCE)
         .ifBlank { throw IllegalArgumentException("GOOGLE_TOKEN_AUDIENCE must be set") }
+        .split(',')
+        .asSequence()
+        .map { it.trim() }
+        .filter { it.isNotEmpty() }
+        .toList()
+        .also { audiences ->
+            require(audiences.isNotEmpty()) { "GOOGLE_TOKEN_AUDIENCE must list at least one client id" }
+        }
 
     fun validateSecrets() {
         if (CommonConfigurationValues.environment.isProd) {

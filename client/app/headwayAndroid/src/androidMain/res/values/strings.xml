@@ -1,3 +1,4 @@
 <resources>
     <string name="app_name" translatable="false">Headway</string>
+    <string name="google_web_client_id" translatable="false">658272377808-alf63nc9km4tjgv0dr6lltfqfo1jshqb.apps.googleusercontent.com</string>
 </resources>

@@ -224,6 +224,6 @@ private val invitedUser = DatabaseUser(
     updatedAt = 1_000L,
 )
 
-private const val INVITE_REQUEST_BODY = """{"email":"new.user@headway.test","role":"MANAGER","department":"ANDROID"}"""
-
 private fun String.compactWhitespace(): String = replace(Regex("\\s+"), "")
+
+private const val INVITE_REQUEST_BODY = """{"email":"new.user@headway.test","role":"MANAGER","department":"ANDROID"}"""

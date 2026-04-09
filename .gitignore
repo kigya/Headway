@@ -24,5 +24,6 @@ captures
 **/.vscode
 
 .cursor/projects/
+.cursor/debug-*
 .playwright-mcp/
 specs/**

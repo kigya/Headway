@@ -20,8 +20,6 @@ import io.ktor.http.contentType
 import java.time.OffsetDateTime
 import java.util.UUID
 
-private const val DATABASE_DEPENDENCY_NAME = "database"
-
 class DatabaseRepository(
     private val httpClient: HttpClient,
 ) : DatabaseRepositoryContract {
@@ -169,3 +167,5 @@ class DatabaseRepository(
         }
     }
 }
+
+private const val DATABASE_DEPENDENCY_NAME = "database"

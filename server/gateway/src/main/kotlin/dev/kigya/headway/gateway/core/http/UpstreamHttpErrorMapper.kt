@@ -3,12 +3,23 @@ package dev.kigya.headway.gateway.core.http
 import dev.kigya.headway.database.api.model.DatabasePreparationErrorCodes
 import dev.kigya.headway.gateway.core.exception.GatewayErrorReason
 import dev.kigya.headway.gateway.core.exception.GatewayException
+import io.ktor.client.call.body
 import io.ktor.client.statement.HttpResponse
-import io.ktor.client.statement.bodyAsText
 import io.ktor.http.HttpStatusCode
+import org.slf4j.LoggerFactory
+
+private val upstreamHttpErrorLog = LoggerFactory.getLogger("dev.kigya.headway.gateway.UpstreamHttp")
 
 internal suspend fun HttpResponse.toGatewayException(dependency: String): GatewayException {
     val bodyMsg = safeBodyMessage()
+    if (bodyMsg == null && status == HttpStatusCode.BadRequest) {
+        upstreamHttpErrorLog.warn(
+            "Empty error body from dependency={} method={} url={}",
+            dependency,
+            call.request.method.value,
+            call.request.url,
+        )
+    }
 
     return when (status) {
         HttpStatusCode.BadRequest ->
@@ -67,11 +78,16 @@ private fun forbiddenReason(bodyMsg: String?): GatewayErrorReason = when (bodyMs
 }
 
 private suspend fun HttpResponse.safeBodyMessage(): String? {
-    val raw = runCatching { bodyAsText() }.getOrNull()?.trim().orEmpty()
-    if (raw.isBlank()) return null
-    return raw
-        .replace(Regex("\\s+"), " ")
-        .take(MAX_ERROR_BODY_LEN)
+    val fromBytes = runCatching { body<ByteArray>() }.getOrNull()
+    if (fromBytes != null && fromBytes.isNotEmpty()) {
+        val decoded = fromBytes.decodeToString().trim()
+        if (decoded.isNotEmpty()) {
+            return decoded
+                .replace(Regex("\\s+"), " ")
+                .take(MAX_ERROR_BODY_LEN)
+        }
+    }
+    return null
 }
 
 private const val MAX_ERROR_BODY_LEN = 2048

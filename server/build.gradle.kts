@@ -63,3 +63,9 @@ githubEnvSync {
 
     environments.set(listOf("dev", "prod"))
 }
+
+tasks.register("githubEnvSync") {
+    group = "github env sync"
+    description = "Alias for syncGithubEnv — pulls GitHub variables and renders docker env templates"
+    dependsOn(tasks.named("syncGithubEnv"))
+}

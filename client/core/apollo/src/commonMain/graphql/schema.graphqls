@@ -1,0 +1,137 @@
+scalar UUID
+scalar Long
+
+schema {
+    query: Query
+    mutation: Mutation
+}
+
+type Query {
+    homeScreen: HomeScreenPayload!
+    learningQuestionsCatalog(subjectUserId: UUID): GatewayLearningQuestionsCatalog!
+}
+
+type Mutation {
+    loginWithGoogle(idToken: String!, fingerprint: String!, platform: GatewaySessionPlatform!): GatewayGoogleLoginResponse!
+    loginAsGuest(stub: Boolean): GatewayGuestLoginResponse!
+    refreshToken(refreshToken: String!, fingerprint: String!): GatewayRefreshAccessTokenResponse!
+    logoutGuest: Boolean!
+}
+
+enum GatewaySessionPlatform {
+    ANDROID
+    IOS
+    DESKTOP
+    WEB
+}
+
+type GatewayGoogleLoginResponse {
+    accessToken: String!
+    refreshToken: String!
+    user: GatewayUser!
+}
+
+type GatewayUser {
+    id: UUID!
+    email: String!
+    name: String!
+    role: GatewayUserRole!
+    avatarUrl: String
+    department: GatewayUserDepartment
+    is_active: Boolean!
+}
+
+enum GatewayUserRole {
+    DEVELOPER
+    MANAGER
+    MENTOR
+    EMPLOYEE
+    GUEST
+}
+
+enum GatewayUserDepartment {
+    ANDROID
+    IOS
+    CROSS_PLATFORM
+}
+
+type GatewayGuestLoginResponse {
+    accessToken: String!
+    expiresAtEpochMs: Long!
+}
+
+type GatewayRefreshAccessTokenResponse {
+    accessToken: String!
+}
+
+type HomeScreenPayload {
+    dateLabel: String!
+    greeting: String!
+    roleLabel: String
+    readinessPercent: Int
+    nextInterviewType: HomeScreenNextInterviewType
+    nextInterviewTypeLabel: String
+    sections: [HomeScreenSectionItem!]!
+}
+
+enum HomeScreenNextInterviewType {
+    CHECK
+    SPOT
+    MOCK
+    SOFT_SKILLS
+}
+
+type HomeScreenSectionItem {
+    id: HomeScreenSectionId!
+    title: String!
+    style: HomeScreenSectionStyle!
+    iconUrl: String!
+}
+
+enum HomeScreenSectionId {
+    HOME
+    START_TRAINING_SESSION
+    LEARN_QUESTIONS
+    EMPLOYEE_PROGRESS_MANAGEMENT
+    PEOPLE_MANAGEMENT
+    VIEW_STATISTICS
+    ABOUT
+    SIGN_OUT
+}
+
+enum HomeScreenSectionStyle {
+    FILLED_PRIMARY
+    OUTLINED_ACCENT
+    DEFAULT
+}
+
+type GatewayLearningQuestionsCatalog {
+    hardSkills: [GatewayLearningQuestion!]!
+    softSkills: [GatewayLearningQuestion!]!
+    resumeHard: Long
+    resumeSoft: Long
+}
+
+type GatewayLearningQuestion {
+    id: Long!
+    skillGroup: GatewayLearningSkillGroup!
+    text: String!
+    tags: [GatewayLearningTag!]!
+    progress: GatewayLearningProgressState
+}
+
+enum GatewayLearningSkillGroup {
+    HARD
+    SOFT
+}
+
+enum GatewayLearningProgressState {
+    NOT_ANSWERED
+    PARTIALLY_ANSWERED
+    ANSWERED
+}
+
+type GatewayLearningTag {
+    id: Long!
+    label: String!
+}

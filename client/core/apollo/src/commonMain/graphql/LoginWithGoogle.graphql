@@ -1,0 +1,11 @@
+mutation LoginWithGoogle($idToken: String!, $fingerprint: String!, $platform: GatewaySessionPlatform!) {
+    loginWithGoogle(idToken: $idToken, fingerprint: $fingerprint, platform: $platform) {
+        accessToken
+        refreshToken
+        user {
+            id
+            email
+            name
+        }
+    }
+}

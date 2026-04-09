@@ -1,0 +1,16 @@
+query LearningQuestionsCatalog($subjectUserId: UUID) {
+    learningQuestionsCatalog(subjectUserId: $subjectUserId) {
+        hardSkills {
+            id
+            text
+            skillGroup
+        }
+        softSkills {
+            id
+            text
+            skillGroup
+        }
+        resumeHard
+        resumeSoft
+    }
+}

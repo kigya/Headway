@@ -10,8 +10,9 @@ plugins {
 
 commonMainDependencies {
     projects {
-        implementation(navigation.api)
-        implementation(feature.auth.api)
-        implementation(feature.auth.internal)
+        implementation(core.sessionInternal)
+        implementation(navigation.navigationApi)
+        implementation(feature.authApi)
+        implementation(feature.authInternal)
     }
 }

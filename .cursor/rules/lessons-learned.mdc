@@ -97,10 +97,10 @@ alwaysApply: true
 
 ### 10
 
-- **Rule:** Place file-level `private const val` at the **bottom** of the file, after the declarations that reference them.
-- **Why it exists:** Project convention keeps literals and tags grouped at the end so the main API and behavior read top-down first.
-- **Bad pattern (short):** A block of `private const val` immediately after imports or above the primary `@Composable` / `actual` entry points.
-- **Correct pattern (short):** Package, imports, types and functions, then a trailing `private const val` section (e.g. `SystemBarsColor.ios.kt`).
+- **Rule:** Place file-level `private const val` at the **bottom** of the file, after the declarations that reference them; use **top-level** `private const val`, not a `private companion object` block, when literals are file-private.
+- **Why it exists:** Project convention keeps literals and tags grouped at the end so the main API and behavior read top-down first; a companion object is unnecessary noise for file-scoped constants.
+- **Bad pattern (short):** A block of `private const val` immediately after imports or above the primary `@Composable` / `actual` entry points; literals above Koin `actual fun sessionPlatformModule() { module { … } }` or above the main repository `class`; `private const val` sandwiched between preview/test helper types; `private companion object { const val … }` for values only this file needs.
+- **Correct pattern (short):** Package, imports, types and functions (including `actual`/Koin modules), then one trailing top-level `private const val` section (e.g. `SystemBarsColor.ios.kt`, `SessionPlatformModule.*.kt`).
 
 ---
 
@@ -169,10 +169,10 @@ alwaysApply: true
 
 ### 18
 
-- **Rule:** On the server, every serializable **property** on `@Serializable` types (DTOs, gateway GraphQL models, nested Ktor `@Resource` parameter classes, enums) must be annotated with `@SerialName("…")` using the **actual wire key** (query/path/JSON) for that type.
-- **Why it exists:** Explicit keys document the contract and prevent silent renames when Kotlin property names change; mixed annotated/unannotated fields are easy to miss in review and drift from inter-service expectations.
-- **Bad pattern (short):** `@Serializable data class X( @SerialName("a") val a: String, val b: String )` or omitting `@SerialName` on Ktor resource `parent` / path parameters while other fields use snake_case query keys.
-- **Correct pattern (short):** Annotate **each** constructor property (including `parent` on resources and UUID/custom-serialized fields); when formalizing legacy DTOs, set `@SerialName` to match the **previous** implicit kotlinx name (often camelCase) or the established snake_case API—never rename keys in the same edit unless intentionally versioning the contract.
+- **Rule:** Every serializable **property** on `@Serializable` types must use `@SerialName("…")` with the **real persisted or wire key** (JSON field name, query/path key, polymorphic type tag): **server** DTOs, gateway GraphQL models, Ktor `@Resource` parameters, enums, **and client `kotlinx.serialization` models** (e.g. `LocalSessionRecord` in secure storage). **Polymorphic** sealed subclasses need `@SerialName` on each variant for the type discriminator **and** on every property inside them.
+- **Why it exists:** Explicit keys document the contract and prevent silent renames when Kotlin property names change; mixed annotated/unannotated fields are easy to miss in review and drift from APIs, stored payloads, or inter-service expectations.
+- **Bad pattern (short):** `@Serializable data class X( @SerialName("a") val a: String, val b: String )`; client `data class Guest(val accessToken: String, …)` without `@SerialName` on each property; omitting `@SerialName` on Ktor resource `parent` while other fields use snake_case query keys.
+- **Correct pattern (short):** Annotate **each** constructor property (including `parent` on resources and UUID/custom-serialized fields); for existing payloads, set `@SerialName` to match the **previous** implicit kotlinx name (often camelCase) or the established API—never rename keys in the same edit unless intentionally versioning the contract.
 
 ---
 
@@ -191,3 +191,129 @@ alwaysApply: true
 - **Why it exists:** Those APIs already start collecting when the composable is active; an extra read in `SideEffect` does not change subscription behavior, hides real intent, and invites dead code.
 - **Bad pattern (short):** `val state by viewModel.uiState.collectAsStateWithLifecycle()` plus `SideEffect { state.shouldDisplayText }` (or any field) when nothing in the tree uses `state` for UI or side effects.
 - **Correct pattern (short):** If the screen has no UI tied to store state yet, skip collection until it does; otherwise read the fields where they matter (parameters to child composables, `when`, etc.) and rely on `collectAsStateWithLifecycle()` alone for lifecycle-aware collection.
+
+---
+
+### 21
+
+- **Rule:** In Android and other platform adapters, **inject** `CoroutineDispatcher` (or a DI-owned `CoroutineScope` used for long-lived work like DataStore); **cancel** that scope when the Koin definition clears; remove **unused** constructor-held fields after refactors.
+- **Why it exists:** Hard-coded `Dispatchers.IO` and ad-hoc `CoroutineScope(SupervisorJob() + …)` are hard to test, easy to leak across holder recreation, and hide lifecycle ownership; dead fields (e.g. unused `applicationContext`) violate hygiene and confuse readers.
+- **Bad pattern (short):** `CoroutineScope(SupervisorJob() + Dispatchers.IO)` inside the type with no `cancel`; `withContext(Dispatchers.IO)` / `scope = … + Dispatchers.IO` without injection; `outcomeSuspendCatchingOn(dispatcher = Dispatchers.IO/Dispatchers.Default, …)` in wasm/iOS/desktop storage adapters; keeping `applicationContext` or other members that nothing reads.
+- **Correct pattern (short):** Inject `CoroutineDispatcher` (e.g. Koin `get(named(DispatcherKey.IO))`; wasm `dispatcherModule` may map IO to `Dispatchers.Default`); optionally a `CoroutineScope` from Koin; use `single(createdAtStart = false) { … } onClose { it.cancel() }` (or equivalent) for custom scopes; delete unused properties and imports.
+
+---
+
+### 22
+
+- **Rule:** In Ktor `StatusPages`, return error **text bodies** with `respondText` (plain text) when other services consume errors via `HttpResponse.bodyAsText()`; register domain-specific handlers **before** `handleDefaultExceptions()` so `Throwable` does not swallow typed exceptions.
+- **Why it exists:** `call.respond(HttpStatusCode, message = …)` does not reliably set a readable plain body for Ktor clients; the gateway then sees an empty body and maps upstream 400 to a generic `"Bad request"` GraphQL message, hiding the real cause (e.g. validation or deserialization).
+- **Bad pattern (short):** `call.respond(status = HttpStatusCode.BadRequest, message = exception.message.orEmpty())` in shared StatusPages; installing `handleDefaultExceptions()` before service-specific `exception<DomainException>` so the catch-all `Throwable` handler wins.
+- **Correct pattern (short):** `call.respondText(text = exception.describeForHttpStatusText("Bad request"), contentType = ContentType.Text.Plain, status = HttpStatusCode.BadRequest)` (or equivalent non-blank text); `install(StatusPages) { handleDomainExceptions(); handleDefaultExceptions() }`.
+
+---
+
+### 23
+
+- **Rule:** Set **`GOOGLE_TOKEN_AUDIENCE`** (auth service) to the **same OAuth 2.0 Web client ID** the mobile app passes to **`requestIdToken(webClientId)`** (Android `google_web_client_id` / iOS equivalent), not the Android-only or iOS-only client ID.
+- **Why it exists:** `GoogleIdTokenVerifier.setAudience` must match the ID token’s `aud` claim; a mismatch makes `verify()` return null and surfaces as **“Invalid Google token”** / `INVALID_ACCESS_TOKEN` even with a real user sign-in.
+- **Bad pattern (short):** Placeholder or stale `GOOGLE_TOKEN_AUDIENCE` in `docker/*/env.auth` that does not match the Web client ID wired in the client app.
+- **Correct pattern (short):** Keep `GOOGLE_TOKEN_AUDIENCE` aligned with the Web client ID used for ID tokens; per-environment deploy config should still use that environment’s Web client if it differs from dev.
+
+---
+
+### 24
+
+- **Rule:** Headway **desktop** loopback OAuth uses the **same Web OAuth 2.0 client ID** as mobile `id_token` audience: register **Authorized redirect URI** `http://127.0.0.1:<port>/oauth2callback` on that **Web** client. **Desktop**-type clients in Google Cloud often have **no redirect URI fields**; they are not required for this flow. Auth **`GOOGLE_TOKEN_AUDIENCE`** may be a **comma-separated** list if multiple client IDs can appear in `aud`; a single Web client ID is enough when desktop and mobile share it.
+- **Why it exists:** The desktop app must exchange the authorization code for an `id_token` whose `aud` matches what `GoogleIdTokenVerifier` accepts; loopback redirect must be allowlisted on the client used in the authorize + token steps.
+- **Bad pattern (short):** Expecting a separate Desktop OAuth client redirect UI in Console when the app is configured to use the Web client; or omitting the loopback redirect URI on the Web client used for desktop PKCE.
+- **Correct pattern (short):** Web client ID in app + `http://127.0.0.1:8405/oauth2callback` under **Authorized redirect URIs** for that Web client; keep `GOOGLE_TOKEN_AUDIENCE` aligned with that client ID (comma-separated only if you intentionally issue tokens for more than one OAuth client).
+
+---
+
+### 25
+
+- **Rule:** **iOS** Google Sign-In requires **`CFBundleURLTypes`** in the app **`Info.plist`** with URL scheme **`com.googleusercontent.apps.<ios_client_id_prefix>`** (reversed client id: everything before `.apps.googleusercontent.com` in the **iOS** OAuth client id). Without it, `GIDSignIn` throws at runtime: *missing support for the following URL schemes*.
+- **Why it exists:** Google redirects back to the app via that custom URL scheme; the SDK validates it before starting the flow.
+- **Bad pattern (short):** `GIDConfiguration` + `signIn(withPresenting:)` in Swift without the matching `Info.plist` URL scheme.
+- **Correct pattern (short):** Add the scheme to `Info.plist` (and keep `onOpenURL` / `handle(url)` wired as in the integration guide).
+
+---
+
+### 26
+
+- **Rule:** **Desktop** token exchange against a **Web** OAuth client may require **`client_secret`** on `https://oauth2.googleapis.com/token` even with PKCE; support it only via **local env** (e.g. `HEADWAY_GOOGLE_OAUTH_CLIENT_SECRET`), never commit the secret.
+- **Why it exists:** Google treats Web clients as confidential; without the secret the response often has no `id_token`, so the loopback page shows sign-in failed.
+- **Bad pattern (short):** Hard-coding the client secret in source or expecting PKCE alone to succeed for every Web client configuration.
+- **Correct pattern (short):** Copy the Web client secret from Google Cloud Console into a local / machine env var for desktop dev; production desktop builds need a distribution-safe approach (or a different OAuth client model).
+
+---
+
+### 27
+
+- **Rule:** For **Web / GSI** (`google.accounts.id`), add the app’s exact **Authorized JavaScript origin** in Google Cloud for the **same Web OAuth 2.0 client** (scheme + host + **port**). Local webpack dev is a distinct origin (must match `devServer.port` in `app/headwayWeb/build.gradle.kts`, e.g. `http://localhost:8765` vs `http://localhost:8080`).
+- **Why it exists:** Google returns **Error 400: origin_mismatch** and the One Tap / ID flow never yields a credential; the app then shows the generic error fallback even though the backend is fine.
+- **Bad pattern (short):** Only `http://localhost` without port, or a production origin only, while developing on `wasmJsBrowserDevelopmentRun` at another port.
+- **Correct pattern (short):** In **Credentials → Web client → Authorized JavaScript origins**, add each dev URL you use (must match the pinned **devServer.port** in `app/headwayWeb/build.gradle.kts`, currently `http://localhost:8765`).
+
+---
+
+### 28
+
+- **Rule:** The **gateway** must install **Ktor CORS** for **browser** GraphQL clients when `ENV` is not `prod` (`anyHost()` + `POST`/`OPTIONS` + `Authorization` + `Content-Type` + `allowNonSimpleContentTypes`); align allowed headers with gateway usage (e.g. `X-Headway-Locale`).
+- **Why it exists:** After a valid Google **ID token**, Apollo’s `POST` from `http://localhost:<webpackPort>` to `http://127.0.0.1:8080/...` is **cross-origin**; without CORS the browser blocks the response and the client maps the failure to **`Network` / `NetworkUnavailable`** (see `HeadwayGraphqlExecutor` + `SessionGraphqlFailureMapper`), not a GraphQL error body.
+- **Bad pattern (short):** Fixing only **Authorized JavaScript origins** while the gateway sends **no** `Access-Control-Allow-*` headers for `/api/v1/graphql`.
+- **Correct pattern (short):** `installHeadwayGatewayCors` in gateway presentation (dev/non-prod); for **prod** browser traffic, replace `anyHost()` with an explicit allowlist (env-driven) before shipping public web.
+
+---
+
+### 29
+
+- **Rule:** In a primary constructor, list **`val` / `var` properties first**, then **plain constructor parameters** (no property), in a stable order across the project.
+- **Why it exists:** Keeps “stored state” visually grouped at the top; avoids mixing `context: Context`-style parameters ahead of `private val` dependencies and makes reviews consistent.
+- **Bad pattern (short):** `class X(context: Context, private val io: CoroutineDispatcher, scope: CoroutineScope)`.
+- **Correct pattern (short):** `class X(private val io: CoroutineDispatcher, context: Context, scope: CoroutineScope)`.
+
+---
+
+### 30
+
+- **Rule:** `SecureSessionStorageContract` and similar **platform I/O adapters** must return **`Outcome<SecureSessionStorageError, …>`** (or an equivalent module-local sealed error), using **`outcomeSuspendCatching` / `outcomeSuspendCatchingOn`** so storage failures are typed, not silent throws; **domain repositories** map that failure to **`SessionDomainError`** (or the feature’s domain error) at the boundary.
+- **Why it exists:** Raw suspend APIs hide DataStore / filesystem / Keychain / `localStorage` failures; `Outcome` matches client policy and lets `LocalSessionPersistenceRepository` report `LocalPersistenceFailed` consistently.
+- **Bad pattern (short):** `suspend fun loadPayload(): String?` with uncaught `IOException` / DataStore errors propagating as generic exceptions.
+- **Correct pattern (short):** `suspend fun loadPayload(): Outcome<SecureSessionStorageError, String?>` with `outcomeSuspendCatchingOn(ioDispatcher) { … }`; caller uses `when (loaded) { Success -> …; Failure -> Outcome.failure(SessionDomainError.LocalPersistenceFailed) }`.
+
+---
+
+### 31
+
+- **Rule:** Prefer **full-word local names** over cryptic abbreviations (`error` not `err`, `message` not `msg`, `index` not `idx`, `context` not `ctx`, `gatewayException` not `ex` in tests) when the name is not a widely understood domain acronym on the wire.
+- **Why it exists:** Abbreviations save a few characters but slow scanning and review; aligned with root [AGENTS.md](../../AGENTS.md) verb-led / readable naming spirit.
+- **Bad pattern (short):** `val err = …`, `val msg = …`, `val ex = assertFailsWith<…>`.
+- **Correct pattern (short):** `val tokenError = …`, `val badRequestMessage = …`, `val gatewayException = response.toGatewayException(…)`.
+
+---
+
+### 32
+
+- **Rule:** In client **`build.gradle.kts`**, do not declare **empty** `commonMainDependencies` / `androidMainDependencies` / `iosMainDependencies` / `desktopMainDependencies` / `wasmMainDependencies` blocks; remove the block and the unused `import extension.*MainDependencies`.
+- **Why it exists:** Empty blocks look like forgotten configuration, add noise, and keep stale imports; when a platform needs dependencies, add the block then.
+- **Bad pattern (short):** `iosMainDependencies {\n}\n\ndesktopMainDependencies {\n}` with no `projects` / `libs` body.
+- **Correct pattern (short):** Only blocks that contain at least one `projects { … }` or `libs { … }` (or other real configuration inside the helper).
+
+---
+
+### 33
+
+- **Rule:** If a **`projects { implementation(…) }`** dependency is **the same on every KMP target** (`androidMain` / `iosMain` / `desktopMain` / `wasmMain`), declare it once in **`commonMainDependencies`** instead of repeating per platform.
+- **Why it exists:** Duplication drifts (one target updated, others not), clutters build scripts, and contradicts KMP’s shared `commonMain` model; platform blocks should hold only truly platform-specific deps (e.g. `koin.android`, `kotlinx.browser.wasm.js`).
+- **Bad pattern (short):** Same `implementation(core.secureStorage)` under `androidMainDependencies`, `iosMainDependencies`, `desktopMainDependencies`, and `wasmMainDependencies`.
+- **Correct pattern (short):** `implementation(core.secureStorage)` inside `commonMainDependencies { projects { … } }`; platform blocks only for extras.
+
+---
+
+### 34
+
+- **Rule:** For **thin wrappers** with a **single** read-only property (URLs, ids, typed strings in DI), prefer **`@JvmInline value class`** over **`data class`** when you do not need `copy`, `componentN`, or distinct heap identity.
+- **Why it exists:** Fewer allocations and clearer intent than a full data class; matches Kotlin guidance for domain “newtypes”; aligns with lessons-learned §9 for bounded unions built from value classes.
+- **Bad pattern (short):** `data class HeadwayGraphqlHttpUrl(val value: String)` for a pass-through holder only used as `get<HeadwayGraphqlHttpUrl>().value`.
+- **Correct pattern (short):** `@JvmInline value class HeadwayGraphqlHttpUrl(val value: String)`.

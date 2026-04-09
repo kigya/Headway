@@ -1,0 +1,16 @@
+query HomeScreen {
+    homeScreen {
+        dateLabel
+        greeting
+        roleLabel
+        readinessPercent
+        nextInterviewType
+        nextInterviewTypeLabel
+        sections {
+            id
+            title
+            style
+            iconUrl
+        }
+    }
+}

@@ -13,7 +13,7 @@ For the design system see [`core/design-system/.../AGENTS.md`](core/design-syste
 | Language        | Kotlin 2.x, KMP (commonMain + androidMain / iosMain / desktopMain / wasmJsMain)         |
 | UI              | Compose Multiplatform (Android / Desktop / iOS / Web)                                   |
 | State           | MVIKotlin (Store + Intent / State / Label / Action / Message)                           |
-| DI              | Koin Multiplatform, `KoinMultiplatformApplication`                                      |
+| DI              | Koin Multiplatform, `KoinApplication`                                                   |
 | Navigation      | Navigation3 (`NavDisplay`, `NavKey`, `entryProvider`)                                   |
 | Error handling  | `Outcome<Error, Value>` (`core:outcome`)                                                |
 | Design system   | `core:design-system` — `FreudTheme`, `FreudDsToken<T>`, `FreudColorScheme`              |
@@ -32,7 +32,7 @@ cd client && ./gradlew app:headwayAndroid:assembleDebug
 cd client && ./gradlew detekt
 
 # Build a single module
-cd client && ./gradlew :feature:auth:internal:compileKotlinAndroid
+cd client && ./gradlew :feature:auth-internal:compileKotlinAndroid
 
 # Full project build (when explicitly requested)
 cd client && ./gradlew build
@@ -51,7 +51,7 @@ client/
 │   ├── headwayDesktop/         # Desktop (JVM) application entry point
 │   ├── headwayIOS/             # iOS application entry point (via shared)
 │   └── headwayWeb/             # WasmJs application entry point
-├── shared/                     # App.kt — KoinMultiplatformApplication + FreudTheme + NavDisplay
+├── shared/                     # App.kt — KoinApplication + FreudTheme + NavDisplay
 ├── core/
 │   ├── annotation/             # @MarkerInterface and other shared annotations
 │   ├── design-system/          # FreudTheme, tokens, components, previews (see dedicated AGENTS.md)
@@ -294,7 +294,7 @@ Rules:
 - `ViewModel` is registered via `viewModelOf`
 - `RouteHolder` is registered via `singleOf` with `bind Contract::class`
 - Feature modules are aggregated in `di/modules` → `featureModules` list
-- App entry uses `KoinMultiplatformApplication(config = KoinConfiguration { modules(appModules) })`
+- App entry uses `KoinApplication(configuration = KoinConfiguration { modules(appModules) }, content = …)`
 
 ---
 
@@ -398,5 +398,5 @@ Rules:
 3. **`feature/<name>/di`** — create `val <name>Module get() = module { ... }` with StoreFactory, ViewModel, RouteHolder
 4. **`di/modules`** — add module to `featureModules` list
 5. **`shared/App.kt`** — add `entry<ScreenKey> { routeHolder.content() }` to `entryProvider`
-6. **`settings.gradle.kts`** — include `:feature:<name>:api`, `:feature:<name>:internal`, `:feature:<name>:di`
+6. **`settings.gradle.kts`** — register `feature:<name>-api|-internal|-di` with `projectDir` under `feature/<name>/…`; same idea for `navigation:navigation-*` → `navigation/…` and `di:di-*` → `di/…`
 7. **Verify** — run `./gradlew app:headwayAndroid:assembleDebug` and `./gradlew detekt`

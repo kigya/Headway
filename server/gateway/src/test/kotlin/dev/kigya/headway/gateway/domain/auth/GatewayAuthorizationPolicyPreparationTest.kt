@@ -14,7 +14,7 @@ class GatewayAuthorizationPolicyPreparationTest {
 
     @Test
     fun `preparation rejects guest principal`() {
-        val ex = assertFailsWith<GatewayException.Forbidden> {
+        val forbiddenException = assertFailsWith<GatewayException.Forbidden> {
             GatewayAuthorizationPolicy.ensure(
                 principal = GatewayPrincipal.Guest(
                     guestSessionId = UUID.fromString("00000000-0000-0000-0000-00000000abba"),
@@ -23,12 +23,12 @@ class GatewayAuthorizationPolicyPreparationTest {
                 operation = GatewayOperation.Preparation,
             )
         }
-        assertEquals(GatewayErrorReason.GUEST_NOT_ALLOWED, ex.reason)
+        assertEquals(GatewayErrorReason.GUEST_NOT_ALLOWED, forbiddenException.reason)
     }
 
     @Test
     fun `preparation rejects employee user`() {
-        val ex = assertFailsWith<GatewayException.Forbidden> {
+        val forbiddenException = assertFailsWith<GatewayException.Forbidden> {
             GatewayAuthorizationPolicy.ensure(
                 principal = GatewayPrincipal.User(
                     user = GatewayUser(
@@ -41,6 +41,6 @@ class GatewayAuthorizationPolicyPreparationTest {
                 operation = GatewayOperation.Preparation,
             )
         }
-        assertEquals(GatewayErrorReason.INSUFFICIENT_ROLE, ex.reason)
+        assertEquals(GatewayErrorReason.INSUFFICIENT_ROLE, forbiddenException.reason)
     }
 }

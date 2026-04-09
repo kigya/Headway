@@ -10,8 +10,9 @@ plugins {
 
 commonMainDependencies {
     projects {
-        implementation(feature.splash.api)
-        implementation(feature.splash.internal)
-        implementation(navigation.api)
+        implementation(core.sessionInternal)
+        implementation(feature.splashApi)
+        implementation(feature.splashInternal)
+        implementation(navigation.navigationApi)
     }
 }

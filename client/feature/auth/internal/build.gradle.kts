@@ -10,10 +10,19 @@ plugins {
     alias(libs.plugins.convention.component.mvi)
 }
 
+compose {
+    resources {
+        packageOfResClass = "headway.feature.auth.internal.generated.resources"
+    }
+}
+
 commonMainDependencies {
     projects {
-        implementation(navigation.api)
+        implementation(core.sessionInternal)
+        implementation(navigation.navigationApi)
         implementation(core.designSystem)
-        implementation(feature.auth.api)
+        implementation(feature.authApi)
+        implementation(feature.homeApi)
+        implementation(feature.learnQuestionsApi)
     }
 }

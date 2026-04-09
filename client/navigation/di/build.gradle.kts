@@ -8,7 +8,7 @@ plugins {
 
 commonMainDependencies {
     projects {
-        implementation(navigation.api)
-        implementation(navigation.internal)
+        implementation(navigation.navigationApi)
+        implementation(navigation.navigationInternal)
     }
 }

@@ -25,6 +25,7 @@ microserviceDependencies {
     libs {
         implementation(logback)
         implementation(ktor.serverCore)
+        implementation(ktor.serverCors)
         implementation(ktor.serverNetty)
         implementation(ktor.negotiation)
         implementation(ktor.serialization)

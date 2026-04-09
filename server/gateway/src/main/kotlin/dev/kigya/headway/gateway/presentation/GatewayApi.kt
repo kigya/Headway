@@ -1,6 +1,5 @@
 package dev.kigya.headway.gateway.presentation
 
-import com.apurebase.kgraphql.GraphQL
 import com.apurebase.kgraphql.GraphQLError
 import dev.kigya.headway.gateway.core.exception.GatewayErrorCode
 import dev.kigya.headway.gateway.core.presentation.GatewayGraphqlErrorMapper
@@ -8,6 +7,7 @@ import dev.kigya.headway.gateway.graphql.GraphqlRequestContext
 import dev.kigya.headway.gateway.graphql.parseGatewayAppLocale
 import dev.kigya.headway.gateway.graphql.stringScalarLong
 import dev.kigya.headway.gateway.graphql.stringScalarUUID
+import dev.kigya.headway.gateway.kgraphql.LenientKGraphQL
 import dev.kigya.headway.gateway.model.GatewayGoogleLoginResponse
 import dev.kigya.headway.gateway.model.GatewayGuestLoginResponse
 import dev.kigya.headway.gateway.model.GatewayRefreshAccessTokenResponse
@@ -27,14 +27,15 @@ import io.ktor.server.application.install
 import io.ktor.server.application.log
 
 internal fun Application.installGatewayApi(bindings: GatewayApiBindings) {
-    install(GraphQL) {
+    installHeadwayGatewayCors(environment = bindings.environment)
+    install(LenientKGraphQL) {
         playground = !bindings.environment.isProd
         endpoint = GatewayHttpRoute.GraphQL.path
         context { call ->
             +GraphqlRequestContext(
                 authorizationHeader = call.request.headers[HttpHeaders.Authorization],
                 appLocale = parseGatewayAppLocale(
-                    xHeadwayLocale = call.request.headers[X_HEADWAY_LOCALE_HEADER],
+                    xHeadwayLocale = call.request.headers[X_HEADWAY_LOCALE_HEADER_NAME],
                     acceptLanguage = call.request.headers[HttpHeaders.AcceptLanguage],
                 ),
             )
@@ -100,5 +101,3 @@ internal fun Application.installGatewayApi(bindings: GatewayApiBindings) {
         }
     }
 }
-
-private const val X_HEADWAY_LOCALE_HEADER: String = "X-Headway-Locale"

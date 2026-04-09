@@ -1,10 +1,9 @@
+@file:OptIn(org.jetbrains.kotlin.gradle.ExperimentalWasmDsl::class)
+
 import base.WebApplicationConventionParams
 import org.gradle.kotlin.dsl.configure
-import org.jetbrains.kotlin.gradle.ExperimentalWasmDsl
 import org.jetbrains.kotlin.gradle.dsl.KotlinMultiplatformExtension
 import org.jetbrains.kotlin.gradle.targets.js.webpack.KotlinWebpackConfig
-import kotlin.apply
-import kotlin.jvm.java
 
 plugins {
     id("org.jetbrains.kotlin.multiplatform")
@@ -28,6 +27,7 @@ project.afterEvaluate {
                 commonWebpackConfig {
                     outputFileName = "${name}App.js"
                     devServer = (devServer ?: KotlinWebpackConfig.DevServer()).apply {
+                        port = webExtension.port.get()
                         static = (static ?: mutableListOf()).apply {
                             add(rootDirPath)
                             add(projectDirPath)

@@ -6,7 +6,12 @@ import com.arkivanov.mvikotlin.core.store.Store
 import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.arkivanov.mvikotlin.extensions.coroutines.coroutineBootstrapper
 import com.arkivanov.mvikotlin.extensions.coroutines.coroutineExecutorFactory
+import dev.kigya.headway.core.outcome.getOrNull
+import dev.kigya.headway.core.session.domain.usecase.ResolveLaunchDestinationUseCase
+import dev.kigya.headway.core.session.model.LaunchDestination
 import dev.kigya.headway.feature.auth.api.AuthScreenKey
+import dev.kigya.headway.feature.home.api.HomeScreenKey
+import dev.kigya.headway.feature.learnQuestions.api.LearnQuestionsScreenKey
 import dev.kigya.headway.feature.splash.internal.ui.screen.SplashStore.Intent
 import dev.kigya.headway.feature.splash.internal.ui.screen.SplashStore.Label
 import dev.kigya.headway.feature.splash.internal.ui.screen.SplashStore.State
@@ -30,6 +35,7 @@ interface SplashStore : Store<Intent, State, Label> {
 class SplashStoreFactory(
     private val storeFactory: StoreFactory,
     private val navigator: NavigatorContract,
+    private val resolveLaunchDestination: ResolveLaunchDestinationUseCase,
 ) {
     fun create(executorCoroutineScope: CoroutineScope): SplashStore = object :
         SplashStore,
@@ -41,22 +47,27 @@ class SplashStoreFactory(
                 launch {
                     delay(showTextDelay)
                     dispatch(Action.ShowText)
+                    delay(afterTextDelay)
+                    val destination = resolveLaunchDestination().getOrNull()
+                        ?: LaunchDestination.Auth
+                    executorCoroutineScope.launch {
+                        val key = when (destination) {
+                            LaunchDestination.Auth -> AuthScreenKey
+                            LaunchDestination.Home -> HomeScreenKey
+                            LaunchDestination.LearnQuestions -> LearnQuestionsScreenKey
+                        }
+                        navigator.navigate(
+                            NavigationIntent.ReplaceTopBy(
+                                screenNavigationKey = key,
+                                asyncRunner = { executorCoroutineScope.asNavigationAsyncRunner() },
+                            ),
+                        )
+                    }
                 }
             },
             executorFactory = coroutineExecutorFactory(executorCoroutineScope.coroutineContext) {
                 onAction<Action.ShowText> {
-                    launch {
-                        dispatch(Message.ShowText)
-                        delay(afterTextDelay)
-                        executorCoroutineScope.launch {
-                            navigator.navigate(
-                                NavigationIntent.ReplaceTopBy(
-                                    screenNavigationKey = AuthScreenKey,
-                                    asyncRunner = { executorCoroutineScope.asNavigationAsyncRunner() },
-                                ),
-                            )
-                        }
-                    }
+                    dispatch(Message.ShowText)
                 }
             },
             reducer = Reducer { message ->
@@ -67,11 +78,11 @@ class SplashStoreFactory(
         ) {}
 
     private sealed interface Action {
-        object ShowText : Action
+        data object ShowText : Action
     }
 
     private sealed interface Message {
-        object ShowText : Message
+        data object ShowText : Message
     }
 
     private companion object {

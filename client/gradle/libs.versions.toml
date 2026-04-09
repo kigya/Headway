@@ -13,6 +13,7 @@ coroutines = { require = "1.10.2" }
 kotlinxSerialization = { require = "1.10.0" }
 kotlinxDatetime = { prefer = "0.7.1" }
 kotlinxCollectionsImmutable = { require = "0.4.0" }
+kotlinxBrowser = { require = "0.3" }
 
 # Compose Multiplatform
 composeMultiplatform = { require = "1.10.3" }
@@ -44,6 +45,13 @@ connectivity = { require = "2.4.1" }
 dataStore = { require = "1.2.1" }
 room = { strictly = "2.8.4" }
 sqlite = { strictly = "2.6.2" }
+securityCrypto = { require = "1.1.0-alpha06" }
+
+# GraphQL (client gateway)
+apollo = "4.3.1"
+
+# Google Sign-In (Android)
+playServicesAuth = { require = "21.3.0" }
 
 # Authentication
 kmpAuth = { require = "2.3.1" }
@@ -69,8 +77,10 @@ coroutines-swing = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-swing", 
 serializationJson = { module = "org.jetbrains.kotlinx:kotlinx-serialization-json", version.ref = "kotlinxSerialization" }
 kotlinxDatetime = { module = "org.jetbrains.kotlinx:kotlinx-datetime", version.ref = "kotlinxDatetime" }
 immutableCollections = { module = "org.jetbrains.kotlinx:kotlinx-collections-immutable", version.ref = "kotlinxCollectionsImmutable" }
+kotlinx-browser-wasm-js = { module = "org.jetbrains.kotlinx:kotlinx-browser-wasm-js", version.ref = "kotlinxBrowser" }
 
 # --- Compose ---
+activity-ktx = { module = "androidx.activity:activity-ktx", version.ref = "composeActivity" }
 compose-activity = { module = "androidx.activity:activity-compose", version.ref = "composeActivity" }
 compose-adaptive = { module = "org.jetbrains.compose.material3.adaptive:adaptive", version.ref = "composeMaterial3Adaptive" }
 compose-windowSizeClass = { module = "org.jetbrains.compose.material3:material3-window-size-class", version.ref = "composeWindowSizeClass" }
@@ -125,6 +135,10 @@ google-api-client = { module = "com.google.api-client:google-api-client", versio
 dataStore-core = { module = "androidx.datastore:datastore-core", version.ref = "dataStore" }
 dataStore-preferences = { module = "androidx.datastore:datastore-preferences", version.ref = "dataStore" }
 dataStore-preferencesCore = { module = "androidx.datastore:datastore-preferences-core", version.ref = "dataStore" }
+security-crypto = { module = "androidx.security:security-crypto", version.ref = "securityCrypto" }
+apollo-api = { module = "com.apollographql.apollo:apollo-api", version.ref = "apollo" }
+apollo-runtime = { module = "com.apollographql.apollo:apollo-runtime", version.ref = "apollo" }
+play-services-auth = { module = "com.google.android.gms:play-services-auth", version.ref = "playServicesAuth" }
 room-runtime = { module = "androidx.room:room-runtime", version.ref = "room" }
 room-compiler = { module = "androidx.room:room-compiler", version.ref = "room" }
 sqlite-bundled = { module = "androidx.sqlite:sqlite-bundled", version.ref = "sqlite" }
@@ -179,6 +193,7 @@ googleServices = { id = "com.google.gms.google-services", version.ref = "googleS
 serialization = { id = "org.jetbrains.kotlin.plugin.serialization", version.ref = "kotlin" }
 room = { id = "androidx.room", version.ref = "room" }
 buildkonfig = { id = "com.codingfeline.buildkonfig", version.ref = "buildkonfig" }
+apollo = { id = "com.apollographql.apollo", version.ref = "apollo" }
 
 # Convention Plugins Configuration
 convention-base-androidApplication = "base.androidApplication:1.0"

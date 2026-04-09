@@ -15,7 +15,7 @@ commonMainDependencies {
         implementation(bundles.compottie)
     }
     projects {
-        implementation(navigation.api)
+        implementation(navigation.navigationApi)
     }
 }
 

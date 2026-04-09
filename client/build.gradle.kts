@@ -19,6 +19,7 @@ plugins {
     alias(libs.plugins.serialization) apply false
     alias(libs.plugins.room) apply false
     alias(libs.plugins.buildkonfig) apply false
+    alias(libs.plugins.apollo) apply false
 }
 
 buildscript {

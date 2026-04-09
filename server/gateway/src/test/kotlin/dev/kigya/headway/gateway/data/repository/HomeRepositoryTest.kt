@@ -89,10 +89,10 @@ class HomeRepositoryTest {
             respondError(HttpStatusCode.BadRequest)
         }
         val repo = HomeRepository(httpClient = homeGatewayHttpClient(engine))
-        val ex = assertFailsWith<GatewayException.InvalidRequest> {
+        val invalidRequestException = assertFailsWith<GatewayException.InvalidRequest> {
             runBlocking { repo.getHomeScreen(sampleRequest) }
         }
-        assertEquals(GatewayErrorReason.BAD_REQUEST, ex.reason)
+        assertEquals(GatewayErrorReason.BAD_REQUEST, invalidRequestException.reason)
     }
 
     @Test
@@ -102,22 +102,22 @@ class HomeRepositoryTest {
             respondError(HttpStatusCode.InternalServerError)
         }
         val repo = HomeRepository(httpClient = homeGatewayHttpClient(engine))
-        val ex = assertFailsWith<GatewayException.UpstreamProtocol> {
+        val upstreamProtocolException = assertFailsWith<GatewayException.UpstreamProtocol> {
             runBlocking { repo.getHomeScreen(sampleRequest) }
         }
-        assertEquals("home", ex.dependency)
-        assertEquals(500, ex.upstreamStatus)
+        assertEquals("home", upstreamProtocolException.dependency)
+        assertEquals(500, upstreamProtocolException.upstreamStatus)
     }
 
     @Test
     fun `maps transport failure to dependency unavailable`() {
         val engine = MockEngine { throw IOException("network") }
         val repo = HomeRepository(httpClient = homeGatewayHttpClient(engine))
-        val ex = assertFailsWith<GatewayException.DependencyUnavailable> {
+        val dependencyUnavailableException = assertFailsWith<GatewayException.DependencyUnavailable> {
             runBlocking { repo.getHomeScreen(sampleRequest) }
         }
-        assertEquals("home", ex.dependency)
-        assertTrue(ex.cause is IOException)
+        assertEquals("home", dependencyUnavailableException.dependency)
+        assertTrue(dependencyUnavailableException.cause is IOException)
     }
 
     private fun assertScreenPost(request: HttpRequestData) {

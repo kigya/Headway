@@ -682,8 +682,8 @@ private fun nextRecommendedFormat(
 }
 
 private fun isUniqueActiveSessionViolation(e: ExposedSQLException): Boolean {
-    val msg = e.message.orEmpty() + e.cause?.message.orEmpty()
-    return msg.contains("preparation_session_one_active_per_pair_idx", ignoreCase = true)
+    val combinedExceptionMessage = e.message.orEmpty() + e.cause?.message.orEmpty()
+    return combinedExceptionMessage.contains("preparation_session_one_active_per_pair_idx", ignoreCase = true)
 }
 
 private fun parseStringListJson(raw: String): List<String> = runCatching {
