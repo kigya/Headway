@@ -13,6 +13,8 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import java.awt.Desktop
+import java.awt.EventQueue
+import java.awt.Frame
 import java.net.HttpURLConnection
 import java.net.InetSocketAddress
 import java.net.URI
@@ -105,6 +107,7 @@ class DesktopGoogleIdTokenAcquisition(
             val params = parseQueryParams(rawQuery)
             if (params[QUERY_KEY_ERROR] != null) {
                 respondHtml(exchange, OAUTH_HTML_CLOSE_BODY)
+                bringDesktopAppToForeground()
                 onFinish(Outcome.failure(SessionDomainError.GoogleSignInCancelled))
                 return@runCatching
             }
@@ -112,6 +115,7 @@ class DesktopGoogleIdTokenAcquisition(
             val state = params[QUERY_KEY_STATE]
             if (code.isNullOrBlank() || state != expectedState) {
                 respondHtml(exchange, OAUTH_HTML_ERROR_BODY)
+                bringDesktopAppToForeground()
                 onFinish(Outcome.failure(SessionDomainError.GoogleSignInUnavailable))
                 return@runCatching
             }
@@ -122,15 +126,18 @@ class DesktopGoogleIdTokenAcquisition(
             )
             if (tokenOutcome is Outcome.Success) {
                 respondHtml(exchange, OAUTH_HTML_SUCCESS_BODY)
+                bringDesktopAppToForeground()
                 onFinish(Outcome.success(tokenOutcome.value))
             } else {
                 respondHtml(exchange, OAUTH_HTML_ERROR_BODY)
+                bringDesktopAppToForeground()
                 onFinish(tokenOutcome)
             }
         }.onFailure {
             runCatching {
                 respondHtml(exchange, OAUTH_HTML_ERROR_BODY)
             }
+            bringDesktopAppToForeground()
             onFinish(Outcome.failure(SessionDomainError.GoogleSignInUnavailable))
         }
     }
@@ -249,6 +256,26 @@ class DesktopGoogleIdTokenAcquisition(
     private fun codeChallengeS256(verifier: String): String {
         val digest = MessageDigest.getInstance(DIGEST_SHA256).digest(verifier.toByteArray(StandardCharsets.US_ASCII))
         return Base64.getUrlEncoder().withoutPadding().encodeToString(digest)
+    }
+
+    private fun bringDesktopAppToForeground() {
+        EventQueue.invokeLater {
+            runCatching {
+                val applicationClass = Class.forName("com.apple.eawt.Application")
+                val application = applicationClass.getMethod("getApplication").invoke(null)
+                applicationClass.getMethod("requestForeground", Boolean::class.javaPrimitiveType)
+                    .invoke(application, true)
+            }
+            for (frame in Frame.getFrames()) {
+                if (frame.isDisplayable && frame.isVisible) {
+                    if (frame.extendedState and Frame.ICONIFIED != 0) {
+                        frame.extendedState = Frame.NORMAL
+                    }
+                    frame.toFront()
+                    frame.requestFocus()
+                }
+            }
+        }
     }
 }
 
