@@ -47,9 +47,7 @@ class HeadwayAndroidGoogleSignInFlow(
         }
     }
 
-    fun beginGoogleSignInForIdToken(
-        onResult: (Outcome<SessionDomainError, String>) -> Unit,
-    ) {
+    fun beginGoogleSignInForIdToken(onResult: (Outcome<SessionDomainError, String>) -> Unit) {
         activity.runOnUiThread {
             val webClientId = resolveGoogleWebClientId(activity)
             if (webClientId.isEmpty()) {

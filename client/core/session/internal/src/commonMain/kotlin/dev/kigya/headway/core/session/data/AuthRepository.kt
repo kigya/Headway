@@ -72,7 +72,8 @@ internal class AuthRepository(
             .mapSuccess { }
 }
 
-private fun HeadwaySessionGatewayPlatform.toGatewaySessionPlatform(): GatewaySessionPlatform = when (this) {
+private fun HeadwaySessionGatewayPlatform.toGatewaySessionPlatform(): GatewaySessionPlatform =
+    when (this) {
     HeadwaySessionGatewayPlatform.Android -> GatewaySessionPlatform.ANDROID
     HeadwaySessionGatewayPlatform.Ios -> GatewaySessionPlatform.IOS
     HeadwaySessionGatewayPlatform.Desktop -> GatewaySessionPlatform.DESKTOP
