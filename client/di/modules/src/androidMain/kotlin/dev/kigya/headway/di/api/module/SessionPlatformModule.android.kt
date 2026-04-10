@@ -82,6 +82,6 @@ private class AndroidSessionRuntimeIdentity(
 private const val HEADWAY_AUTH_LOG_TAG: String = "HeadwayAuth"
 
 private const val HEADWAY_GRAPHQL_HTTP_URL_META_KEY: String = "headway.graphql.httpUrl"
-private const val DEFAULT_GRAPHQL_HTTP_URL: String = "http://10.0.2.2:8080/api/v1/graphql"
+private const val DEFAULT_GRAPHQL_HTTP_URL: String = "https://kigya-headway-dev-gateway.onrender.com/api/v1/graphql"
 private const val HEADWAY_SECURE_SESSION_DATASTORE_SCOPE_NAME: String =
     "HeadwaySecureSessionDataStoreScope"

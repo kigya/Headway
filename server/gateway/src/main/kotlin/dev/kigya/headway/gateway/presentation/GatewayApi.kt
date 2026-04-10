@@ -1,6 +1,8 @@
 package dev.kigya.headway.gateway.presentation
 
 import com.apurebase.kgraphql.GraphQLError
+import dev.kigya.headway.common.extension.defaultResources
+import dev.kigya.headway.common.extension.healthzRouting
 import dev.kigya.headway.gateway.core.exception.GatewayErrorCode
 import dev.kigya.headway.gateway.core.presentation.GatewayGraphqlErrorMapper
 import dev.kigya.headway.gateway.graphql.GraphqlRequestContext
@@ -25,8 +27,13 @@ import io.ktor.http.HttpHeaders
 import io.ktor.server.application.Application
 import io.ktor.server.application.install
 import io.ktor.server.application.log
+import io.ktor.server.routing.routing
 
 internal fun Application.installGatewayApi(bindings: GatewayApiBindings) {
+    defaultResources()
+    routing {
+        healthzRouting()
+    }
     installHeadwayGatewayCors(environment = bindings.environment)
     install(LenientKGraphQL) {
         playground = !bindings.environment.isProd

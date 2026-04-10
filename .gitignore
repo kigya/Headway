@@ -18,6 +18,8 @@ captures
 **/xcshareddata/WorkspaceSettings.xcsettings
 /server/docker/*
 !/server/docker/Dockerfile
+!/server/docker/render
+!/server/docker/render/**
 !/server/docker/template
 **/bin/
 **/lib/

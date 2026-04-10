@@ -60,6 +60,6 @@ public abstract class AndroidApplicationConventionParams @Inject constructor(
         versionCode.convention(1)
         versionName.convention("1.0.0")
         resourceConfigurations.convention(emptyList())
-        headwayGraphqlHttpUrl.convention("http://10.0.2.2:8080/api/v1/graphql")
+        headwayGraphqlHttpUrl.convention("https://kigya-headway-dev-gateway.onrender.com/api/v1/graphql")
     }
 }
