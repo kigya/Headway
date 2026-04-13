@@ -13,11 +13,15 @@ val androidExtension = project.extensions.create(
 
 androidExtension.namespace.convention(
     project.provider {
-        val projectNameFormatted = project.path
-            .drop(1)
-            .replace(Regex("[-:]"), ".")
-        "dev.kigya.headway.$projectNameFormatted"
-    }
+        if (project.path == ":app:headwayAndroid") {
+            "dev.kigya.headway"
+        } else {
+            val projectNameFormatted = project.path
+                .drop(1)
+                .replace(Regex("[-:]"), ".")
+            "dev.kigya.headway.$projectNameFormatted"
+        }
+    },
 )
 
 /**
@@ -37,6 +41,7 @@ configureIfExists(ApplicationExtension::class.java) {
         versionCode = androidExtension.versionCode.get()
         versionName = androidExtension.versionName.get()
         resourceConfigurations += androidExtension.resourceConfigurations.get()
+        manifestPlaceholders["headwayGraphqlHttpUrl"] = androidExtension.headwayGraphqlHttpUrl.get()
 
         testOptions.unitTests.apply {
             isIncludeAndroidResources = true

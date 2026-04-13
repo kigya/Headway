@@ -44,10 +44,16 @@ jobs:
 
       - name: Package Desktop (${{ matrix.os }})
         working-directory: ./client
+        shell: bash
         env:
           GPR_USER: ${{ secrets.GPR_USER }}
           GPR_KEY: ${{ secrets.GPR_KEY }}
-        run: ./gradlew :app:headwayDesktop:packageDistributionForCurrentOS --stacktrace
+        run: |
+          if [[ -z "${GPR_KEY}" ]]; then
+            echo '::error::GPR_KEY is empty or unset. Add repository secrets GPR_KEY (PAT with read:packages for GithubEnvSync-Plugin) and optionally GPR_USER (defaults to GITHUB_ACTOR when GPR_KEY is set).'
+            exit 1
+          fi
+          ./gradlew :app:headwayDesktop:packageDistributionForCurrentOS --stacktrace
 
       - name: Upload Desktop distributions (${{ matrix.os }})
         uses: actions/upload-artifact@v4

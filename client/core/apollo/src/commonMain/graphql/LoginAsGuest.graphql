@@ -1,0 +1,6 @@
+mutation LoginAsGuest($stub: Boolean) {
+    loginAsGuest(stub: $stub) {
+        accessToken
+        expiresAtEpochMs
+    }
+}

@@ -1,4 +1,5 @@
 import extension.commonMainDependencies
+import extension.iosMainDependencies
 
 plugins {
     alias(libs.plugins.convention.base.sharedLibrary)
@@ -19,10 +20,18 @@ kotlin {
 
 commonMainDependencies {
     projects {
-        implementation(di.modules)
-        implementation(navigation.api)
+        implementation(di.diModules)
+        implementation(navigation.navigationApi)
         implementation(core.designSystem)
-        implementation(feature.splash.api)
-        implementation(feature.auth.api)
+        implementation(feature.splashApi)
+        implementation(feature.authApi)
+        implementation(feature.homeApi)
+        implementation(feature.learnQuestionsApi)
+    }
+}
+
+iosMainDependencies {
+    projects {
+        implementation(core.sessionInternal)
     }
 }

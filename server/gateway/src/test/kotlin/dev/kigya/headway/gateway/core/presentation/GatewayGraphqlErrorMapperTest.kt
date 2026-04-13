@@ -24,8 +24,8 @@ class GatewayGraphqlErrorMapperTest {
 
     @Test
     fun `maps dependency unavailable with retryable and dependency`() {
-        val ex = GatewayException.DependencyUnavailable(dependency = "auth")
-        val envelope = GatewayGraphqlErrorMapper.map(ex)
+        val gatewayException = GatewayException.DependencyUnavailable(dependency = "auth")
+        val envelope = GatewayGraphqlErrorMapper.map(gatewayException)
 
         assertEquals(GatewayErrorCode.DEPENDENCY_UNAVAILABLE, envelope.code)
         assertEquals("dependency", envelope.extensions["category"])
@@ -36,8 +36,8 @@ class GatewayGraphqlErrorMapperTest {
 
     @Test
     fun `extensionsFor exposes upstream protocol fields`() {
-        val ex = GatewayException.UpstreamProtocol(dependency = "database", status = 418)
-        val ext = GatewayGraphqlErrorMapper.extensionsFor(ex)
+        val gatewayException = GatewayException.UpstreamProtocol(dependency = "database", status = 418)
+        val ext = GatewayGraphqlErrorMapper.extensionsFor(gatewayException)
 
         assertEquals("UPSTREAM_PROTOCOL", ext["reason"])
         assertEquals(418, ext["upstreamStatus"])
@@ -47,11 +47,11 @@ class GatewayGraphqlErrorMapperTest {
 
     @Test
     fun `maps guest forbidden`() {
-        val ex = GatewayException.Forbidden(
+        val gatewayException = GatewayException.Forbidden(
             reason = GatewayErrorReason.GUEST_NOT_ALLOWED,
             message = "Guests cannot invite users",
         )
-        val envelope = GatewayGraphqlErrorMapper.map(ex)
+        val envelope = GatewayGraphqlErrorMapper.map(gatewayException)
 
         assertEquals(GatewayErrorCode.FORBIDDEN, envelope.code)
         assertEquals(GatewayErrorCategory.AUTHORIZATION.name.lowercase(), envelope.extensions["category"])
@@ -60,11 +60,11 @@ class GatewayGraphqlErrorMapperTest {
 
     @Test
     fun `maps preparation scope session closed conflict reason`() {
-        val ex = GatewayException.Conflict(
+        val gatewayException = GatewayException.Conflict(
             message = "closed",
             reason = GatewayErrorReason.PREPARATION_SCOPE_SESSION_CLOSED,
         )
-        val envelope = GatewayGraphqlErrorMapper.map(ex)
+        val envelope = GatewayGraphqlErrorMapper.map(gatewayException)
 
         assertEquals(GatewayErrorCode.CONFLICT, envelope.code)
         assertEquals("PREPARATION_SCOPE_SESSION_CLOSED", envelope.extensions["reason"])

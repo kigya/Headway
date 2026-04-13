@@ -23,9 +23,9 @@ class UpstreamHttpErrorMapperTest {
             status = HttpStatusCode.Conflict,
             body = DatabasePreparationErrorCodes.SCOPE_SESSION_CLOSED,
         ).get("http://test/")
-        val ex = response.toGatewayException("database")
-        assertTrue(ex is GatewayException.Conflict)
-        assertEquals(GatewayErrorReason.PREPARATION_SCOPE_SESSION_CLOSED, ex.reason)
+        val gatewayException = response.toGatewayException("database")
+        assertTrue(gatewayException is GatewayException.Conflict)
+        assertEquals(GatewayErrorReason.PREPARATION_SCOPE_SESSION_CLOSED, gatewayException.reason)
     }
 
     @Test
@@ -34,9 +34,9 @@ class UpstreamHttpErrorMapperTest {
             status = HttpStatusCode.Forbidden,
             body = DatabasePreparationErrorCodes.SUMMARY_REQUIRES_COMPLETED_SESSION,
         ).get("http://test/")
-        val ex = response.toGatewayException("database")
-        assertTrue(ex is GatewayException.Forbidden)
-        assertEquals(GatewayErrorReason.PREPARATION_SUMMARY_REQUIRES_COMPLETED_SESSION, ex.reason)
+        val gatewayException = response.toGatewayException("database")
+        assertTrue(gatewayException is GatewayException.Forbidden)
+        assertEquals(GatewayErrorReason.PREPARATION_SUMMARY_REQUIRES_COMPLETED_SESSION, gatewayException.reason)
     }
 
     @Test
@@ -45,9 +45,9 @@ class UpstreamHttpErrorMapperTest {
             status = HttpStatusCode.Conflict,
             body = "other",
         ).get("http://test/")
-        val ex = response.toGatewayException("database")
-        assertTrue(ex is GatewayException.Conflict)
-        assertEquals(GatewayErrorReason.IDENTITY_CONFLICT, ex.reason)
+        val gatewayException = response.toGatewayException("database")
+        assertTrue(gatewayException is GatewayException.Conflict)
+        assertEquals(GatewayErrorReason.IDENTITY_CONFLICT, gatewayException.reason)
     }
 
     @Test
@@ -56,9 +56,9 @@ class UpstreamHttpErrorMapperTest {
             status = HttpStatusCode.Forbidden,
             body = "nope",
         ).get("http://test/")
-        val ex = response.toGatewayException("database")
-        assertTrue(ex is GatewayException.Forbidden)
-        assertEquals(GatewayErrorReason.INSUFFICIENT_ROLE, ex.reason)
+        val gatewayException = response.toGatewayException("database")
+        assertTrue(gatewayException is GatewayException.Forbidden)
+        assertEquals(GatewayErrorReason.INSUFFICIENT_ROLE, gatewayException.reason)
     }
 
     private fun mockClient(

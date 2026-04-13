@@ -10,6 +10,6 @@ plugins {
 
 commonMainDependencies {
     projects {
-        implementation(navigation.api)
+        implementation(navigation.navigationApi)
     }
 }

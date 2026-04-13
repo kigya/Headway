@@ -65,8 +65,6 @@ private object FreudFallbackPreviewTheme : FreudTheme() {
         )
 }
 
-private const val SEPARATOR = " • "
-
 private data class FreudFallbackPreviewCase(
     val isDark: Boolean,
     val isWide: Boolean,
@@ -196,3 +194,5 @@ private fun FreudFallbackPreview(
         }
     }
 }
+
+private const val SEPARATOR = " • "

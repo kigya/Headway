@@ -1,6 +1,5 @@
 package dev.kigya.headway.feature.auth.internal.ui.screen.auth
 
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.BoxWithConstraints
@@ -77,7 +76,9 @@ internal fun AuthScreen() {
 
     AuthScreenContent(
         state = state,
-        onOpenNoAccess = viewModel::onOpenNoAccess,
+        onSignInWithGoogle = viewModel::onSignInWithGoogle,
+        onContinueAsGuest = viewModel::onContinueAsGuest,
+        onDismissError = viewModel::onDismissError,
     )
 }
 
@@ -85,13 +86,14 @@ internal fun AuthScreen() {
 @Composable
 private fun AuthScreenContent(
     state: State<AuthStore.State>,
-    onOpenNoAccess: () -> Unit,
+    onSignInWithGoogle: () -> Unit,
+    onContinueAsGuest: () -> Unit,
+    onDismissError: () -> Unit,
 ) {
     val windowSizeClass = rememberWindowSizeClass()
     BoxWithConstraints(
         modifier = Modifier
             .fillMaxSize()
-            .clickable { onOpenNoAccess() }
             .background(
                 color = AuthTheme.colorScheme.authBackground,
                 pattern = FreudBackgroundPattern.Waves,
@@ -106,20 +108,35 @@ private fun AuthScreenContent(
             textColumnHorizontalPadding = horizontalPaddingWide,
         )
         FreudFallback(
-            isError = false,
-            onRetry = { },
+            isError = state.value.hasError,
+            onRetry = onDismissError,
         ) {
             if (useSideBySide) {
-                AuthScreenWideContent(lottieColumnWidth = lottieSideBudget)
+                AuthScreenWideContent(
+                    lottieColumnWidth = lottieSideBudget,
+                    isBusy = state.value.isBusy,
+                    onSignInWithGoogle = onSignInWithGoogle,
+                    onContinueAsGuest = onContinueAsGuest,
+                )
             } else {
-                AuthScreenStackedContent(containerWidth = maxWidth)
+                AuthScreenStackedContent(
+                    containerWidth = maxWidth,
+                    isBusy = state.value.isBusy,
+                    onSignInWithGoogle = onSignInWithGoogle,
+                    onContinueAsGuest = onContinueAsGuest,
+                )
             }
         }
     }
 }
 
 @Composable
-private fun AuthScreenStackedContent(containerWidth: Dp) {
+private fun AuthScreenStackedContent(
+    containerWidth: Dp,
+    isBusy: Boolean,
+    onSignInWithGoogle: () -> Unit,
+    onContinueAsGuest: () -> Unit,
+) {
     val scrollState = rememberScrollState()
     Column(
         modifier = Modifier
@@ -152,6 +169,9 @@ private fun AuthScreenStackedContent(containerWidth: Dp) {
         }
         FreudSpacer(size = AuthTheme.dimension.dp36)
         AuthActionButtons(
+            isBusy = isBusy,
+            onSignInWithGoogle = onSignInWithGoogle,
+            onContinueAsGuest = onContinueAsGuest,
             modifier = Modifier
                 .widthIn(max = authSideBySideActionButtonWidth)
                 .fillMaxWidth(),
@@ -161,7 +181,12 @@ private fun AuthScreenStackedContent(containerWidth: Dp) {
 }
 
 @Composable
-private fun AuthScreenWideContent(lottieColumnWidth: Dp) {
+private fun AuthScreenWideContent(
+    lottieColumnWidth: Dp,
+    isBusy: Boolean,
+    onSignInWithGoogle: () -> Unit,
+    onContinueAsGuest: () -> Unit,
+) {
     Row(modifier = Modifier.fillMaxSize()) {
         AuthSideBySideLottieColumn(lottieColumnWidth = lottieColumnWidth) {
             FreudLottie(
@@ -188,7 +213,12 @@ private fun AuthScreenWideContent(lottieColumnWidth: Dp) {
             FreudSpacer(size = AuthTheme.dimension.dp36)
             AuthHeaderTexts(isWide = true)
             FreudSpacer(size = AuthTheme.dimension.dp48)
-            AuthActionButtons(modifier = Modifier.width(width = authSideBySideActionButtonWidth))
+            AuthActionButtons(
+                isBusy = isBusy,
+                onSignInWithGoogle = onSignInWithGoogle,
+                onContinueAsGuest = onContinueAsGuest,
+                modifier = Modifier.width(width = authSideBySideActionButtonWidth),
+            )
         }
     }
 }
@@ -258,25 +288,32 @@ private fun AuthHeaderTexts(isWide: Boolean) {
 }
 
 @Composable
-private fun AuthActionButtons(modifier: Modifier = Modifier) {
+private fun AuthActionButtons(
+    isBusy: Boolean,
+    onSignInWithGoogle: () -> Unit,
+    onContinueAsGuest: () -> Unit,
+    modifier: Modifier = Modifier,
+) {
     Column(modifier = modifier) {
         FreudHorizontalButton(
             modifier = Modifier.fillMaxWidth(),
             text = FreudTextValue.text(resource = Res.string.auth_learn_as_guest_button),
-            onClick = { },
+            onClick = onContinueAsGuest,
             containerColor = AuthTheme.colorScheme.transparent,
             contentColor = AuthTheme.colorScheme.learnAsGuestButtonColor,
             borderColor = AuthTheme.colorScheme.learnAsGuestButtonColor,
             size = FreudHorizontalButtonSize.LARGE,
+            isEnabled = !isBusy,
         )
         FreudSpacer(size = AuthTheme.dimension.dp20)
         FreudHorizontalButton(
             modifier = Modifier.fillMaxWidth(),
             text = FreudTextValue.text(resource = Res.string.auth_sing_in_google_button),
-            onClick = { },
+            onClick = onSignInWithGoogle,
             containerColor = AuthTheme.colorScheme.googleSingInButtonColor,
             contentColor = AuthTheme.colorScheme.googleSingInButtonTextColor,
             size = FreudHorizontalButtonSize.LARGE,
+            isEnabled = !isBusy,
             leadingIcon = FreudButtonIconSpec.Static(
                 resource = Res.drawable.ic_google,
                 tint = null,

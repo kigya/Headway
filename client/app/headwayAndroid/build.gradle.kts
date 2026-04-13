@@ -14,6 +14,12 @@ configureAndroidApplication {
 
 dependencies {
     projects {
+        implementation(core.outcome)
+        implementation(core.sessionInternal)
+        implementation(di.diModules)
         implementation(shared)
+    }
+    libs {
+        implementation(koin.android)
     }
 }

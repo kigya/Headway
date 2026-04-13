@@ -223,15 +223,15 @@ private fun buildPage(
     val startIndex = when (afterQuestionId) {
         null -> 0
         else -> {
-            val idx = allIds.indexOf(afterQuestionId)
-            if (idx < 0) {
+            val afterQuestionIndex = allIds.indexOf(afterQuestionId)
+            if (afterQuestionIndex < 0) {
                 return DatabaseLearningPageResponseDto(
                     items = emptyList(),
                     resumeHard = null,
                     resumeSoft = null,
                 )
             }
-            idx + 1
+            afterQuestionIndex + 1
         }
     }
     val sliceIds = allIds.drop(startIndex).take(limit)

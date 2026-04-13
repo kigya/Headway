@@ -1,0 +1,416 @@
+projects:
+  - name: headway-backend
+    environments:
+      - name: dev
+        envVarGroups:
+          - name: headway-dev-shared
+            envVars:
+              - key: ENV
+                value: dev
+          - name: headway-dev-auth-secrets
+            envVars:
+              - key: JWT_ACCESS_SECRET
+                sync: false
+              - key: JWT_REFRESH_SECRET
+                sync: false
+              - key: JWT_GUEST_SECRET
+                sync: false
+          - name: headway-dev-database-secrets
+            envVars:
+              - key: DATABASE_PASSWORD
+                sync: false
+          - name: headway-dev-admin-secrets
+            envVars:
+              - key: HEADWAY_GITHUB_OAUTH_CLIENT_ID
+                sync: false
+              - key: HEADWAY_GITHUB_OAUTH_CLIENT_SECRET
+                sync: false
+              - key: HEADWAY_ADMIN_SESSION_SECRET
+                sync: false
+        services:
+          - name: kigya-headway-dev-gateway
+            type: web
+            runtime: docker
+            plan: free
+            region: frankfurt
+            branch: client-headway/86-client-auth-flow
+            autoDeployTrigger: off
+            rootDir: server
+            dockerfilePath: docker/render/Gateway.Dockerfile
+            dockerContext: .
+            healthCheckPath: /healthz
+            envVars:
+              - fromGroup: headway-dev-shared
+              - key: PORT
+                value: "8080"
+              - key: GATEWAY_SERVICE_HOST
+                value: "0.0.0.0"
+              - key: GATEWAY_SERVICE_PORT
+                value: "8080"
+              - key: AUTH_SERVICE_HOST
+                fromService:
+                  name: kigya-headway-dev-auth
+                  type: pserv
+                  property: host
+              - key: AUTH_SERVICE_PORT
+                fromService:
+                  name: kigya-headway-dev-auth
+                  type: pserv
+                  property: port
+              - key: DATABASE_SERVICE_HOST
+                fromService:
+                  name: kigya-headway-dev-database
+                  type: pserv
+                  property: host
+              - key: DATABASE_SERVICE_PORT
+                fromService:
+                  name: kigya-headway-dev-database
+                  type: pserv
+                  property: port
+              - key: HOME_SERVICE_HOST
+                fromService:
+                  name: kigya-headway-dev-home
+                  type: pserv
+                  property: host
+              - key: HOME_SERVICE_PORT
+                fromService:
+                  name: kigya-headway-dev-home
+                  type: pserv
+                  property: port
+
+          - name: kigya-headway-dev-auth
+            type: pserv
+            runtime: docker
+            plan: starter
+            region: frankfurt
+            branch: client-headway/86-client-auth-flow
+            autoDeployTrigger: off
+            rootDir: server
+            dockerfilePath: docker/render/Auth.Dockerfile
+            dockerContext: .
+            envVars:
+              - fromGroup: headway-dev-shared
+              - fromGroup: headway-dev-auth-secrets
+              - key: PORT
+                value: "8081"
+              - key: AUTH_SERVICE_SELF_HOST
+                value: "0.0.0.0"
+              - key: AUTH_SERVICE_PORT
+                value: "8081"
+              - key: DATABASE_SERVICE_HOST
+                fromService:
+                  name: kigya-headway-dev-database
+                  type: pserv
+                  property: host
+              - key: DATABASE_SERVICE_PORT
+                fromService:
+                  name: kigya-headway-dev-database
+                  type: pserv
+                  property: port
+              - key: JWT_ISSUER
+                value: headway-auth
+              - key: JWT_AUDIENCE
+                value: headway-gateway
+              - key: JWT_ACCESS_TTL_SEC
+                value: "300"
+              - key: JWT_GUEST_TTL_SEC
+                value: "86400"
+              - key: GOOGLE_TOKEN_AUDIENCE
+                value: 658272377808-alf63nc9km4tjgv0dr6lltfqfo1jshqb.apps.googleusercontent.com
+
+          - name: kigya-headway-dev-database
+            type: pserv
+            runtime: docker
+            plan: starter
+            region: frankfurt
+            branch: client-headway/86-client-auth-flow
+            autoDeployTrigger: off
+            rootDir: server
+            dockerfilePath: docker/render/Database.Dockerfile
+            dockerContext: .
+            envVars:
+              - fromGroup: headway-dev-shared
+              - fromGroup: headway-dev-database-secrets
+              - key: PORT
+                value: "8082"
+              - key: DATABASE_SELF_SERVICE_HOST
+                value: "0.0.0.0"
+              - key: DATABASE_SERVICE_PORT
+                value: "8082"
+              - key: DATABASE_HOST_URL
+                value: aws-1-eu-north-1.pooler.supabase.com
+              - key: DATABASE_PORT
+                value: "5432"
+              - key: DATABASE_NAME
+                value: postgres
+              - key: DATABASE_USER
+                value: postgres.ymqpiogjzymkkwzutqds
+              - key: DATABASE_SSL_MODE
+                value: disable
+              - key: DATABASE_POOL_SIZE
+                value: "3"
+
+          - name: kigya-headway-dev-home
+            type: pserv
+            runtime: docker
+            plan: starter
+            region: frankfurt
+            branch: client-headway/86-client-auth-flow
+            autoDeployTrigger: off
+            rootDir: server
+            dockerfilePath: docker/render/Home.Dockerfile
+            dockerContext: .
+            envVars:
+              - fromGroup: headway-dev-shared
+              - key: PORT
+                value: "8084"
+              - key: HOME_SERVICE_SELF_HOST
+                value: "0.0.0.0"
+              - key: HOME_SERVICE_PORT
+                value: "8084"
+              - key: HOME_ICONS_PUBLIC_BASE_URL
+                value: https://ymqpiogjzymkkwzutqds.supabase.co/storage/v1/object/public/icons
+
+          - name: kigya-headway-dev-admin
+            type: web
+            runtime: docker
+            plan: free
+            region: frankfurt
+            branch: client-headway/86-client-auth-flow
+            autoDeployTrigger: off
+            rootDir: server
+            dockerfilePath: docker/render/Admin.Dockerfile
+            dockerContext: .
+            healthCheckPath: /internal/v1/admin/healthz
+            envVars:
+              - fromGroup: headway-dev-shared
+              - fromGroup: headway-dev-admin-secrets
+              - key: PORT
+                value: "8083"
+              - key: ADMIN_SERVICE_HOST
+                value: "0.0.0.0"
+              - key: ADMIN_SERVICE_PORT
+                value: "8083"
+              - key: DATABASE_SERVICE_HOST
+                fromService:
+                  name: kigya-headway-dev-database
+                  type: pserv
+                  property: host
+              - key: DATABASE_SERVICE_PORT
+                fromService:
+                  name: kigya-headway-dev-database
+                  type: pserv
+                  property: port
+              - key: HEADWAY_REPO_OWNER
+                value: kigya
+              - key: HEADWAY_REPO_NAME
+                value: Headway
+              - key: HEADWAY_ADMIN_OAUTH_PUBLIC_ORIGIN
+                value: https://kigya-headway-dev-admin.onrender.com
+
+      - name: prod
+        envVarGroups:
+          - name: headway-prod-shared
+            envVars:
+              - key: ENV
+                value: prod
+          - name: headway-prod-auth-secrets
+            envVars:
+              - key: JWT_ACCESS_SECRET
+                sync: false
+              - key: JWT_REFRESH_SECRET
+                sync: false
+              - key: JWT_GUEST_SECRET
+                sync: false
+          - name: headway-prod-database-secrets
+            envVars:
+              - key: DATABASE_PASSWORD
+                sync: false
+          - name: headway-prod-admin-secrets
+            envVars:
+              - key: HEADWAY_GITHUB_OAUTH_CLIENT_ID
+                sync: false
+              - key: HEADWAY_GITHUB_OAUTH_CLIENT_SECRET
+                sync: false
+              - key: HEADWAY_ADMIN_SESSION_SECRET
+                sync: false
+        services:
+          - name: kigya-headway-prod-gateway
+            type: web
+            runtime: docker
+            plan: starter
+            region: frankfurt
+            branch: client-headway/86-client-auth-flow
+            autoDeployTrigger: off
+            rootDir: server
+            dockerfilePath: docker/render/Gateway.Dockerfile
+            dockerContext: .
+            healthCheckPath: /healthz
+            envVars:
+              - fromGroup: headway-prod-shared
+              - key: PORT
+                value: "8080"
+              - key: GATEWAY_SERVICE_HOST
+                value: "0.0.0.0"
+              - key: GATEWAY_SERVICE_PORT
+                value: "8080"
+              - key: AUTH_SERVICE_HOST
+                fromService:
+                  name: kigya-headway-prod-auth
+                  type: pserv
+                  property: host
+              - key: AUTH_SERVICE_PORT
+                fromService:
+                  name: kigya-headway-prod-auth
+                  type: pserv
+                  property: port
+              - key: DATABASE_SERVICE_HOST
+                fromService:
+                  name: kigya-headway-prod-database
+                  type: pserv
+                  property: host
+              - key: DATABASE_SERVICE_PORT
+                fromService:
+                  name: kigya-headway-prod-database
+                  type: pserv
+                  property: port
+              - key: HOME_SERVICE_HOST
+                fromService:
+                  name: kigya-headway-prod-home
+                  type: pserv
+                  property: host
+              - key: HOME_SERVICE_PORT
+                fromService:
+                  name: kigya-headway-prod-home
+                  type: pserv
+                  property: port
+
+          - name: kigya-headway-prod-auth
+            type: pserv
+            runtime: docker
+            plan: starter
+            region: frankfurt
+            branch: client-headway/86-client-auth-flow
+            autoDeployTrigger: off
+            rootDir: server
+            dockerfilePath: docker/render/Auth.Dockerfile
+            dockerContext: .
+            envVars:
+              - fromGroup: headway-prod-shared
+              - fromGroup: headway-prod-auth-secrets
+              - key: PORT
+                value: "8081"
+              - key: AUTH_SERVICE_SELF_HOST
+                value: "0.0.0.0"
+              - key: AUTH_SERVICE_PORT
+                value: "8081"
+              - key: DATABASE_SERVICE_HOST
+                fromService:
+                  name: kigya-headway-prod-database
+                  type: pserv
+                  property: host
+              - key: DATABASE_SERVICE_PORT
+                fromService:
+                  name: kigya-headway-prod-database
+                  type: pserv
+                  property: port
+              - key: JWT_ISSUER
+                value: headway-auth
+              - key: JWT_AUDIENCE
+                value: headway-gateway
+              - key: JWT_ACCESS_TTL_SEC
+                value: "300"
+              - key: JWT_GUEST_TTL_SEC
+                value: "86400"
+              - key: GOOGLE_TOKEN_AUDIENCE
+                value: 658272377808-alf63nc9km4tjgv0dr6lltfqfo1jshqb.apps.googleusercontent.com
+
+          - name: kigya-headway-prod-database
+            type: pserv
+            runtime: docker
+            plan: starter
+            region: frankfurt
+            branch: client-headway/86-client-auth-flow
+            autoDeployTrigger: off
+            rootDir: server
+            dockerfilePath: docker/render/Database.Dockerfile
+            dockerContext: .
+            envVars:
+              - fromGroup: headway-prod-shared
+              - fromGroup: headway-prod-database-secrets
+              - key: PORT
+                value: "8082"
+              - key: DATABASE_SELF_SERVICE_HOST
+                value: "0.0.0.0"
+              - key: DATABASE_SERVICE_PORT
+                value: "8082"
+              - key: DATABASE_HOST_URL
+                value: aws-1-eu-west-1.pooler.supabase.com
+              - key: DATABASE_PORT
+                value: "5432"
+              - key: DATABASE_NAME
+                value: postgres
+              - key: DATABASE_USER
+                value: postgres.lhdkfjlltgnxrttrqfla
+              - key: DATABASE_SSL_MODE
+                value: disable
+              - key: DATABASE_POOL_SIZE
+                value: "3"
+
+          - name: kigya-headway-prod-home
+            type: pserv
+            runtime: docker
+            plan: starter
+            region: frankfurt
+            branch: client-headway/86-client-auth-flow
+            autoDeployTrigger: off
+            rootDir: server
+            dockerfilePath: docker/render/Home.Dockerfile
+            dockerContext: .
+            envVars:
+              - fromGroup: headway-prod-shared
+              - key: PORT
+                value: "8084"
+              - key: HOME_SERVICE_SELF_HOST
+                value: "0.0.0.0"
+              - key: HOME_SERVICE_PORT
+                value: "8084"
+              - key: HOME_ICONS_PUBLIC_BASE_URL
+                value: https://lhdkfjlltgnxrttrqfla.supabase.co/storage/v1/object/public/icons
+
+          - name: kigya-headway-prod-admin
+            type: web
+            runtime: docker
+            plan: free
+            region: frankfurt
+            branch: client-headway/86-client-auth-flow
+            autoDeployTrigger: off
+            rootDir: server
+            dockerfilePath: docker/render/Admin.Dockerfile
+            dockerContext: .
+            healthCheckPath: /internal/v1/admin/healthz
+            envVars:
+              - fromGroup: headway-prod-shared
+              - fromGroup: headway-prod-admin-secrets
+              - key: PORT
+                value: "8083"
+              - key: ADMIN_SERVICE_HOST
+                value: "0.0.0.0"
+              - key: ADMIN_SERVICE_PORT
+                value: "8083"
+              - key: DATABASE_SERVICE_HOST
+                fromService:
+                  name: kigya-headway-prod-database
+                  type: pserv
+                  property: host
+              - key: DATABASE_SERVICE_PORT
+                fromService:
+                  name: kigya-headway-prod-database
+                  type: pserv
+                  property: port
+              - key: HEADWAY_REPO_OWNER
+                value: kigya
+              - key: HEADWAY_REPO_NAME
+                value: Headway
+              - key: HEADWAY_ADMIN_OAUTH_PUBLIC_ORIGIN
+                value: https://kigya-headway-prod-admin.onrender.com

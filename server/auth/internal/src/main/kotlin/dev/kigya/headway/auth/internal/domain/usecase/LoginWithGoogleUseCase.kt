@@ -24,10 +24,15 @@ internal class LoginWithGoogleUseCase(
     ): AuthGoogleLoginResponse {
         val googleUser = googleTokenVerifier.verify(tokenString = idToken)
 
+        val displayName = resolveGoogleDisplayName(
+            name = googleUser.name,
+            email = googleUser.email,
+        )
+
         val user = databaseRepository.upsertGoogleUser(
             googleId = googleUser.googleId,
             email = googleUser.email,
-            name = googleUser.name,
+            name = displayName,
             avatarUrl = googleUser.pictureUrl,
         )
 
@@ -55,5 +60,22 @@ internal class LoginWithGoogleUseCase(
         )
     }
 }
+
+private fun resolveGoogleDisplayName(
+    name: String,
+    email: String,
+): String {
+    val trimmedName = name.trim()
+    if (trimmedName.isNotEmpty()) {
+        return trimmedName
+    }
+    val localPart = email.substringBefore('@').trim()
+    if (localPart.isNotEmpty()) {
+        return localPart
+    }
+    return DEFAULT_GOOGLE_DISPLAY_NAME
+}
+
+private const val DEFAULT_GOOGLE_DISPLAY_NAME: String = "User"
 
 private const val REFRESH_ALIVE_MONTHS = 3L

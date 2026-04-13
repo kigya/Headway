@@ -31,8 +31,9 @@ class HeadwayNavigator(
                 with(this as NavigatorScope) {
                     val runner = intent.asyncRunner()
                     runner {
-                        if (this@HeadwayNavigator._backStack.lastOrNull() != intent.asyncRunner) {
-                            this@HeadwayNavigator._backStack.add(intent.screenNavigationKey)
+                        val targetKey = intent.screenNavigationKey
+                        if (this@HeadwayNavigator._backStack.lastOrNull() != targetKey) {
+                            this@HeadwayNavigator._backStack.add(targetKey)
                         }
                         delay(REPLACE_TOP_DELAY)
                         if (this@HeadwayNavigator._backStack.size > 1) {
