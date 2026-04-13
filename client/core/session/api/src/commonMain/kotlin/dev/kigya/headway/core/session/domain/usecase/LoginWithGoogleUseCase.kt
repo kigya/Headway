@@ -14,13 +14,15 @@ class LoginWithGoogleUseCase(
 
     suspend operator fun invoke(idToken: String): Outcome<SessionDomainError, Unit> =
         when (val registered = authRepository.loginWithGoogle(idToken)) {
-            is Outcome.Success -> {
-                accessTokenStore.update(registered.value.accessToken)
+            is Outcome.Success ->
                 when (val saved = persistence.saveRecord(registered.value)) {
-                    is Outcome.Success -> Outcome.success(Unit)
+                    is Outcome.Success -> {
+                        accessTokenStore.update(registered.value.accessToken)
+                        Outcome.success(Unit)
+                    }
+
                     is Outcome.Failure -> saved
                 }
-            }
 
             is Outcome.Failure -> registered
         }

@@ -4,7 +4,7 @@ sealed interface HeadwayRemoteGraphqlFailure {
 
     data object Network : HeadwayRemoteGraphqlFailure
 
-    public data class GraphQl(
+    data class GraphQl(
         val message: String,
         val category: String?,
         val reason: String?,

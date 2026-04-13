@@ -30,15 +30,20 @@ import io.ktor.util.AttributeKey
 import kotlinx.coroutines.coroutineScope
 import kotlinx.serialization.json.Json
 
-internal class LenientKGraphQL(val schema: Schema) {
+internal data class LenientKGraphQL(val schema: Schema) {
     class Configuration : SchemaConfigurationDSL() {
-        fun schema(block: SchemaBuilder.() -> Unit) {
-            schemaBlock = block
-        }
-
         var playground: Boolean = false
 
         var endpoint: String = "/graphql"
+
+        internal var contextSetup: (ContextBuilder.(ApplicationCall) -> Unit)? = null
+        internal var wrapWith: (Route.(next: Route.() -> Unit) -> Unit)? = null
+        internal var errorHandler: ((Throwable) -> Throwable) = { throwable -> throwable }
+        internal var schemaBlock: (SchemaBuilder.() -> Unit)? = null
+
+        fun schema(block: SchemaBuilder.() -> Unit) {
+            schemaBlock = block
+        }
 
         fun context(block: ContextBuilder.(ApplicationCall) -> Unit) {
             contextSetup = block
@@ -48,37 +53,13 @@ internal class LenientKGraphQL(val schema: Schema) {
             wrapWith = block
         }
 
-        fun errorHandler(block: (e: Throwable) -> Throwable) {
+        fun errorHandler(block: (throwable: Throwable) -> Throwable) {
             errorHandler = block
-        }
-
-        internal var contextSetup: (ContextBuilder.(ApplicationCall) -> Unit)? = null
-        internal var wrapWith: (Route.(next: Route.() -> Unit) -> Unit)? = null
-        internal var errorHandler: ((Throwable) -> Throwable) = { e -> e }
-        internal var schemaBlock: (SchemaBuilder.() -> Unit)? = null
-    }
-
-    companion object Feature : Plugin<Application, Configuration, LenientKGraphQL> {
-        override val key = AttributeKey<LenientKGraphQL>("LenientKGraphQL")
-
-        private val rootFeature = FeatureInstance("LenientKGraphQL")
-
-        override fun install(
-            pipeline: Application,
-            configure: Configuration.() -> Unit,
-        ): LenientKGraphQL {
-            return rootFeature.install(pipeline, configure)
         }
     }
 
     class FeatureInstance(featureKey: String = "LenientKGraphQL") :
         Plugin<Application, Configuration, LenientKGraphQL> {
-        companion object {
-            private val playgroundHtml: ByteArray? by lazy {
-                KtorGraphQLConfiguration::class.java.classLoader.getResource("playground.html")?.readBytes()
-            }
-        }
-
         override val key = AttributeKey<LenientKGraphQL>(featureKey)
 
         override fun install(
@@ -135,10 +116,10 @@ internal class LenientKGraphQL(val schema: Schema) {
                     coroutineScope {
                         proceed()
                     }
-                } catch (e: Throwable) {
-                    val error = config.errorHandler(e)
+                } catch (exception: Throwable) {
+                    val error = config.errorHandler(exception)
                     if (error !is GraphQLError) {
-                        throw e
+                        throw exception
                     }
 
                     context.respondText(
@@ -150,6 +131,23 @@ internal class LenientKGraphQL(val schema: Schema) {
             }
             return LenientKGraphQL(schema)
         }
+
+        companion object {
+            private val playgroundHtml: ByteArray? by lazy {
+                KtorGraphQLConfiguration::class.java.classLoader.getResource("playground.html")?.readBytes()
+            }
+        }
+    }
+
+    companion object Feature : Plugin<Application, Configuration, LenientKGraphQL> {
+        override val key = AttributeKey<LenientKGraphQL>("LenientKGraphQL")
+
+        private val rootFeature = FeatureInstance("LenientKGraphQL")
+
+        override fun install(
+            pipeline: Application,
+            configure: Configuration.() -> Unit,
+        ): LenientKGraphQL = rootFeature.install(pipeline, configure)
     }
 }
 

@@ -1,5 +1,8 @@
 package dev.kigya.headway.core.session.model
 
-data class HomeScreenSummary(
+import kotlin.jvm.JvmInline
+
+@JvmInline
+value class HomeScreenSummary(
     val greeting: String,
 )

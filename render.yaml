@@ -7,6 +7,26 @@ projects:
             envVars:
               - key: ENV
                 value: dev
+          - name: headway-dev-auth-secrets
+            envVars:
+              - key: JWT_ACCESS_SECRET
+                sync: false
+              - key: JWT_REFRESH_SECRET
+                sync: false
+              - key: JWT_GUEST_SECRET
+                sync: false
+          - name: headway-dev-database-secrets
+            envVars:
+              - key: DATABASE_PASSWORD
+                sync: false
+          - name: headway-dev-admin-secrets
+            envVars:
+              - key: HEADWAY_GITHUB_OAUTH_CLIENT_ID
+                sync: false
+              - key: HEADWAY_GITHUB_OAUTH_CLIENT_SECRET
+                sync: false
+              - key: HEADWAY_ADMIN_SESSION_SECRET
+                sync: false
         services:
           - name: kigya-headway-dev-gateway
             type: web
@@ -70,6 +90,7 @@ projects:
             dockerContext: .
             envVars:
               - fromGroup: headway-dev-shared
+              - fromGroup: headway-dev-auth-secrets
               - key: PORT
                 value: "8081"
               - key: AUTH_SERVICE_SELF_HOST
@@ -90,14 +111,8 @@ projects:
                 value: headway-auth
               - key: JWT_AUDIENCE
                 value: headway-gateway
-              - key: JWT_ACCESS_SECRET
-                sync: false
-              - key: JWT_REFRESH_SECRET
-                sync: false
               - key: JWT_ACCESS_TTL_SEC
                 value: "300"
-              - key: JWT_GUEST_SECRET
-                sync: false
               - key: JWT_GUEST_TTL_SEC
                 value: "86400"
               - key: GOOGLE_TOKEN_AUDIENCE
@@ -115,6 +130,7 @@ projects:
             dockerContext: .
             envVars:
               - fromGroup: headway-dev-shared
+              - fromGroup: headway-dev-database-secrets
               - key: PORT
                 value: "8082"
               - key: DATABASE_SELF_SERVICE_HOST
@@ -129,8 +145,6 @@ projects:
                 value: postgres
               - key: DATABASE_USER
                 value: postgres.ymqpiogjzymkkwzutqds
-              - key: DATABASE_PASSWORD
-                sync: false
               - key: DATABASE_SSL_MODE
                 value: disable
               - key: DATABASE_POOL_SIZE
@@ -170,6 +184,7 @@ projects:
             healthCheckPath: /internal/v1/admin/healthz
             envVars:
               - fromGroup: headway-dev-shared
+              - fromGroup: headway-dev-admin-secrets
               - key: PORT
                 value: "8083"
               - key: ADMIN_SERVICE_HOST
@@ -186,16 +201,10 @@ projects:
                   name: kigya-headway-dev-database
                   type: pserv
                   property: port
-              - key: HEADWAY_GITHUB_OAUTH_CLIENT_ID
-                value: Ov23lilAEAUJM7Vn9CpX
-              - key: HEADWAY_GITHUB_OAUTH_CLIENT_SECRET
-                sync: false
               - key: HEADWAY_REPO_OWNER
                 value: kigya
               - key: HEADWAY_REPO_NAME
                 value: Headway
-              - key: HEADWAY_ADMIN_SESSION_SECRET
-                sync: false
               - key: HEADWAY_ADMIN_OAUTH_PUBLIC_ORIGIN
                 value: https://kigya-headway-dev-admin.onrender.com
 
@@ -205,6 +214,26 @@ projects:
             envVars:
               - key: ENV
                 value: prod
+          - name: headway-prod-auth-secrets
+            envVars:
+              - key: JWT_ACCESS_SECRET
+                sync: false
+              - key: JWT_REFRESH_SECRET
+                sync: false
+              - key: JWT_GUEST_SECRET
+                sync: false
+          - name: headway-prod-database-secrets
+            envVars:
+              - key: DATABASE_PASSWORD
+                sync: false
+          - name: headway-prod-admin-secrets
+            envVars:
+              - key: HEADWAY_GITHUB_OAUTH_CLIENT_ID
+                sync: false
+              - key: HEADWAY_GITHUB_OAUTH_CLIENT_SECRET
+                sync: false
+              - key: HEADWAY_ADMIN_SESSION_SECRET
+                sync: false
         services:
           - name: kigya-headway-prod-gateway
             type: web
@@ -268,6 +297,7 @@ projects:
             dockerContext: .
             envVars:
               - fromGroup: headway-prod-shared
+              - fromGroup: headway-prod-auth-secrets
               - key: PORT
                 value: "8081"
               - key: AUTH_SERVICE_SELF_HOST
@@ -288,14 +318,8 @@ projects:
                 value: headway-auth
               - key: JWT_AUDIENCE
                 value: headway-gateway
-              - key: JWT_ACCESS_SECRET
-                sync: false
-              - key: JWT_REFRESH_SECRET
-                sync: false
               - key: JWT_ACCESS_TTL_SEC
                 value: "300"
-              - key: JWT_GUEST_SECRET
-                sync: false
               - key: JWT_GUEST_TTL_SEC
                 value: "86400"
               - key: GOOGLE_TOKEN_AUDIENCE
@@ -313,6 +337,7 @@ projects:
             dockerContext: .
             envVars:
               - fromGroup: headway-prod-shared
+              - fromGroup: headway-prod-database-secrets
               - key: PORT
                 value: "8082"
               - key: DATABASE_SELF_SERVICE_HOST
@@ -327,8 +352,6 @@ projects:
                 value: postgres
               - key: DATABASE_USER
                 value: postgres.lhdkfjlltgnxrttrqfla
-              - key: DATABASE_PASSWORD
-                sync: false
               - key: DATABASE_SSL_MODE
                 value: disable
               - key: DATABASE_POOL_SIZE
@@ -368,6 +391,7 @@ projects:
             healthCheckPath: /internal/v1/admin/healthz
             envVars:
               - fromGroup: headway-prod-shared
+              - fromGroup: headway-prod-admin-secrets
               - key: PORT
                 value: "8083"
               - key: ADMIN_SERVICE_HOST
@@ -384,15 +408,9 @@ projects:
                   name: kigya-headway-prod-database
                   type: pserv
                   property: port
-              - key: HEADWAY_GITHUB_OAUTH_CLIENT_ID
-                value: Ov23lilAEAUJM7Vn9CpX
-              - key: HEADWAY_GITHUB_OAUTH_CLIENT_SECRET
-                sync: false
               - key: HEADWAY_REPO_OWNER
                 value: kigya
               - key: HEADWAY_REPO_NAME
                 value: Headway
-              - key: HEADWAY_ADMIN_SESSION_SECRET
-                sync: false
               - key: HEADWAY_ADMIN_OAUTH_PUBLIC_ORIGIN
                 value: https://kigya-headway-prod-admin.onrender.com

@@ -11,8 +11,8 @@ import org.slf4j.LoggerFactory
 private val upstreamHttpErrorLog = LoggerFactory.getLogger("dev.kigya.headway.gateway.UpstreamHttp")
 
 internal suspend fun HttpResponse.toGatewayException(dependency: String): GatewayException {
-    val bodyMsg = safeBodyMessage()
-    if (bodyMsg == null && status == HttpStatusCode.BadRequest) {
+    val bodyMessage = safeBodyMessage()
+    if (bodyMessage == null && status == HttpStatusCode.BadRequest) {
         upstreamHttpErrorLog.warn(
             "Empty error body from dependency={} method={} url={}",
             dependency,
@@ -21,49 +21,59 @@ internal suspend fun HttpResponse.toGatewayException(dependency: String): Gatewa
         )
     }
 
-    return when (status) {
-        HttpStatusCode.BadRequest ->
-            GatewayException.InvalidRequest(
-                reason = GatewayErrorReason.BAD_REQUEST,
-                message = bodyMsg ?: "Bad request",
-            )
+    return toGatewayExceptionForStatus(
+        status = status,
+        bodyMessage = bodyMessage,
+        dependency = dependency,
+    )
+}
 
-        HttpStatusCode.Unauthorized ->
-            GatewayException.Unauthorized(
-                reason = GatewayErrorReason.INVALID_ACCESS_TOKEN,
-                message = bodyMsg ?: "Unauthorized",
-            )
+private fun toGatewayExceptionForStatus(
+    status: HttpStatusCode,
+    bodyMessage: String?,
+    dependency: String,
+): GatewayException = when (status) {
+    HttpStatusCode.BadRequest ->
+        GatewayException.InvalidRequest(
+            reason = GatewayErrorReason.BAD_REQUEST,
+            message = bodyMessage ?: "Bad request",
+        )
 
-        HttpStatusCode.Forbidden ->
-            GatewayException.Forbidden(
-                reason = forbiddenReason(bodyMsg),
-                message = bodyMsg ?: "Forbidden",
-            )
+    HttpStatusCode.Unauthorized ->
+        GatewayException.Unauthorized(
+            reason = GatewayErrorReason.INVALID_ACCESS_TOKEN,
+            message = bodyMessage ?: "Unauthorized",
+        )
 
-        HttpStatusCode.NotFound ->
-            GatewayException.NotFound(
-                message = bodyMsg ?: "Not found",
-            )
+    HttpStatusCode.Forbidden ->
+        GatewayException.Forbidden(
+            reason = forbiddenReason(bodyMessage),
+            message = bodyMessage ?: "Forbidden",
+        )
 
-        HttpStatusCode.Conflict ->
-            GatewayException.Conflict(
-                message = bodyMsg ?: "Conflict",
-                reason = conflictReason(bodyMsg),
-            )
+    HttpStatusCode.NotFound ->
+        GatewayException.NotFound(
+            message = bodyMessage ?: "Not found",
+        )
 
-        HttpStatusCode.ServiceUnavailable ->
-            GatewayException.DependencyUnavailable(
-                dependency = dependency,
-                message = "Service temporarily unavailable",
-            )
+    HttpStatusCode.Conflict ->
+        GatewayException.Conflict(
+            message = bodyMessage ?: "Conflict",
+            reason = conflictReason(bodyMessage),
+        )
 
-        else ->
-            GatewayException.UpstreamProtocol(
-                dependency = dependency,
-                status = status.value,
-                message = "Service temporarily unavailable",
-            )
-    }
+    HttpStatusCode.ServiceUnavailable ->
+        GatewayException.DependencyUnavailable(
+            dependency = dependency,
+            message = "Service temporarily unavailable",
+        )
+
+    else ->
+        GatewayException.UpstreamProtocol(
+            dependency = dependency,
+            status = status.value,
+            message = "Service temporarily unavailable",
+        )
 }
 
 private fun conflictReason(bodyMsg: String?): GatewayErrorReason = when (bodyMsg?.trim()) {

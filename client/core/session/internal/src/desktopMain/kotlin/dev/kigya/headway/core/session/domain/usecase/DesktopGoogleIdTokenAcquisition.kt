@@ -208,15 +208,15 @@ class DesktopGoogleIdTokenAcquisition(
         codeChallenge: String,
         state: String,
     ): String {
-        val enc = headwayUtf8Charset
+        val urlEncodingCharset = headwayUtf8Charset
         return "$AUTH_ENDPOINT?" +
-            "${QUERY_KEY_CLIENT_ID}=${URLEncoder.encode(clientId, enc)}&" +
-            "${QUERY_KEY_REDIRECT_URI}=${URLEncoder.encode(redirectUri, enc)}&" +
+            "${QUERY_KEY_CLIENT_ID}=${URLEncoder.encode(clientId, urlEncodingCharset)}&" +
+            "${QUERY_KEY_REDIRECT_URI}=${URLEncoder.encode(redirectUri, urlEncodingCharset)}&" +
             "${QUERY_KEY_RESPONSE_TYPE}=$RESPONSE_TYPE_CODE&" +
-            "${QUERY_KEY_SCOPE}=${URLEncoder.encode(OAUTH_SCOPES, enc)}&" +
-            "${QUERY_KEY_CODE_CHALLENGE}=${URLEncoder.encode(codeChallenge, enc)}&" +
+            "${QUERY_KEY_SCOPE}=${URLEncoder.encode(OAUTH_SCOPES, urlEncodingCharset)}&" +
+            "${QUERY_KEY_CODE_CHALLENGE}=${URLEncoder.encode(codeChallenge, urlEncodingCharset)}&" +
             "${QUERY_KEY_CODE_CHALLENGE_METHOD}=$CHALLENGE_METHOD_S256&" +
-            "${QUERY_KEY_STATE}=${URLEncoder.encode(state, enc)}&" +
+            "${QUERY_KEY_STATE}=${URLEncoder.encode(state, urlEncodingCharset)}&" +
             "${QUERY_KEY_PROMPT}=$PROMPT_SELECT_ACCOUNT"
     }
 
@@ -226,16 +226,16 @@ class DesktopGoogleIdTokenAcquisition(
         }
         return rawQuery.split(QUERY_PAIR_SEPARATOR).asSequence()
             .mapNotNull { pair ->
-                val idx = pair.indexOf(KEY_VALUE_SEPARATOR)
-                if (idx <= 0) {
+                val separatorIndex = pair.indexOf(KEY_VALUE_SEPARATOR)
+                if (separatorIndex <= 0) {
                     null
                 } else {
                     val key = URLDecoder.decode(
-                        pair.substring(0, idx),
+                        pair.substring(0, separatorIndex),
                         headwayUtf8Charset,
                     )
                     val value = URLDecoder.decode(
-                        pair.substring(idx + 1),
+                        pair.substring(separatorIndex + 1),
                         headwayUtf8Charset,
                     )
                     key to value

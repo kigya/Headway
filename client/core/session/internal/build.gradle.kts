@@ -1,8 +1,5 @@
 import extension.androidMainDependencies
 import extension.commonMainDependencies
-import extension.desktopMainDependencies
-import extension.iosMainDependencies
-import extension.wasmMainDependencies
 
 plugins {
     alias(libs.plugins.convention.base.sharedLibrary)
@@ -31,13 +28,4 @@ androidMainDependencies {
         implementation(activity.ktx)
         implementation(play.services.auth)
     }
-}
-
-iosMainDependencies {
-}
-
-desktopMainDependencies {
-}
-
-wasmMainDependencies {
 }

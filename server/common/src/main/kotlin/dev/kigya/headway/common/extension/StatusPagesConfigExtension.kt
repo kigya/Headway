@@ -15,7 +15,7 @@ import io.ktor.server.response.respondText
 fun StatusPagesConfig.handleDefaultExceptions() {
     exception<BadRequestException> { call, exception ->
         call.respondText(
-            text = exception.describeForHttpStatusText("Bad request"),
+            text = exception.describeForHttpStatusText(BAD_REQUEST_DESCRIPTION),
             contentType = ContentType.Text.Plain,
             status = HttpStatusCode.BadRequest,
         )
@@ -31,7 +31,7 @@ fun StatusPagesConfig.handleDefaultExceptions() {
 
     exception<MissingRequestParameterException> { call, exception ->
         call.respondText(
-            text = exception.describeForHttpStatusText("Bad request"),
+            text = exception.describeForHttpStatusText(BAD_REQUEST_DESCRIPTION),
             contentType = ContentType.Text.Plain,
             status = HttpStatusCode.BadRequest,
         )
@@ -39,7 +39,7 @@ fun StatusPagesConfig.handleDefaultExceptions() {
 
     exception<ParameterConversionException> { call, exception ->
         call.respondText(
-            text = exception.describeForHttpStatusText("Bad request"),
+            text = exception.describeForHttpStatusText(BAD_REQUEST_DESCRIPTION),
             contentType = ContentType.Text.Plain,
             status = HttpStatusCode.BadRequest,
         )
@@ -47,7 +47,7 @@ fun StatusPagesConfig.handleDefaultExceptions() {
 
     exception<CannotTransformContentToTypeException> { call, exception ->
         call.respondText(
-            text = exception.describeForHttpStatusText("Bad request"),
+            text = exception.describeForHttpStatusText(BAD_REQUEST_DESCRIPTION),
             contentType = ContentType.Text.Plain,
             status = HttpStatusCode.BadRequest,
         )
@@ -101,3 +101,5 @@ fun Throwable.describeForHttpStatusText(fallback: String): String {
     }
     return this::class.simpleName ?: fallback
 }
+
+private const val BAD_REQUEST_DESCRIPTION = "Bad request"

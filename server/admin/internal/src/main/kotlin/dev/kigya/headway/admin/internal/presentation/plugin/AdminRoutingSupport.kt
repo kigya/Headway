@@ -12,7 +12,6 @@ import io.ktor.http.ContentType
 import io.ktor.http.encodeURLParameter
 import io.ktor.server.application.ApplicationCall
 import io.ktor.server.plugins.NotFoundException
-import io.ktor.server.plugins.origin
 import io.ktor.server.response.respondBytes
 import java.security.SecureRandom
 
@@ -61,30 +60,6 @@ internal fun buildGithubAuthorizeUrl(
     append("&redirect_uri=").append(redirectUri.encodeURLParameter())
     append("&scope=repo")
     append("&state=").append(state.encodeURLParameter())
-}
-
-internal fun githubCallbackUrl(
-    call: ApplicationCall,
-    oauthPublicOrigin: String?,
-): String {
-    val overrideOrigin = oauthPublicOrigin?.trimEnd('/')
-    if (!overrideOrigin.isNullOrBlank()) {
-        return "$overrideOrigin$githubCallbackPath"
-    }
-
-    val headers = call.request.headers
-    val forwardedProto = headers["X-Forwarded-Proto"]?.substringBefore(',')?.trim()
-    val forwardedHost = headers["X-Forwarded-Host"]?.substringBefore(',')?.trim()
-    if (!forwardedProto.isNullOrBlank() && !forwardedHost.isNullOrBlank()) {
-        return "$forwardedProto://$forwardedHost$githubCallbackPath"
-    }
-
-    val origin = call.request.origin
-    val port = origin.serverPort
-    val defaultPort = (origin.scheme == "http" && port == HTTP_PORT) ||
-        (origin.scheme == "https" && port == HTTPS_PORT)
-    val portSuffix = if (defaultPort) "" else ":$port"
-    return "${origin.scheme}://${origin.serverHost}$portSuffix$githubCallbackPath"
 }
 
 internal fun appRedirect(
@@ -158,13 +133,10 @@ private fun DatabaseUserDepartment.label(): String = when (this) {
     DatabaseUserDepartment.CROSSPLATFORM -> "Cross-Platform"
 }
 
-private const val HTTP_PORT = 80
-private const val HTTPS_PORT = 443
 private const val STATE_BYTE_COUNT = 24
 private const val QUERY_ERROR = "error"
 private const val QUERY_SCREEN = "screen"
 private const val QUERY_LOGIN = "login"
 private const val QUERY_REPO = "repo"
 private val appPath = "${adminServiceUrlHolder.baseUrl}/app"
-private val githubCallbackPath = "${adminServiceUrlHolder.baseUrl}/auth/github/callback"
 private val secureRandom = SecureRandom()
