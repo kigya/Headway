@@ -6,14 +6,7 @@ rootProject.name = "Headway"
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
-pluginManagement {
-    repositories {
-        gradlePluginPortal()
-        mavenCentral()
-        google()
-    }
-    includeBuild("build-logic")
-}
+apply(from = rootDir.resolve("../config/gradle/headway-github-env-sync-plugin-management.settings.gradle.kts"))
 
 plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"

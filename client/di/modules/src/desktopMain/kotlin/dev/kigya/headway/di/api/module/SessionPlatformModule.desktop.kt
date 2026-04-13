@@ -26,7 +26,7 @@ actual fun sessionPlatformModule(): Module = module {
     single<GoogleIdTokenAcquisitionContract> {
         DesktopGoogleIdTokenAcquisition(
             ioDispatcher = get(named(DispatcherKey.IO)),
-            googleOAuthClientSecret = "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",
+            googleOAuthClientSecret = System.getenv("HEADWAY_GOOGLE_OAUTH_CLIENT_SECRET"),
         )
     }
 }

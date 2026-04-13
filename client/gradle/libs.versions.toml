@@ -66,6 +66,7 @@ coil = { prefer = "3.4.0" }
 
 # Tooling & Verification
 detekt = { require = "1.23.8" }
+github-env-sync-plugin = "1.0.1"
 detektComposeLopez = { require = "0.5.6" }
 detektComposeKode = { require = "1.4.0" }
 buildkonfig = "0.17.1"
@@ -206,3 +207,4 @@ convention-component-mvi = "component.mvi:1.0"
 convention-component-koin = "component.koin:1.0"
 convention-component-serialization = "component.serialization:1.0"
 convention-component-room = "component.room:1.0"
+github-env-sync = { id = "dev.kigya.github-env-sync", version.ref = "github-env-sync-plugin" }

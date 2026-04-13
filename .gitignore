@@ -21,6 +21,9 @@ captures
 !/server/docker/render
 !/server/docker/render/**
 !/server/docker/template
+/client/secrets/*
+!/client/secrets/template
+!/client/secrets/template/**
 **/bin/
 **/lib/
 **/.vscode

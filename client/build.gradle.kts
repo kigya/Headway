@@ -1,6 +1,7 @@
 import org.jetbrains.kotlin.gradle.tasks.KotlinCompile
 
 plugins {
+    alias(libs.plugins.github.env.sync)
     // Android
     alias(libs.plugins.androidApplication) apply false
     alias(libs.plugins.androidLibrary) apply false
@@ -31,6 +32,28 @@ buildscript {
 apply {
     from("../config/git/hooks/installer.gradle.kts")
     from("../config/templates/installer.gradle.kts")
+}
+
+githubEnvSync {
+    owner.set("kigya")
+    repo.set("Headway")
+
+    templatesDir.set(layout.projectDirectory.dir("secrets/template"))
+    outputDir.set(layout.projectDirectory.dir("secrets"))
+
+    tokenPropertyName.set("github.env.sync.plugin.token")
+    usernamePropertyName.set("github.env.sync.plugin.username")
+
+    autoOpenBrowser.set(true)
+    failOnMissingVariables.set(true)
+
+    environments.set(listOf("dev", "prod"))
+}
+
+tasks.register("githubEnvSync") {
+    group = "github env sync"
+    description = "Alias for syncGithubEnv — pulls GitHub variables and renders client secrets env templates"
+    dependsOn(tasks.named("syncGithubEnv"))
 }
 
 /**
