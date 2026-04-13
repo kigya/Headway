@@ -37,7 +37,7 @@ projects:
             autoDeployTrigger: off
             rootDir: server
             dockerfilePath: docker/render/Gateway.Dockerfile
-            dockerContext: .
+            dockerContext: ..
             healthCheckPath: /healthz
             envVars:
               - fromGroup: headway-dev-shared
@@ -87,7 +87,7 @@ projects:
             autoDeployTrigger: off
             rootDir: server
             dockerfilePath: docker/render/Auth.Dockerfile
-            dockerContext: .
+            dockerContext: ..
             envVars:
               - fromGroup: headway-dev-shared
               - fromGroup: headway-dev-auth-secrets
@@ -127,7 +127,7 @@ projects:
             autoDeployTrigger: off
             rootDir: server
             dockerfilePath: docker/render/Database.Dockerfile
-            dockerContext: .
+            dockerContext: ..
             envVars:
               - fromGroup: headway-dev-shared
               - fromGroup: headway-dev-database-secrets
@@ -159,7 +159,7 @@ projects:
             autoDeployTrigger: off
             rootDir: server
             dockerfilePath: docker/render/Home.Dockerfile
-            dockerContext: .
+            dockerContext: ..
             envVars:
               - fromGroup: headway-dev-shared
               - key: PORT
@@ -180,7 +180,7 @@ projects:
             autoDeployTrigger: off
             rootDir: server
             dockerfilePath: docker/render/Admin.Dockerfile
-            dockerContext: .
+            dockerContext: ..
             healthCheckPath: /internal/v1/admin/healthz
             envVars:
               - fromGroup: headway-dev-shared
@@ -244,7 +244,7 @@ projects:
             autoDeployTrigger: off
             rootDir: server
             dockerfilePath: docker/render/Gateway.Dockerfile
-            dockerContext: .
+            dockerContext: ..
             healthCheckPath: /healthz
             envVars:
               - fromGroup: headway-prod-shared
@@ -294,7 +294,7 @@ projects:
             autoDeployTrigger: off
             rootDir: server
             dockerfilePath: docker/render/Auth.Dockerfile
-            dockerContext: .
+            dockerContext: ..
             envVars:
               - fromGroup: headway-prod-shared
               - fromGroup: headway-prod-auth-secrets
@@ -334,7 +334,7 @@ projects:
             autoDeployTrigger: off
             rootDir: server
             dockerfilePath: docker/render/Database.Dockerfile
-            dockerContext: .
+            dockerContext: ..
             envVars:
               - fromGroup: headway-prod-shared
               - fromGroup: headway-prod-database-secrets
@@ -366,7 +366,7 @@ projects:
             autoDeployTrigger: off
             rootDir: server
             dockerfilePath: docker/render/Home.Dockerfile
-            dockerContext: .
+            dockerContext: ..
             envVars:
               - fromGroup: headway-prod-shared
               - key: PORT
@@ -387,7 +387,7 @@ projects:
             autoDeployTrigger: off
             rootDir: server
             dockerfilePath: docker/render/Admin.Dockerfile
-            dockerContext: .
+            dockerContext: ..
             healthCheckPath: /internal/v1/admin/healthz
             envVars:
               - fromGroup: headway-prod-shared

@@ -1,6 +1,7 @@
 FROM gradle:8.14.0-jdk17 AS build
 WORKDIR /src
-COPY . .
+COPY server/ .
+COPY config/ /config/
 
 RUN --mount=type=cache,target=/home/gradle/.gradle \
   ./gradlew --no-daemon -Dorg.gradle.vfs.watch=false -Dorg.gradle.configuration-cache=false \
