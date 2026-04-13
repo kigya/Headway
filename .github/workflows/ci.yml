@@ -19,6 +19,7 @@ jobs:
     name: client
     if: ${{ true }}
     uses: ./.github/workflows/_client.yml
+    secrets: inherit
   server:
     name: server
     if: ${{ true }}

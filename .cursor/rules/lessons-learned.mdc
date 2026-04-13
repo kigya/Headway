@@ -317,3 +317,12 @@ alwaysApply: true
 - **Why it exists:** Fewer allocations and clearer intent than a full data class; matches Kotlin guidance for domain “newtypes”; aligns with lessons-learned §9 for bounded unions built from value classes.
 - **Bad pattern (short):** `data class HeadwayGraphqlHttpUrl(val value: String)` for a pass-through holder only used as `get<HeadwayGraphqlHttpUrl>().value`.
 - **Correct pattern (short):** `@JvmInline value class HeadwayGraphqlHttpUrl(val value: String)`.
+
+---
+
+### 35
+
+- **Rule:** When a workflow **`uses:`** another **reusable workflow** (`workflow_call`), put **`secrets: inherit`** on that **`uses:`** job in the **caller** if the callee (or its nested callees) needs **`secrets.GPR_*`**, **`secrets.*`**, or org/repo tokens; nested `secrets: inherit` alone does not lift secrets past a caller that omitted them.
+- **Why it exists:** GitHub Actions does **not** pass repository secrets into reusable workflows by default; missing `secrets: inherit` on the top-level `uses:` leaves `${{ secrets.GPR_KEY }}` empty in client jobs even when the secrets exist in **Repository secrets**.
+- **Bad pattern (short):** `ci.yml` calls `./.github/workflows/_client.yml` without `secrets: inherit` while `_client.yml` passes `secrets: inherit` only to `_build-desktop.yml`.
+- **Correct pattern (short):** On every `uses: ./.github/workflows/…` job that needs secrets, add `secrets: inherit` (or map explicit `secrets:`), matching how `server` jobs are wired.
