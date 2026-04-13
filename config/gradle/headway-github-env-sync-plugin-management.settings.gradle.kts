@@ -16,21 +16,35 @@ pluginManagement {
                         originalChar.toChar()
                     }.joinToString("")
 
+                fun nonBlankEnvironmentVariable(name: String): String? =
+                    System.getenv(name)?.takeIf { it.isNotEmpty() }
+
                 val propertyUsername = providers.gradleProperty("github.env.sync.username").getOrNull()
-                val gprUsername = providers.environmentVariable("GPR_USER").getOrNull()
-                username = propertyUsername ?: gprUsername
+                val gprUsername = nonBlankEnvironmentVariable("GPR_USER")
+                val githubActor = nonBlankEnvironmentVariable("GITHUB_ACTOR")
 
                 val encryptedToken = providers.gradleProperty("github.env.sync.token").getOrNull()
                 val decryptionKey = providers.gradleProperty("github.env.sync.token.key").getOrNull()
-                val gprPat = providers.environmentVariable("GPR_KEY").getOrNull()
+                val gprPat = nonBlankEnvironmentVariable("GPR_KEY")
 
-                password = when {
-                    encryptedToken != null && decryptionKey != null ->
+                val decryptedPassword =
+                    if (encryptedToken != null && decryptionKey != null) {
                         decryptGithubEnvSyncPackageCredentialToken(encryptedToken, decryptionKey)
+                    } else {
+                        null
+                    }
 
-                    gprPat != null -> gprPat
-                    else -> null
-                }
+                val effectivePassword = decryptedPassword ?: gprPat
+
+                username = propertyUsername
+                    ?: gprUsername
+                    ?: if (gprPat != null) {
+                        githubActor
+                    } else {
+                        null
+                    }
+
+                password = effectivePassword
             }
         }
     }
