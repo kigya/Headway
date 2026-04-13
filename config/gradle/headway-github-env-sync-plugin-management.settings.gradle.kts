@@ -16,20 +16,21 @@ pluginManagement {
                         originalChar.toChar()
                     }.joinToString("")
 
-                username = providers.gradleProperty("github.env.sync.username").getOrNull()
-                password = providers
-                    .gradleProperty("github.env.sync.token")
-                    .getOrNull()
-                    ?.let { encryptedHex ->
-                        val key = providers
-                            .gradleProperty("github.env.sync.token.key")
-                            .getOrNull()
-                        requireNotNull(key) {
-                            "Github token decryption key (github.env.sync.token.key) is required"
-                        }
+                val propertyUsername = providers.gradleProperty("github.env.sync.username").getOrNull()
+                val gprUsername = providers.environmentVariable("GPR_USER").getOrNull()
+                username = propertyUsername ?: gprUsername
 
-                        decryptGithubEnvSyncPackageCredentialToken(encryptedHex, key)
-                    }
+                val encryptedToken = providers.gradleProperty("github.env.sync.token").getOrNull()
+                val decryptionKey = providers.gradleProperty("github.env.sync.token.key").getOrNull()
+                val gprPat = providers.environmentVariable("GPR_KEY").getOrNull()
+
+                password = when {
+                    encryptedToken != null && decryptionKey != null ->
+                        decryptGithubEnvSyncPackageCredentialToken(encryptedToken, decryptionKey)
+
+                    gprPat != null -> gprPat
+                    else -> null
+                }
             }
         }
     }
