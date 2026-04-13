@@ -6,7 +6,14 @@ rootProject.name = "Headway"
 
 enableFeaturePreview("TYPESAFE_PROJECT_ACCESSORS")
 
-apply(from = rootDir.resolve("../config/gradle/headway-github-env-sync-plugin-management.settings.gradle.kts"))
+val headwayGithubPluginManagementScript =
+    sequenceOf(
+        rootDir.resolve("../config/gradle/headway-github-env-sync-plugin-management.settings.gradle.kts"),
+        rootDir.resolve("config/gradle/headway-github-env-sync-plugin-management.settings.gradle.kts"),
+    ).firstOrNull { it.isFile }
+        ?: error("Missing headway-github-env-sync plugin management script")
+
+apply(from = headwayGithubPluginManagementScript)
 
 plugins {
     id("org.gradle.toolchains.foojay-resolver-convention") version "1.0.0"
