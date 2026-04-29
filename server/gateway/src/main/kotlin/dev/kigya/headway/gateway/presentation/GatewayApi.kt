@@ -95,7 +95,7 @@ internal fun Application.installGatewayApi(bindings: GatewayApiBindings) {
             )
             homeSchema(
                 resolvePrincipal = bindings.resolvePrincipal,
-                getHomeScreen = bindings.getHomeScreen,
+                loadHomeScreen = bindings.getHomeScreen,
             )
             preparationSchema(
                 resolvePrincipal = bindings.resolvePrincipal,
