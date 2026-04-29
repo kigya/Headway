@@ -1,0 +1,328 @@
+---
+description: Cumulative anti-patterns — update when fixing reusable user-reported mistakes
+alwaysApply: true
+---
+
+## Lessons Learned
+
+### Format
+
+- **Rule:**
+- **Why it exists:**
+- **Bad pattern (short):**
+- **Correct pattern (short):**
+
+---
+
+### 1
+
+- **Rule:** Use Freud design system in feature UI, not Material3 or raw theme values.
+- **Why it exists:** [client/AGENTS.md](../../client/AGENTS.md) forbids raw Material3 without design-system wrapping and hard-coded colors/dimensions/typography in features.
+- **Bad pattern (short):** `MaterialTheme`, `androidx.compose.material3.Text`, raw `Color(0xFF…)`, fixed `dp`/`sp` literals in feature composables.
+- **Correct pattern (short):** `FreudText`, `FreudDsToken`, feature `internal object XTheme : FreudTheme()` with `FreudColorScheme` extensions using `super.color.*` and `FreudDynamicColor`.
+
+---
+
+### 2
+
+- **Rule:** Keep ViewModel a thin bridge; put behavior in the MVIKotlin Store.
+- **Why it exists:** [client/AGENTS.md](../../client/AGENTS.md) requires StoreFactory executor/reducer for logic and forbids business logic in ViewModel.
+- **Bad pattern (short):** Branching, navigation, or state updates inside `ViewModel` methods or `viewModelScope` that belong in the store pipeline.
+- **Correct pattern (short):** ViewModel calls `store.accept(Intent)`; StoreFactory `coroutineExecutorFactory` / reducer handle navigation via `NavigatorContract` and state changes via `Message`.
+
+---
+
+### 3
+
+- **Rule:** Model expected client failures with `Outcome`, not ad-hoc exceptions.
+- **Why it exists:** [client/AGENTS.md](../../client/AGENTS.md) and root [AGENTS.md](../../AGENTS.md) require typed `Outcome` for client error handling.
+- **Bad pattern (short):** `try/catch` or `runCatching` for normal domain failures; throwing for control flow in client domain code.
+- **Correct pattern (short):** Sealed error types and `Outcome` helpers (`outcomeSuspendCatching`, `mapSuccess`, `handle`, etc.) from `core:outcome`.
+
+---
+
+### 4
+
+- **Rule:** Navigate only through `NavigatorContract` and `NavigationIntent`.
+- **Why it exists:** [client/AGENTS.md](../../client/AGENTS.md) standardizes Navigation3 on `NavigatorContract`; bypass breaks back stack and `App.kt` assembly.
+- **Bad pattern (short):** Direct platform navigation APIs, string routes, or stack mutation outside `NavigationIntent`.
+- **Correct pattern (short):** Inject `NavigatorContract`; use `NavigationIntent.NavigateTo` / `NavigateBack` / `ReplaceTopBy` with `@Serializable` `NavKey` types from the feature `api` module.
+
+---
+
+### 5
+
+- **Rule:** Gateway repositories must wrap service HTTP in `upstreamCall`.
+- **Why it exists:** [server/AGENTS.md](../../server/AGENTS.md) requires consistent dependency error mapping for gateway outbound calls.
+- **Bad pattern (short):** Raw `httpClient.post` / `httpClient.get` in `gateway/data/repository` without `upstreamCall`.
+- **Correct pattern (short):** `upstreamCall(dependency, request) { … }` and map failures with `toGatewayException` so GraphQL extensions stay consistent.
+
+---
+
+### 6
+
+- **Rule:** In `core:design-system`, keep `component/` for UI components and their previews only; put shared cross-component helpers under `util/`.
+- **Why it exists:** Clear module layout: composables and preview files stay discoverable; reusable text/value types, screen helpers, and preview grids are not “components” and should not live beside `FreudText` / `FreudButton`.
+- **Bad pattern (short):** New shared types (e.g. text models, formatters) as sibling `.kt` files under `.../designSystem/component/` when multiple components import them.
+- **Correct pattern (short):** Components and `component/preview/*` in `component/`; shared utilities (e.g. `FreudTextValue`, `FreudScreenByWidth`, `PreviewText`) in `.../designSystem/util/`.
+
+---
+
+### 7
+
+- **Rule:** For `.ai/cursor/` in `.gitignore`, prefer ignoring only local Cursor paths (e.g. `.ai/cursor/projects/`) instead of `.ai/cursor/*` plus many `!` exceptions.
+- **Why it exists:** Git applies negations correctly, but IDE source control often still dims paths under a broad `.ai/cursor/*` rule as if they were ignored.
+- **Bad pattern (short):** `.ai/cursor/*` with `!.ai/cursor/rules/**` (and similar) while expecting tracked rules to look like normal SCM files in the editor.
+- **Correct pattern (short):** Ignore concrete local-only subtrees such as `.ai/cursor/projects/`; keep committed `.ai/cursor/rules`, `.ai/cursor/skills`, and docs untargeted by parent ignore rules.
+
+---
+
+### 8
+
+- **Rule:** In `@Immutable` Compose-facing models, use `ImmutableList` / `ImmutableMap` / `ImmutableSet` from `kotlinx-collections-immutable`, not Kotlin `List` / `Map` / `Set`; the **type argument** must be Compose-stable too—`ImmutableList<Any>` stays unstable because `Any` is unstable.
+- **Why it exists:** Plain collection interfaces are treated as unstable by the Compose compiler, so skip optimization is weaker and runtime stability checks increase. A stable collection wrapper does not fix an unstable element type.
+- **Bad pattern (short):** `@Immutable data class State(val items: List<Item>)` or `@Immutable data class X(val segments: List<Segment>)` passed into composable trees; `ImmutableList<Any>` for formatted string args or similar unions.
+- **Correct pattern (short):** `ImmutableList` built with `persistentListOf` / `toPersistentList` with a **stable element type** (e.g. `sealed interface` + `@JvmInline value class` implementations for bounded unions); Compose modules already pull `kotlinx-collections-immutable` via `convention.component.compose`.
+
+---
+
+### 9
+
+- **Rule:** Prefer `sealed interface` over `sealed class` for bounded unions when subclasses do not need shared superclass state; implement with `@JvmInline value class` (or small data types) plus `companion object` factories returning the interface type.
+- **Why it exists:** Avoids an artificial abstract base; value-class implementations cut allocations for thin wrappers while keeping a single public contract type.
+- **Bad pattern (short):** `sealed class` with `private constructor()` only to host nested `data class` variants that carry no shared base behavior.
+- **Correct pattern (short):** `sealed interface` + `internal value class … : Interface` + public factories on the interface (see `FreudTextFormatArg`).
+
+---
+
+### 10
+
+- **Rule:** Place file-level `private const val` at the **bottom** of the file, after the declarations that reference them; use **top-level** `private const val`, not a `private companion object` block, when literals are file-private.
+- **Why it exists:** Project convention keeps literals and tags grouped at the end so the main API and behavior read top-down first; a companion object is unnecessary noise for file-scoped constants.
+- **Bad pattern (short):** A block of `private const val` immediately after imports or above the primary `@Composable` / `actual` entry points; literals above Koin `actual fun sessionPlatformModule() { module { … } }` or above the main repository `class`; `private const val` sandwiched between preview/test helper types; `private companion object { const val … }` for values only this file needs.
+- **Correct pattern (short):** Package, imports, types and functions (including `actual`/Koin modules), then one trailing top-level `private const val` section (e.g. `SystemBarsColor.ios.kt`, `SessionPlatformModule.*.kt`).
+
+---
+
+### 11
+
+- **Rule:** In `server/database/internal`, classify expected PostgreSQL business-rule rejections as `DatabaseException.InvalidRequest` instead of collapsing every SQL exception into `DependencyUnavailable`.
+- **Why it exists:** Database triggers and constraints can reject bad user input while Postgres itself remains healthy; mapping those cases to `503` makes gateway/admin UI show false “service unavailable” errors.
+- **Bad pattern (short):** Catch any `ExposedSQLException` / `SQLException` in `dbQuery` and always throw `DependencyUnavailable("postgres")`, even for allowlist/domain validation failures.
+- **Correct pattern (short):** Normalize the SQL error message, detect known user-input violations (for example invite email domain allowlist failures), and map them to `InvalidRequest`; reserve `DependencyUnavailable` for real database outages/protocol failures.
+
+---
+
+### 12
+
+- **Rule:** On the server, branch on environment via typed `CommonConfigurationValues.environment` helpers (`isDev` / `isProd`), not raw `ENV` string comparisons.
+- **Why it exists:** Scattered `"prod"` string checks drift easily, duplicate parsing rules, and make it harder to keep runtime behavior, UI flags, and secret validation aligned across microservices.
+- **Bad pattern (short):** `CommonConfigurationValues.ENV == "prod"` or `environment != "prod"` in service config, routing, or UI gating.
+- **Correct pattern (short):** Parse once into `Environment`, use `environment.isProd` / `environment.isDev` for behavior checks, and use `environment.rawValue` only when serializing or displaying the active environment.
+
+---
+
+### 13
+
+- **Rule:** Name functions that compute or map a value with a **verb** (or Kotlin `toTargetType` for conversions), not a noun that reads like a property.
+- **Why it exists:** Root [AGENTS.md](../../AGENTS.md) uses `camelCase` for functions; noun-like names on call sites (`val x = jvmLocale(y)`) look like field access and hide that work is happening.
+- **Bad pattern (short):** `private fun jvmLocale(dto: LocaleDto): Locale` when the body maps or builds the result.
+- **Correct pattern (short):** `private fun toJvmLocale(dto: LocaleDto): Locale` or `private fun resolveJvmLocale(dto: LocaleDto): Locale` (and similar verb-led names for non-conversion helpers).
+
+---
+
+### 14
+
+- **Rule:** When syncing GitHub Actions variables into templates, paginate the REST list endpoints using GitHub’s real page size cap (**`per_page` max 30** for repo and environment variable lists); do not assume a single response contains every variable.
+- **Why it exists:** GitHub caps these lists at 30 items per page; requesting `per_page=100` still returns at most 30. If the loop treats “fewer than 100” as “done”, it stops after the first page and newer keys (e.g. `JWT_GUEST_*`) never load.
+- **Bad pattern (short):** One GET or a pagination loop whose “last page” check uses a limit higher than GitHub’s cap (e.g. break when `size < 100`).
+- **Correct pattern (short):** Use `per_page=30`, loop `page = 1, 2, …` until `variables.size < 30`, empty page, or `result.size >= total_count` (see `GithubApi.fetchAllActionVariables`).
+
+---
+
+### 15
+
+- **Rule:** Reference Kotlin types by simple name with an explicit `import`; avoid fully qualified class names in expressions and generic arguments when unambiguous.
+- **Why it exists:** Root [AGENTS.md](../../AGENTS.md) requires explicit, ordered imports; FQCNs in the body obscure readability and duplicate the package at every use site.
+- **Bad pattern (short):** `type<dev.kigya.headway.gateway.model.GatewayPreparationEmployee>()` or other `dev.kigya...Type` sprinkled through call sites.
+- **Correct pattern (short):** `import dev.kigya.headway.gateway.model.GatewayPreparationEmployee` and `type<GatewayPreparationEmployee>()`.
+
+---
+
+### 16
+
+- **Rule:** Name Kotlin source files with **PascalCase** when they hold top-level declarations in presentation/routing-style modules, matching siblings in the same package (e.g. `UsersRouting.kt`, `SessionRouting.kt`).
+- **Why it exists:** Mixed `camelCase.kt` filenames break consistency with the rest of the server tree and with Kotlin’s usual convention of PascalCase file names aligned to the primary type or feature entry.
+- **Bad pattern (short):** `preparationRouting.kt` next to `UsersRouting.kt` / `SessionRouting.kt`.
+- **Correct pattern (short):** `PreparationRouting.kt`; keep top-level function names in `camelCase` (e.g. `Route.preparationRouting`) — only the **file** name uses PascalCase.
+
+---
+
+### 17
+
+- **Rule:** Every downstream microservice the gateway calls through a dedicated Koin `HttpClient` must have a matching **`BaseHttpProbe`** (or equivalent) wired into `CheckHealthStatusUseCase` so aggregated GraphQL health lists that dependency.
+- **Why it exists:** [server/AGENTS.md](../../server/AGENTS.md) documents gateway dependency probes via `HealthzResource`; skipping a wired service hides outages from operators and from the public health contract.
+- **Bad pattern (short):** `createServiceHttpClient<HomeKoinHttpClient>(…)` and `HomeRepository` calls exist, but health aggregation only checks auth and database.
+- **Correct pattern (short):** `HomeServiceProbe(httpClient)` plus `GatewayDependencyHealth(name = "home", …)` and include its status when computing overall `GatewayServiceStatus`.
+
+---
+
+### 18
+
+- **Rule:** Every serializable **property** on `@Serializable` types must use `@SerialName("…")` with the **real persisted or wire key** (JSON field name, query/path key, polymorphic type tag): **server** DTOs, gateway GraphQL models, Ktor `@Resource` parameters, enums, **and client `kotlinx.serialization` models** (e.g. `LocalSessionRecord` in secure storage). **Polymorphic** sealed subclasses need `@SerialName` on each variant for the type discriminator **and** on every property inside them.
+- **Why it exists:** Explicit keys document the contract and prevent silent renames when Kotlin property names change; mixed annotated/unannotated fields are easy to miss in review and drift from APIs, stored payloads, or inter-service expectations.
+- **Bad pattern (short):** `@Serializable data class X( @SerialName("a") val a: String, val b: String )`; client `data class Guest(val accessToken: String, …)` without `@SerialName` on each property; omitting `@SerialName` on Ktor resource `parent` while other fields use snake_case query keys.
+- **Correct pattern (short):** Annotate **each** constructor property (including `parent` on resources and UUID/custom-serialized fields); for existing payloads, set `@SerialName` to match the **previous** implicit kotlinx name (often camelCase) or the established API—never rename keys in the same edit unless intentionally versioning the contract.
+
+---
+
+### 19
+
+- **Rule:** In `*/internal/data`, keep **`repository/`** for types that implement a **`…RepositoryContract`** (or are clearly named `*Repository` HTTP/DB facades). Put other persistence helpers—Exposed query/scoping functions, cross-domain sync writers, one-off SQL utilities—in a **sibling subpackage** under `data/` (e.g. `data/scope`, `data/learning`), not beside repositories in the same directory.
+- **Why it exists:** [server/AGENTS.md](../../server/AGENTS.md) maps `data/repository` to repository implementations; mixing non-repositories there blurs the port/adapter boundary and makes discovery harder.
+- **Bad pattern (short):** `LearningQuestionPreparationSync` or `FacilitatorSubjectScopeQueries.kt` (top-level scope checks) living under `data/repository/` next to `UsersRepository`.
+- **Correct pattern (short):** `data/learning/LearningQuestionPreparationSync.kt`, `data/scope/FacilitatorSubjectScope.kt` (or another purposeful name); repositories stay in `data/repository/` and import those helpers.
+
+---
+
+### 20
+
+- **Rule:** Treat `collectAsStateWithLifecycle()` (or `collectAsState()`) on a `StateFlow` as **the** subscription while the composable is in the lifecycle window; do not add no-op `SideEffect { state.field }` (or similar) to “hold” the collection or to silence unused-state warnings.
+- **Why it exists:** Those APIs already start collecting when the composable is active; an extra read in `SideEffect` does not change subscription behavior, hides real intent, and invites dead code.
+- **Bad pattern (short):** `val state by viewModel.uiState.collectAsStateWithLifecycle()` plus `SideEffect { state.shouldDisplayText }` (or any field) when nothing in the tree uses `state` for UI or side effects.
+- **Correct pattern (short):** If the screen has no UI tied to store state yet, skip collection until it does; otherwise read the fields where they matter (parameters to child composables, `when`, etc.) and rely on `collectAsStateWithLifecycle()` alone for lifecycle-aware collection.
+
+---
+
+### 21
+
+- **Rule:** In Android and other platform adapters, **inject** `CoroutineDispatcher` (or a DI-owned `CoroutineScope` used for long-lived work like DataStore); **cancel** that scope when the Koin definition clears; remove **unused** constructor-held fields after refactors.
+- **Why it exists:** Hard-coded `Dispatchers.IO` and ad-hoc `CoroutineScope(SupervisorJob() + …)` are hard to test, easy to leak across holder recreation, and hide lifecycle ownership; dead fields (e.g. unused `applicationContext`) violate hygiene and confuse readers.
+- **Bad pattern (short):** `CoroutineScope(SupervisorJob() + Dispatchers.IO)` inside the type with no `cancel`; `withContext(Dispatchers.IO)` / `scope = … + Dispatchers.IO` without injection; `outcomeSuspendCatchingOn(dispatcher = Dispatchers.IO/Dispatchers.Default, …)` in wasm/iOS/desktop storage adapters; keeping `applicationContext` or other members that nothing reads.
+- **Correct pattern (short):** Inject `CoroutineDispatcher` (e.g. Koin `get(named(DispatcherKey.IO))`; wasm `dispatcherModule` may map IO to `Dispatchers.Default`); optionally a `CoroutineScope` from Koin; use `single(createdAtStart = false) { … } onClose { it.cancel() }` (or equivalent) for custom scopes; delete unused properties and imports.
+
+---
+
+### 22
+
+- **Rule:** In Ktor `StatusPages`, return error **text bodies** with `respondText` (plain text) when other services consume errors via `HttpResponse.bodyAsText()`; register domain-specific handlers **before** `handleDefaultExceptions()` so `Throwable` does not swallow typed exceptions.
+- **Why it exists:** `call.respond(HttpStatusCode, message = …)` does not reliably set a readable plain body for Ktor clients; the gateway then sees an empty body and maps upstream 400 to a generic `"Bad request"` GraphQL message, hiding the real cause (e.g. validation or deserialization).
+- **Bad pattern (short):** `call.respond(status = HttpStatusCode.BadRequest, message = exception.message.orEmpty())` in shared StatusPages; installing `handleDefaultExceptions()` before service-specific `exception<DomainException>` so the catch-all `Throwable` handler wins.
+- **Correct pattern (short):** `call.respondText(text = exception.describeForHttpStatusText("Bad request"), contentType = ContentType.Text.Plain, status = HttpStatusCode.BadRequest)` (or equivalent non-blank text); `install(StatusPages) { handleDomainExceptions(); handleDefaultExceptions() }`.
+
+---
+
+### 23
+
+- **Rule:** Set **`GOOGLE_TOKEN_AUDIENCE`** (auth service) to the **same OAuth 2.0 Web client ID** the mobile app passes to **`requestIdToken(webClientId)`** (Android `google_web_client_id` / iOS equivalent), not the Android-only or iOS-only client ID.
+- **Why it exists:** `GoogleIdTokenVerifier.setAudience` must match the ID token’s `aud` claim; a mismatch makes `verify()` return null and surfaces as **“Invalid Google token”** / `INVALID_ACCESS_TOKEN` even with a real user sign-in.
+- **Bad pattern (short):** Placeholder or stale `GOOGLE_TOKEN_AUDIENCE` in `docker/*/env.auth` that does not match the Web client ID wired in the client app.
+- **Correct pattern (short):** Keep `GOOGLE_TOKEN_AUDIENCE` aligned with the Web client ID used for ID tokens; per-environment deploy config should still use that environment’s Web client if it differs from dev.
+
+---
+
+### 24
+
+- **Rule:** Headway **desktop** loopback OAuth uses the **same Web OAuth 2.0 client ID** as mobile `id_token` audience: register **Authorized redirect URI** `http://127.0.0.1:<port>/oauth2callback` on that **Web** client. **Desktop**-type clients in Google Cloud often have **no redirect URI fields**; they are not required for this flow. Auth **`GOOGLE_TOKEN_AUDIENCE`** may be a **comma-separated** list if multiple client IDs can appear in `aud`; a single Web client ID is enough when desktop and mobile share it.
+- **Why it exists:** The desktop app must exchange the authorization code for an `id_token` whose `aud` matches what `GoogleIdTokenVerifier` accepts; loopback redirect must be allowlisted on the client used in the authorize + token steps.
+- **Bad pattern (short):** Expecting a separate Desktop OAuth client redirect UI in Console when the app is configured to use the Web client; or omitting the loopback redirect URI on the Web client used for desktop PKCE.
+- **Correct pattern (short):** Web client ID in app + `http://127.0.0.1:8405/oauth2callback` under **Authorized redirect URIs** for that Web client; keep `GOOGLE_TOKEN_AUDIENCE` aligned with that client ID (comma-separated only if you intentionally issue tokens for more than one OAuth client).
+
+---
+
+### 25
+
+- **Rule:** **iOS** Google Sign-In requires **`CFBundleURLTypes`** in the app **`Info.plist`** with URL scheme **`com.googleusercontent.apps.<ios_client_id_prefix>`** (reversed client id: everything before `.apps.googleusercontent.com` in the **iOS** OAuth client id). Without it, `GIDSignIn` throws at runtime: *missing support for the following URL schemes*.
+- **Why it exists:** Google redirects back to the app via that custom URL scheme; the SDK validates it before starting the flow.
+- **Bad pattern (short):** `GIDConfiguration` + `signIn(withPresenting:)` in Swift without the matching `Info.plist` URL scheme.
+- **Correct pattern (short):** Add the scheme to `Info.plist` (and keep `onOpenURL` / `handle(url)` wired as in the integration guide).
+
+---
+
+### 26
+
+- **Rule:** **Desktop** token exchange against a **Web** OAuth client may require **`client_secret`** on `https://oauth2.googleapis.com/token` even with PKCE; support it only via **local env** (e.g. `HEADWAY_GOOGLE_OAUTH_CLIENT_SECRET`), never commit the secret.
+- **Why it exists:** Google treats Web clients as confidential; without the secret the response often has no `id_token`, so the loopback page shows sign-in failed.
+- **Bad pattern (short):** Hard-coding the client secret in source or expecting PKCE alone to succeed for every Web client configuration.
+- **Correct pattern (short):** Copy the Web client secret from Google Cloud Console into a local / machine env var for desktop dev; production desktop builds need a distribution-safe approach (or a different OAuth client model).
+
+---
+
+### 27
+
+- **Rule:** For **Web / GSI** (`google.accounts.id`), add the app’s exact **Authorized JavaScript origin** in Google Cloud for the **same Web OAuth 2.0 client** (scheme + host + **port**). Local webpack dev is a distinct origin (must match `devServer.port` in `app/headwayWeb/build.gradle.kts`, e.g. `http://localhost:8765` vs `http://localhost:8080`).
+- **Why it exists:** Google returns **Error 400: origin_mismatch** and the One Tap / ID flow never yields a credential; the app then shows the generic error fallback even though the backend is fine.
+- **Bad pattern (short):** Only `http://localhost` without port, or a production origin only, while developing on `wasmJsBrowserDevelopmentRun` at another port.
+- **Correct pattern (short):** In **Credentials → Web client → Authorized JavaScript origins**, add each dev URL you use (must match the pinned **devServer.port** in `app/headwayWeb/build.gradle.kts`, currently `http://localhost:8765`).
+
+---
+
+### 28
+
+- **Rule:** The **gateway** must install **Ktor CORS** for **browser** GraphQL clients when `ENV` is not `prod` (`anyHost()` + `POST`/`OPTIONS` + `Authorization` + `Content-Type` + `allowNonSimpleContentTypes`); align allowed headers with gateway usage (e.g. `X-Headway-Locale`).
+- **Why it exists:** After a valid Google **ID token**, Apollo’s `POST` from `http://localhost:<webpackPort>` to `http://127.0.0.1:8080/...` is **cross-origin**; without CORS the browser blocks the response and the client maps the failure to **`Network` / `NetworkUnavailable`** (see `HeadwayGraphqlExecutor` + `SessionGraphqlFailureMapper`), not a GraphQL error body.
+- **Bad pattern (short):** Fixing only **Authorized JavaScript origins** while the gateway sends **no** `Access-Control-Allow-*` headers for `/api/v1/graphql`.
+- **Correct pattern (short):** `installHeadwayGatewayCors` in gateway presentation (dev/non-prod); for **prod** browser traffic, replace `anyHost()` with an explicit allowlist (env-driven) before shipping public web.
+
+---
+
+### 29
+
+- **Rule:** In a primary constructor, list **`val` / `var` properties first**, then **plain constructor parameters** (no property), in a stable order across the project.
+- **Why it exists:** Keeps “stored state” visually grouped at the top; avoids mixing `context: Context`-style parameters ahead of `private val` dependencies and makes reviews consistent.
+- **Bad pattern (short):** `class X(context: Context, private val io: CoroutineDispatcher, scope: CoroutineScope)`.
+- **Correct pattern (short):** `class X(private val io: CoroutineDispatcher, context: Context, scope: CoroutineScope)`.
+
+---
+
+### 30
+
+- **Rule:** `SecureSessionStorageContract` and similar **platform I/O adapters** must return **`Outcome<SecureSessionStorageError, …>`** (or an equivalent module-local sealed error), using **`outcomeSuspendCatching` / `outcomeSuspendCatchingOn`** so storage failures are typed, not silent throws; **domain repositories** map that failure to **`SessionDomainError`** (or the feature’s domain error) at the boundary.
+- **Why it exists:** Raw suspend APIs hide DataStore / filesystem / Keychain / `localStorage` failures; `Outcome` matches client policy and lets `LocalSessionPersistenceRepository` report `LocalPersistenceFailed` consistently.
+- **Bad pattern (short):** `suspend fun loadPayload(): String?` with uncaught `IOException` / DataStore errors propagating as generic exceptions.
+- **Correct pattern (short):** `suspend fun loadPayload(): Outcome<SecureSessionStorageError, String?>` with `outcomeSuspendCatchingOn(ioDispatcher) { … }`; caller uses `when (loaded) { Success -> …; Failure -> Outcome.failure(SessionDomainError.LocalPersistenceFailed) }`.
+
+---
+
+### 31
+
+- **Rule:** Prefer **full-word local names** over cryptic abbreviations (`error` not `err`, `message` not `msg`, `index` not `idx`, `context` not `ctx`, `gatewayException` not `ex` in tests) when the name is not a widely understood domain acronym on the wire.
+- **Why it exists:** Abbreviations save a few characters but slow scanning and review; aligned with root [AGENTS.md](../../AGENTS.md) verb-led / readable naming spirit.
+- **Bad pattern (short):** `val err = …`, `val msg = …`, `val ex = assertFailsWith<…>`.
+- **Correct pattern (short):** `val tokenError = …`, `val badRequestMessage = …`, `val gatewayException = response.toGatewayException(…)`.
+
+---
+
+### 32
+
+- **Rule:** In client **`build.gradle.kts`**, do not declare **empty** `commonMainDependencies` / `androidMainDependencies` / `iosMainDependencies` / `desktopMainDependencies` / `wasmMainDependencies` blocks; remove the block and the unused `import extension.*MainDependencies`.
+- **Why it exists:** Empty blocks look like forgotten configuration, add noise, and keep stale imports; when a platform needs dependencies, add the block then.
+- **Bad pattern (short):** `iosMainDependencies {\n}\n\ndesktopMainDependencies {\n}` with no `projects` / `libs` body.
+- **Correct pattern (short):** Only blocks that contain at least one `projects { … }` or `libs { … }` (or other real configuration inside the helper).
+
+---
+
+### 33
+
+- **Rule:** If a **`projects { implementation(…) }`** dependency is **the same on every KMP target** (`androidMain` / `iosMain` / `desktopMain` / `wasmMain`), declare it once in **`commonMainDependencies`** instead of repeating per platform.
+- **Why it exists:** Duplication drifts (one target updated, others not), clutters build scripts, and contradicts KMP’s shared `commonMain` model; platform blocks should hold only truly platform-specific deps (e.g. `koin.android`, `kotlinx.browser.wasm.js`).
+- **Bad pattern (short):** Same `implementation(core.secureStorage)` under `androidMainDependencies`, `iosMainDependencies`, `desktopMainDependencies`, and `wasmMainDependencies`.
+- **Correct pattern (short):** `implementation(core.secureStorage)` inside `commonMainDependencies { projects { … } }`; platform blocks only for extras.
+
+---
+
+### 34
+
+- **Rule:** For **thin wrappers** with a **single** read-only property (URLs, ids, typed strings in DI), prefer **`@JvmInline value class`** over **`data class`** when you do not need `copy`, `componentN`, or distinct heap identity.
+- **Why it exists:** Fewer allocations and clearer intent than a full data class; matches Kotlin guidance for domain “newtypes”; aligns with lessons-learned §9 for bounded unions built from value classes.
+- **Bad pattern (short):** `data class HeadwayGraphqlHttpUrl(val value: String)` for a pass-through holder only used as `get<HeadwayGraphqlHttpUrl>().value`.
+- **Correct pattern (short):** `@JvmInline value class HeadwayGraphqlHttpUrl(val value: String)`.
+
+---
+
+### 35
+
+- **Rule:** When a workflow **`uses:`** another **reusable workflow** (`workflow_call`), put **`secrets: inherit`** on that **`uses:`** job in the **caller** if the callee (or its nested callees) needs **`secrets.GPR_*`**, **`secrets.*`**, or org/repo tokens; nested `secrets: inherit` alone does not lift secrets past a caller that omitted them.
+- **Why it exists:** GitHub Actions does **not** pass repository secrets into reusable workflows by default; missing `secrets: inherit` on the top-level `uses:` leaves `${{ secrets.GPR_KEY }}` empty in client jobs even when the secrets exist in **Repository secrets**.
+- **Bad pattern (short):** `ci.yml` calls `./.github/workflows/_client.yml` without `secrets: inherit` while `_client.yml` passes `secrets: inherit` only to `_build-desktop.yml`.
+- **Correct pattern (short):** On every `uses: ./.github/workflows/…` job that needs secrets, add `secrets: inherit` (or map explicit `secrets:`), matching how `server` jobs are wired.

@@ -28,11 +28,22 @@ captures
 **/lib/
 **/.vscode
 
+.ai/cursor/projects/
+.ai/cursor/debug-*
 .cursor/projects/
 .cursor/debug-*
 .playwright-mcp/
+.ai/specs/**
 specs/**
 
 .repomix/
+.ai/repomix/
 
-.serena/
+.ai/serena/cache/
+.ai/serena/logs/
+.ai/serena/memories/
+.ai/serena/project.local.yml
+.serena/cache/
+.serena/logs/
+.serena/memories/
+.serena/project.local.yml

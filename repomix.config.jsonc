@@ -34,7 +34,9 @@
     "useDefaultPatterns": true,
     "customPatterns": [
       "**/kotlin-js-store/**",
-      "**/.serena/cache/**",
+      "**/.ai/serena/cache/**",
+      "**/.ai/serena/logs/**",
+      "**/.ai/specs/**",
       "**/*.apk",
       "**/*.aab",
       "**/*.ipa",
@@ -51,6 +53,7 @@
       "**/*.ico",
       "**/*.pdf",
       "**/.repomix/**",
+      "**/.ai/repomix/**",
     ],
   },
   "security": {
