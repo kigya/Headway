@@ -6,6 +6,7 @@ import dev.kigya.headway.gateway.core.exception.GatewayErrorCode
 import dev.kigya.headway.gateway.core.exception.GatewayErrorReason
 import dev.kigya.headway.gateway.core.exception.GatewayException
 import io.ktor.server.plugins.BadRequestException as KtorBadRequestException
+import kotlinx.serialization.SerializationException
 
 internal data class GraphQlErrorEnvelope(
     val message: String,
@@ -39,6 +40,19 @@ internal object GatewayGraphqlErrorMapper {
                     ),
                 )
             }
+
+            is SerializationException ->
+                GraphQlErrorEnvelope(
+                    message = "Could not decode upstream JSON",
+                    code = GatewayErrorCode.DEPENDENCY_UNAVAILABLE,
+                    extensions = extensionsFor(
+                        GatewayException.DependencyUnavailable(
+                            dependency = "upstream",
+                            message = "Could not decode upstream JSON",
+                            cause = original,
+                        ),
+                    ),
+                )
 
             is IllegalArgumentException -> {
                 val detail = illegalArgumentDetail(original)

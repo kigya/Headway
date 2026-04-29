@@ -361,4 +361,22 @@ alwaysApply: true
 - **Rule:** Treat **`loginWithGoogle`** payload `user.name` as **auth-time** only; **`homeScreen`** builds copy from **`ResolvePrincipalUseCase` → database `DatabaseUser.name`** passed through **`GatewayUser.toHomeScreenRequest`**. If DB name can be blank while Google supplied a name, **pass `user_email`** into the home request and resolve display name with the **same fallbacks as auth** (trimmed name → email local part → `"User"`), and **do not reject** the home HTTP route when trimmed `user_name` is blank if email can recover it.
 - **Why it exists:** Login can return 200 with a rich `user` object while the subsequent **`HomeScreenQuery`** fails mapping or upstream **400** because home previously required non-blank `user_name` only.
 - **Bad pattern (short):** Assuming Google login JSON proves home will greet with that name; home route `if (body.userName.trim().isBlank()) throw BadRequestException` with no email fallback.
-- **Correct pattern (short):** `HomeScreenRequestDto` includes `user_email`; gateway maps `GatewayUser.email`; home uses shared `resolveHomeDisplayName(userName, userEmail)` (mirror auth) before building `displayName` / greeting.
+- **Correct pattern (short):** `HomeScreenRequestDto` includes `user_email`; gateway maps `GatewayUser.email`; home uses shared `resolveHomeDisplayName(userName, userEmail)` (mirror auth) before building `displayName` / greeting; on the client, **`mapHomeScreenPayload`** applies **`LocalSessionRecord.Registered`** fallback (`userName` → email local part → `"User"`) when **`homeScreen.displayName`** is blank so UI survives stale gateways or partial payloads.
+
+---
+
+### 40
+
+- **Rule:** In **`Application.defaultContentNegotiation()`** (`server/common`), set **`ignoreUnknownKeys = true`** on **`Json { … }`** so microservices tolerate **extra JSON keys** from newer callers during rolling upgrades (same pattern as **`HttpClientConfig.baseConfig()`**, which already ignores unknown keys on outbound decode).
+- **Why it exists:** `kotlinx.serialization` throws **`SerializationException`** on unknown keys by default; a newer gateway sending **`user_email`** to an older home binary yields failed **`receive<DTO>()`** and opaque **`INTERNAL`** GraphQL errors until every replica upgrades.
+- **Bad pattern (short):** `Json { prettyPrint = true; encodeDefaults = true }` only on server ContentNegotiation while HTTP clients add optional wire fields.
+- **Correct pattern (short):** `Json { prettyPrint = true; encodeDefaults = true; ignoreUnknownKeys = true }` in `defaultContentNegotiation()`; deploy order still coordinated for required-field parity.
+
+---
+
+### 41
+
+- **Rule:** In **`GatewayGraphqlErrorMapper.map`**, handle **`kotlinx.serialization.SerializationException` before `IllegalArgumentException`** — **`SerializationException` subclasses `IllegalArgumentException`** and must not be classified as **`BAD_REQUEST`**.
+- **Why it exists:** Mis-ordered `when` branches turn upstream/decode failures into validation-shaped responses and hide dependency-style failures from operators.
+- **Bad pattern (short):** `is IllegalArgumentException -> …` above `is SerializationException -> …` (subclass never matches the latter).
+- **Correct pattern (short):** Order **`SerializationException`** (map to **`DependencyUnavailable`** / typed gateway policy) **above** **`IllegalArgumentException`**.

@@ -18,6 +18,7 @@ import kotlinx.collections.immutable.toPersistentList
 
 internal fun mapHomeScreenPayload(
     home: HomeScreenQuery.HomeScreen,
+    registeredDisplayNameFallback: String,
 ): Outcome<SessionDomainError, HomeScreenSummary> {
     val accessRole = mapAccessRole(home.accessRole)
         ?: return Outcome.failure(SessionDomainError.Unexpected)
@@ -25,7 +26,9 @@ internal fun mapHomeScreenPayload(
     if (dateLabel.isEmpty()) {
         return Outcome.failure(SessionDomainError.Unexpected)
     }
-    val displayName = home.displayName.trim()
+    val displayName = home.displayName.trim().ifEmpty {
+        registeredDisplayNameFallback.trim()
+    }
     if (displayName.isEmpty()) {
         return Outcome.failure(SessionDomainError.Unexpected)
     }

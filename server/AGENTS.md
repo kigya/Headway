@@ -407,6 +407,7 @@ Rule: new error types in gateway must preserve this scheme (code + httpStatus + 
 - `defaultContentNegotiation()`:
     - prettyPrint = true
     - encodeDefaults = true
+    - ignoreUnknownKeys = true (microservices accept forward-compatible bodies when callers add fields before all replicas upgrade)
 - `defaultResources()` installs the Resources plugin
 
 This must be enabled in each service (auth, database, home, …) and in gateway as needed (gateway uses the GraphQL plugin; but types/serializers still apply in KGraphQL).

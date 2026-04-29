@@ -4,6 +4,7 @@ import dev.kigya.headway.gateway.core.exception.GatewayErrorCategory
 import dev.kigya.headway.gateway.core.exception.GatewayErrorCode
 import dev.kigya.headway.gateway.core.exception.GatewayErrorReason
 import dev.kigya.headway.gateway.core.exception.GatewayException
+import kotlinx.serialization.SerializationException
 import kotlin.test.Test
 import kotlin.test.assertEquals
 
@@ -68,5 +69,17 @@ class GatewayGraphqlErrorMapperTest {
 
         assertEquals(GatewayErrorCode.CONFLICT, envelope.code)
         assertEquals("PREPARATION_SCOPE_SESSION_CLOSED", envelope.extensions["reason"])
+    }
+
+    @Test
+    fun `maps kotlinx SerializationException to dependency unavailable`() {
+        val envelope = GatewayGraphqlErrorMapper.map(
+            SerializationException("missing field"),
+        )
+
+        assertEquals(GatewayErrorCode.DEPENDENCY_UNAVAILABLE, envelope.code)
+        assertEquals("upstream", envelope.extensions["dependency"])
+        assertEquals(true, envelope.extensions["retryable"])
+        assertEquals(503, envelope.extensions["httpStatus"])
     }
 }
