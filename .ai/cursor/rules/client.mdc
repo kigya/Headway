@@ -1,0 +1,47 @@
+---
+description: Headway client — KMP, Compose, MVI, Navigation3, Freud DS
+globs: client/**
+alwaysApply: false
+---
+
+## Verify
+
+- After substantive client work: `cd client && ./gradlew app:headwayAndroid:assembleDebug` and `cd client && ./gradlew detekt` per [client/AGENTS.md](../../../client/AGENTS.md).
+
+## Modules
+
+- New features use `feature/<name>/{api,di,internal}`.
+- `api` holds `NavKey` and route holder contract only—no UI and no business logic.
+
+## MVI
+
+- `Store` defines Intent / State / Label; `State` is `@Immutable` with default field values; private `Action` / `Message` inside StoreFactory; reducer `when` is exhaustive.
+- ViewModel is thin: create store, `store.accept(...)`, expose `stateFlow(viewModelScope)`—**no business logic in ViewModel**.
+
+## Navigation
+
+- Navigate only through `NavigatorContract` and `NavigationIntent`.
+- New screens need `entry` in [client/shared/App.kt](../../../client/shared/App.kt) and includes in `settings.gradle.kts`.
+- Ask before changing global nav wiring or `NavKey` definitions.
+
+## UI
+
+- Use `FreudTheme`, `FreudDsToken`, and design-system components; **no raw Material3** without design-system wrapping.
+- No hard-coded colors, dimensions, or typography in feature modules.
+- Use `FreudText(value = …, …)`—parameter is `value`, not `text`.
+- `modifier: Modifier = Modifier` on composables; apply chained modifiers only at the root layout node.
+- Screens: `FreudFallback` + `FreudScreenByWidth`; collect state with `collectAsStateWithLifecycle()`.
+
+## Errors (client)
+
+- Use `Outcome` from `core:outcome` for expected failures; sealed domain errors—do not use raw exceptions for expected paths.
+- Follow `CancellationException` and `TimeoutCancellationException` rules in [client/AGENTS.md](../../../client/AGENTS.md).
+
+## Platform
+
+- No Android-only APIs in `commonMain`.
+
+## Gradle
+
+- New modules use `client/build-logic` convention plugins only—do not hand-roll Kotlin / Compose / Detekt in module scripts.
+- Ask before changing `build-logic/` or the `core:design-system` public API.

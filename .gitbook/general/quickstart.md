@@ -44,7 +44,7 @@ git config --list --show-origin
 * `server/` — Ktor-сервисы (auth, database, home, gateway, admin и др.), Gradle, Docker.
 * `AGENTS.md` (корень) — общие правила Kotlin для всего репо.
 * `client/AGENTS.md` и `server/AGENTS.md` — детали по сторонам.
-* `.cursor/rules/` и `.cursor/skills/` — подсказки для IDE и агентов (не заменяют `AGENTS.md`).
+* `.ai/cursor/rules/` и `.ai/cursor/skills/` — подсказки для IDE и агентов (не заменяют `AGENTS.md`).
 
 ## Минимальные команды после правок
 

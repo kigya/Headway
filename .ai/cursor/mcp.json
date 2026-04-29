@@ -1,0 +1,26 @@
+{
+  "mcpServers": {
+    "serena": {
+      "type": "stdio",
+      "command": "serena",
+      "args": [
+        "start-mcp-server",
+        "--context",
+        "ide",
+        "--project",
+        "${workspaceFolder}",
+        "--open-web-dashboard",
+        "false"
+      ]
+    },
+    "repomix": {
+      "type": "stdio",
+      "command": "npx",
+      "args": [
+        "-y",
+        "repomix",
+        "--mcp"
+      ]
+    }
+  }
+}

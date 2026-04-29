@@ -13,7 +13,7 @@ icon: database
 | **Dev** | `ymqpiogjzymkkwzutqds` | [Supabase — dev](https://supabase.com/dashboard/project/ymqpiogjzymkkwzutqds) |
 | **Prod** | `lhdkfjlltgnxrttrqfla` | [Supabase — prod](https://supabase.com/dashboard/project/lhdkfjlltgnxrttrqfla) |
 
-Те же ссылки продублированы в [`.cursor/RESOURCES.md`](https://github.com/kigya/Headway/blob/trunk/.cursor/RESOURCES.md) для агентов IDE.
+Те же ссылки продублированы в [`.ai/cursor/RESOURCES.md`](https://github.com/kigya/Headway/blob/trunk/.ai/cursor/RESOURCES.md) для агентов IDE.
 
 ## Практические заметки
 

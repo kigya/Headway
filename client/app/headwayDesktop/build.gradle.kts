@@ -1,5 +1,6 @@
 import base.configureDesktopApplication
 import extension.desktopMainDependencies
+import java.io.File
 import org.gradle.api.tasks.JavaExec
 import org.jetbrains.compose.desktop.application.dsl.TargetFormat
 
@@ -37,14 +38,19 @@ private val headwayDesktopJavaExecEnvTaskNames: Set<String> =
         "hotDevDesktopAsync",
     )
 
+private val headwayDesktopEnvFileForJavaExec: File =
+    providers.gradleProperty("headwayDesktopEnv").orElse("dev").get().let { envDirectoryName ->
+        rootProject.layout.projectDirectory
+            .file("secrets/$envDirectoryName/env.desktop")
+            .asFile
+    }
+
 tasks.withType<JavaExec>().configureEach {
     if (name !in headwayDesktopJavaExecEnvTaskNames) {
         return@configureEach
     }
     doFirst {
-        val envDirectoryName =
-            project.providers.gradleProperty("headwayDesktopEnv").orElse("dev").get()
-        val envFile = project.rootProject.file("secrets/$envDirectoryName/env.desktop")
+        val envFile = headwayDesktopEnvFileForJavaExec
         if (!envFile.exists()) {
             return@doFirst
         }
