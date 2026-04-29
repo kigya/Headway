@@ -18,7 +18,7 @@ import dev.kigya.headway.gateway.presentation.routes.GatewayGraphqlOperation
 
 internal fun SchemaBuilder.homeSchema(
     resolvePrincipal: ResolvePrincipalUseCase,
-    getHomeScreen: GetHomeScreenUseCase,
+    loadHomeScreen: GetHomeScreenUseCase,
 ) {
     enum<HomeScreenSectionId>()
     enum<HomeScreenSectionStyle>()
@@ -38,7 +38,7 @@ internal fun SchemaBuilder.homeSchema(
                 is GatewayPrincipal.Guest ->
                     throw GatewayException.Internal("Unexpected guest principal")
             }
-            getHomeScreen(
+            loadHomeScreen(
                 user = user,
                 locale = requestContext.appLocale,
             )
