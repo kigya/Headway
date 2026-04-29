@@ -34,4 +34,18 @@ internal object HomeTheme : FreudTheme() {
             light = super.color.brown10,
             dark = super.color.brown100,
         )
+
+    val FreudColorScheme.homeGridCellSurface
+        @Composable
+        get() = this provides FreudDynamicColor(
+            light = super.color.gray20,
+            dark = super.color.brown80,
+        )
+
+    val FreudColorScheme.homeGridCellBorder
+        @Composable
+        get() = this provides FreudDynamicColor(
+            light = super.color.brown40,
+            dark = super.color.brown50,
+        )
 }

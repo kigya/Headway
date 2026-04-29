@@ -2,7 +2,10 @@ query HomeScreen {
     homeScreen {
         dateLabel
         greeting
+        displayName
         roleLabel
+        avatarUrl
+        accessRole
         readinessPercent
         nextInterviewType
         nextInterviewTypeLabel

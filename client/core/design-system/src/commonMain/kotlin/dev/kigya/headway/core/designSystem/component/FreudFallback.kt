@@ -20,6 +20,7 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -57,6 +58,7 @@ import headway.core.design_system.generated.resources.freud_fallback_retry_butto
 import kotlinx.coroutines.delay
 import org.jetbrains.compose.resources.stringResource
 
+@Immutable
 private enum class FreudFallbackStubKind {
     Error,
     Network,

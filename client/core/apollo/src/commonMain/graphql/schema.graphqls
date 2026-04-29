@@ -67,7 +67,10 @@ type GatewayRefreshAccessTokenResponse {
 type HomeScreenPayload {
     dateLabel: String!
     greeting: String!
+    displayName: String!
     roleLabel: String
+    avatarUrl: String
+    accessRole: GatewayUserRole!
     readinessPercent: Int
     nextInterviewType: HomeScreenNextInterviewType
     nextInterviewTypeLabel: String

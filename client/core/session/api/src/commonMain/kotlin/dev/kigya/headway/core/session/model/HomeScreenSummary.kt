@@ -1,8 +1,8 @@
 package dev.kigya.headway.core.session.model
 
-import kotlin.jvm.JvmInline
+import kotlinx.collections.immutable.ImmutableList
 
-@JvmInline
-value class HomeScreenSummary(
-    val greeting: String,
+data class HomeScreenSummary(
+    val userSummary: HomeUserSummary,
+    val actions: ImmutableList<HomeScreenAction>,
 )

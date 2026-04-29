@@ -29,11 +29,15 @@ internal class GetHomeScreenUseCase(
             role = request.userRole,
             locale = request.locale,
         )
+        val avatarUrl = request.userAvatarUrl?.trim()?.takeIf { it.isNotEmpty() }
 
         return HomeScreenResponseDto(
             dateLabel = dateLabel,
             greeting = greeting,
+            displayName = trimmedName,
             roleLabel = roleLabel,
+            avatarUrl = avatarUrl,
+            accessRole = request.userRole,
             readinessPercent = readinessAndNext.first,
             nextInterviewType = readinessAndNext.second,
             nextInterviewTypeLabel = readinessAndNext.third,

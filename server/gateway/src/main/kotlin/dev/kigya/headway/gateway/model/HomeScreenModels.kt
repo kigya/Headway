@@ -7,7 +7,10 @@ import kotlinx.serialization.Serializable
 internal data class HomeScreenPayload(
     @SerialName("dateLabel") val dateLabel: String,
     @SerialName("greeting") val greeting: String,
+    @SerialName("displayName") val displayName: String,
     @SerialName("roleLabel") val roleLabel: String?,
+    @SerialName("avatarUrl") val avatarUrl: String?,
+    @SerialName("accessRole") val accessRole: GatewayUserRole,
     @SerialName("readinessPercent") val readinessPercent: Int?,
     @SerialName("nextInterviewType") val nextInterviewType: HomeScreenNextInterviewType?,
     @SerialName("nextInterviewTypeLabel") val nextInterviewTypeLabel: String?,

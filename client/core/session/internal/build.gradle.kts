@@ -18,6 +18,7 @@ commonMainDependencies {
     libs {
         implementation(apollo.runtime)
         implementation(coroutines.core)
+        implementation(immutableCollections)
         implementation(koin.core)
         implementation(serializationJson)
     }

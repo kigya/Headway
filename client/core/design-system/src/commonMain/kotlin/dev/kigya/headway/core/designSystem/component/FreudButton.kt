@@ -41,6 +41,7 @@ import dev.kigya.headway.core.designSystem.util.FreudTextValue
 import dev.kigya.headway.core.designSystem.util.resolveToPlainStringOrNull
 import org.jetbrains.compose.resources.DrawableResource
 
+@Immutable
 enum class FreudHorizontalButtonSize {
     LARGE,
     SMALL,
@@ -92,6 +93,7 @@ sealed interface FreudButtonIconSpec {
         val animation: FreudAnimatedIconAnimation = FreudIconDefaults.fadeInScale(),
     ) : FreudButtonIconSpec
 
+    @Immutable
     enum class RevealDirection { LEFT_TO_RIGHT, RIGHT_TO_LEFT }
 
     @Immutable

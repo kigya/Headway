@@ -5,6 +5,7 @@ import androidx.compose.runtime.Composable
 import androidx.compose.runtime.Immutable
 import androidx.compose.runtime.MutableState
 import androidx.compose.runtime.SideEffect
+import androidx.compose.runtime.Stable
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.ui.text.AnnotatedString
@@ -34,6 +35,7 @@ sealed interface FreudTextAnimation {
     ) : FreudTextAnimation
 }
 
+@Stable
 class FreudAnimationTrigger {
     internal val isFinished: MutableState<Boolean> = mutableStateOf(false)
     fun reset() {

@@ -15,6 +15,7 @@ import org.jetbrains.compose.resources.StringResource
 import org.jetbrains.compose.resources.stringResource
 import kotlin.jvm.JvmInline
 
+@Immutable
 sealed interface FreudTextFormatArg {
 
     companion object {
@@ -54,6 +55,7 @@ private fun FreudTextFormatArg.toPlatformFormatValue(): Any = when (this) {
     is FreudTextFormatDouble -> value
 }
 
+@Immutable
 sealed interface FreudTextValue {
     val animation: FreudTextAnimation?
     val onFinishTrigger: FreudAnimationTrigger?
@@ -241,6 +243,7 @@ private fun freudStringResource(
     return stringResource(resource, *platformArgs)
 }
 
+@Immutable
 internal sealed interface FreudTextSource {
 
     @JvmInline
@@ -253,6 +256,7 @@ internal sealed interface FreudTextSource {
     ) : FreudTextSource
 }
 
+@Immutable
 internal sealed interface FreudRichTextContent {
 
     @JvmInline
@@ -261,6 +265,7 @@ internal sealed interface FreudRichTextContent {
     ) : FreudRichTextContent
 }
 
+@Immutable
 internal data class FreudRichTextSegment(
     val source: FreudTextSource,
     val color: FreudDsToken<Color>?,

@@ -12,6 +12,7 @@ commonMainDependencies {
     }
     libs {
         implementation(coroutines.core)
+        implementation(immutableCollections)
         implementation(serializationJson)
     }
 }

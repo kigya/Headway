@@ -1,6 +1,7 @@
 package dev.kigya.headway.core.designSystem.util
 
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.drawWithCache
@@ -19,11 +20,13 @@ import dev.kigya.headway.core.designSystem.theme.color.FreudDynamicColor
 import dev.kigya.headway.core.designSystem.theme.color.provides
 import dev.kigya.headway.core.designSystem.util.FreudBackgroundTheme.line
 
+@Immutable
 enum class FreudBackgroundPattern {
     None,
     Waves,
 }
 
+@Immutable
 private enum class FreudBackgroundWaveOrientation {
     Horizontal,
     Vertical,

@@ -44,6 +44,8 @@ class GetHomeScreenUseCaseTest {
         assertNull(result.readinessPercent)
         assertNull(result.nextInterviewType)
         assertNull(result.nextInterviewTypeLabel)
+        assertEquals("Guest", result.displayName)
+        assertEquals(HomeUserRoleDto.GUEST, result.accessRole)
     }
 
     @Test
@@ -62,7 +64,9 @@ class GetHomeScreenUseCaseTest {
         assertEquals(8, result.sections.size)
         assertEquals(expectedDateLabel(Locale.ENGLISH), result.dateLabel)
         assertEquals("Hi, Dev!", result.greeting)
+        assertEquals("Dev", result.displayName)
         assertEquals("Developer", result.roleLabel)
+        assertEquals(HomeUserRoleDto.DEVELOPER, result.accessRole)
         assertNull(result.readinessPercent)
     }
 
@@ -79,7 +83,9 @@ class GetHomeScreenUseCaseTest {
         )
 
         assertEquals("Привет, Иван!", result.greeting)
+        assertEquals("Иван", result.displayName)
         assertEquals("Разработчик", result.roleLabel)
+        assertEquals(HomeUserRoleDto.DEVELOPER, result.accessRole)
         assertEquals(expectedDateLabel(Locale.forLanguageTag("ru")), result.dateLabel)
     }
 
@@ -114,6 +120,7 @@ class GetHomeScreenUseCaseTest {
         )
 
         assertEquals("Hi, Bob!", result.greeting)
+        assertEquals("Bob", result.displayName)
     }
 
     @Test

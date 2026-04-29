@@ -14,6 +14,8 @@ data class HomeScreenRequestDto(
     val userName: String,
     @SerialName("user_role")
     val userRole: HomeUserRoleDto,
+    @SerialName("user_avatar_url")
+    val userAvatarUrl: String? = null,
     @SerialName("locale")
     val locale: HomeAppLocaleDto,
 )

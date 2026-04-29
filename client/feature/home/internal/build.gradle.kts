@@ -12,9 +12,11 @@ plugins {
 commonMainDependencies {
     projects {
         implementation(core.sessionInternal)
+        implementation(core.sessionApi)
         implementation(navigation.navigationApi)
         implementation(core.designSystem)
         implementation(feature.authApi)
         implementation(feature.homeApi)
+        implementation(feature.learnQuestionsApi)
     }
 }

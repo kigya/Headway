@@ -6,11 +6,13 @@ import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.width
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Immutable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.Dp
 import dev.kigya.headway.core.designSystem.theme.FreudDsToken
 import dev.kigya.headway.core.designSystem.theme.FreudTheme
 
+@Immutable
 enum class FreudSpacerOrientation {
     VERTICAL,
     HORIZONTAL,

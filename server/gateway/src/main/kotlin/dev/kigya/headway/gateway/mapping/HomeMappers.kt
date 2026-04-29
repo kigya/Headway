@@ -22,6 +22,7 @@ internal fun GatewayUser.toHomeScreenRequest(locale: GatewayAppLocale): HomeScre
         userId = id,
         userName = name,
         userRole = role.toHomeUserRoleDto(),
+        userAvatarUrl = avatarUrl,
         locale = locale.toHomeAppLocaleDto(),
     )
 
@@ -29,7 +30,10 @@ internal fun HomeScreenResponseDto.toGatewayHomeScreenPayload(): HomeScreenPaylo
     HomeScreenPayload(
         dateLabel = dateLabel,
         greeting = greeting,
+        displayName = displayName,
         roleLabel = roleLabel,
+        avatarUrl = avatarUrl,
+        accessRole = accessRole.toGatewayUserRole(),
         readinessPercent = readinessPercent,
         nextInterviewType = nextInterviewType?.toGateway(),
         nextInterviewTypeLabel = nextInterviewTypeLabel,
@@ -70,6 +74,14 @@ private fun HomeScreenNextInterviewTypeDto.toGateway(): HomeScreenNextInterviewT
 private fun GatewayAppLocale.toHomeAppLocaleDto(): HomeAppLocaleDto = when (this) {
     GatewayAppLocale.EN -> HomeAppLocaleDto.EN
     GatewayAppLocale.RU -> HomeAppLocaleDto.RU
+}
+
+private fun HomeUserRoleDto.toGatewayUserRole(): GatewayUserRole = when (this) {
+    HomeUserRoleDto.DEVELOPER -> GatewayUserRole.DEVELOPER
+    HomeUserRoleDto.MANAGER -> GatewayUserRole.MANAGER
+    HomeUserRoleDto.MENTOR -> GatewayUserRole.MENTOR
+    HomeUserRoleDto.EMPLOYEE -> GatewayUserRole.EMPLOYEE
+    HomeUserRoleDto.GUEST -> GatewayUserRole.GUEST
 }
 
 private fun GatewayUserRole.toHomeUserRoleDto(): HomeUserRoleDto = when (this) {

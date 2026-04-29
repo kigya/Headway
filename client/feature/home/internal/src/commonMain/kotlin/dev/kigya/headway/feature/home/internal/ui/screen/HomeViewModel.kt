@@ -6,6 +6,7 @@ import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.arkivanov.mvikotlin.extensions.coroutines.stateFlow
 import dev.kigya.headway.core.session.domain.usecase.LoadHomeScreenSummaryUseCase
 import dev.kigya.headway.core.session.domain.usecase.LogoutRegisteredUseCase
+import dev.kigya.headway.core.session.model.HomeActionSemanticType
 import dev.kigya.headway.navigation.api.navigator.NavigatorContract
 import kotlinx.coroutines.flow.StateFlow
 
@@ -31,5 +32,13 @@ class HomeViewModel(
 
     fun onRetryLoad() {
         store.accept(HomeStore.Intent.RetryLoad)
+    }
+
+    fun onActionClick(semantic: HomeActionSemanticType) {
+        store.accept(HomeStore.Intent.ActionClick(semantic))
+    }
+
+    fun onToggleWideNavigation() {
+        store.accept(HomeStore.Intent.ToggleWideNavigation)
     }
 }

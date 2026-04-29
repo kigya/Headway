@@ -6,14 +6,16 @@ import dev.kigya.headway.core.outcome.getOrElse
 import dev.kigya.headway.core.outcome.getOrNull
 import dev.kigya.headway.core.session.domain.error.SessionDomainError
 import dev.kigya.headway.core.session.domain.repository.AuthRepositoryContract
+import dev.kigya.headway.core.session.domain.repository.GuestLearningRepositoryContract
+import dev.kigya.headway.core.session.domain.repository.HomeRepositoryContract
 import dev.kigya.headway.core.session.domain.repository.LocalSessionPersistenceContract
-import dev.kigya.headway.core.session.domain.repository.ProtectedRepositoryContract
 import dev.kigya.headway.core.session.model.LaunchDestination
 import dev.kigya.headway.core.session.model.LocalSessionRecord
 
 class ResolveLaunchDestinationUseCase(
     private val persistence: LocalSessionPersistenceContract,
-    private val protectedRepository: ProtectedRepositoryContract,
+    private val homeRepository: HomeRepositoryContract,
+    private val guestLearningRepository: GuestLearningRepositoryContract,
     private val authRepository: AuthRepositoryContract,
     private val accessTokenStore: HeadwayAccessTokenStore,
     private val clock: SessionClock,
@@ -38,7 +40,7 @@ class ResolveLaunchDestinationUseCase(
             return Outcome.success(LaunchDestination.Auth)
         }
         accessTokenStore.update(record.accessToken)
-        return when (val overview = protectedRepository.loadGuestLearningOverview()) {
+        return when (val overview = guestLearningRepository.loadGuestLearningOverview()) {
             is Outcome.Success -> Outcome.success(LaunchDestination.LearnQuestions)
             is Outcome.Failure -> guestFailure(overview.error)
         }
@@ -61,7 +63,7 @@ class ResolveLaunchDestinationUseCase(
         record: LocalSessionRecord.Registered,
     ): Outcome<SessionDomainError, LaunchDestination> {
         accessTokenStore.update(record.accessToken)
-        return when (val home = protectedRepository.loadHomeSummary()) {
+        return when (val home = homeRepository.loadHomeSummary()) {
             is Outcome.Success -> Outcome.success(LaunchDestination.Home)
             is Outcome.Failure -> registeredHomeFailure(record, home.error)
         }
@@ -82,7 +84,7 @@ class ResolveLaunchDestinationUseCase(
                 val updated = record.copy(accessToken = newAccess)
                 persistence.saveRecord(updated)
                 accessTokenStore.update(newAccess)
-                return when (protectedRepository.loadHomeSummary()) {
+                return when (homeRepository.loadHomeSummary()) {
                     is Outcome.Success -> Outcome.success(LaunchDestination.Home)
                     is Outcome.Failure -> {
                         persistence.clearRecord()

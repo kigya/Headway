@@ -13,6 +13,9 @@ commonMainDependencies {
     libs {
         implementation(bundles.connectivity)
         implementation(bundles.compottie)
+        implementation(libs.coil.compose)
+        implementation(libs.coil.composeCore)
+        implementation(libs.coil.networkKtor)
     }
     projects {
         implementation(navigation.navigationApi)

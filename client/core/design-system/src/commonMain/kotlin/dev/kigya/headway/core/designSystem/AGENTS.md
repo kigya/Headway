@@ -119,6 +119,15 @@ Avoid redundant comments like: `// Derive the stub kind; null means "show normal
 
 Fields of Kotlin `List`, `Map`, or `Set` inside `@Immutable` types used in composition are treated as unstable. Prefer `ImmutableList` (and siblings) from `kotlinx-collections-immutable`, built with `persistentListOf` / `toPersistentList` (already on the classpath for Compose modules via the compose convention). Example: `FreudTextValue` rich segments and string format args.
 
+### 2.8 `@Immutable` / `@Stable` on DS helper types
+
+Types passed **into** Freud components (payload models, slot specs, enums for variants, image shapes) should declare Compose stability explicitly:
+
+- **`@Immutable`** for enums, sealed hierarchies, and data-like models whose fields are all immutable (including `ImmutableList` / primitives / stable tokens).
+- **`@Stable`** when the type holds lambdas (callbacks), `MutableState`, or other composition-owned mutable state.
+
+See workspace **lessons-learned §38** for the short rule card.
+
 ---
 
 ## 3. Theme and token system
@@ -179,6 +188,15 @@ Important detail: `FreudTextSize` uses `LocalDensity.current.fontScale` to creat
 That is a deliberate design choice. It means:
 - DS typography remains visually consistent with design specs even if system font scale changes.
 - If accessibility scaling is required later, this decision should be revisited consciously. Until then, follow the existing policy.
+
+### 3.5 Semantic colors on `FreudXTheme : FreudTheme()`
+
+Internal DS component themes (for example `FreudWideNavigationTheme`, `FreudFallbackTheme`) expose palette-backed semantic colors as **extension properties** on `FreudColorScheme`, not as `@Composable fun semantic(): FreudDsToken<Color>`:
+
+- Declare inside the theme object: `val FreudColorScheme.tokenName: FreudDsToken<Color>` with `@Composable get() = this provides FreudDynamicColor(light = super.color.…, dark = super.color.…)`.
+- At call sites: `import …FreudXTheme.tokenName` (one import per token), then `FreudXTheme.colorScheme.tokenName` (and `.value` only where a raw `Color` is required).
+
+Same rule for feature modules lives in **lessons-learned §36**; do not regress to function-style theme accessors.
 
 ---
 
@@ -311,6 +329,7 @@ Previews here are not “quick demos”; they are used as:
 - Preview files live under `component/preview`.
 - Naming convention: `FreudXPreview.kt`.
 - Preview composables are usually `private` (they are not a runtime API).
+- **Mandatory:** each new `Freud*.kt` **component** under `component/` (a `@Composable` intended for reuse) ships in the same change as `component/preview/Freud*Preview.kt`. Skip only non-UI plumbing (for example a `CompositionLocal` holder file without composable UI).
 
 ### 7.2 Preview uses `FreudTheme(isDark = case.isDark)`
 Every preview case should run in both light and dark. Pattern:
@@ -527,7 +546,7 @@ Use:
     - Use `.then(...)` for conditional modifier parts.
     - Avoid fixed constraints that can clip typography; use `heightIn(min = ...)` or `widthIn(...)` when needed.
 
-4) Create a preview in `component/preview/`:
+4) Create a preview in `component/preview/` (**required before merge**):
     - `FreudXPreview.kt`
     - `private object FreudXPreviewTheme : FreudTheme()` and define semantic preview colors via `provides`.
     - Create `data class FreudXPreviewCase(...)`.
@@ -553,7 +572,7 @@ Use:
 - Boolean parameter names follow `isXxx`/`shouldXxx`.
 - No preview utilities leaked into public API surface.
 - Token constructors remain controlled (`internal` where appropriate).
-- Preview exists and covers theme x variants.
+- **`component/preview/Freud*Preview.kt` exists for every new composable component in `component/`**, covering light/dark and main variants (theme × states).
 - No fixed-size constraints that clip DS typography.
 - Preview code uses a dedicated preview theme object and semantic token mapping.
 

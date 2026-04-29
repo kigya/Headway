@@ -326,3 +326,30 @@ alwaysApply: true
 - **Why it exists:** GitHub Actions does **not** pass repository secrets into reusable workflows by default; missing `secrets: inherit` on the top-level `uses:` leaves `${{ secrets.GPR_KEY }}` empty in client jobs even when the secrets exist in **Repository secrets**.
 - **Bad pattern (short):** `ci.yml` calls `./.github/workflows/_client.yml` without `secrets: inherit` while `_client.yml` passes `secrets: inherit` only to `_build-desktop.yml`.
 - **Correct pattern (short):** On every `uses: ./.github/workflows/…` job that needs secrets, add `secrets: inherit` (or map explicit `secrets:`), matching how `server` jobs are wired.
+
+---
+
+### 36
+
+- **Rule:** In feature `XTheme : FreudTheme()`, declare **semantic colors** as **`val FreudColorScheme.tokenName` with `@Composable get()`** (and `this provides FreudDynamicColor(…)`), not as **`@Composable fun tokenName(): FreudDsToken<Color>`** calling `colorScheme provides …`.
+- **Why it exists:** Matches [client/AGENTS.md](../../../client/AGENTS.md) feature theme pattern and [design-system AGENTS.md](../../../client/core/design-system/src/commonMain/kotlin/dev/kigya/headway/core/designSystem/AGENTS.md); nested extensions require **`import XTheme.tokenName`** so `Theme.colorScheme.tokenName` resolves at call sites.
+- **Bad pattern (short):** `@Composable fun homeBackground() = colorScheme provides FreudDynamicColor(…)`; call sites `HomeTheme.homeBackground().value`.
+- **Correct pattern (short):** `val FreudColorScheme.homeBackground @Composable get() = this provides FreudDynamicColor(…)`; `import XTheme.homeBackground`; usage `XTheme.colorScheme.homeBackground` / `.value` where a raw `Color` is needed.
+
+---
+
+### 37
+
+- **Rule:** Every **`Freud*` composable UI component** added under `core/design-system/.../component/` must ship with a matching **`component/preview/Freud*Preview.kt`** (light/dark and main variants via `PreviewParameterProvider`), same PR as the component. Non-UI hooks (e.g. `CompositionLocal` holders only) are excluded.
+- **Why it exists:** [design-system AGENTS.md](../../../client/core/design-system/src/commonMain/kotlin/dev/kigya/headway/core/designSystem/AGENTS.md) treats previews as the behavioral and visual contract for tokens and variants; missing previews hide regressions and wrong theme mapping.
+- **Bad pattern (short):** New `FreudHomeHeader.kt` or `FreudAsyncImage.kt` without `FreudHomeHeaderPreview.kt` / `FreudAsyncImagePreview.kt`.
+- **Correct pattern (short):** Add `FreudXPreview.kt` with `FreudXPreviewTheme : FreudTheme()`, `FreudTheme(isDark = case.isDark)`, and cases covering theme × key states per section 7 of the design-system AGENTS.md.
+
+---
+
+### 38
+
+- **Rule:** Model types that **design-system components take as parameters** (payloads, slot specs, text models, image shape, enum variants) with **`@Immutable`** when all public state is deeply immutable, or **`@Stable`** when the type holds **mutable composition state** (e.g. `MutableState`, lambdas) or a Stable-appropriate contract; put annotations on the **sealed interface / enum / data class** used with the component.
+- **Why it exists:** Skipping `Immutable` / `Stable` makes Compose treat types as **unstable** and weakens recomposition wins; [design-system AGENTS.md](../../../client/core/design-system/src/commonMain/kotlin/dev/kigya/headway/core/designSystem/AGENTS.md) already requires `ImmutableList` for collection fields in immutable models.
+- **Bad pattern (short):** Public `data class FreudWideNavigationItem(...)` or sealed slot types passed into `Freud*` composables without compose-runtime stability markers.
+- **Correct pattern (short):** `@Immutable data class FreudWideNavigationItem`; `@Stable sealed interface FreudTopBarStartSlot` when implementations carry `onClick` lambdas; `@Stable class FreudAnimationTrigger` for mutable trigger state; enums used as DS parameters annotated `@Immutable`.

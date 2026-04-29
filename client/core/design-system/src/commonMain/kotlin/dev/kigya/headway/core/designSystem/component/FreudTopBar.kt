@@ -9,6 +9,7 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.Stable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -43,20 +44,24 @@ private object FreudTopBarDefaults : FreudTheme() {
         )
 }
 
+@Stable
 sealed interface FreudTopBarStartSlot {
     val onClick: () -> Unit
     val contentDescription: FreudTextValue?
 
+    @Stable
     data class Back(
         override val onClick: () -> Unit,
         override val contentDescription: FreudTextValue? = null,
     ) : FreudTopBarStartSlot
 }
 
+@Stable
 sealed interface FreudTopBarEndSlot {
     val onClick: () -> Unit
     val contentDescription: FreudTextValue?
 
+    @Stable
     data class SignOut(
         override val onClick: () -> Unit,
         override val contentDescription: FreudTextValue? = null,
