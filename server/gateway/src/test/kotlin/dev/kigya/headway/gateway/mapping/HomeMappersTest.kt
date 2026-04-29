@@ -3,6 +3,7 @@ package dev.kigya.headway.gateway.mapping
 import dev.kigya.headway.gateway.graphql.GatewayAppLocale
 import dev.kigya.headway.gateway.model.GatewayUser
 import dev.kigya.headway.gateway.model.GatewayUserRole
+import dev.kigya.headway.home.api.model.`in`.HomeUserRoleDto
 import dev.kigya.headway.home.api.model.out.HomeScreenNextInterviewTypeDto
 import dev.kigya.headway.home.api.model.out.HomeScreenResponseDto
 import dev.kigya.headway.home.api.model.out.HomeScreenSectionIdDto
@@ -29,6 +30,7 @@ class HomeMappersTest {
                 val request = user.toHomeScreenRequest(locale)
                 assertEquals(sampleUserId, request.userId)
                 assertEquals("N", request.userName)
+                assertEquals("e@x.com", request.userEmail)
                 assertEquals(role.name, request.userRole.name)
                 assertEquals(locale.name, request.locale.name)
             }
@@ -53,7 +55,10 @@ class HomeMappersTest {
         val dto = HomeScreenResponseDto(
             dateLabel = "d",
             greeting = "g",
+            displayName = "dn",
             roleLabel = "r",
+            avatarUrl = "https://avatar",
+            accessRole = HomeUserRoleDto.MENTOR,
             readinessPercent = 1,
             nextInterviewType = HomeScreenNextInterviewTypeDto.SPOT,
             nextInterviewTypeLabel = "Spot",
@@ -62,7 +67,10 @@ class HomeMappersTest {
         val payload = dto.toGatewayHomeScreenPayload()
         assertEquals("d", payload.dateLabel)
         assertEquals("g", payload.greeting)
+        assertEquals("dn", payload.displayName)
         assertEquals("r", payload.roleLabel)
+        assertEquals("https://avatar", payload.avatarUrl)
+        assertEquals(GatewayUserRole.MENTOR, payload.accessRole)
         assertEquals(1, payload.readinessPercent)
         assertEquals("SPOT", payload.nextInterviewType?.name)
         assertEquals("Spot", payload.nextInterviewTypeLabel)
@@ -81,7 +89,10 @@ class HomeMappersTest {
             val dto = HomeScreenResponseDto(
                 dateLabel = "",
                 greeting = "",
+                displayName = "",
                 roleLabel = null,
+                avatarUrl = null,
+                accessRole = HomeUserRoleDto.EMPLOYEE,
                 readinessPercent = null,
                 nextInterviewType = dtoType,
                 nextInterviewTypeLabel = "L",

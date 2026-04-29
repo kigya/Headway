@@ -10,7 +10,8 @@ internal object ConfigurationValues {
         get() = stringEnv(EnvKeys.HOME_SERVICE_SELF_HOST)
 
     val HOME_SERVICE_PORT: Int
-        get() = intEnv(EnvKeys.HOME_SERVICE_PORT)
+        get() = System.getenv("PORT")?.toIntOrNull()
+            ?: intEnv(EnvKeys.HOME_SERVICE_PORT)
 
     val HOME_ICONS_PUBLIC_BASE_URL: String
         get() = stringEnv(EnvKeys.HOME_ICONS_PUBLIC_BASE_URL).trim()

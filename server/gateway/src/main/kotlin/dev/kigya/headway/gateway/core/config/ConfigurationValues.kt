@@ -9,7 +9,8 @@ internal object ConfigurationValues {
         get() = stringEnv("GATEWAY_SERVICE_HOST")
 
     val GATEWAY_SERVICE_PORT: Int
-        get() = intEnv("GATEWAY_SERVICE_PORT")
+        get() = System.getenv("PORT")?.toIntOrNull()
+            ?: intEnv("GATEWAY_SERVICE_PORT")
 
     val AUTH_SERVICE_HOST: String
         get() = stringEnv("AUTH_SERVICE_HOST")

@@ -353,3 +353,12 @@ alwaysApply: true
 - **Why it exists:** Skipping `Immutable` / `Stable` makes Compose treat types as **unstable** and weakens recomposition wins; [design-system AGENTS.md](../../../client/core/design-system/src/commonMain/kotlin/dev/kigya/headway/core/designSystem/AGENTS.md) already requires `ImmutableList` for collection fields in immutable models.
 - **Bad pattern (short):** Public `data class FreudWideNavigationItem(...)` or sealed slot types passed into `Freud*` composables without compose-runtime stability markers.
 - **Correct pattern (short):** `@Immutable data class FreudWideNavigationItem`; `@Stable sealed interface FreudTopBarStartSlot` when implementations carry `onClick` lambdas; `@Stable class FreudAnimationTrigger` for mutable trigger state; enums used as DS parameters annotated `@Immutable`.
+
+---
+
+### 39
+
+- **Rule:** Treat **`loginWithGoogle`** payload `user.name` as **auth-time** only; **`homeScreen`** builds copy from **`ResolvePrincipalUseCase` → database `DatabaseUser.name`** passed through **`GatewayUser.toHomeScreenRequest`**. If DB name can be blank while Google supplied a name, **pass `user_email`** into the home request and resolve display name with the **same fallbacks as auth** (trimmed name → email local part → `"User"`), and **do not reject** the home HTTP route when trimmed `user_name` is blank if email can recover it.
+- **Why it exists:** Login can return 200 with a rich `user` object while the subsequent **`HomeScreenQuery`** fails mapping or upstream **400** because home previously required non-blank `user_name` only.
+- **Bad pattern (short):** Assuming Google login JSON proves home will greet with that name; home route `if (body.userName.trim().isBlank()) throw BadRequestException` with no email fallback.
+- **Correct pattern (short):** `HomeScreenRequestDto` includes `user_email`; gateway maps `GatewayUser.email`; home uses shared `resolveHomeDisplayName(userName, userEmail)` (mirror auth) before building `displayName` / greeting.

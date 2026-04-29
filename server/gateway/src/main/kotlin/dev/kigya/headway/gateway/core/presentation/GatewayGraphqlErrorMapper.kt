@@ -1,6 +1,7 @@
 package dev.kigya.headway.gateway.core.presentation
 
 import com.apurebase.kgraphql.ExecutionException
+import com.apurebase.kgraphql.ValidationException
 import dev.kigya.headway.gateway.core.exception.GatewayErrorCode
 import dev.kigya.headway.gateway.core.exception.GatewayErrorReason
 import dev.kigya.headway.gateway.core.exception.GatewayException
@@ -41,6 +42,21 @@ internal object GatewayGraphqlErrorMapper {
 
             is IllegalArgumentException -> {
                 val detail = illegalArgumentDetail(original)
+                GraphQlErrorEnvelope(
+                    message = detail,
+                    code = GatewayErrorCode.BAD_REQUEST,
+                    extensions = extensionsFor(
+                        GatewayException.InvalidRequest(
+                            reason = GatewayErrorReason.BAD_REQUEST,
+                            message = detail,
+                            cause = original,
+                        ),
+                    ),
+                )
+            }
+
+            is ValidationException -> {
+                val detail = original.message?.trim().orEmpty().ifEmpty { DEFAULT_BAD_REQUEST }
                 GraphQlErrorEnvelope(
                     message = detail,
                     code = GatewayErrorCode.BAD_REQUEST,

@@ -21,6 +21,7 @@ internal fun GatewayUser.toHomeScreenRequest(locale: GatewayAppLocale): HomeScre
     HomeScreenRequestDto(
         userId = id,
         userName = name,
+        userEmail = email,
         userRole = role.toHomeUserRoleDto(),
         userAvatarUrl = avatarUrl,
         locale = locale.toHomeAppLocaleDto(),

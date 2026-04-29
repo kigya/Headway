@@ -30,6 +30,7 @@ class GetHomeScreenUseCaseTest {
             HomeScreenRequestDto(
                 userId = UUID.fromString("00000000-0000-0000-0000-000000000001"),
                 userName = "Guest",
+                userEmail = "guest@example.com",
                 userRole = HomeUserRoleDto.GUEST,
                 locale = HomeAppLocaleDto.EN,
             ),
@@ -55,6 +56,7 @@ class GetHomeScreenUseCaseTest {
             HomeScreenRequestDto(
                 userId = UUID.fromString("00000000-0000-0000-0000-000000000002"),
                 userName = "Dev",
+                userEmail = "dev@example.com",
                 userRole = HomeUserRoleDto.DEVELOPER,
                 locale = HomeAppLocaleDto.EN,
             ),
@@ -77,6 +79,7 @@ class GetHomeScreenUseCaseTest {
             HomeScreenRequestDto(
                 userId = UUID.fromString("00000000-0000-0000-0000-000000000002"),
                 userName = "Иван",
+                userEmail = "ivan@example.com",
                 userRole = HomeUserRoleDto.DEVELOPER,
                 locale = HomeAppLocaleDto.RU,
             ),
@@ -96,6 +99,7 @@ class GetHomeScreenUseCaseTest {
             HomeScreenRequestDto(
                 userId = UUID.fromString("00000000-0000-0000-0000-000000000004"),
                 userName = "Mentor",
+                userEmail = "mentor@example.com",
                 userRole = HomeUserRoleDto.MENTOR,
                 locale = HomeAppLocaleDto.EN,
             ),
@@ -114,6 +118,7 @@ class GetHomeScreenUseCaseTest {
             HomeScreenRequestDto(
                 userId = UUID.fromString("00000000-0000-0000-0000-000000000005"),
                 userName = "  Bob  ",
+                userEmail = "bob@example.com",
                 userRole = HomeUserRoleDto.DEVELOPER,
                 locale = HomeAppLocaleDto.EN,
             ),
@@ -130,6 +135,7 @@ class GetHomeScreenUseCaseTest {
             HomeScreenRequestDto(
                 userId = UUID.fromString("00000000-0000-0000-0000-000000000003"),
                 userName = "Emp",
+                userEmail = "emp@example.com",
                 userRole = HomeUserRoleDto.EMPLOYEE,
                 locale = HomeAppLocaleDto.EN,
             ),
@@ -138,6 +144,23 @@ class GetHomeScreenUseCaseTest {
         assertEquals(80, result.readinessPercent)
         assertEquals(HomeScreenNextInterviewTypeDto.MOCK, result.nextInterviewType)
         assertEquals("Mock", result.nextInterviewTypeLabel)
+    }
+
+    @Test
+    fun `blank trimmed user name falls back to email local part`() {
+        val useCase = buildUseCase()
+        val result = useCase(
+            HomeScreenRequestDto(
+                userId = UUID.fromString("00000000-0000-0000-0000-000000000008"),
+                userName = "   ",
+                userEmail = "alice@example.org",
+                userRole = HomeUserRoleDto.DEVELOPER,
+                locale = HomeAppLocaleDto.EN,
+            ),
+        )
+
+        assertEquals("alice", result.displayName)
+        assertEquals("Hi, alice!", result.greeting)
     }
 
     private fun expectedDateLabel(locale: Locale): String {

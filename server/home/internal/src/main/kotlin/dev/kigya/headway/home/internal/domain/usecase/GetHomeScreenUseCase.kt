@@ -5,6 +5,7 @@ import dev.kigya.headway.home.api.model.`in`.HomeScreenRequestDto
 import dev.kigya.headway.home.api.model.`in`.HomeUserRoleDto
 import dev.kigya.headway.home.api.model.out.HomeScreenNextInterviewTypeDto
 import dev.kigya.headway.home.api.model.out.HomeScreenResponseDto
+import dev.kigya.headway.home.internal.domain.resolveHomeDisplayName
 import java.time.Clock
 import java.time.ZoneId
 import java.time.format.DateTimeFormatter
@@ -18,8 +19,11 @@ internal class GetHomeScreenUseCase(
     operator fun invoke(request: HomeScreenRequestDto): HomeScreenResponseDto {
         val jvmLocale = toJvmLocale(request.locale)
         val dateLabel = formatDateLabel(jvmLocale)
-        val trimmedName = request.userName.trim()
-        val greeting = "${HomeScreenCopy.greetingPrefix(request.locale)} $trimmedName!"
+        val resolvedName = resolveHomeDisplayName(
+            userName = request.userName,
+            userEmail = request.userEmail,
+        )
+        val greeting = "${HomeScreenCopy.greetingPrefix(request.locale)} $resolvedName!"
         val roleLabel = HomeScreenCopy.roleLabel(request.userRole, request.locale)
         val readinessAndNext = readinessAndNextInterview(
             role = request.userRole,
@@ -34,7 +38,7 @@ internal class GetHomeScreenUseCase(
         return HomeScreenResponseDto(
             dateLabel = dateLabel,
             greeting = greeting,
-            displayName = trimmedName,
+            displayName = resolvedName,
             roleLabel = roleLabel,
             avatarUrl = avatarUrl,
             accessRole = request.userRole,

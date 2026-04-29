@@ -50,6 +50,7 @@ class HomeRoutesTest {
         val body = HomeScreenRequestDto(
             userId = UUID.fromString("00000000-0000-0000-0000-000000000001"),
             userName = "Tester",
+            userEmail = "ignored@example.com",
             userRole = HomeUserRoleDto.GUEST,
             locale = HomeAppLocaleDto.EN,
         )
@@ -65,7 +66,7 @@ class HomeRoutesTest {
     }
 
     @Test
-    fun `post screen rejects blank user name`() = testApplication {
+    fun `post screen accepts blank user name when email provides fallback`() = testApplication {
         application {
             installHomeApi(getHomeScreen = testGetHomeScreenUseCase())
         }
@@ -73,6 +74,7 @@ class HomeRoutesTest {
         val body = HomeScreenRequestDto(
             userId = UUID.fromString("00000000-0000-0000-0000-000000000001"),
             userName = "   ",
+            userEmail = "tester@example.com",
             userRole = HomeUserRoleDto.GUEST,
             locale = HomeAppLocaleDto.EN,
         )
@@ -81,7 +83,9 @@ class HomeRoutesTest {
             setBody(json.encodeToString(body))
         }
 
-        assertEquals(HttpStatusCode.BadRequest, response.status)
+        assertEquals(HttpStatusCode.OK, response.status)
+        val text = response.bodyAsText()
+        assertTrue(text.contains("Hi, tester!"))
     }
 
     private fun testGetHomeScreenUseCase(): GetHomeScreenUseCase = GetHomeScreenUseCase(

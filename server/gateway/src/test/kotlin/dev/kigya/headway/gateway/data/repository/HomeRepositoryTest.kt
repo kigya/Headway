@@ -45,6 +45,7 @@ class HomeRepositoryTest {
     private val sampleRequest = HomeScreenRequestDto(
         userId = UUID.fromString("aaaaaaaa-bbbb-cccc-dddd-eeeeeeeeeeee"),
         userName = "U",
+        userEmail = "u@example.com",
         userRole = HomeUserRoleDto.GUEST,
         locale = HomeAppLocaleDto.EN,
     )
@@ -52,7 +53,10 @@ class HomeRepositoryTest {
     private val sampleResponseDto = HomeScreenResponseDto(
         dateLabel = "Sat, 1 Jan 2025",
         greeting = "Hi, U!",
+        displayName = "U",
         roleLabel = null,
+        avatarUrl = null,
+        accessRole = HomeUserRoleDto.GUEST,
         readinessPercent = null,
         nextInterviewType = null,
         nextInterviewTypeLabel = null,

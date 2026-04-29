@@ -724,7 +724,10 @@ private val invitedUser = GatewayUser(
 private val developerHomeEnStub: HomeScreenResponseDto = HomeScreenResponseDto(
     dateLabel = "Mon, 1 Jan 2024",
     greeting = "Hi, Developer!",
+    displayName = "Developer",
     roleLabel = "Developer",
+    avatarUrl = null,
+    accessRole = HomeUserRoleDto.DEVELOPER,
     readinessPercent = null,
     nextInterviewType = null,
     nextInterviewTypeLabel = null,
@@ -749,7 +752,10 @@ private object EmployeeHomeReadinessTestHomeRepository : HomeRepositoryContract 
             HomeUserRoleDto.EMPLOYEE -> HomeScreenResponseDto(
                 dateLabel = "Mon, 1 Jan 2024",
                 greeting = "Hi, Employee!",
+                displayName = "Employee",
                 roleLabel = null,
+                avatarUrl = null,
+                accessRole = HomeUserRoleDto.EMPLOYEE,
                 readinessPercent = 80,
                 nextInterviewType = HomeScreenNextInterviewTypeDto.MOCK,
                 nextInterviewTypeLabel = "Mock",

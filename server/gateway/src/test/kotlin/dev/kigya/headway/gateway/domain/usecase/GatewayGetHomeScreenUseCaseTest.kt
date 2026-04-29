@@ -31,7 +31,10 @@ class GatewayGetHomeScreenUseCaseTest {
         val upstream = HomeScreenResponseDto(
             dateLabel = "dl",
             greeting = "gr",
+            displayName = "Alex",
             roleLabel = "Mentor",
+            avatarUrl = null,
+            accessRole = HomeUserRoleDto.MENTOR,
             readinessPercent = 80,
             nextInterviewType = null,
             nextInterviewTypeLabel = null,
@@ -59,6 +62,7 @@ class GatewayGetHomeScreenUseCaseTest {
             HomeScreenRequestDto(
                 userId = userId,
                 userName = "Alex",
+                userEmail = "a@b.c",
                 userRole = HomeUserRoleDto.MENTOR,
                 locale = HomeAppLocaleDto.RU,
             ),

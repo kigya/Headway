@@ -12,6 +12,8 @@ data class HomeScreenRequestDto(
     val userId: UUID,
     @SerialName("user_name")
     val userName: String,
+    @SerialName("user_email")
+    val userEmail: String = "",
     @SerialName("user_role")
     val userRole: HomeUserRoleDto,
     @SerialName("user_avatar_url")
