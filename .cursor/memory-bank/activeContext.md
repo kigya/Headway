@@ -13,3 +13,4 @@
 ## Notes
 
 - Agent rules: `.cursor/rules/` + closest `AGENTS.md`; cumulative lessons in `lessons-learned.mdc` (includes §18 serialization, §19 `data/` layout vs `repository/`, §20 Compose `collectAsStateWithLifecycle` vs no-op `SideEffect`).
+- **Tooling:** Serena MCP + Repomix wired for this repo (`.cursor/mcp.json`, local `.serena/` + `repomix.config.jsonc`); Memory Bank + Spec Kit remain the canonical memory/spec flow (`docs/ai-workflow.md`).

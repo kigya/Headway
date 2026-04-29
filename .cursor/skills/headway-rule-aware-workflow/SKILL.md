@@ -12,7 +12,7 @@ description: >-
 
 ## Instructions
 
-1. Skim [.cursor/memory-bank/activeContext.md](../../memory-bank/activeContext.md) and [.cursor/memory-bank/systemPatterns.md](../../memory-bank/systemPatterns.md) for current focus and cross-cutting patterns (do not treat Memory Bank as a substitute for `AGENTS.md`).
+1. Skim [.cursor/memory-bank/activeContext.md](../../memory-bank/activeContext.md) and [.cursor/memory-bank/systemPatterns.md](../../memory-bank/systemPatterns.md) for current focus and cross-cutting patterns (do not treat Memory Bank as a substitute for `AGENTS.md`). When **Serena MCP** is available, prefer Serena’s symbolic tools for exploration before broad file reads; use **Repomix** only when a compact snapshot is explicitly useful ([docs/ai-workflow.md](../../../docs/ai-workflow.md)).
 2. Determine the **closest** source of truth by path:
    - Repo root / shared Kotlin → [AGENTS.md](../../../AGENTS.md)
    - `client/**` → [client/AGENTS.md](../../../client/AGENTS.md)

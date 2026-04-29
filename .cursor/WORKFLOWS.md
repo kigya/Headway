@@ -4,6 +4,8 @@ This repo layers **Agent Skills** on top of [`.cursor/rules/`](rules/), [`.curso
 
 **How this fits Spec Kit:** Spec-driven commands live under [`.cursor/commands/`](commands/) (`speckit.*`). See [docs/ai-workflow.md](../docs/ai-workflow.md) for the full model.
 
+**Optional MCP tooling:** [`.cursor/mcp.json`](mcp.json) registers **Serena** (symbol-aware navigation and edits) and **Repomix** (compact codebase snapshots). Neither replaces Memory Bank, Spec Kit, or `AGENTS.md`; see [docs/ai-workflow.md](../docs/ai-workflow.md) → *Serena and Repomix*.
+
 ## Subagents ([`.cursor/agents/`](agents/))
 
 Cursor **Subagents** are separate agent contexts for noisy or scoped work (Gradle logs, CI-parity checks). Invoke with `/name` (e.g. `/headway-detekt`) or natural language. They complement built-in Explore / Bash / Browser; they do **not** replace **Skills** for one-shot git flows.

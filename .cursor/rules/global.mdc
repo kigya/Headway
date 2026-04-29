@@ -8,6 +8,7 @@ alwaysApply: true
 - Follow the **closest** `AGENTS.md` to the paths you edit: repo root → [AGENTS.md](../../AGENTS.md); under `client/` → [client/AGENTS.md](../../client/AGENTS.md); under `server/` → [server/AGENTS.md](../../server/AGENTS.md); design-system code → [core/design-system AGENTS.md](../../client/core/design-system/src/commonMain/kotlin/dev/kigya/headway/core/designSystem/AGENTS.md).
 - Do not paraphrase large sections of those files here—obey them.
 - For **project context** (current focus, stack summary, patterns overview), read [.cursor/memory-bank/](../memory-bank/) when starting non-trivial work. It does not override `AGENTS.md` or these rules.
+- When **Serena MCP** is available, prefer Serena’s symbolic navigation and targeted edits before broad repository-wide reads; use **Repomix** only for deliberate compact snapshots ([docs/ai-workflow.md](../../docs/ai-workflow.md)).
 
 ## Visibility
 

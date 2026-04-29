@@ -18,6 +18,15 @@ Patterns called out in `AGENTS.md` / `client/AGENTS.md` / `server/AGENTS.md` and
 - **Thin typed values:** single-field wrappers (e.g. config URLs in DI) use **`@JvmInline value class`**, not `data class`, unless `copy`/data-class semantics are required (§34).
 - **Lessons:** cumulative anti-patterns live in `.cursor/rules/lessons-learned.mdc` (curated, not a dump of every chat).
 
+## Agent workflow layering
+
+- **`AGENTS.md` + `.cursor/rules/`:** canonical coding policy; obey closest `AGENTS.md` by path.
+- **`.cursor/memory-bank/`:** canonical durable **project** context (orientation, focus, patterns); maintain via `/finish-feature` and `/capture-lesson` when insights belong outside one-off chat.
+- **Spec Kit (`.cursor/commands/speckit.*`, `.specify/`):** feature pipeline — clarify → specify → plan → tasks → implement — with artifacts under `specs/` (ignored by git here) and `.specify/` templates.
+- **Serena MCP:** symbolic navigation, references, and targeted edits; prefer Serena before broad exploratory file reads when MCP is enabled.
+- **Repomix:** occasional **compact repo snapshots** for wider context (CLI or MCP); not for routine symbol lookup (use Serena).
+- **Capture lesson:** reusable mistakes still flow to `lessons-learned.mdc` and optionally Memory Bank — tooling does not replace that loop.
+
 ## Open questions
 
 - Add feature-specific patterns here only when they are **stable** and **cross-cutting**; otherwise keep them in specs or task notes under `.specify/` / GitBook.

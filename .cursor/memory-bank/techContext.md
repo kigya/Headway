@@ -23,3 +23,16 @@
 - Initialized with **Specify CLI 0.4.0** (`specify init --here --ai cursor-agent --offline`). Config snapshot: `.specify/init-options.json`
 - Slash commands: `.cursor/commands/speckit.*.md`
 - Templates and scripts: `.specify/templates/`, `.specify/scripts/` (bash + PowerShell)
+
+## Serena MCP (this repo)
+
+- Install (official): `uv tool install -p 3.13 serena-agent@latest --prerelease=allow`; global init: `serena init`; update: `uv tool upgrade serena-agent --prerelease=allow`.
+- Project: `.serena/project.yml` (local; `.serena/` is gitignored); languages include Kotlin plus TS/YAML/JSON/Markdown/Bash helpers for tooling/config files. Index once via `serena project index` after major structural changes.
+- Cursor MCP: `.cursor/mcp.json` runs `serena start-mcp-server --context ide --project ${workspaceFolder}` so the open workspace is the active project.
+- Memory Bank remains authoritative: `base_modes` include `no-memories` and `no-onboarding`; `initial_prompt` reminds agents that policy lives in `AGENTS.md` / `.cursor/rules/` and durable context in `.cursor/memory-bank/`.
+
+## Repomix (this repo)
+
+- Repo config: `repomix.config.jsonc` (JSON with comments). Default output path `.repomix/repomix-output.xml`; directory `.repomix/` is gitignored.
+- CLI snapshot from repo root: `npx -y repomix --output .repomix/repomix-output.xml`, or if `npx` cannot resolve the package: `npm exec --yes --package=repomix -- repomix --output .repomix/repomix-output.xml`. MCP mode uses `npx -y repomix --mcp` in `.cursor/mcp.json`; switch to `npm exec --yes --package=repomix -- repomix --mcp` locally if needed.
+- Uses `.gitignore`, Repomix defaults, and `ignore.customPatterns` for Gradle/Yarn stores, binaries, images, Repomix output, and similar noise.

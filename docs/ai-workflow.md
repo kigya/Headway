@@ -15,8 +15,16 @@ This document describes how **AI-assisted development** is wired in Headway. It 
 | **`.cursor/commands/speckit.*.md`** | **Spec Kit** slash commands (Specify 0.4.0, `cursor-agent` target). |
 | **`.specify/`** | Spec Kit templates, constitution scaffold (`memory/constitution.md`), and helper scripts. |
 | **`.gitbook/`** | Human-oriented handbook (not the agent’s primary runtime context). |
+| **Serena MCP** | Symbol-aware navigation, references, and targeted edits via [`Model Context Protocol`](https://modelcontextprotocol.io/introduction); configured in [`.cursor/mcp.json`](../.cursor/mcp.json). Project settings live under `.serena/` locally (gitignored), typically `.serena/project.yml`. Memory Bank stays authoritative over Serena memories. |
+| **Repomix** | Optional compact codebase snapshots (CLI or MCP); config [repomix.config.jsonc](../repomix.config.jsonc); outputs under `.repomix/` (ignored by git). |
 
-**Precedence:** For **what code must do**, obey the closest `AGENTS.md` + `.cursor/rules/`. For **what the project is doing now** and **brownfield context**, prefer `.cursor/memory-bank/` and update it when wrap-up skills say so.
+**Precedence:** For **what code must do**, obey the closest `AGENTS.md` + `.cursor/rules/`. For **what the project is doing now** and **brownfield context**, prefer `.cursor/memory-bank/` and update it when wrap-up skills say so. **Serena** and **Repomix** augment retrieval—they do not replace `AGENTS.md`, `.cursor/rules/`, Memory Bank, or Spec Kit artifacts.
+
+## Serena and Repomix (optional tooling)
+
+- **Serena:** Use for symbol lookup, references, and edits across the repo. Prefer Serena before scanning large trees with naive file reads. Project-local MCP uses `--context ide` and `--project ${workspaceFolder}` so the open workspace is the active project.
+- **Repomix:** Use when you need a **single packed snapshot** (for example onboarding an external review or attaching a bounded export). Routine navigation should use Serena or normal repo tools, not Repomix.
+- **Memory Bank vs Serena memories:** Canonical durable context for Headway agents remains `.cursor/memory-bank/` plus `/capture-lesson` updates to `lessons-learned.mdc`. This repo’s Serena project disables memory onboarding modes so Serena does not compete with Memory Bank for policy.
 
 ## Spec Kit (brownfield specs)
 
@@ -66,4 +74,21 @@ Subagents (`.cursor/agents/`) are for **noisy or scoped verification** (full Gra
 1. Open **`.cursor/memory-bank/activeContext.md`** when picking up a task.
 2. Edit code under the closest **`AGENTS.md`**.
 3. For sizable features, run **Spec Kit** commands to generate spec artifacts under `.specify/` (and feature branches as the scripts expect).
-4. End with **`/finish-feature`**; run **`/capture-lesson`** after fixes that should not recur.
+4. During exploration, when Serena MCP is enabled, prefer **symbol-aware tools** before broad reads; use **Repomix** only when a compact export is explicitly useful.
+5. End with **`/finish-feature`**; run **`/capture-lesson`** after fixes that should not recur.
+
+### Compact snapshots (Repomix CLI)
+
+From the repo root (requires Node/npm). Official docs typically use `npx`:
+
+```bash
+npx -y repomix --output .repomix/repomix-output.xml
+```
+
+If `npx` fails to resolve the package on your machine, use npm’s exec form:
+
+```bash
+npm exec --yes --package=repomix -- repomix --output .repomix/repomix-output.xml
+```
+
+Add `--compress` for a more token-efficient structural extract when needed. Generated files under `.repomix/` are gitignored.

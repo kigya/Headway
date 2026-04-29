@@ -12,6 +12,10 @@ External dashboards and refs (Supabase, GitHub project): [RESOURCES.md](RESOURCE
 
 Command definitions: [`.cursor/commands/`](commands/) (`speckit.*`). Templates and scripts: [`.specify/`](../.specify/) in the repo root.
 
+## MCP (Serena + Repomix)
+
+Project-local MCP servers live in [`.cursor/mcp.json`](mcp.json). **Serena** (`ide` context, workspace project) handles symbolic navigation and edits; **Repomix** runs `npx repomix --mcp` for packed snapshots. Roles and CLI hints: [docs/ai-workflow.md](../docs/ai-workflow.md) → *Serena and Repomix*. Reload Cursor after changing `mcp.json` if servers do not appear.
+
 ## Workflows (explicit invocation)
 
 See [WORKFLOWS.md](WORKFLOWS.md) for when and how to use:

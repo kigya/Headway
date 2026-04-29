@@ -2,6 +2,11 @@
 
 Changelog for **AI workflow** and **Memory Bank** maintenance (not product release notes).
 
+## 2026-04-29
+
+- **Cursor:** Added project MCP config (Serena `ide` context + Repomix stdio), local `.serena/project.yml` with symbolic languages and Memory-Bank-first prompts, `repomix.config.jsonc`, `.gitignore` for `.repomix/` outputs and `.serena/`.
+- **Docs:** `docs/ai-workflow.md`, `.cursor/README.md`, `.cursor/WORKFLOWS.md`, `headway-rule-aware-workflow` skill, `.cursor/rules/global.mdc`, Memory Bank (`techContext.md`, `systemPatterns.md`, `activeContext.md`) updated for layering.
+
 ## 2026-03-27
 
 - **Server (spec 003):** learning-questions HTTP + GraphQL surface (database internal + gateway), guest session register/revoke/validate, preparation→learning progress sync; `@SerialName` coverage on affected wire models and Ktor resources; non-repository persistence helpers moved to `data/scope` and `data/learning`.
