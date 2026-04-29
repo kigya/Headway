@@ -28,8 +28,8 @@ cd server && ./gradlew \
   --stacktrace
 ```
 
-4. Optional stricter gate (per [server/AGENTS.md](../../server/AGENTS.md)): after the above succeeds, run `cd server && ./gradlew detekt --stacktrace` unless the parent already delegated to `headway-detekt`.
+4. Optional stricter gate (per [server/AGENTS.md](../../../server/AGENTS.md)): after the above succeeds, run `cd server && ./gradlew detekt --stacktrace` unless the parent already delegated to `headway-detekt`.
 
 5. Summarize: pass/fail, failing task name, install paths under `server/**/build/install/` when relevant.
 
-6. Workflow references: [.github/workflows/_build-server.yml](../../.github/workflows/_build-server.yml), [.github/workflows/_test-server.yml](../../.github/workflows/_test-server.yml).
+6. Workflow references: [.github/workflows/_build-server.yml](../../../.github/workflows/_build-server.yml), [.github/workflows/_test-server.yml](../../../.github/workflows/_test-server.yml).

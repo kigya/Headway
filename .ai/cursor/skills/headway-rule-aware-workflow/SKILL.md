@@ -14,10 +14,10 @@ description: >-
 
 1. Skim [.ai/cursor/memory-bank/activeContext.md](../../memory-bank/activeContext.md) and [.ai/cursor/memory-bank/systemPatterns.md](../../memory-bank/systemPatterns.md) for current focus and cross-cutting patterns (do not treat Memory Bank as a substitute for `AGENTS.md`). When **Serena MCP** is available, prefer Serena’s symbolic tools for exploration before broad file reads; use **Repomix** only when a compact snapshot is explicitly useful ([.ai/docs/ai-workflow.md](../../../docs/ai-workflow.md)).
 2. Determine the **closest** source of truth by path:
-   - Repo root / shared Kotlin → [AGENTS.md](../../../AGENTS.md)
-   - `client/**` → [client/AGENTS.md](../../../client/AGENTS.md)
-   - `server/**` → [server/AGENTS.md](../../../server/AGENTS.md)
-   - Design-system code → [client/core/design-system/src/commonMain/kotlin/dev/kigya/headway/core/designSystem/AGENTS.md](../../../client/core/design-system/src/commonMain/kotlin/dev/kigya/headway/core/designSystem/AGENTS.md)
+   - Repo root / shared Kotlin → [AGENTS.md](../../../../AGENTS.md)
+   - `client/**` → [client/AGENTS.md](../../../../client/AGENTS.md)
+   - `server/**` → [server/AGENTS.md](../../../../server/AGENTS.md)
+   - Design-system code → [client/core/design-system/src/commonMain/kotlin/dev/kigya/headway/core/designSystem/AGENTS.md](../../../../client/core/design-system/src/commonMain/kotlin/dev/kigya/headway/core/designSystem/AGENTS.md)
 3. Load matching Cursor rules from [.ai/cursor/rules/](../../rules/):
    - Always: [global.mdc](../../rules/global.mdc), [lessons-learned.mdc](../../rules/lessons-learned.mdc)
    - Under `client/**`: [client.mdc](../../rules/client.mdc), [detekt-guardrails.mdc](../../rules/detekt-guardrails.mdc)

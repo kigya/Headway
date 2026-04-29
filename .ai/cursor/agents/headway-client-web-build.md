@@ -33,4 +33,4 @@ Optional: set `GRADLE_OPTS=-Xmx4g` if the JVM runs out of memory (CI uses this).
 
 6. **Note:** CI runs this job on `macos-latest`. On Linux or Windows, behavior may differ; report the host OS if the build fails.
 
-7. Workflow reference: [.github/workflows/_build-web.yml](../../.github/workflows/_build-web.yml).
+7. Workflow reference: [.github/workflows/_build-web.yml](../../../.github/workflows/_build-web.yml).

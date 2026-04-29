@@ -1,6 +1,6 @@
 # Headway Cursor agent workflows
 
-This repo layers **Agent Skills** on top of [`.ai/cursor/rules/`](rules/), [`.ai/cursor/memory-bank/`](memory-bank/), and root [`AGENTS.md`](../AGENTS.md), [`client/AGENTS.md`](../client/AGENTS.md), [`server/AGENTS.md`](../server/AGENTS.md). Nothing here runs in the background: you invoke workflows from chat.
+This repo layers **Agent Skills** on top of [`.ai/cursor/rules/`](rules/), [`.ai/cursor/memory-bank/`](memory-bank/), and root [`AGENTS.md`](../../AGENTS.md), [`client/AGENTS.md`](../../client/AGENTS.md), [`server/AGENTS.md`](../../server/AGENTS.md). Nothing here runs in the background: you invoke workflows from chat.
 
 **How this fits Spec Kit:** Spec-driven commands live under [`.ai/cursor/commands/`](commands/) (`speckit.*`). See [.ai/docs/ai-workflow.md](../docs/ai-workflow.md) for the full model.
 

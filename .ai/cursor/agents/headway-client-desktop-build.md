@@ -27,4 +27,4 @@ cd client && ./gradlew :app:headwayDesktop:packageDistributionForCurrentOS --sta
 
 5. Summarize: pass/fail; on success, outputs under `client/app/headwayDesktop/build/compose/binaries/`.
 
-6. Workflow reference: [.github/workflows/_build-desktop.yml](../../.github/workflows/_build-desktop.yml).
+6. Workflow reference: [.github/workflows/_build-desktop.yml](../../../.github/workflows/_build-desktop.yml).

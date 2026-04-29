@@ -21,4 +21,4 @@ cd client && ./gradlew :app:headwayAndroid:assembleDebug --stacktrace
 
 4. Summarize: pass/fail; on success, note APK/AAB locations under `client/app/headwayAndroid/build/outputs/` (apk / bundle).
 
-5. Canonical command: [client/AGENTS.md](../../client/AGENTS.md). CI: [.github/workflows/_build-android.yml](../../.github/workflows/_build-android.yml).
+5. Canonical command: [client/AGENTS.md](../../../client/AGENTS.md). CI: [.github/workflows/_build-android.yml](../../../.github/workflows/_build-android.yml).

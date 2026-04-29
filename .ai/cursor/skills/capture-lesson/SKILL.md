@@ -15,7 +15,7 @@ disable-model-invocation: true
 1. Use the current chat context and the user’s description. When available, inspect recent changes (e.g. diff or touched files) in **read-only** fashion.
 2. State the **root cause** in one short phrase.
 3. Classify **reusable** vs **one-off**:
-   - **Reusable:** Violates architecture or patterns in [AGENTS.md](../../../AGENTS.md) or [.ai/cursor/rules/](../../rules/); stable project pattern; likely to recur; spans more than a trivial typo; expressible as a general rule.
+   - **Reusable:** Violates architecture or patterns in [AGENTS.md](../../../../AGENTS.md) or [.ai/cursor/rules/](../../rules/); stable project pattern; likely to recur; spans more than a trivial typo; expressible as a general rule.
    - **One-off:** Typo; single-screen copy; one-off business rule; rename with no broader lesson; isolated case with no rule value.
 4. If **one-off:** Reply **skipped** with one line of reasoning. Do **not** edit [lessons-learned.mdc](../../rules/lessons-learned.mdc).
 5. If **reusable:**
@@ -39,5 +39,5 @@ disable-model-invocation: true
 
 ## Constraints
 
-- Do **not** edit [AGENTS.md](../../../AGENTS.md), [client/AGENTS.md](../../../client/AGENTS.md), or [server/AGENTS.md](../../../server/AGENTS.md) in this workflow.
+- Do **not** edit [AGENTS.md](../../../../AGENTS.md), [client/AGENTS.md](../../../../client/AGENTS.md), or [server/AGENTS.md](../../../../server/AGENTS.md) in this workflow.
 - Do **not** add scripts, hooks, or CI.

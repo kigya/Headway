@@ -6,8 +6,8 @@ alwaysApply: false
 
 ## Configs
 
-- Client: [config/detekt/client.yml](../../config/detekt/client.yml) and [config/detekt/compose.yml](../../config/detekt/compose.yml) via `client/build-logic`.
-- Server: [config/detekt/server.yml](../../config/detekt/server.yml) via `server/build-logic`.
+- Client: [config/detekt/client.yml](../../../config/detekt/client.yml) and [config/detekt/compose.yml](../../../config/detekt/compose.yml) via `client/build-logic`.
+- Server: [config/detekt/server.yml](../../../config/detekt/server.yml) via `server/build-logic`.
 - Do not bypass team config with ad-hoc `detekt { }` overrides in module `build.gradle.kts` unless the user explicitly approves a deliberate change.
 
 ## Policy
@@ -22,4 +22,4 @@ alwaysApply: false
 
 ## Overlap with AGENTS
 
-- Formatting, trailing commas, and complexity limits in root [AGENTS.md](../../AGENTS.md) still apply—generated Kotlin must pass Detekt **and** those rules.
+- Formatting, trailing commas, and complexity limits in root [AGENTS.md](../../../AGENTS.md) still apply—generated Kotlin must pass Detekt **and** those rules.

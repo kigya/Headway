@@ -6,7 +6,7 @@ alwaysApply: false
 
 ## Verify
 
-- After substantive client work: `cd client && ./gradlew app:headwayAndroid:assembleDebug` and `cd client && ./gradlew detekt` per [client/AGENTS.md](../../client/AGENTS.md).
+- After substantive client work: `cd client && ./gradlew app:headwayAndroid:assembleDebug` and `cd client && ./gradlew detekt` per [client/AGENTS.md](../../../client/AGENTS.md).
 
 ## Modules
 
@@ -21,7 +21,7 @@ alwaysApply: false
 ## Navigation
 
 - Navigate only through `NavigatorContract` and `NavigationIntent`.
-- New screens need `entry` in [client/shared/App.kt](../../client/shared/App.kt) and includes in `settings.gradle.kts`.
+- New screens need `entry` in [client/shared/App.kt](../../../client/shared/App.kt) and includes in `settings.gradle.kts`.
 - Ask before changing global nav wiring or `NavKey` definitions.
 
 ## UI
@@ -35,7 +35,7 @@ alwaysApply: false
 ## Errors (client)
 
 - Use `Outcome` from `core:outcome` for expected failures; sealed domain errors—do not use raw exceptions for expected paths.
-- Follow `CancellationException` and `TimeoutCancellationException` rules in [client/AGENTS.md](../../client/AGENTS.md).
+- Follow `CancellationException` and `TimeoutCancellationException` rules in [client/AGENTS.md](../../../client/AGENTS.md).
 
 ## Platform
 

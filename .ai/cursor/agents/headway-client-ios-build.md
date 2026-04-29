@@ -31,4 +31,4 @@ cd client/app/headwayIOS && xcodebuild \
 
 5. Summarize: pass/fail; on success, simulator app path similar to `client/build/ios/Build/Products/Debug-iphonesimulator/Headway.app`.
 
-6. Workflow reference: [.github/workflows/_build-ios.yml](../../.github/workflows/_build-ios.yml).
+6. Workflow reference: [.github/workflows/_build-ios.yml](../../../.github/workflows/_build-ios.yml).

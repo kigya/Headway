@@ -2,7 +2,7 @@
 
 ## Purpose
 
-Rules in [`.ai/cursor/rules/`](rules/) turn [AGENTS.md](../AGENTS.md), [client/AGENTS.md](../client/AGENTS.md), and [server/AGENTS.md](../server/AGENTS.md) into short, enforceable instructions for the AI agent. Those `AGENTS.md` files stay the canonical reference for **code policy** and are not replaced by this folder.
+Rules in [`.ai/cursor/rules/`](rules/) turn [AGENTS.md](../../AGENTS.md), [client/AGENTS.md](../../client/AGENTS.md), and [server/AGENTS.md](../../server/AGENTS.md) into short, enforceable instructions for the AI agent. Those `AGENTS.md` files stay the canonical reference for **code policy** and are not replaced by this folder.
 
 **Project context** for agents (orientation, current focus, stack recap) lives in [`.ai/cursor/memory-bank/`](memory-bank/). Full layering is described in [.ai/docs/ai-workflow.md](../docs/ai-workflow.md).
 
@@ -26,4 +26,4 @@ See [WORKFLOWS.md](WORKFLOWS.md) for when and how to use:
 - `/commit` — `git add -A` (or given paths), then `git commit` with `CLIENT-HEADWAY-` / `SERVER-HEADWAY-` / `FULLSTACK-HEADWAY-` + task number from the branch; no push unless you ask.
 - `/pull-request` — push branch, create or update PR into `trunk` (title, body, labels, `Closes #N`); optional `gh` for GitHub Project.
 
-Skills live under [`.ai/cursor/skills/`](skills/). There are no hooks, watchers, or CI steps in this layer.
+Skills live under [`.ai/cursor/skills/`](skills/) (Headway workflows plus optional vendor packs: `apollo-kotlin`, `supabase-postgres-best-practices`, `audit-context-building`). There are no hooks, watchers, or CI steps in this layer.

@@ -20,4 +20,4 @@ You run Headway static analysis only. Do not edit source files unless the user e
 
 4. Summarize for the parent: pass/fail per tree, first actionable finding if any, paths to HTML reports under `**/build/reports/detekt/*.html`.
 
-5. Canonical policy: [client/AGENTS.md](../../client/AGENTS.md), [server/AGENTS.md](../../server/AGENTS.md).
+5. Canonical policy: [client/AGENTS.md](../../../client/AGENTS.md), [server/AGENTS.md](../../../server/AGENTS.md).

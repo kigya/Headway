@@ -17,7 +17,7 @@ alwaysApply: true
 ### 1
 
 - **Rule:** Use Freud design system in feature UI, not Material3 or raw theme values.
-- **Why it exists:** [client/AGENTS.md](../../client/AGENTS.md) forbids raw Material3 without design-system wrapping and hard-coded colors/dimensions/typography in features.
+- **Why it exists:** [client/AGENTS.md](../../../client/AGENTS.md) forbids raw Material3 without design-system wrapping and hard-coded colors/dimensions/typography in features.
 - **Bad pattern (short):** `MaterialTheme`, `androidx.compose.material3.Text`, raw `Color(0xFF…)`, fixed `dp`/`sp` literals in feature composables.
 - **Correct pattern (short):** `FreudText`, `FreudDsToken`, feature `internal object XTheme : FreudTheme()` with `FreudColorScheme` extensions using `super.color.*` and `FreudDynamicColor`.
 
@@ -26,7 +26,7 @@ alwaysApply: true
 ### 2
 
 - **Rule:** Keep ViewModel a thin bridge; put behavior in the MVIKotlin Store.
-- **Why it exists:** [client/AGENTS.md](../../client/AGENTS.md) requires StoreFactory executor/reducer for logic and forbids business logic in ViewModel.
+- **Why it exists:** [client/AGENTS.md](../../../client/AGENTS.md) requires StoreFactory executor/reducer for logic and forbids business logic in ViewModel.
 - **Bad pattern (short):** Branching, navigation, or state updates inside `ViewModel` methods or `viewModelScope` that belong in the store pipeline.
 - **Correct pattern (short):** ViewModel calls `store.accept(Intent)`; StoreFactory `coroutineExecutorFactory` / reducer handle navigation via `NavigatorContract` and state changes via `Message`.
 
@@ -35,7 +35,7 @@ alwaysApply: true
 ### 3
 
 - **Rule:** Model expected client failures with `Outcome`, not ad-hoc exceptions.
-- **Why it exists:** [client/AGENTS.md](../../client/AGENTS.md) and root [AGENTS.md](../../AGENTS.md) require typed `Outcome` for client error handling.
+- **Why it exists:** [client/AGENTS.md](../../../client/AGENTS.md) and root [AGENTS.md](../../../AGENTS.md) require typed `Outcome` for client error handling.
 - **Bad pattern (short):** `try/catch` or `runCatching` for normal domain failures; throwing for control flow in client domain code.
 - **Correct pattern (short):** Sealed error types and `Outcome` helpers (`outcomeSuspendCatching`, `mapSuccess`, `handle`, etc.) from `core:outcome`.
 
@@ -44,7 +44,7 @@ alwaysApply: true
 ### 4
 
 - **Rule:** Navigate only through `NavigatorContract` and `NavigationIntent`.
-- **Why it exists:** [client/AGENTS.md](../../client/AGENTS.md) standardizes Navigation3 on `NavigatorContract`; bypass breaks back stack and `App.kt` assembly.
+- **Why it exists:** [client/AGENTS.md](../../../client/AGENTS.md) standardizes Navigation3 on `NavigatorContract`; bypass breaks back stack and `App.kt` assembly.
 - **Bad pattern (short):** Direct platform navigation APIs, string routes, or stack mutation outside `NavigationIntent`.
 - **Correct pattern (short):** Inject `NavigatorContract`; use `NavigationIntent.NavigateTo` / `NavigateBack` / `ReplaceTopBy` with `@Serializable` `NavKey` types from the feature `api` module.
 
@@ -53,7 +53,7 @@ alwaysApply: true
 ### 5
 
 - **Rule:** Gateway repositories must wrap service HTTP in `upstreamCall`.
-- **Why it exists:** [server/AGENTS.md](../../server/AGENTS.md) requires consistent dependency error mapping for gateway outbound calls.
+- **Why it exists:** [server/AGENTS.md](../../../server/AGENTS.md) requires consistent dependency error mapping for gateway outbound calls.
 - **Bad pattern (short):** Raw `httpClient.post` / `httpClient.get` in `gateway/data/repository` without `upstreamCall`.
 - **Correct pattern (short):** `upstreamCall(dependency, request) { … }` and map failures with `toGatewayException` so GraphQL extensions stay consistent.
 
@@ -125,7 +125,7 @@ alwaysApply: true
 ### 13
 
 - **Rule:** Name functions that compute or map a value with a **verb** (or Kotlin `toTargetType` for conversions), not a noun that reads like a property.
-- **Why it exists:** Root [AGENTS.md](../../AGENTS.md) uses `camelCase` for functions; noun-like names on call sites (`val x = jvmLocale(y)`) look like field access and hide that work is happening.
+- **Why it exists:** Root [AGENTS.md](../../../AGENTS.md) uses `camelCase` for functions; noun-like names on call sites (`val x = jvmLocale(y)`) look like field access and hide that work is happening.
 - **Bad pattern (short):** `private fun jvmLocale(dto: LocaleDto): Locale` when the body maps or builds the result.
 - **Correct pattern (short):** `private fun toJvmLocale(dto: LocaleDto): Locale` or `private fun resolveJvmLocale(dto: LocaleDto): Locale` (and similar verb-led names for non-conversion helpers).
 
@@ -143,7 +143,7 @@ alwaysApply: true
 ### 15
 
 - **Rule:** Reference Kotlin types by simple name with an explicit `import`; avoid fully qualified class names in expressions and generic arguments when unambiguous.
-- **Why it exists:** Root [AGENTS.md](../../AGENTS.md) requires explicit, ordered imports; FQCNs in the body obscure readability and duplicate the package at every use site.
+- **Why it exists:** Root [AGENTS.md](../../../AGENTS.md) requires explicit, ordered imports; FQCNs in the body obscure readability and duplicate the package at every use site.
 - **Bad pattern (short):** `type<dev.kigya.headway.gateway.model.GatewayPreparationEmployee>()` or other `dev.kigya...Type` sprinkled through call sites.
 - **Correct pattern (short):** `import dev.kigya.headway.gateway.model.GatewayPreparationEmployee` and `type<GatewayPreparationEmployee>()`.
 
@@ -161,7 +161,7 @@ alwaysApply: true
 ### 17
 
 - **Rule:** Every downstream microservice the gateway calls through a dedicated Koin `HttpClient` must have a matching **`BaseHttpProbe`** (or equivalent) wired into `CheckHealthStatusUseCase` so aggregated GraphQL health lists that dependency.
-- **Why it exists:** [server/AGENTS.md](../../server/AGENTS.md) documents gateway dependency probes via `HealthzResource`; skipping a wired service hides outages from operators and from the public health contract.
+- **Why it exists:** [server/AGENTS.md](../../../server/AGENTS.md) documents gateway dependency probes via `HealthzResource`; skipping a wired service hides outages from operators and from the public health contract.
 - **Bad pattern (short):** `createServiceHttpClient<HomeKoinHttpClient>(…)` and `HomeRepository` calls exist, but health aggregation only checks auth and database.
 - **Correct pattern (short):** `HomeServiceProbe(httpClient)` plus `GatewayDependencyHealth(name = "home", …)` and include its status when computing overall `GatewayServiceStatus`.
 
@@ -179,7 +179,7 @@ alwaysApply: true
 ### 19
 
 - **Rule:** In `*/internal/data`, keep **`repository/`** for types that implement a **`…RepositoryContract`** (or are clearly named `*Repository` HTTP/DB facades). Put other persistence helpers—Exposed query/scoping functions, cross-domain sync writers, one-off SQL utilities—in a **sibling subpackage** under `data/` (e.g. `data/scope`, `data/learning`), not beside repositories in the same directory.
-- **Why it exists:** [server/AGENTS.md](../../server/AGENTS.md) maps `data/repository` to repository implementations; mixing non-repositories there blurs the port/adapter boundary and makes discovery harder.
+- **Why it exists:** [server/AGENTS.md](../../../server/AGENTS.md) maps `data/repository` to repository implementations; mixing non-repositories there blurs the port/adapter boundary and makes discovery harder.
 - **Bad pattern (short):** `LearningQuestionPreparationSync` or `FacilitatorSubjectScopeQueries.kt` (top-level scope checks) living under `data/repository/` next to `UsersRepository`.
 - **Correct pattern (short):** `data/learning/LearningQuestionPreparationSync.kt`, `data/scope/FacilitatorSubjectScope.kt` (or another purposeful name); repositories stay in `data/repository/` and import those helpers.
 
@@ -287,7 +287,7 @@ alwaysApply: true
 ### 31
 
 - **Rule:** Prefer **full-word local names** over cryptic abbreviations (`error` not `err`, `message` not `msg`, `index` not `idx`, `context` not `ctx`, `gatewayException` not `ex` in tests) when the name is not a widely understood domain acronym on the wire.
-- **Why it exists:** Abbreviations save a few characters but slow scanning and review; aligned with root [AGENTS.md](../../AGENTS.md) verb-led / readable naming spirit.
+- **Why it exists:** Abbreviations save a few characters but slow scanning and review; aligned with root [AGENTS.md](../../../AGENTS.md) verb-led / readable naming spirit.
 - **Bad pattern (short):** `val err = …`, `val msg = …`, `val ex = assertFailsWith<…>`.
 - **Correct pattern (short):** `val tokenError = …`, `val badRequestMessage = …`, `val gatewayException = response.toGatewayException(…)`.
 

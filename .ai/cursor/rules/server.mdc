@@ -38,7 +38,7 @@ alwaysApply: false
 ## Exceptions
 
 - Register new domain cases in `handle<Service>Exceptions()`.
-- Use `DependencyUnavailable` vs `UpstreamProtocol` per [server/AGENTS.md](../../server/AGENTS.md).
+- Use `DependencyUnavailable` vs `UpstreamProtocol` per [server/AGENTS.md](../../../server/AGENTS.md).
 
 ## Gradle
 

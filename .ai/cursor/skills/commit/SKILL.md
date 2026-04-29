@@ -39,7 +39,7 @@ disable-model-invocation: true
 ## Constraints
 
 - One logical commit per `/commit` invocation; default is all non-ignored local changes (`git add -A`), unless the user named paths.
-- Follow shared Kotlin/repo hygiene from [AGENTS.md](../../../AGENTS.md) for message quality.
+- Follow shared Kotlin/repo hygiene from [AGENTS.md](../../../../AGENTS.md) for message quality.
 
 ## Output
 
