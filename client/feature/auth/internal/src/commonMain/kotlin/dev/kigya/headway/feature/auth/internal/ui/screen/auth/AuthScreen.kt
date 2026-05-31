@@ -8,7 +8,7 @@ import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.heightIn
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.layout.widthIn
@@ -121,6 +121,7 @@ private fun AuthScreenContent(
             } else {
                 AuthScreenStackedContent(
                     containerWidth = maxWidth,
+                    containerHeight = maxHeight,
                     isBusy = state.value.isBusy,
                     onSignInWithGoogle = onSignInWithGoogle,
                     onContinueAsGuest = onContinueAsGuest,
@@ -133,11 +134,16 @@ private fun AuthScreenContent(
 @Composable
 private fun AuthScreenStackedContent(
     containerWidth: Dp,
+    containerHeight: Dp,
     isBusy: Boolean,
     onSignInWithGoogle: () -> Unit,
     onContinueAsGuest: () -> Unit,
 ) {
     val scrollState = rememberScrollState()
+    val stackedLottieHeight = resolveStackedLottieHeight(
+        containerWidth = containerWidth,
+        containerHeight = containerHeight,
+    )
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -149,13 +155,12 @@ private fun AuthScreenStackedContent(
         AuthLogo()
         FreudSpacer(size = AuthTheme.dimension.dp36)
         AuthHeaderTexts(isWide = false)
-        if (containerWidth > STACKED_LOTTIE_HIDE_BELOW_WIDTH) {
+        if (stackedLottieHeight != null) {
             FreudSpacer(size = AuthTheme.dimension.dp24)
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .weight(1f)
-                    .heightIn(max = resolveStackedLottieMaxHeight(containerWidth = containerWidth))
+                    .height(height = stackedLottieHeight)
                     .clip(shape = RectangleShape),
                 contentAlignment = Alignment.Center,
             ) {
@@ -328,11 +333,35 @@ private fun AuthActionButtons(
     }
 }
 
-private fun resolveStackedLottieMaxHeight(containerWidth: Dp): Dp =
-    minOf(STACKED_LOTTIE_MAX_HEIGHT_CAP, containerWidth * STACKED_LOTTIE_MAX_HEIGHT_WIDTH_FACTOR)
+private fun resolveStackedLottieHeight(
+    containerWidth: Dp,
+    containerHeight: Dp,
+): Dp? {
+    val contentWidth = containerWidth - AuthTheme.dimension.dp24.value * 2
+    if (contentWidth < STACKED_LOTTIE_MIN_SIZE) {
+        return null
+    }
 
-private val STACKED_LOTTIE_HIDE_BELOW_WIDTH = 340.dp
+    val availableHeight = containerHeight - STACKED_LOTTIE_FIXED_SIBLINGS_HEIGHT
+    if (availableHeight < STACKED_LOTTIE_MIN_SIZE) {
+        return null
+    }
+
+    val cappedHeight = minOf(
+        STACKED_LOTTIE_MAX_HEIGHT_CAP,
+        containerWidth * STACKED_LOTTIE_MAX_HEIGHT_WIDTH_FACTOR,
+        availableHeight,
+    )
+    if (cappedHeight < STACKED_LOTTIE_MIN_SIZE || contentWidth < STACKED_LOTTIE_MIN_SIZE) {
+        return null
+    }
+
+    return cappedHeight
+}
+
+private val STACKED_LOTTIE_MIN_SIZE = 120.dp
 private val STACKED_LOTTIE_MAX_HEIGHT_CAP = 260.dp
+private val STACKED_LOTTIE_FIXED_SIBLINGS_HEIGHT = 540.dp
 private const val STACKED_LOTTIE_MAX_HEIGHT_WIDTH_FACTOR = 0.65f
 private const val GREETING_ANIMATION_DURATION = 1000
 private const val SUBTEXT_GREETING_ANIMATION_DURATION = 600

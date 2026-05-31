@@ -6,6 +6,8 @@ import androidx.navigation3.runtime.entryProvider
 import androidx.navigation3.runtime.rememberSaveableStateHolderNavEntryDecorator
 import androidx.navigation3.ui.NavDisplay
 import dev.kigya.headway.core.designSystem.theme.FreudTheme
+import dev.kigya.headway.core.designSystem.theme.LocalTheme
+import dev.kigya.headway.core.designSystem.util.SystemBarsColor
 import dev.kigya.headway.feature.auth.api.AuthNoAccessScreenKey
 import dev.kigya.headway.feature.auth.api.AuthNoAccessScreenRouteHolderContract
 import dev.kigya.headway.feature.auth.api.AuthScreenKey
@@ -52,11 +54,38 @@ private fun AppNavigationHost() {
             rememberViewModelStoreNavEntryDecorator(),
         ),
         entryProvider = entryProvider {
-            entry<SplashScreenKey> { splashRoute.content() }
-            entry<AuthScreenKey> { authRoute.content() }
-            entry<AuthNoAccessScreenKey> { authNoAccessRoute.content() }
-            entry<HomeScreenKey> { homeRoute.content() }
-            entry<LearnQuestionsScreenKey> { learnQuestionsRoute.content() }
+            entry<SplashScreenKey> {
+                LightSurfaceSystemBarsColor()
+                splashRoute.content()
+            }
+            entry<AuthScreenKey> {
+                LightSurfaceSystemBarsColor()
+                authRoute.content()
+            }
+            entry<AuthNoAccessScreenKey> {
+                LightSurfaceSystemBarsColor()
+                authNoAccessRoute.content()
+            }
+            entry<HomeScreenKey> {
+                LightSurfaceSystemBarsColor()
+                homeRoute.content()
+            }
+            entry<LearnQuestionsScreenKey> {
+                LightSurfaceSystemBarsColor()
+                learnQuestionsRoute.content()
+            }
+        },
+    )
+}
+
+@Composable
+private fun LightSurfaceSystemBarsColor() {
+    val isDarkTheme = LocalTheme.current.isDark
+    SystemBarsColor(
+        color = if (isDarkTheme) {
+            SystemBarsColor.LIGHT
+        } else {
+            SystemBarsColor.DARK
         },
     )
 }
