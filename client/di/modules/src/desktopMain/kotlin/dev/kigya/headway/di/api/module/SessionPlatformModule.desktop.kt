@@ -50,4 +50,4 @@ private class DesktopSessionRuntimeIdentity : SessionRuntimeIdentityContract {
     override val sessionGatewayPlatform: HeadwaySessionGatewayPlatform = HeadwaySessionGatewayPlatform.Desktop
 }
 
-private const val DEV_GRAPHQL_URL: String = "https://kigya-headway-dev-gateway.onrender.com/api/v1/graphql"
+private const val DEV_GRAPHQL_URL: String = "http://localhost:8080/api/v1/graphql"

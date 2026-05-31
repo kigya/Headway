@@ -3,7 +3,8 @@
 **Feature Branch**: `[###-feature-name]`  
 **Created**: [DATE]  
 **Status**: Draft  
-**Input**: User description: "$ARGUMENTS"
+**Input**: User description: "$ARGUMENTS"  
+**Related PRD**: [link the screen PRD(s) under `.gitbook/product/prd/`, or "n/a — non-screen change". Keep requirements consistent with the PRD; reconcile at `/finish-feature`.]
 
 ## User Scenarios & Testing *(mandatory)*
 

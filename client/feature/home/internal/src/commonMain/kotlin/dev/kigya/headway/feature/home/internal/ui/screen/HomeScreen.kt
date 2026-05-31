@@ -7,10 +7,12 @@ import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.aspectRatio
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.systemBarsPadding
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -76,20 +78,26 @@ private fun HomeScreenContent(
             .fillMaxSize()
             .background(HomeTheme.colorScheme.homeBackground.value),
     ) {
-        FreudFallback(
-            isError = state.value.errorMessage != null,
-            onRetry = onRetryLoad,
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .systemBarsPadding(),
         ) {
-            if (state.value.isLoading && state.value.summary == null) {
-                Box(modifier = Modifier.fillMaxSize())
-            } else {
-                state.value.summary?.let { summary ->
-                    HomeLoadedBody(
-                        summary = summary,
-                        isWideNavigationVisible = state.value.isWideNavigationVisible,
-                        onActionClick = onActionClick,
-                        onToggleWideNavigation = onToggleWideNavigation,
-                    )
+            FreudFallback(
+                isError = state.value.errorMessage != null,
+                onRetry = onRetryLoad,
+            ) {
+                if (state.value.isLoading && state.value.summary == null) {
+                    Box(modifier = Modifier.fillMaxSize())
+                } else {
+                    state.value.summary?.let { summary ->
+                        HomeLoadedBody(
+                            summary = summary,
+                            isWideNavigationVisible = state.value.isWideNavigationVisible,
+                            onActionClick = onActionClick,
+                            onToggleWideNavigation = onToggleWideNavigation,
+                        )
+                    }
                 }
             }
         }
@@ -116,6 +124,36 @@ private fun HomeLoadedBody(
             selectedKey = HomeActionSemanticType.Home.name,
             isRailVisible = isWideNavigationVisible,
             onToggleRail = onToggleWideNavigation,
+            headerLeadingContent = {
+                Row(
+                    horizontalArrangement = Arrangement.spacedBy(HomeTheme.dimension.dp8.value),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    FreudText(
+                        value = FreudTextValue.text("headway"),
+                        color = HomeTheme.colorScheme.homePrimaryText,
+                        typography = HomeTheme.typography.headingSmExtraBold,
+                    )
+                }
+            },
+            headerTrailingContent = {
+                Row(
+                    modifier = Modifier.clickable(
+                        interactionSource = remember { MutableInteractionSource() },
+                        indication = null,
+                        role = Role.Button,
+                        onClick = onToggleWideNavigation,
+                    ),
+                    horizontalArrangement = Arrangement.spacedBy(HomeTheme.dimension.dp2.value),
+                    verticalAlignment = Alignment.CenterVertically,
+                ) {
+                    FreudText(
+                        value = FreudTextValue.text("<<"),
+                        color = HomeTheme.colorScheme.homePrimaryText,
+                        typography = HomeTheme.typography.textLgBold,
+                    )
+                }
+            },
             onItemClick = { item ->
                 val semantic = HomeActionSemanticType.entries.first { it.name == item.key }
                 onActionClick(semantic)
@@ -130,9 +168,7 @@ private fun HomeLoadedBody(
             ) {
                 FreudHomeHeader(
                     content = headerContent,
-                    avatarImageUrl = summary.userSummary.avatarUrl,
                     avatarContentDescription = summary.userSummary.displayName,
-                    isWideLayout = true,
                 )
             }
         }
@@ -145,7 +181,6 @@ private fun HomeLoadedBody(
         ) {
             FreudHomeHeader(
                 content = headerContent,
-                avatarImageUrl = summary.userSummary.avatarUrl,
                 avatarContentDescription = summary.userSummary.displayName,
             )
             LazyVerticalGrid(
@@ -230,7 +265,14 @@ private fun HomeActionGridCell(
 }
 
 private fun buildHeaderContent(summary: HomeScreenSummary): FreudHomeHeaderContent {
-    val greeting = FreudTextValue.text("Hi, ${summary.userSummary.displayName}!")
+    val display = summary.userSummary.displayName.trim()
+    val given = display.substringBefore(' ').trim().ifEmpty { display }
+    val greetingPrimary = FreudTextValue.text("Hi, $display!")
+    val greetingShortIfOverflow = if (given != display) {
+        FreudTextValue.text("Hi, $given!")
+    } else {
+        null
+    }
     val date = FreudTextValue.text(summary.userSummary.dateLabel)
     val role = summary.userSummary.roleLabel?.let { FreudTextValue.text(it) }
     val metrics = when (summary.userSummary.accessRole) {
@@ -250,16 +292,19 @@ private fun buildHeaderContent(summary: HomeScreenSummary): FreudHomeHeaderConte
                 )
             }
         }
+
         HomeAccessRole.Developer,
         HomeAccessRole.Manager,
         HomeAccessRole.Guest,
         -> null
     }
     return FreudHomeHeaderContent(
-        greeting = greeting,
+        greetingPrimary = greetingPrimary,
+        greetingShortIfOverflow = greetingShortIfOverflow,
         dateLabel = date,
         roleLabel = role,
         metrics = metrics,
+        avatarImageUrl = summary.userSummary.avatarUrl,
     )
 }
 

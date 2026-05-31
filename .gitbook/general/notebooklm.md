@@ -1,41 +1,41 @@
 ---
 description: >-
-  NotebookLM с материалами Headway для ускорения онбординга и поиска по документации.
+  NotebookLM with Headway materials to speed up onboarding and documentation search.
 icon: hexagon-nodes
 ---
 
 # NotebookLM
 
-## Ссылка
+## Link
 
-**NotebookLM:** [открыть блокнот](https://notebooklm.google.com/notebook/c583b068-44b5-4a68-9148-321b3b2e1795)
+**NotebookLM:** [open notebook](https://notebooklm.google.com/notebook/c583b068-44b5-4a68-9148-321b3b2e1795)
 
-Доступ зависит от прав Google-аккаунта. Если не открывается — запросите доступ у мейнтейнеров.
+Access depends on your Google account permissions. If it does not open, ask maintainers for access.
 
-## Зачем это
+## Why use it
 
-* быстрее войти в контекст проекта;
-* искать ответы по собранным источникам в одном месте;
-* задавать вопросы по конвенциям, архитектуре, дизайну;
-* не перебирать вручную десятки файлов при онбординге.
+* get into project context faster;
+* search answers across collected sources in one place;
+* ask questions about conventions, architecture, and design;
+* avoid manually scanning dozens of files during onboarding.
 
-## Когда использовать
+## When to use
 
-* общие вопросы по структуре репозитория;
-* напомнить себе про client/server/fullstack;
-* ориентир по схеме БД или документации до уточнения в коде.
+* general questions about repository structure;
+* reminders about client/server/fullstack boundaries;
+* orientation on DB schema or docs before verifying in code.
 
-## Важно
+## Important
 
-NotebookLM — **вспомогательный** инструмент, не единственный источник правды. Спорные и критичные вещи проверяйте по актуальному коду и `AGENTS.md`.
+NotebookLM is a **helper** tool, not the single source of truth. For disputed or critical topics, verify against current code and `AGENTS.md`.
 
-## Онбординг
+## Onboarding
 
-1. Откройте блокнот и посмотрите список подключённых источников.
-2. Задайте сначала общие вопросы (архитектура, границы client/server).
-3. Сверьте ответы с репозиторием и GitBook.
-4. Неясности вынесите в чат команды.
+1. Open the notebook and review connected sources.
+2. Start with broad questions (architecture, client/server boundaries).
+3. Cross-check answers with the repository and GitBook.
+4. Raise unclear points in the team chat.
 
-## Поддержка в актуальном состоянии
+## Keeping it up to date
 
-При появлении важных документов их стоит добавить в источники NotebookLM; устаревшее — убрать или заменить.
+When important docs appear, add them to NotebookLM sources; remove or replace outdated material.

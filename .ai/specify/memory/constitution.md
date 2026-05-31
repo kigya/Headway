@@ -16,6 +16,7 @@ All work MUST start by identifying the paths it changes and loading the closest 
 - `.ai/cursor/rules/global.mdc` and `.ai/cursor/rules/lessons-learned.mdc` MUST be treated as always-applicable guidance.
 - Client Kotlin work SHOULD also account for `.ai/cursor/rules/client.mdc` and `.ai/cursor/rules/detekt-guardrails.mdc`.
 - Server Kotlin work SHOULD also account for `.ai/cursor/rules/server.mdc` and `.ai/cursor/rules/detekt-guardrails.mdc`.
+- **Product behavior** (screen purpose, states, requirements, copy) MUST be governed by the matching PRD under `.gitbook/product/prd/`. Work that adds or changes a screen, or its data path, MUST read the PRD first and reconcile it afterward per `.ai/cursor/rules/prd-sync.mdc`. The PRD answers *what/why*; `AGENTS.md` answers *how the code is written*; they do not override each other. When product behavior is unspecified or ambiguous, the product owner MUST be consulted and the decision recorded in the PRD rather than guessed in code.
 
 Implications:
 

@@ -1,21 +1,33 @@
-# Оглавление
+# Table of contents
 
-* [Добро пожаловать](README.md)
+* [Welcome](README.md)
 
-## Общее
+## General
 
-* [Быстрый старт](general/quickstart.md)
-* [Git, PR, метки и доска задач](general/git-and-board.md)
-* [Проверки перед push](general/pre-push-checks.md)
+* [Quick start](general/quickstart.md)
+* [Developing a feature (Spec Kit + PRD)](general/feature-workflow.md)
+* [Git, PRs, labels, and task board](general/git-and-board.md)
+* [Pre-push checks](general/pre-push-checks.md)
 * [Live Templates](general/live-templates.md)
 * [NotebookLM](general/notebooklm.md)
 
-## Клиент
+## Product
 
-* [Конвенции и рабочий процесс](client/conventions.md)
+* [Product requirements (PRD)](product/prd/README.md)
+* [Interview preparation methodology](product/methodology.md)
+* Screens
+  * [Splash](product/prd/splash.md)
+  * [Loading indicator](product/prd/loading-indicator.md)
+  * [Error & network stubs](product/prd/error-network-stubs.md)
+  * [Auth](product/prd/auth.md)
+  * [No access](product/prd/no-access.md)
 
-## Сервер
+## Client
 
-* [Конвенции и архитектура](server/conventions.md)
+* [Conventions and workflow](client/conventions.md)
+
+## Server
+
+* [Conventions and architecture](server/conventions.md)
 * [githubEnvSync](server/github-env-sync.md)
-* [Supabase и окружения](server/supabase.md)
+* [Supabase and environments](server/supabase.md)

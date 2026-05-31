@@ -5,8 +5,8 @@ import com.apurebase.kgraphql.ValidationException
 import dev.kigya.headway.gateway.core.exception.GatewayErrorCode
 import dev.kigya.headway.gateway.core.exception.GatewayErrorReason
 import dev.kigya.headway.gateway.core.exception.GatewayException
-import io.ktor.server.plugins.BadRequestException as KtorBadRequestException
 import kotlinx.serialization.SerializationException
+import io.ktor.server.plugins.BadRequestException as KtorBadRequestException
 
 internal data class GraphQlErrorEnvelope(
     val message: String,

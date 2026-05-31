@@ -3,10 +3,12 @@ package dev.kigya.headway.core.designSystem.component.preview
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -15,6 +17,7 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.tooling.preview.PreviewParameter
 import androidx.compose.ui.tooling.preview.PreviewParameterProvider
 import androidx.compose.ui.unit.dp
+import dev.kigya.headway.core.designSystem.component.FreudIcon
 import dev.kigya.headway.core.designSystem.component.FreudText
 import dev.kigya.headway.core.designSystem.component.FreudWideNavigation
 import dev.kigya.headway.core.designSystem.component.FreudWideNavigationItem
@@ -26,6 +29,10 @@ import dev.kigya.headway.core.designSystem.theme.color.FreudColorScheme
 import dev.kigya.headway.core.designSystem.theme.color.FreudDynamicColor
 import dev.kigya.headway.core.designSystem.theme.color.provides
 import dev.kigya.headway.core.designSystem.util.FreudTextValue
+import headway.core.design_system.generated.resources.Res
+import headway.core.design_system.generated.resources.ic_calendar
+import headway.core.design_system.generated.resources.ic_chevron_left
+import headway.core.design_system.generated.resources.ic_el_baion
 import kotlinx.collections.immutable.ImmutableList
 import kotlinx.collections.immutable.persistentListOf
 
@@ -54,11 +61,13 @@ private fun previewWideNavigationItems(): ImmutableList<FreudWideNavigationItem>
         key = PREVIEW_NAV_KEY_HOME,
         label = FreudTextValue.text("Home"),
         iconUrl = "",
+        iconResource = Res.drawable.ic_el_baion,
     ),
     FreudWideNavigationItem(
         key = PREVIEW_NAV_KEY_PREP,
         label = FreudTextValue.text("Preparation"),
         iconUrl = "",
+        iconResource = Res.drawable.ic_calendar,
     ),
 )
 
@@ -116,6 +125,29 @@ private fun FreudWideNavigationPreview(
                 isRailVisible = case.isRailVisible,
                 onToggleRail = {},
                 onItemClick = {},
+                headerLeadingContent = {
+                    FreudText(
+                        value = FreudTextValue.text("headway"),
+                        color = FreudWideNavigationPreviewTheme.colorScheme.text,
+                        typography = ds.typography.textMdSemiBold,
+                    )
+                },
+                headerTrailingContent = {
+                    Row {
+                        FreudIcon(
+                            resource = Res.drawable.ic_chevron_left,
+                            contentDescription = null,
+                            modifier = Modifier.size(ds.dimension.dp16.value),
+                            tint = FreudWideNavigationPreviewTheme.colorScheme.text,
+                        )
+                        FreudIcon(
+                            resource = Res.drawable.ic_chevron_left,
+                            contentDescription = null,
+                            modifier = Modifier.size(ds.dimension.dp16.value),
+                            tint = FreudWideNavigationPreviewTheme.colorScheme.text,
+                        )
+                    }
+                },
                 modifier = Modifier
                     .padding(top = ds.dimension.dp12.value)
                     .fillMaxWidth()

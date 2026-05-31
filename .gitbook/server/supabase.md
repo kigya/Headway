@@ -2,25 +2,25 @@
 icon: database
 ---
 
-# Supabase и Postgres
+# Supabase and Postgres
 
-Продакшен и разработка используют **хостованный PostgreSQL в Supabase**. Схема и данные — зона ответственности серверной части; миграции лежат в репозитории (`server/database/migrations/` и правила в `server/AGENTS.md`).
+Production and development use **hosted PostgreSQL on Supabase**. Schema and data are owned by the server side; migrations live in the repository (`server/database/migrations/` and rules in `server/AGENTS.md`).
 
-## Консоли проектов
+## Project consoles
 
-| Окружение | Project ref | Ссылка на дашборд |
-|-----------|-------------|-------------------|
+| Environment | Project ref | Dashboard link |
+|-------------|-------------|------------------|
 | **Dev** | `ymqpiogjzymkkwzutqds` | [Supabase — dev](https://supabase.com/dashboard/project/ymqpiogjzymkkwzutqds) |
 | **Prod** | `lhdkfjlltgnxrttrqfla` | [Supabase — prod](https://supabase.com/dashboard/project/lhdkfjlltgnxrttrqfla) |
 
-Те же ссылки продублированы в [`.ai/cursor/RESOURCES.md`](https://github.com/kigya/Headway/blob/trunk/.ai/cursor/RESOURCES.md) для агентов IDE.
+Same links are duplicated in [`.ai/cursor/RESOURCES.md`](https://github.com/kigya/Headway/blob/trunk/.ai/cursor/RESOURCES.md) for IDE agents.
 
-## Практические заметки
+## Practical notes
 
-* Строки подключения и ключи API не храните в git; для локальной работы используйте переменные окружения и/или результат **githubEnvSync** по политике команды.
-* Изменения схемы сопровождайте миграциями и согласованием с backend-частью.
-* Окружение в коде сервера различайте через типизированные помощники (`CommonConfigurationValues.environment` и т.п.), а не сырые сравнения строк — см. `server/AGENTS.md` и корневой `AGENTS.md`.
+* Do not store connection strings or API keys in git; for local work use environment variables and/or **githubEnvSync** output per team policy.
+* Pair schema changes with migrations and backend agreement.
+* Branch on environment in server code via typed helpers (`CommonConfigurationValues.environment`, etc.), not raw string compares — see `server/AGENTS.md` and root `AGENTS.md`.
 
-## Связь с GitHub Variables
+## Relation to GitHub Variables
 
-Значения для dev/prod часто задаются в **GitHub Environments** и подтягиваются в docker-env через [githubEnvSync](github-env-sync.md). При добавлении новой переменной для сервиса обычно нужно: завести её в GitHub, при необходимости добавить плейсхолдер в соответствующий `*.template` в `server/docker/template/`, выполнить синхронизацию.
+Dev/prod values are often defined in **GitHub Environments** and pulled into docker env via [githubEnvSync](github-env-sync.md). When adding a new service variable, you typically: create it in GitHub, add a placeholder to the matching `*.template` in `server/docker/template/` if needed, then run sync.

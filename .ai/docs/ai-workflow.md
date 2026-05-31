@@ -1,4 +1,4 @@
-# AI workflow (Spec Kit + Memory Bank + Cursor)
+# AI workflow (Spec Kit + Memory Bank + Cursor + Codex)
 
 This document describes how **AI-assisted development** is wired in Headway. It complements `AGENTS.md` (coding rules) and does not replace it.
 
@@ -11,14 +11,66 @@ This document describes how **AI-assisted development** is wired in Headway. It 
 | **`.ai/cursor/memory-bank/`** | Canonical **project context** for agents: orientation, current focus, stack summary, pattern reminders. |
 | **`.ai/cursor/rules/lessons-learned.mdc`** | Curated **reusable mistakes** (Rule / Why / Bad / Correct). |
 | **`.ai/cursor/skills/`** | Invoked workflows: rule alignment, lesson capture, feature wrap-up, commit, PR. |
-| **`.ai/cursor/agents/*.md`** | **Cursor Subagents:** CI-parity Gradle/Detekt/build checks in an isolated agent context; see [`.ai/cursor/WORKFLOWS.md`](../.ai/cursor/WORKFLOWS.md). |
+| **`.ai/cursor/agents/*.md`** | **Cursor Subagents:** CI-parity Gradle/Detekt/build checks in an isolated agent context; see [`.ai/cursor/WORKFLOWS.md`](../cursor/WORKFLOWS.md). |
 | **`.ai/cursor/commands/speckit.*.md`** | **Spec Kit** slash commands (Specify 0.4.0, `cursor-agent` target). |
+| **`.ai/codex/`** | **Codex adapter:** Codex docs plus symlinks to the shared agent context. |
+| **`.codex`** | Repo-root symlink to `.ai/codex`, analogous to `.cursor -> .ai/cursor`. |
 | **`.ai/specify/`** | Spec Kit templates, constitution scaffold (`memory/constitution.md`), and helper scripts. |
+| **`.gitbook/product/prd/`** | **Product source of truth (PRD):** one spec per screen — purpose, states, FR/NFR, Supabase entities, code mapping. Read before screen work, update after. |
 | **`.gitbook/`** | Human-oriented handbook (not the agent’s primary runtime context). |
-| **Serena MCP** | Symbol-aware navigation, references, and targeted edits via [`Model Context Protocol`](https://modelcontextprotocol.io/introduction); configured in [`.ai/cursor/mcp.json`](../.ai/cursor/mcp.json). Project settings live under `.ai/serena/` locally (gitignored), typically `.ai/serena/project.yml`. Memory Bank stays authoritative over Serena memories. |
+| **Serena MCP** | Symbol-aware navigation, references, and targeted edits via [`Model Context Protocol`](https://modelcontextprotocol.io/introduction); configured in [`.ai/cursor/mcp.json`](../cursor/mcp.json). Project settings live under `.ai/serena/` locally (gitignored), typically `.ai/serena/project.yml`. Memory Bank stays authoritative over Serena memories. |
 | **Repomix** | Optional compact codebase snapshots (CLI or MCP); config [repomix.config.jsonc](../repomix.config.jsonc); outputs under `.repomix/` (ignored by git). |
 
-**Precedence:** For **what code must do**, obey the closest `AGENTS.md` + `.ai/cursor/rules/`. For **what the project is doing now** and **brownfield context**, prefer `.ai/cursor/memory-bank/` and update it when wrap-up skills say so. **Serena** and **Repomix** augment retrieval—they do not replace `AGENTS.md`, `.ai/cursor/rules/`, Memory Bank, or Spec Kit artifacts.
+**Precedence:** For **what the product must do** (screen behavior, requirements,
+product copy), the **PRD** in `.gitbook/product/prd/` is the source of truth. For
+**what code must do** (shape, layers, style), obey the closest `AGENTS.md` +
+`.ai/cursor/rules/` (or the `.ai/codex/rules/` symlink). For **what the
+project is doing now** and **brownfield context**, prefer
+`.ai/cursor/memory-bank/` (or `.ai/codex/memory-bank/`) and update it when
+wrap-up skills say so. PRD (product) and `AGENTS.md` (code) answer different
+questions and do not override each other. **Serena** and **Repomix** augment
+retrieval; they do not replace `AGENTS.md`, rules, Memory Bank, PRDs, or Spec Kit
+artifacts.
+
+## Product PRDs (GitBook) and the sync loop
+
+`.gitbook/product/prd/` holds a PRD per screen (index + screen inventory in
+`README.md`; domain background in `.gitbook/product/methodology.md`). Because
+`.gitbook/` is Git-synced to GitBook, editing these markdown files **is** how the
+PRD section is updated (the GitBook MCP is read-only and used only to verify).
+
+The **PRD sync loop** runs without a reminder and is enforced by
+[`.ai/cursor/rules/prd-sync.mdc`](../cursor/rules/prd-sync.mdc) (path-scoped to
+feature UI, `core:session`, design-system, gateway/auth/database) and the
+`/headway-rule-aware-workflow` and `/finish-feature` skills:
+
+1. **Before** changing a screen or its data path, read the matching PRD; treat
+   its FR/NFR as the behavior contract.
+2. If the change would contradict the PRD, or the PRD is silent/ambiguous,
+   **ask the product owner** — do not guess — and record the answer in the PRD.
+3. **After** the change, update the PRD in the same edit: status (✅/🟡/⬜) in the
+   page header and the inventory table, requirements, states, Supabase
+   `Data & entities`, the technical mapping, and open questions.
+
+Spec Kit ties in via a **Related PRD** link in `spec.md` (see the spec template)
+and the feature flow in `.gitbook/general/feature-workflow.md`. New features are
+written through Spec Kit; the PRD is read first and reconciled at
+`/finish-feature`.
+
+## Codex adapter
+
+`.codex` points to `.ai/codex`. That directory is intentionally thin:
+
+- Codex-specific orientation lives in `.ai/codex/README.md` and `.ai/codex/WORKFLOWS.md`.
+- Shared rules, Memory Bank, skills, Spec Kit command recipes, verification
+  recipes, resources, and MCP config are symlinks back to `.ai/cursor/*`.
+- Shared AI docs, Spec Kit templates/artifacts, and Serena project settings are
+  symlinked from `.ai/docs/`, `.ai/specify/`, `.ai/specs/`, and `.ai/serena/`.
+- Cursor remains unchanged: `.cursor` still points to `.ai/cursor`.
+
+When a rule or memory update applies to both agents, edit the shared target
+under `.ai/cursor/` (directly or through the `.ai/codex/` symlink). Only
+Codex-specific instructions should live as standalone files in `.ai/codex/`.
 
 ## Serena and Repomix (optional tooling)
 
@@ -63,15 +115,21 @@ Optional quality commands (see command descriptions): `/speckit.analyze`, `/spec
 ## Other skills
 
 - **`/headway-rule-aware-workflow`** — while coding, align with the closest `AGENTS.md`, `.ai/cursor/rules/`, and skim **Memory Bank** for current focus.
-- **`/commit`**, **`/pull-request`** — unchanged; see [`.ai/cursor/WORKFLOWS.md`](../.ai/cursor/WORKFLOWS.md).
+- **`/commit`**, **`/pull-request`** — unchanged; see [`.ai/cursor/WORKFLOWS.md`](../cursor/WORKFLOWS.md).
 
 ## Subagents
 
-Subagents (`.ai/cursor/agents/`) are for **noisy or scoped verification** (full Gradle output, platform builds). Invoke with `/headway-detekt`, `/headway-client-android-build`, `/headway-pre-merge-verify`, etc. **Commit and PR** stay on the **`/commit`** and **`/pull-request`** Skills, not a parallel git subagent. Full list: [`.ai/cursor/WORKFLOWS.md`](../.ai/cursor/WORKFLOWS.md) → *Subagents*.
+Subagents (`.ai/cursor/agents/`) are for **noisy or scoped verification** (full
+Gradle output, platform builds). Invoke with `/headway-detekt`,
+`/headway-client-android-build`, `/headway-pre-merge-verify`, etc. **Commit and
+PR** stay on the **`/commit`** and **`/pull-request`** Skills, not a parallel
+git subagent. Full list: [`.ai/cursor/WORKFLOWS.md`](../cursor/WORKFLOWS.md) →
+*Subagents*.
 
 ## Recommended habit
 
-1. Open **`.ai/cursor/memory-bank/activeContext.md`** when picking up a task.
+1. Open **`.ai/cursor/memory-bank/activeContext.md`** (or
+   `.ai/codex/memory-bank/activeContext.md` from Codex) when picking up a task.
 2. Edit code under the closest **`AGENTS.md`**.
 3. For sizable features, run **Spec Kit** commands to generate spec artifacts under `.ai/specify/` (and feature branches as the scripts expect).
 4. During exploration, when Serena MCP is enabled, prefer **symbol-aware tools** before broad reads; use **Repomix** only when a compact export is explicitly useful.

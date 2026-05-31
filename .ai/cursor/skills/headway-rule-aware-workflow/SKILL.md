@@ -23,6 +23,7 @@ description: >-
    - Under `client/**`: [client.mdc](../../rules/client.mdc), [detekt-guardrails.mdc](../../rules/detekt-guardrails.mdc)
    - Under `server/**`: [server.mdc](../../rules/server.mdc), [detekt-guardrails.mdc](../../rules/detekt-guardrails.mdc)
    - Kotlin anywhere: consider [detekt-guardrails.mdc](../../rules/detekt-guardrails.mdc)
+   - Touching a screen or its data path (feature UI, `core:session`, design-system, gateway/auth/database): [prd-sync.mdc](../../rules/prd-sync.mdc) — read the matching PRD in [`.gitbook/product/prd/`](../../../../.gitbook/product/prd/README.md) as the product contract **before** editing, ask the product owner when it is silent/ambiguous, and update the PRD (status, FR/NFR, data, code mapping, open questions) **after**.
 4. Prefer **existing** project patterns over inventing new ones; treat [lessons-learned.mdc](../../rules/lessons-learned.mdc) as cumulative anti-patterns to avoid.
 5. Do **not** duplicate long AGENTS text in chat—apply it. Do **not** add hooks, CI, or background automation.
 6. For recording a mistake after a fix, the user should run `/capture-lesson`. For pre-merge wrap-up, `/finish-feature`. For spec-driven work, use `/speckit.*` commands from [`.ai/cursor/commands/`](../../commands/) per [.ai/docs/ai-workflow.md](../../../docs/ai-workflow.md).

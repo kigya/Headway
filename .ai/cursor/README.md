@@ -8,6 +8,15 @@ Rules in [`.ai/cursor/rules/`](rules/) turn [AGENTS.md](../../AGENTS.md), [clien
 
 External dashboards and refs (Supabase, GitHub project): [RESOURCES.md](RESOURCES.md).
 
+## Codex adapter
+
+Codex has its own repo-root symlink: `.codex -> .ai/codex`. That directory
+adds Codex-specific orientation while reusing this folder's Memory Bank, rules,
+skills, command recipes, verification agents, resources, and MCP config through
+symlinks. Keep `.cursor -> .ai/cursor` intact; shared context updates should
+continue to land in this Cursor-origin tree unless the team creates a new common
+layer.
+
 ## Spec Kit (slash commands)
 
 Command definitions: [`.ai/cursor/commands/`](commands/) (`speckit.*`). Templates and scripts: [`.ai/specify/`](../specify/) in the repo root.

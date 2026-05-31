@@ -2,64 +2,64 @@
 icon: bolt
 ---
 
-# Быстрый старт
+# Quick start
 
-## Репозиторий
+## Repository
 
 [github.com/kigya/Headway](https://github.com/kigya/Headway)
 
-## Клонирование
+## Cloning
 
-1. В Android Studio: **Get from VCS** (или **File → New → Project from Version Control…**).
+1. In Android Studio: **Get from VCS** (or **File → New → Project from Version Control…**).
 2. URL: `https://github.com/kigya/Headway.git`.
-3. Выберите папку и выполните **Clone** (при необходимости войдите в GitHub или используйте токен).
+3. Choose a folder and click **Clone** (sign in to GitHub or use a token if prompted).
 
-## Git: имя и email
+## Git: name and email
 
-В терминале IDE:
+In the IDE terminal:
 
-Глобально (для всех репозиториев):
+Globally (all repositories):
 
 ```
-git config --global user.name "Ваше Имя"
+git config --global user.name "Your Name"
 git config --global user.email "you@example.com"
 ```
 
-Только для этого репозитория (из корня клона):
+For this repository only (from the clone root):
 
 ```
-git config user.name "Ваше Имя"
+git config user.name "Your Name"
 git config user.email "you@example.com"
 ```
 
-Проверка:
+Verify:
 
 ```
 git config --list --show-origin
 ```
 
-## Где что лежит в монорепозитории
+## Monorepo layout
 
-* `client/` — KMP-приложение (Android, iOS, Desktop, Web), Compose, MVIKotlin.
-* `server/` — Ktor-сервисы (auth, database, home, gateway, admin и др.), Gradle, Docker.
-* `AGENTS.md` (корень) — общие правила Kotlin для всего репо.
-* `client/AGENTS.md` и `server/AGENTS.md` — детали по сторонам.
-* `.ai/cursor/rules/` и `.ai/cursor/skills/` — подсказки для IDE и агентов (не заменяют `AGENTS.md`).
+* `client/` — KMP app (Android, iOS, Desktop, Web), Compose, MVIKotlin.
+* `server/` — Ktor services (auth, database, home, gateway, admin, etc.), Gradle, Docker.
+* `AGENTS.md` (root) — shared Kotlin rules for the whole repo.
+* `client/AGENTS.md` and `server/AGENTS.md` — side-specific details.
+* `.ai/cursor/rules/` and `.ai/cursor/skills/` — IDE and agent hints (they do not replace `AGENTS.md`).
 
-## Минимальные команды после правок
+## Minimum commands after changes
 
-**Клиент** (основная проверка перед сдачей задачи):
+**Client** (main check before handing off a task):
 
 ```
 cd client && ./gradlew app:headwayAndroid:assembleDebug
 cd client && ./gradlew detekt
 ```
 
-**Сервер:**
+**Server:**
 
 ```
 cd server && ./gradlew build
 cd server && ./gradlew detekt
 ```
 
-Дальше — настройка хуков, доски задач и соглашений по веткам: раздел [Git, PR, метки и доска задач](git-and-board.md).
+Next: set up hooks, the task board, and branch conventions — see [Git, PRs, labels, and task board](git-and-board.md).

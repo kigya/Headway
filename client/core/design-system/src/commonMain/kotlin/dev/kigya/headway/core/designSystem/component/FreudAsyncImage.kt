@@ -24,11 +24,14 @@ import dev.kigya.headway.core.designSystem.theme.color.FreudColorScheme
 import dev.kigya.headway.core.designSystem.theme.color.FreudDynamicColor
 import dev.kigya.headway.core.designSystem.theme.color.provides
 import headway.core.design_system.generated.resources.Res
+import headway.core.design_system.generated.resources.ic_async_image_placeholder
 import headway.core.design_system.generated.resources.ic_el_baion
 import org.jetbrains.compose.resources.painterResource
 
 @Immutable
 sealed interface FreudAsyncImageShape {
+
+    @Immutable
     data object Circle : FreudAsyncImageShape
 
     @Immutable
@@ -44,6 +47,7 @@ fun FreudAsyncImage(
     shape: FreudAsyncImageShape,
     modifier: Modifier = Modifier,
     contentScale: ContentScale = ContentScale.Crop,
+    showDefaultPlaceholderOnError: Boolean = true,
 ) {
     val resolvedShape: Shape = when (shape) {
         FreudAsyncImageShape.Circle -> CircleShape
@@ -59,7 +63,13 @@ fun FreudAsyncImage(
         )
         return
     }
-    val placeholderPainter = painterResource(Res.drawable.ic_el_baion)
+
+    val placeholderPainter = if (showDefaultPlaceholderOnError) {
+        painterResource(Res.drawable.ic_async_image_placeholder)
+    } else {
+        null
+    }
+
     val request = ImageRequest.Builder(platformContext)
         .data(trimmed)
         .build()

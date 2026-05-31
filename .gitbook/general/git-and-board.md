@@ -2,108 +2,108 @@
 icon: code-branch
 ---
 
-# Git, PR, метки и доска задач
+# Git, PRs, labels, and task board
 
-## Модель ветвления: trunk-based
+## Branching model: trunk-based
 
-* Основная ветка: **`trunk`**.
-* Фичи и фиксы — в короткоживущих ветках от `trunk`.
-* В `trunk` попадаем через **Pull Request**.
+* Main branch: **`trunk`**.
+* Features and fixes live in short-lived branches off `trunk`.
+* Land changes in **`trunk`** via **Pull Request**.
 
-Рекомендации: маленькие ветки и PR, частые слияния, без «месячных» веток.
+Recommendations: small branches and PRs, frequent merges, avoid long-lived “month-long” branches.
 
-## Сообщения коммитов
+## Commit messages
 
-Номер задачи берётся с **доски проекта** (не путать с номером PR на GitHub).
+The task number comes from the **project board** (do not confuse it with the GitHub PR number).
 
-* Клиент: `CLIENT-HEADWAY-<НОМЕР>: краткое описание`
-* Сервер: `SERVER-HEADWAY-<НОМЕР>: краткое описание`
-* Оба контура в одной задаче: `FULLSTACK-HEADWAY-<НОМЕР>: краткое описание`
+* Client: `CLIENT-HEADWAY-<NUMBER>: short description`
+* Server: `SERVER-HEADWAY-<NUMBER>: short description`
+* Both sides in one task: `FULLSTACK-HEADWAY-<NUMBER>: short description`
 
-`FULLSTACK` используйте только если в коммите реально затронуты и клиент, и сервер по одной задаче.
+Use `FULLSTACK` only when a single task truly touches both client and server in the same commit.
 
-Примеры:
+Examples:
 
-* `CLIENT-HEADWAY-16: поправил README`
+* `CLIENT-HEADWAY-16: fix README`
 * `SERVER-HEADWAY-8: healthcheck`
-* `FULLSTACK-HEADWAY-32: переключатель окружений`
+* `FULLSTACK-HEADWAY-32: environment switcher`
 
-## Имена веток
+## Branch names
 
-* Клиент: `client-headway/<НОМЕР>-кратко-в-kebab-case`
-* Сервер: `server-headway/<НОМЕР>-кратко-в-kebab-case`
-* Fullstack: `fullstack-headway/<НОМЕР>-кратко-в-kebab-case`
+* Client: `client-headway/<NUMBER>-short-kebab-case`
+* Server: `server-headway/<NUMBER>-short-kebab-case`
+* Fullstack: `fullstack-headway/<NUMBER>-short-kebab-case`
 
-Примеры: `client-headway/16-readme-docs`, `server-headway/8-healthcheck`.
+Examples: `client-headway/16-readme-docs`, `server-headway/8-healthcheck`.
 
-## Заголовки Pull Request
+## Pull request titles
 
-Тот же формат, что и у коммитов (префикс + номер задачи + краткое описание). Номер PR GitHub (`#17`) для идентификации задачи **не используем** — ориентир номер с доски.
+Same format as commits (prefix + task number + short description). Do **not** use the GitHub PR number (`#17`) to identify the task — use the board number.
 
-## Доска задач
+## Task board
 
-**Ссылка:** [Headway project — view 2](https://github.com/users/kigya/projects/4/views/2)
+**Link:** [Headway project — view 2](https://github.com/users/kigya/projects/4/views/2)
 
-### Автоматизация статуса (Actions)
+### Status automation (Actions)
 
-В репозитории есть workflow [`.github/workflows/project-board-sync.yml`](../../.github/workflows/project-board-sync.yml):
+The repo includes workflow [`.github/workflows/project-board-sync.yml`](../../.github/workflows/project-board-sync.yml):
 
-* PR в **`trunk`** не в черновике (**opened** / **reopened** / **ready_for_review**) → у связанных issue на [проекте пользователя #4](https://github.com/users/kigya/projects/4) поле **Status** становится **In Review** (если карточка уже добавлена в этот проект).
-* После **merge** PR в **`trunk`** → **Status** → **Done** для тех же issue.
+* A PR into **`trunk`** that is not a draft (**opened** / **reopened** / **ready_for_review**) → linked issues on [user project #4](https://github.com/users/kigya/projects/4) get **Status** **In Review** (if the card is already on that project).
+* After **merge** into **`trunk`** → **Status** → **Done** for the same issues.
 
-Связь с issue определяется так:
+Linking to issues works via:
 
-* ветка по конвенции `client-headway/<НОМЕР>-…`, `server-headway/<НОМЕР>-…`, `fullstack-headway/<НОМЕР>-…`;
-* и/или в заголовке или теле PR есть `Closes #N` / `Fixes #N` / `Resolves #N` (регистр не важен).
+* branch names following `client-headway/<NUMBER>-…`, `server-headway/<NUMBER>-…`, `fullstack-headway/<NUMBER>-…`;
+* and/or `Closes #N` / `Fixes #N` / `Resolves #N` in the PR title or body (case-insensitive).
 
-**Секрет репозитория:** `HEADWAY_PROJECT_V2_WRITE_TOKEN` — PAT владельца проекта с правом читать и менять **Projects** (для user project это токен пользователя `kigya`). Без секрета job завершится с ошибкой. PR из **форков** workflow не запускает (у форков нет доступа к секретам).
+**Repository secret:** `HEADWAY_PROJECT_V2_WRITE_TOKEN` — a PAT for the project owner with permission to read and update **Projects** (for a user project, the `kigya` user token). Without the secret, the job fails. PRs from **forks** do not run the workflow (forks cannot use repo secrets).
 
-В настройках самого проекта на GitHub по-прежнему можно включить встроенные **Workflows** (например закрытие issue → **Done**), они дополняют Actions и настраиваются только в UI проекта.
+You can still enable built-in **Workflows** on the GitHub project UI (e.g. closed issue → **Done**); they complement Actions and are configured only in the project UI.
 
-### Колонки и смысл
+### Columns and meaning
 
-| Колонка | Когда ставить | Что иметь в виду |
-|---------|----------------|------------------|
-| **To Do** | Задача заведена, работа ещё не начата | Уточните объём и зависимости до старта. |
-| **In Progress** | Вы взяли задачу и ведёте работу | Один человек — одна основная задача в прогрессе; ветка согласована с номером. |
-| **In Review** | Открыт PR, ждём ревью или правок по ревью | В описании PR укажите ссылку на задачу, при необходимости `Closes #N` к issue. |
-| **Blocked** | Нельзя продолжить без решения, доступа или другой задачи | Кратко опишите причину блокировки в карточке или PR. |
-| **Done** | Работа завершена (часто после merge в `trunk`) | Убедитесь, что критерии приёмки закрыты и нет хвостов по деплою/докам. |
+| Column | When to use | Notes |
+|--------|-------------|-------|
+| **To Do** | Task is filed, work not started | Clarify scope and dependencies before starting. |
+| **In Progress** | You own the task and are actively working | One person — one main in-progress task; branch name matches the number. |
+| **In Review** | PR is open, waiting for review or review fixes | Link the task in the PR description; add `Closes #N` to the issue when needed. |
+| **Blocked** | Cannot proceed without a decision, access, or another task | Briefly note the blocker on the card or PR. |
+| **Done** | Work is finished (often after merge to `trunk`) | Confirm acceptance criteria and any deploy/doc follow-ups. |
 
-### Как с этим работать на практике
+### Day-to-day workflow
 
-1. Задача появляется в **To Do** (или вы её создаёте по договорённости с командой).
-2. Перед кодом: перенос в **In Progress**, создание ветки по конвенции, коммиты с нужным префиксом.
-3. После открытия PR: карточка в **In Review**; ревьюер смотрит код и доску.
-4. Если ждёте внешнее решение — **Blocked** с комментарием.
-5. После merge (и при необходимости пост-деплоя) — **Done**.
+1. Task appears in **To Do** (or you create it per team agreement).
+2. Before coding: move to **In Progress**, create a branch per convention, commit with the right prefix.
+3. After opening a PR: card in **In Review**; reviewers use code and the board.
+4. If waiting on an external decision — **Blocked** with a comment.
+5. After merge (and post-deploy if needed) — **Done**.
 
-## Метки (labels) на GitHub
+## GitHub labels
 
-### Обязательная доменная метка
+### Required domain label
 
-* Только клиент: **`Headway-Client`**
-* Только сервер: **`Headway-Backend`**
-* Задача на оба контура: **обе** метки — `Headway-Client` и `Headway-Backend`
+* Client only: **`Headway-Client`**
+* Server only: **`Headway-Backend`**
+* Both sides: **both** labels — `Headway-Client` and `Headway-Backend`
 
-### Дополнительные типы (по ситуации)
+### Optional type labels (as needed)
 
-* `feature` — новая функциональность
-* `bug` — исправление дефекта
-* `tech` — рефакторинг, инфраструктура, техдолг без продуктовой фичи
-* `research` — исследование, спайк
-* `draft` — PR черновик, ревью не ждём
+* `feature` — new functionality
+* `bug` — defect fix
+* `tech` — refactor, infrastructure, tech debt without a product feature
+* `research` — spike or investigation
+* `draft` — draft PR, review not expected
 
-Примеры сочетаний:
+Example combinations:
 
-* Клиентская фича: `Headway-Client` + `feature`
-* Баг на сервере: `Headway-Backend` + `bug`
+* Client feature: `Headway-Client` + `feature`
+* Server bug: `Headway-Backend` + `bug`
 * Fullstack: `Headway-Client` + `Headway-Backend` + `feature`
 
-## Чеклист перед открытием PR
+## Checklist before opening a PR
 
-* Имя ветки по конвенции.
-* Коммиты и заголовок PR с верным префиксом и номером задачи.
-* Нужные метки (домен + тип).
-* Карточка на доске обновлена (при открытом PR в `trunk` статус **In Review** выставляет workflow, если issue уже в проекте и задан секрет PAT).
-* Локально прошли проверки: см. [Проверки перед push](pre-push-checks.md) и `AGENTS.md` для client/server.
+* Branch name follows convention.
+* Commits and PR title use the correct prefix and task number.
+* Required labels (domain + type).
+* Board card updated (for open PRs to `trunk`, **In Review** is set by the workflow if the issue is on the project and the PAT secret is configured).
+* Local checks passed: see [Pre-push checks](pre-push-checks.md) and `AGENTS.md` for client/server.

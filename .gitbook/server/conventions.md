@@ -2,70 +2,70 @@
 icon: server
 ---
 
-# Сервер: конвенции и архитектура
+# Server: conventions and architecture
 
-Полный канон — [`server/AGENTS.md`](https://github.com/kigya/Headway/blob/trunk/server/AGENTS.md). Здесь — кратко для ежедневной работы.
+Full canonical rules — [`server/AGENTS.md`](https://github.com/kigya/Headway/blob/trunk/server/AGENTS.md). Below is a short daily-work summary.
 
-## Стек
+## Stack
 
-Kotlin JVM 17, **Ktor** + Netty, **KGraphQL** на gateway, **Koin**, **Exposed** + PostgreSQL, **kotlinx.serialization**, Docker. Анализ: **Detekt** + ktlint.
+Kotlin JVM 17, **Ktor** + Netty, **KGraphQL** on gateway, **Koin**, **Exposed** + PostgreSQL, **kotlinx.serialization**, Docker. Analysis: **Detekt** + ktlint.
 
-## Команды
+## Commands
 
 ```
 cd server && ./gradlew build
 cd server && ./gradlew detekt
 ```
 
-Для точечной сборки сервиса см. примеры в `server/AGENTS.md` (`:auth:internal:build`, `:gateway:build`, …). Есть агрегат **`verifyWithCoverage`** (detekt + Kover по правилам в `server/build.gradle.kts`).
+For a single service build, see examples in `server/AGENTS.md` (`:auth:internal:build`, `:gateway:build`, …). Aggregate task **`verifyWithCoverage`** (detekt + Kover per `server/build.gradle.kts`).
 
-## Структура
+## Structure
 
-* Микросервис = **`service/api`** (контракт: DTO, `@Resource`, URL holder) + **`service/internal`** (роутинг, use case, репозитории, DI).
-* **`gateway`** — единая точка для клиента (GraphQL), оркестрация вызовов auth/database и др.
-* **`common`** — общие утилиты, healthz, сериализаторы, базовые Ktor-настройки.
-* **`database/migrations/`** — SQL-миграции для хостового Postgres (Supabase).
-* **`docker/`** — env-файлы и шаблоны для генерации; см. также [githubEnvSync](github-env-sync.md).
+* Microservice = **`service/api`** (contract: DTOs, `@Resource`, URL holder) + **`service/internal`** (routing, use cases, repositories, DI).
+* **`gateway`** — single entry for the client (GraphQL), orchestrates auth/database and other calls.
+* **`common`** — shared utilities, healthz, serializers, base Ktor setup.
+* **`database/migrations/`** — SQL migrations for hosted Postgres (Supabase).
+* **`docker/`** — env files and generation templates; see also [githubEnvSync](github-env-sync.md).
 
-## Пакеты и видимость
+## Packages and visibility
 
-Пространство имён: `dev.kigya.headway.…`. В `internal` модулях по умолчанию всё **`internal`**. В `api` типы обычно публичные как контракт.
+Namespace: `dev.kigya.headway.…`. In `internal` modules, default everything to **`internal`**. In `api`, types are usually public as the contract.
 
 ## HTTP
 
-Все пути через **Ktor `@Resource`**, без строковых литералов маршрутов. База сервиса: **`/internal/v1/<сервис>`**. У каждого сервиса под базой — **`/healthz`**.
+All paths via **Ktor `@Resource`**, no string route literals. Service base: **`/internal/v1/<service>`**. Each service has **`/healthz`** under its base.
 
-## Слои внутри internal
+## Layers inside internal
 
-* **Роутинг** — `trim()` / `isBlank()`, Ktor-исключения для базовой валидации, тонкая передача в use case.
-* **Use case** — один класс на действие, `suspend operator fun invoke`, без HTTP и без SQL.
-* **Репозиторий** — Exposed/HTTP; БД только через обёртки вроде `Database.dbQuery`.
+* **Routing** — `trim()` / `isBlank()`, Ktor exceptions for basic validation, thin handoff to use cases.
+* **Use case** — one class per action, `suspend operator fun invoke`, no HTTP and no SQL.
+* **Repository** — Exposed/HTTP; DB only through wrappers like `Database.dbQuery`.
 
-## Ошибки
+## Errors
 
-Запечатанные **`ServiceException`** с вариантами вроде `InvalidRequest`, `Unauthorized`, `DependencyUnavailable`, `UpstreamProtocol`. Новые случаи регистрируйте в **`handle<Service>Exceptions()`** в StatusPages.
+Sealed **`ServiceException`** with variants such as `InvalidRequest`, `Unauthorized`, `DependencyUnavailable`, `UpstreamProtocol`. Register new cases in **`handle<Service>Exceptions()`** in StatusPages.
 
 ## Gateway
 
-Все исходящие HTTP-вызовы из репозиториев gateway — через **`upstreamCall(...)`**, не «голый» `httpClient.get/post`. Ошибки мапятся через **`toGatewayException`**, расширения GraphQL сохраняют коды и зависимости.
+All outbound HTTP from gateway repositories goes through **`upstreamCall(...)`**, not bare `httpClient.get/post`. Map failures with **`toGatewayException`**; GraphQL extensions keep codes and dependencies.
 
-Публичные модели клиента живут в gateway; расхождения с DTO микросервисов чинят **мапперами**, а не правкой чужих `api`-моделей без необходимости.
+Public client models live in gateway; fix drift from microservice DTOs with **mappers**, not by changing foreign `api` models unless necessary.
 
-## Docker и секреты
+## Docker and secrets
 
-Секреты в git не кладём. Для локальной/generation см. [githubEnvSync](github-env-sync.md) и [Supabase](supabase.md). В prod обязателен осмысленный **`validateSecrets()`** при старте.
+Do not commit secrets. For local/generation see [githubEnvSync](github-env-sync.md) and [Supabase](supabase.md). In prod, require meaningful **`validateSecrets()`** at startup.
 
-## Перед рискованными изменениями согласуйте
+## Coordinate before risky changes
 
-* новые зависимости;
-* `build-logic/` и плагины;
-* Docker/env и публичный API `common`;
-* смену схемы БД (таблицы Exposed + миграции).
+* new dependencies;
+* `build-logic/` and plugins;
+* Docker/env and public `common` API;
+* schema changes (Exposed tables + migrations).
 
-## Новый endpoint (очень кратко)
+## New endpoint (very short)
 
 1. `api`: DTO, `@Resource`.
-2. `internal`: use case, репозиторий при необходимости, роутинг, маппинг исключений, Koin.
-3. Не дублировать модели — брать из другого `api` зависимостью.
+2. `internal`: use case, repository if needed, routing, exception mapping, Koin.
+3. Do not duplicate models — depend on another service’s `api`.
 
-Новая операция GraphQL: имя в `GatewayGraphqlOperation`, модель, маппер, репозиторий с `upstreamCall`, use case, схема, регистрация типов в `GatewayApi.kt` — детали в `server/AGENTS.md`.
+New GraphQL operation: name in `GatewayGraphqlOperation`, model, mapper, repository with `upstreamCall`, use case, schema, type registration in `GatewayApi.kt` — details in `server/AGENTS.md`.

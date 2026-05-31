@@ -2,67 +2,67 @@
 icon: seedling
 ---
 
-# Проверки перед push
+# Pre-push checks
 
-Цель — не слать в CI заведомо сломанный код и поймать detekt/lint раньше.
+The goal is to avoid pushing obviously broken code and catch detekt/lint issues earlier.
 
-## Установка git hooks (один раз)
+## Installing git hooks (once)
 
-Скрипт `config/git/hooks/installer.gradle.kts` подключён и в **`client/build.gradle.kts`**, и в **`server/build.gradle.kts`**. Установить хуки можно из **любого из этих каталогов**:
+Script `config/git/hooks/installer.gradle.kts` is applied in both **`client/build.gradle.kts`** and **`server/build.gradle.kts`**. Install hooks from **either** directory:
 
 ```
 cd client && ./gradlew installGitHooks
 ```
 
-или
+or
 
 ```
 cd server && ./gradlew installGitHooks
 ```
 
-Это выставляет `core.hooksPath` на `config/git/hooks` и делает файлы хуков исполняемыми (на Unix).
+This sets `core.hooksPath` to `config/git/hooks` and makes hook files executable (on Unix).
 
-## Что делает pre-push
+## What pre-push does
 
-Скрипт `config/git/hooks/pre-push` запускает из **текущей рабочей директории git** команды `./gradlew detekt` и `./gradlew lint`. В корне монорепозитория отдельного `gradlew` нет: если push делаете из корня и hook падает с «gradlew not found», выполняйте проверки вручную (ниже) или доработайте hook под ваш сценарий.
+Script `config/git/hooks/pre-push` runs `./gradlew detekt` and `./gradlew lint` from the **current git working directory**. There is no root-level `gradlew` in the monorepo: if you push from the repo root and the hook fails with “gradlew not found”, run checks manually (below) or adjust the hook for your workflow.
 
-## Ручная проверка (надёжный вариант)
+## Manual checks (reliable)
 
-Перед push рекомендуется:
+Before push, run:
 
 ```
 cd client && ./gradlew detekt
 cd server && ./gradlew detekt
 ```
 
-При работе только с одной стороной достаточно соответствующей команды. Для существенных изменений на клиенте дополнительно:
+If you only changed one side, the matching command is enough. For substantial client changes, also:
 
 ```
 cd client && ./gradlew app:headwayAndroid:assembleDebug
 ```
 
-Для сервера:
+For server:
 
 ```
 cd server && ./gradlew build
 ```
 
-## Обход hook (редко)
+## Bypassing the hook (rare)
 
 ```
 git push --no-verify
 ```
 
-Используйте только осознанно (например, экстренный hotfix по договорённости).
+Use only deliberately (e.g. an agreed emergency hotfix).
 
-## Альтернатива: только путь к hooks
+## Alternative: hooks path only
 
 ```
 git config core.hooksPath config/git/hooks
 chmod -R +x config/git/hooks
 ```
 
-Проверка:
+Verify:
 
 ```
 git config --get core.hooksPath

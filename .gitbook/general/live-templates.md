@@ -4,36 +4,36 @@ icon: forward
 
 # Live Templates
 
-Общие Live Templates лежат в репозитории. Задача `installLiveTemplates` объявлена в `config/templates/installer.gradle.kts`, скрипт подключён и в **`client/build.gradle.kts`**, и в **`server/build.gradle.kts`**, поэтому команду можно запускать **из каталога `client/` или `server/`** (с тем же эффектом).
+Shared Live Templates live in the repository. Task `installLiveTemplates` is defined in `config/templates/installer.gradle.kts` and applied in both **`client/build.gradle.kts`** and **`server/build.gradle.kts`**, so you can run it **from `client/` or `server/`** with the same effect.
 
-## Установка
+## Installation
 
 ```
 cd client && ./gradlew installLiveTemplates
 ```
 
-или
+or
 
 ```
 cd server && ./gradlew installLiveTemplates
 ```
 
-Файлы копируются в каталог шаблонов Android Studio. Перезапустите IDE (или **File → Invalidate Caches / Restart**). Шаблоны ищите в **Settings → Editor → Live Templates**, группа **Headway**.
+Files are copied into the Android Studio templates directory. Restart the IDE (or **File → Invalidate Caches / Restart**). Find templates under **Settings → Editor → Live Templates**, group **Headway**.
 
-## Если автоопределение каталога IDE не сработало
+## If IDE directory auto-detection fails
 
-Укажите каталог конфигурации вручную (пример для macOS):
+Set the config directory manually (macOS example):
 
 ```
 cd client && ./gradlew installLiveTemplates -PasConfigDir="$HOME/Library/Application Support/Google/AndroidStudio2025.1"
 ```
 
-(аналогично с `cd server && …`.)
+(same with `cd server && …`.)
 
-## Ручная установка
+## Manual installation
 
-Скопируйте XML из `config/templates/` в каталог templates вашей версии Android Studio:
+Copy XML from `config/templates/` into your Android Studio version templates folder:
 
-* macOS: `~/Library/Application Support/Google/AndroidStudio<версия>/templates/`
-* Linux: `~/.config/Google/AndroidStudio<версия>/templates/`
-* Windows: `%APPDATA%\Google\AndroidStudio<версия>\templates\`
+* macOS: `~/Library/Application Support/Google/AndroidStudio<version>/templates/`
+* Linux: `~/.config/Google/AndroidStudio<version>/templates/`
+* Windows: `%APPDATA%\Google\AndroidStudio<version>\templates\`

@@ -2,6 +2,12 @@
 
 Changelog for **AI workflow** and **Memory Bank** maintenance (not product release notes).
 
+## 2026-05-30
+
+- **GitBook PRD:** Added `Product` section to `.gitbook/` — `product/prd/README.md` (overview, screen inventory, conventions), `product/methodology.md` (interview-prep domain), and per-screen PRDs for Splash, Loading indicator, Error & network stubs, Auth, No access (with screenshots under `product/prd/assets/`). Updated `.gitbook/SUMMARY.md` and added `general/feature-workflow.md` (Spec Kit + PRD flow).
+- **Autonomy wiring:** New `.ai/cursor/rules/prd-sync.mdc` (read PRD before screen/data-path work, ask product owner on ambiguity, update PRD after). Extended `.ai/docs/ai-workflow.md` (PRD layer + precedence + sync loop), `/headway-rule-aware-workflow` and `/finish-feature` skills (PRD steps), Spec Kit `spec-template.md` (Related PRD field) and `constitution.md` (Principle I product source-of-truth). Codex inherits all via `.ai/codex` symlinks.
+- **Note:** Supabase MCP was unreachable this session; PRD `Data & entities` were derived from Exposed table definitions in `server/database/internal` (source of truth in code).
+
 ## 2026-04-29
 
 - **Cursor:** Added project MCP config (Serena `ide` context + Repomix stdio), local `.ai/serena/project.yml` with symbolic languages and Memory-Bank-first prompts, `repomix.config.jsonc`, `.gitignore` for `.repomix/` outputs and `.ai/serena/`.

@@ -380,3 +380,30 @@ alwaysApply: true
 - **Why it exists:** Mis-ordered `when` branches turn upstream/decode failures into validation-shaped responses and hide dependency-style failures from operators.
 - **Bad pattern (short):** `is IllegalArgumentException -> …` above `is SerializationException -> …` (subclass never matches the latter).
 - **Correct pattern (short):** Order **`SerializationException`** (map to **`DependencyUnavailable`** / typed gateway policy) **above** **`IllegalArgumentException`**.
+
+---
+
+### 42
+
+- **Rule:** For adaptive layout inside design-system composables, branch on **`isWide()`** from [`WindowSizeClass.kt`](../../../client/core/design-system/src/commonMain/kotlin/dev/kigya/headway/core/designSystem/util/WindowSizeClass.kt); do **not** add a parallel **`isWideLayout: Boolean`** (or similar) parameter on **`Freud*`** components when the caller already gates with **`isWide()`** or the component can read the same source of truth.
+- **Why it exists:** Duplicated width flags drift (wide shell + narrow header), duplicate preview matrices, and bypass the single window-size contract used by **`FreudScreenByWidth`** and **`FreudBackground`**.
+- **Bad pattern (short):** `FreudHomeHeader(..., isWideLayout = true)` from a branch that already used `isWide()`; preview toggles `isWideLayout` independent of canvas width.
+- **Correct pattern (short):** `if (isWide()) { … }` inside the DS composable; previews use **`@Preview(widthDp = …)`** (narrow vs wide canvas) so **`isWide()`** matches the staged layout; callers drop redundant boolean params.
+
+---
+
+### 43
+
+- **Rule:** In a design-system component file that already has **`private object FreudXDefaults`** (or **`FreudXDefaults`**-style), put **all** component-scoped literals there — including **`const val`** for **`Int` / `Float`** (e.g. `maxLines`, text alpha) alongside **`FreudDsToken<Dp>`** spacing tokens — instead of a separate trailing block of **`private const val`** at the file bottom; place that **`private object …Defaults`** **immediately after imports** (before `@Immutable` models and composables), not below helpers or the theme object.
+- **Why it exists:** Keeps one namespace per component; matches [design-system AGENTS.md](../../../client/core/design-system/src/commonMain/kotlin/dev/kigya/headway/core/designSystem/AGENTS.md) “Defaults object” pattern and avoids scattering magic numbers below the theme object.
+- **Bad pattern (short):** `private object FreudHomeHeaderDefaults { val dp… }` plus **`private const val GREETING_MAX_LINES`** / **`DATE_LABEL_TEXT_ALPHA_*`** after **`FreudHomeHeaderTheme`**, or **`FreudHomeHeaderDefaults`** sandwiched between private composables and **`FreudHomeHeaderTheme`**.
+- **Correct pattern (short):** After imports, **`private object FreudHomeHeaderDefaults { const val GREETING_MAX_LINES = 2; const val DATE_LABEL_TEXT_ALPHA_LIGHT = 0.64f; …; val horizontalPadding = … }`**; then models / composables / theme; references **`FreudHomeHeaderDefaults.GREETING_MAX_LINES`** etc.; no orphan file-level **`private const val`** for that component.
+
+---
+
+### 44
+
+- **Rule:** Each feature **screen** composable (full-destination root) should apply **`Modifier.systemBarsPadding()`** (or an equivalent **`windowInsetsPadding(WindowInsets.systemBars)`**) to the **interactive / readable content** so status and navigation bars do not overlap UI; when the screen uses a full-bleed background, keep **`fillMaxSize()` + background** on an outer container and apply **`systemBarsPadding()`** on an **inner** child so the backdrop can still draw edge-to-edge if desired.
+- **Why it exists:** iOS hosts Compose with **`ignoresSafeArea`**; Android may be edge-to-edge; without insets, headers and bottom actions sit under system UI.
+- **Bad pattern (short):** **`HomeScreenContent`** **`Box(fillMaxSize)`** with only **`background`** and no inset — header and grid hug the physical top/bottom.
+- **Correct pattern (short):** Outer **`Box(background)`** wrapping **`Box(Modifier.fillMaxSize().systemBarsPadding()) { … }`** around **`FreudFallback`** / loaded body (see **`HomeScreen`**).

@@ -1,0 +1,29 @@
+---
+description: Keep GitBook PRDs in sync with screen/feature work — read first, update after, ask product questions
+globs: client/feature/**,client/core/session/**,client/core/design-system/**,server/gateway/**,server/auth/**,server/database/**
+alwaysApply: false
+---
+
+## What PRDs are
+
+- Product + technical specs, one per screen, under [`.gitbook/product/prd/`](../../../.gitbook/product/prd/README.md). They are the **product source of truth** (what the app does and why). `AGENTS.md` + `.ai/cursor/rules/` remain the **code** source of truth. They answer different questions and do not override each other.
+- Index, screen inventory (status legend), and conventions: [`.gitbook/product/prd/README.md`](../../../.gitbook/product/prd/README.md). Domain background: [`.gitbook/product/methodology.md`](../../../.gitbook/product/methodology.md).
+
+## Before changing a screen or its data path
+
+- Find the matching PRD (e.g. `splash.md`, `auth.md`, `no-access.md`, `error-network-stubs.md`, `loading-indicator.md`). If the screen has no PRD yet, the matching page may say *to be specified* — treat the user/product owner as the authority and draft the PRD before/with the change.
+- Treat the PRD's **functional/non-functional requirements** as the behavior contract. If your change would contradict the PRD, or the PRD is silent/ambiguous on the behavior you need, **ask the product owner** instead of guessing; then record the answer in the PRD.
+
+## After changing a screen or its data path (same change)
+
+- Update the matching PRD so it stays accurate, without waiting to be reminded:
+  - **Status** (✅ / 🟡 / ⬜) in the page header and in the inventory table in `README.md`.
+  - **Requirements** (`FR-*` / `NFR-*`), **Experience & states**, and the **Data & entities** section (Supabase tables/columns) when they change.
+  - **Technical implementation** mapping (modules, key files, MVI store, navigation keys, design-system components).
+  - **Open questions & planned work** — remove what shipped; add new questions surfaced by the change.
+- Keep PRD prose human-first and in **English**; describe what is visible on screen. Embed screenshots from `assets/` when behavior is visual.
+
+## Boundaries
+
+- Do not duplicate long Kotlin rules into PRDs; link to code instead. Do not invent product copy or behavior — propose drafts and flag them for review (as the No access "Ask manager" copy is flagged).
+- Spec-driven features link their spec to the PRD; see [`general/feature-workflow.md`](../../../.gitbook/general/feature-workflow.md) and [`.ai/docs/ai-workflow.md`](../../docs/ai-workflow.md).

@@ -18,8 +18,6 @@ captures
 **/xcshareddata/WorkspaceSettings.xcsettings
 /server/docker/*
 !/server/docker/Dockerfile
-!/server/docker/render
-!/server/docker/render/**
 !/server/docker/template
 /client/secrets/*
 !/client/secrets/template
@@ -32,6 +30,10 @@ captures
 .ai/cursor/debug-*
 .cursor/projects/
 .cursor/debug-*
+.ai/codex/projects/
+.ai/codex/debug-*
+.codex/projects/
+.codex/debug-*
 .playwright-mcp/
 .ai/specs/**
 specs/**

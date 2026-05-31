@@ -28,6 +28,7 @@ import androidx.compose.ui.text.style.TextAlign
 import dev.kigya.headway.core.designSystem.component.FreudWideNavigationTheme.railBackground
 import dev.kigya.headway.core.designSystem.component.FreudWideNavigationTheme.railItemDefault
 import dev.kigya.headway.core.designSystem.component.FreudWideNavigationTheme.railItemSelected
+import dev.kigya.headway.core.designSystem.component.FreudWideNavigationTheme.railItemSelectedContent
 import dev.kigya.headway.core.designSystem.component.FreudWideNavigationTheme.railItemText
 import dev.kigya.headway.core.designSystem.theme.FreudDsToken
 import dev.kigya.headway.core.designSystem.theme.FreudTheme
@@ -36,12 +37,14 @@ import dev.kigya.headway.core.designSystem.theme.color.FreudDynamicColor
 import dev.kigya.headway.core.designSystem.theme.color.provides
 import dev.kigya.headway.core.designSystem.util.FreudTextValue
 import kotlinx.collections.immutable.ImmutableList
+import org.jetbrains.compose.resources.DrawableResource
 
 @Immutable
 data class FreudWideNavigationItem(
     val key: String,
     val label: FreudTextValue,
     val iconUrl: String,
+    val iconResource: DrawableResource? = null,
 )
 
 @Composable
@@ -52,8 +55,14 @@ fun FreudWideNavigation(
     onToggleRail: () -> Unit,
     onItemClick: (FreudWideNavigationItem) -> Unit,
     modifier: Modifier = Modifier,
+    headerLeadingContent: (@Composable () -> Unit)? = null,
+    headerTrailingContent: (@Composable () -> Unit)? = null,
     content: @Composable () -> Unit,
 ) {
+    val railShape = RoundedCornerShape(
+        topStart = FreudWideNavigationDefaults.railCorner.value,
+        bottomStart = FreudWideNavigationDefaults.railCorner.value,
+    )
     Row(
         modifier = modifier.fillMaxWidth(),
     ) {
@@ -66,10 +75,29 @@ fun FreudWideNavigation(
                 modifier = Modifier
                     .widthIn(max = FreudWideNavigationDefaults.railMaxWidth.value)
                     .fillMaxHeight()
+                    .clip(railShape)
                     .background(FreudWideNavigationTheme.colorScheme.railBackground.value)
                     .padding(FreudWideNavigationDefaults.railPadding.value),
                 verticalArrangement = Arrangement.spacedBy(FreudWideNavigationDefaults.itemSpacing.value),
             ) {
+                if (headerLeadingContent != null || headerTrailingContent != null) {
+                    Row(
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(
+                                horizontal = FreudWideNavigationDefaults.headerHorizontalPadding.value,
+                                vertical = FreudWideNavigationDefaults.headerVerticalPadding.value,
+                            ),
+                        verticalAlignment = Alignment.CenterVertically,
+                    ) {
+                        Row(
+                            modifier = Modifier.weight(1f),
+                        ) {
+                            headerLeadingContent?.invoke()
+                        }
+                        headerTrailingContent?.invoke()
+                    }
+                }
                 items.forEach { item ->
                     FreudWideNavigationRow(
                         item = item,
@@ -77,10 +105,6 @@ fun FreudWideNavigation(
                         onClick = { onItemClick(item) },
                     )
                 }
-                FreudWideNavigationChromeButton(
-                    label = FreudTextValue.text("Hide menu"),
-                    onClick = onToggleRail,
-                )
             }
         }
         Column(
@@ -119,6 +143,11 @@ private fun FreudWideNavigationRow(
     } else {
         FreudWideNavigationTheme.colorScheme.railItemDefault
     }
+    val contentColor = if (isSelected) {
+        FreudWideNavigationTheme.colorScheme.railItemSelectedContent
+    } else {
+        FreudWideNavigationTheme.colorScheme.railItemText
+    }
     Row(
         modifier = Modifier
             .fillMaxWidth()
@@ -134,16 +163,27 @@ private fun FreudWideNavigationRow(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(FreudWideNavigationDefaults.rowGap.value),
     ) {
-        FreudAsyncImage(
-            imageUrl = item.iconUrl,
-            contentDescription = null,
-            shape = FreudAsyncImageShape.RoundedRectangle(FreudTheme.DefaultFreudTheme.dimension.dp8),
-            modifier = Modifier.size(FreudWideNavigationDefaults.iconBox.value),
-            contentScale = ContentScale.Fit,
-        )
+        val iconResource = item.iconResource
+        if (iconResource == null) {
+            FreudAsyncImage(
+                imageUrl = item.iconUrl,
+                contentDescription = null,
+                shape = FreudAsyncImageShape.RoundedRectangle(FreudTheme.DefaultFreudTheme.dimension.dp8),
+                modifier = Modifier.size(FreudWideNavigationDefaults.iconBox.value),
+                contentScale = ContentScale.Fit,
+                showDefaultPlaceholderOnError = false,
+            )
+        } else {
+            FreudIcon(
+                resource = iconResource,
+                contentDescription = null,
+                modifier = Modifier.size(FreudWideNavigationDefaults.iconBox.value),
+                tint = contentColor,
+            )
+        }
         FreudText(
             value = item.label,
-            color = FreudWideNavigationTheme.colorScheme.railItemText,
+            color = contentColor,
             typography = FreudWideNavigationTheme.typography.textMdSemiBold,
             align = TextAlign.Start,
         )
@@ -168,38 +208,47 @@ private fun FreudWideNavigationChromeButton(
 
 private object FreudWideNavigationDefaults {
     val railMaxWidth = FreudTheme.DefaultFreudTheme.dimension.dp248
-    val railPadding = FreudTheme.DefaultFreudTheme.dimension.dp12
-    val itemSpacing = FreudTheme.DefaultFreudTheme.dimension.dp8
+    val railPadding = FreudTheme.DefaultFreudTheme.dimension.dp16
+    val railCorner = FreudTheme.DefaultFreudTheme.dimension.dp32
+    val itemSpacing = FreudTheme.DefaultFreudTheme.dimension.dp12
     val revealPadding = FreudTheme.DefaultFreudTheme.dimension.dp8
-    val rowPadding = FreudTheme.DefaultFreudTheme.dimension.dp12
+    val rowPadding = FreudTheme.DefaultFreudTheme.dimension.dp16
     val rowGap = FreudTheme.DefaultFreudTheme.dimension.dp12
-    val rowCorner = FreudTheme.DefaultFreudTheme.dimension.dp12
-    val iconBox = FreudTheme.DefaultFreudTheme.dimension.dp48
+    val rowCorner = FreudTheme.DefaultFreudTheme.dimension.dp24
+    val iconBox = FreudTheme.DefaultFreudTheme.dimension.dp32
+    val headerHorizontalPadding = FreudTheme.DefaultFreudTheme.dimension.dp4
+    val headerVerticalPadding = FreudTheme.DefaultFreudTheme.dimension.dp8
 }
 
 @Suppress("TopLevelComposableFunctions")
 internal object FreudWideNavigationTheme : FreudTheme() {
     val FreudColorScheme.railBackground: FreudDsToken<Color>
         @Composable get() = this provides FreudDynamicColor(
-            light = super.color.gray10,
+            light = super.color.brown10,
             dark = super.color.brown90,
         )
 
     val FreudColorScheme.railItemSelected: FreudDsToken<Color>
         @Composable get() = this provides FreudDynamicColor(
-            light = super.color.brown30,
-            dark = super.color.brown50,
+            light = super.color.green50,
+            dark = super.color.green70,
         )
 
     val FreudColorScheme.railItemDefault: FreudDsToken<Color>
         @Composable get() = this provides FreudDynamicColor(
-            light = super.color.gray20,
+            light = super.color.gray10,
             dark = super.color.brown80,
         )
 
     val FreudColorScheme.railItemText: FreudDsToken<Color>
         @Composable get() = this provides FreudDynamicColor(
             light = super.color.brown90,
-            dark = super.color.brown40,
+            dark = super.color.brown20,
+        )
+
+    val FreudColorScheme.railItemSelectedContent: FreudDsToken<Color>
+        @Composable get() = this provides FreudDynamicColor(
+            light = super.color.brown10,
+            dark = super.color.brown10,
         )
 }

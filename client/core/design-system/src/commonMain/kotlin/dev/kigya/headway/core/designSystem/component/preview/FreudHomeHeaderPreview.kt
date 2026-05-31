@@ -20,6 +20,7 @@ import dev.kigya.headway.core.designSystem.theme.color.FreudColorScheme
 import dev.kigya.headway.core.designSystem.theme.color.FreudDynamicColor
 import dev.kigya.headway.core.designSystem.theme.color.provides
 import dev.kigya.headway.core.designSystem.util.FreudTextValue
+import dev.kigya.headway.core.designSystem.util.isWide
 
 private object FreudHomeHeaderPreviewTheme : FreudTheme() {
     val FreudColorScheme.surface
@@ -52,7 +53,6 @@ private data class FreudHomeHeaderPreviewCase(
     val isDark: Boolean,
     val variant: FreudHomeHeaderPreviewVariant,
     val isAvatarEmpty: Boolean,
-    val isWideLayout: Boolean,
 )
 
 private class FreudHomeHeaderPreviewCaseProvider : PreviewParameterProvider<FreudHomeHeaderPreviewCase> {
@@ -60,20 +60,16 @@ private class FreudHomeHeaderPreviewCaseProvider : PreviewParameterProvider<Freu
         val themes = listOf(false, true)
         val variants = FreudHomeHeaderPreviewVariant.entries
         val avatarFlags = listOf(false, true)
-        val layoutFlags = listOf(false, true)
         for (isDark in themes) {
             for (variant in variants) {
                 for (isAvatarEmpty in avatarFlags) {
-                    for (isWideLayout in layoutFlags) {
-                        yield(
-                            FreudHomeHeaderPreviewCase(
-                                isDark = isDark,
-                                variant = variant,
-                                isAvatarEmpty = isAvatarEmpty,
-                                isWideLayout = isWideLayout,
-                            ),
-                        )
-                    }
+                    yield(
+                        FreudHomeHeaderPreviewCase(
+                            isDark = isDark,
+                            variant = variant,
+                            isAvatarEmpty = isAvatarEmpty,
+                        ),
+                    )
                 }
             }
         }
@@ -82,6 +78,7 @@ private class FreudHomeHeaderPreviewCaseProvider : PreviewParameterProvider<Freu
 
 private fun previewHomeHeaderContent(
     variant: FreudHomeHeaderPreviewVariant,
+    isAvatarEmpty: Boolean,
 ): FreudHomeHeaderContent {
     val metrics = when (variant) {
         FreudHomeHeaderPreviewVariant.FULL,
@@ -105,21 +102,43 @@ private fun previewHomeHeaderContent(
         -> null
     }
     return FreudHomeHeaderContent(
-        greeting = FreudTextValue.text(PREVIEW_GREETING_LINE),
+        greetingPrimary = FreudTextValue.text(PREVIEW_GREETING_PRIMARY_LINE),
+        greetingShortIfOverflow = FreudTextValue.text(PREVIEW_GREETING_SHORT_LINE),
         dateLabel = FreudTextValue.text(PREVIEW_DATE_LINE),
         roleLabel = role,
         metrics = metrics,
+        avatarImageUrl = if (isAvatarEmpty) null else SAMPLE_AVATAR_URL,
     )
 }
 
 @Preview(
-    name = "FreudHomeHeader – Theme × Variant × Layout × Avatar",
+    name = "FreudHomeHeader – narrow canvas",
+    widthDp = PREVIEW_CANVAS_WIDTH_NARROW_DP,
+    heightDp = PREVIEW_CANVAS_HEIGHT_DP,
     showBackground = false,
 )
 @Composable
-private fun FreudHomeHeaderPreview(
+private fun FreudHomeHeaderPreviewNarrow(
     @PreviewParameter(FreudHomeHeaderPreviewCaseProvider::class) case: FreudHomeHeaderPreviewCase,
 ) {
+    FreudHomeHeaderPreviewContent(case = case)
+}
+
+@Preview(
+    name = "FreudHomeHeader – wide canvas",
+    widthDp = PREVIEW_CANVAS_WIDTH_WIDE_DP,
+    heightDp = PREVIEW_CANVAS_HEIGHT_DP,
+    showBackground = false,
+)
+@Composable
+private fun FreudHomeHeaderPreviewWide(
+    @PreviewParameter(FreudHomeHeaderPreviewCaseProvider::class) case: FreudHomeHeaderPreviewCase,
+) {
+    FreudHomeHeaderPreviewContent(case = case)
+}
+
+@Composable
+private fun FreudHomeHeaderPreviewContent(case: FreudHomeHeaderPreviewCase) {
     FreudTheme(isDark = case.isDark) {
         val ds = FreudTheme.DefaultFreudTheme
         val label = buildString {
@@ -128,7 +147,7 @@ private fun FreudHomeHeaderPreview(
             append(case.variant.name)
             append(PREVIEW_LABEL_SEPARATOR)
             append(
-                if (case.isWideLayout) {
+                if (isWide()) {
                     PREVIEW_LAYOUT_WIDE_LABEL
                 } else {
                     PREVIEW_LAYOUT_NARROW_LABEL
@@ -159,10 +178,11 @@ private fun FreudHomeHeaderPreview(
                     .background(FreudHomeHeaderPreviewTheme.colorScheme.block.value),
             ) {
                 FreudHomeHeader(
-                    content = previewHomeHeaderContent(case.variant),
-                    avatarImageUrl = if (case.isAvatarEmpty) null else SAMPLE_AVATAR_URL,
+                    content = previewHomeHeaderContent(
+                        variant = case.variant,
+                        isAvatarEmpty = case.isAvatarEmpty,
+                    ),
                     avatarContentDescription = null,
-                    isWideLayout = case.isWideLayout,
                 )
             }
         }
@@ -175,7 +195,9 @@ private const val PREVIEW_LABEL_LIGHT = "Light"
 
 private const val PREVIEW_LABEL_SEPARATOR = " · "
 
-private const val PREVIEW_GREETING_LINE = "Hi, Maksim!"
+private const val PREVIEW_GREETING_PRIMARY_LINE = "Hi, Maksim Verylong Displayname!"
+
+private const val PREVIEW_GREETING_SHORT_LINE = "Hi, Maksim!"
 
 private const val PREVIEW_DATE_LINE = "Tue, 25 Jan 2026"
 
@@ -192,5 +214,11 @@ private const val PREVIEW_AVATAR_REMOTE_LABEL = "Remote avatar"
 private const val PREVIEW_LAYOUT_NARROW_LABEL = "Narrow"
 
 private const val PREVIEW_LAYOUT_WIDE_LABEL = "Wide"
+
+private const val PREVIEW_CANVAS_WIDTH_NARROW_DP = 360
+
+private const val PREVIEW_CANVAS_WIDTH_WIDE_DP = 900
+
+private const val PREVIEW_CANVAS_HEIGHT_DP = 800
 
 private const val SAMPLE_AVATAR_URL = "https://picsum.photos/seed/headway-ds-header/128/128"

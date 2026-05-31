@@ -20,12 +20,13 @@ disable-model-invocation: true
    - **Server substantive work:** `cd server && ./gradlew build` and `cd server && ./gradlew detekt` per [server/AGENTS.md](../../../../server/AGENTS.md). If the diff is narrowly scoped to one module and [server/AGENTS.md](../../../../server/AGENTS.md) lists a tighter task, you may mention that alternative.
    - **Isolated verification:** Optional Cursor subagents under [.ai/cursor/agents/](../../agents/) (e.g. `/headway-pre-merge-verify`, `/headway-detekt`, `/headway-server-verify`) per [.ai/cursor/WORKFLOWS.md](../../WORKFLOWS.md).
 5. **Drift risks:** If the change pattern conflicts with a cited rule, add 1–3 bullets; otherwise omit this section.
-6. **Memory Bank drift:** Update [.ai/cursor/memory-bank/](../../memory-bank/) when this session changed durable context:
+6. **PRD drift:** If the change touched a screen or its data path, reconcile the matching PRD in [`.gitbook/product/prd/`](../../../../.gitbook/product/prd/README.md) per [prd-sync.mdc](../../rules/prd-sync.mdc): update the page **Status** and the inventory-table status in `README.md`, the `FR-*`/`NFR-*`, `Experience & states`, `Data & entities` (Supabase tables/columns), the technical mapping, and `Open questions & planned work`. If behavior diverged from the PRD without product sign-off, flag it as an open question rather than silently rewriting the contract.
+7. **Memory Bank drift:** Update [.ai/cursor/memory-bank/](../../memory-bank/) when this session changed durable context:
    - [`activeContext.md`](../../memory-bank/activeContext.md) — current branch intent / next steps if they shifted.
    - [`progress.md`](../../memory-bank/progress.md) — one dated bullet for notable integration or workflow changes.
    - [`systemPatterns.md`](../../memory-bank/systemPatterns.md) or [`techContext.md`](../../memory-bank/techContext.md) — only for **stable**, **cross-cutting** facts; skip one-off UI copy or single-file trivia.
-7. **Lessons file bloat:** Read [.ai/cursor/rules/lessons-learned.mdc](../../rules/lessons-learned.mdc). Count lessons (`### N` sections). **Bloat if** count **> 12** **or** **≥ 3** lessons cluster on one theme, e.g. Freud/Material3, ViewModel vs Store, navigation/NavigatorContract, gateway/`upstreamCall`, detekt/style, client `Outcome`.
-8. If bloat: add a **Promotion reminder** only—suggest **1–3 stable, recurring** lessons that could move into long-form `AGENTS.md` guidance. Do **not** edit any `AGENTS.md` file. Do **not** suggest promoting everything.
+8. **Lessons file bloat:** Read [.ai/cursor/rules/lessons-learned.mdc](../../rules/lessons-learned.mdc). Count lessons (`### N` sections). **Bloat if** count **> 12** **or** **≥ 3** lessons cluster on one theme, e.g. Freud/Material3, ViewModel vs Store, navigation/NavigatorContract, gateway/`upstreamCall`, detekt/style, client `Outcome`.
+9. If bloat: add a **Promotion reminder** only—suggest **1–3 stable, recurring** lessons that could move into long-form `AGENTS.md` guidance. Do **not** edit any `AGENTS.md` file. Do **not** suggest promoting everything.
 
 ## Output format
 
@@ -34,8 +35,9 @@ Produce a concise report with these sections in order:
 1. **Critical rules used**
 2. **Checks performed / expected before completion**
 3. **Drift risks** (omit if none)
-4. **Memory Bank** (omit if nothing to update—otherwise list files touched and one line each)
-5. **Promotion reminder** (only if bloat condition met)
+4. **PRD updates** (omit if no screen/data-path change—otherwise list PRD pages touched and one line each)
+5. **Memory Bank** (omit if nothing to update—otherwise list files touched and one line each)
+6. **Promotion reminder** (only if bloat condition met)
 
 ## Constraints
 

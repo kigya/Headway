@@ -5,8 +5,8 @@ services:
       dockerfile: docker/Dockerfile
       target: database
     env_file:
-      - docker/${ENV}/env.common
-      - docker/${ENV}/env.database
+      - docker/${ENV:-dev}/env.common
+      - docker/${ENV:-dev}/env.database
     ports:
       - "8082:8082"
     restart: "no"
@@ -17,8 +17,8 @@ services:
       dockerfile: docker/Dockerfile
       target: auth
     env_file:
-      - docker/${ENV}/env.common
-      - docker/${ENV}/env.auth
+      - docker/${ENV:-dev}/env.common
+      - docker/${ENV:-dev}/env.auth
     depends_on:
       - database
     ports:
@@ -31,8 +31,8 @@ services:
       dockerfile: docker/Dockerfile
       target: admin
     env_file:
-      - docker/${ENV}/env.common
-      - docker/${ENV}/env.admin
+      - docker/${ENV:-dev}/env.common
+      - docker/${ENV:-dev}/env.admin
     depends_on:
       - database
     ports:
@@ -45,8 +45,8 @@ services:
       dockerfile: docker/Dockerfile
       target: home
     env_file:
-      - docker/${ENV}/env.common
-      - docker/${ENV}/env.home
+      - docker/${ENV:-dev}/env.common
+      - docker/${ENV:-dev}/env.home
     ports:
       - "8084:8084"
     restart: "no"
@@ -57,8 +57,8 @@ services:
       dockerfile: docker/Dockerfile
       target: gateway
     env_file:
-      - docker/${ENV}/env.common
-      - docker/${ENV}/env.gateway
+      - docker/${ENV:-dev}/env.common
+      - docker/${ENV:-dev}/env.gateway
     depends_on:
       - auth
       - home

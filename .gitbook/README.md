@@ -2,20 +2,20 @@
 icon: hand-wave
 ---
 
-# Добро пожаловать
+# Welcome
 
-## Headway — документация для разработчиков
+## Headway — developer documentation
 
-Здесь собраны правила и подсказки по монорепозиторию **Headway**: клиент (Kotlin Multiplatform, Compose), сервер (Ktor, микросервисы) и общие процессы команды.
+This space collects rules and tips for the **Headway** monorepo: client (Kotlin Multiplatform, Compose), server (Ktor, microservices), and shared team workflows.
 
-**Редактировать сайт в GitBook:** [консоль проекта](https://app.gitbook.com/o/6LyMtZ4tklDUB9XxAiKu/sites/site_x3VE1).
+**Edit the site in GitBook:** [project console](https://app.gitbook.com/o/6LyMtZ4tklDUB9XxAiKu/sites/site_x3VE1).
 
-**Исходный текст страниц** версионируется в репозитории в каталоге `.gitbook/`. После правок в GitBook или в репо важно не расходиться с актуальным `AGENTS.md` в корне, `client/` и `server/`.
+**Page source text** is versioned in the repository under `.gitbook/`. After edits in GitBook or in the repo, keep content aligned with the current `AGENTS.md` at the root, in `client/`, and in `server/`.
 
-### Как пользоваться разделами
+### How to use the sections
 
-* **Общее** — быстрый старт, Git, доска задач, метки, проверки перед отправкой кода, вспомогательные инструменты.
-* **Клиент** — архитектура фич, MVI, навигация, дизайн-система Freud, типовые команды Gradle.
-* **Сервер** — микросервисы, gateway, миграции, `githubEnvSync`, ссылки на Supabase.
+* **General** — quick start, Git, task board, labels, pre-push checks, helper tools.
+* **Client** — feature architecture, MVI, navigation, Freud design system, common Gradle commands.
+* **Server** — microservices, gateway, migrations, `githubEnvSync`, Supabase links.
 
-Точные правила кода и стиль Kotlin дублировать здесь полностью не нужно: канон — файлы `AGENTS.md` в репозитории; GitBook даёт краткую выжимку для людей.
+You do not need to duplicate full Kotlin rules here: the canonical source is `AGENTS.md` in the repository; GitBook provides a short human-oriented summary.
