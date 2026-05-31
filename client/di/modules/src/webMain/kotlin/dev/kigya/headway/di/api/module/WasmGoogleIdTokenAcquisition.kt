@@ -14,35 +14,39 @@ import kotlin.js.unsafeCast
 
 internal class WasmGoogleIdTokenAcquisition : GoogleIdTokenAcquisitionContract {
 
-    override suspend fun obtainIdToken(): Outcome<SessionDomainError, String> {
-        val credential = awaitGoogleCredentialOrNull()
-        return if (credential.isNullOrBlank()) {
-            Outcome.failure(SessionDomainError.GoogleSignInUnavailable)
-        } else {
-            Outcome.success(credential)
-        }
-    }
-
-    private suspend fun awaitGoogleCredentialOrNull(): String? =
+    override suspend fun obtainIdToken(): Outcome<SessionDomainError, String> =
         suspendCancellableCoroutine { continuation ->
             val promise = runCatching {
                 headwayBrowserWindow().headwayStartGoogleCredentialFlow(GOOGLE_WEB_CLIENT_ID)
             }.getOrElse {
-                continuation.resume(null)
+                continuation.resume(Outcome.failure(SessionDomainError.GoogleSignInUnavailable))
                 return@suspendCancellableCoroutine
             }
             promise.then(
                 onFulfilled = { value: JsAny? ->
-                    val text = value?.toString()
-                    continuation.resume(text)
+                    val credential = value?.toString()
+                    if (credential.isNullOrBlank()) {
+                        continuation.resume(Outcome.failure(SessionDomainError.GoogleSignInUnavailable))
+                    } else {
+                        continuation.resume(Outcome.success(credential))
+                    }
                     null
                 },
-                onRejected = { _: JsAny? ->
-                    continuation.resume(null)
+                onRejected = { reason: JsAny? ->
+                    continuation.resume(Outcome.failure(toGoogleSignInError(reason)))
                     null
                 },
             )
         }
+}
+
+private fun toGoogleSignInError(reason: JsAny?): SessionDomainError {
+    val message = reason?.toString().orEmpty()
+    return if (message.contains(GOOGLE_SIGN_IN_CANCELLED_MARKER, ignoreCase = true)) {
+        SessionDomainError.GoogleSignInCancelled
+    } else {
+        SessionDomainError.GoogleSignInUnavailable
+    }
 }
 
 private external interface HeadwayWindowExport : JsAny {
@@ -53,6 +57,8 @@ private fun headwayWasmGlobalWindow(): JsAny = js("window")
 
 private fun headwayBrowserWindow(): HeadwayWindowExport =
     headwayWasmGlobalWindow().unsafeCast<HeadwayWindowExport>()
+
+private const val GOOGLE_SIGN_IN_CANCELLED_MARKER: String = "cancelled"
 
 private const val GOOGLE_WEB_CLIENT_ID: String =
     "658272377808-alf63nc9km4tjgv0dr6lltfqfo1jshqb.apps.googleusercontent.com"
