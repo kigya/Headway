@@ -13,8 +13,6 @@ import kotlinx.serialization.json.Json
 import kotlinx.serialization.json.JsonObject
 import kotlinx.serialization.json.jsonPrimitive
 import java.awt.Desktop
-import java.awt.EventQueue
-import java.awt.Frame
 import java.net.HttpURLConnection
 import java.net.InetSocketAddress
 import java.net.URI
@@ -32,28 +30,44 @@ class DesktopGoogleIdTokenAcquisition(
     private val googleOAuthClientSecret: String?,
 ) : GoogleIdTokenAcquisitionContract {
 
+    init {
+        DesktopOAuthLoopbackServer.configureShutdownDispatcher(ioDispatcher)
+    }
+
     override suspend fun obtainIdToken(): Outcome<SessionDomainError, String> =
         withContext(ioDispatcher) {
             withTimeoutOrNull(OAUTH_WAIT_TIMEOUT_MILLIS) {
                 suspendCancellableCoroutine<Outcome<SessionDomainError, String>> { continuation ->
-                    val finished = AtomicBoolean(false)
-                    var server: HttpServer? = null
-                    fun finishOnce(outcome: Outcome<SessionDomainError, String>) {
-                        if (!finished.compareAndSet(false, true)) {
+                    val authFinished = AtomicBoolean(false)
+                    fun stopServer(server: HttpServer?) {
+                        if (server != null) {
+                            DesktopOAuthLoopbackServer.releaseIfActive(server)
+                        } else {
+                            DesktopOAuthLoopbackServer.release()
+                        }
+                    }
+                    fun finishAuth(outcome: Outcome<SessionDomainError, String>) {
+                        if (!authFinished.compareAndSet(false, true)) {
                             return
                         }
-                        runCatching { server?.stop(SERVER_STOP_DELAY_SECONDS) }
                         if (continuation.isActive) {
                             continuation.resumeWith(Result.success(outcome))
                         }
                     }
-                    continuation.invokeOnCancellation {
-                        runCatching { server?.stop(SERVER_STOP_DELAY_SECONDS) }
+                    fun scheduleServerShutdown(server: HttpServer) {
+                        DesktopOAuthLoopbackServer.scheduleReleaseIfActive(
+                            server = server,
+                            delayMillis = SERVER_KEEP_ALIVE_MILLIS,
+                        )
                     }
+                    continuation.invokeOnCancellation {
+                        DesktopOAuthLoopbackServer.release()
+                    }
+                    DesktopOAuthLoopbackServer.release()
                     val verifier = generateCodeVerifier()
                     val challenge = codeChallengeS256(verifier)
                     val state = randomUrlSafe(OAUTH_STATE_BYTE_LENGTH)
-                    val redirectUri = OAUTH_REDIRECT_URI
+                    val redirectUri = DesktopOAuthLoopbackEndpoint.redirectUri
                     val authUrl = buildAuthorizationUrl(
                         clientId = GOOGLE_WEB_CLIENT_ID,
                         redirectUri = redirectUri,
@@ -62,84 +76,119 @@ class DesktopGoogleIdTokenAcquisition(
                     )
                     val created = runCatching {
                         HttpServer.create(
-                            InetSocketAddress(LOOPBACK_HOST, OAUTH_REDIRECT_PORT),
+                            InetSocketAddress(
+                                DesktopOAuthLoopbackEndpoint.HOST,
+                                DesktopOAuthLoopbackEndpoint.PORT,
+                            ),
                             SINGLE_CONNECTION_BACKLOG,
                         )
                     }.getOrElse {
-                        finishOnce(Outcome.failure(SessionDomainError.GoogleSignInUnavailable))
+                        finishAuth(Outcome.failure(SessionDomainError.GoogleSignInUnavailable))
                         return@suspendCancellableCoroutine
                     }
-                    server = created
-                    created.createContext(OAUTH_REDIRECT_PATH) { exchange ->
+                    DesktopOAuthLoopbackServer.register(created)
+                    created.createContext(DesktopOAuthLoopbackEndpoint.CALLBACK_PATH) { exchange ->
                         handleOAuthCallback(
-                            exchange = exchange,
-                            expectedState = state,
-                            codeVerifier = verifier,
-                            redirectUri = redirectUri,
-                            onFinish = ::finishOnce,
+                            OAuthCallbackContext(
+                                exchange = exchange,
+                                expectedState = state,
+                                codeVerifier = verifier,
+                                redirectUri = redirectUri,
+                                onFinish = ::finishAuth,
+                                onKeepServerAlive = { scheduleServerShutdown(created) },
+                            ),
                         )
+                    }
+                    created.createContext(DesktopOAuthLoopbackEndpoint.OPEN_APP_PATH) { exchange ->
+                        DesktopAppForeground.bringToForeground()
+                        respondHtml(exchange, buildOAuthReturnedHtml())
+                        scheduleServerShutdown(created)
                     }
                     created.executor = null
                     created.start()
                     val desktop = if (Desktop.isDesktopSupported()) Desktop.getDesktop() else null
                     if (desktop == null || !desktop.isSupported(Desktop.Action.BROWSE)) {
-                        finishOnce(Outcome.failure(SessionDomainError.GoogleSignInUnavailable))
+                        finishAuth(Outcome.failure(SessionDomainError.GoogleSignInUnavailable))
+                        stopServer(created)
                         return@suspendCancellableCoroutine
                     }
                     runCatching {
                         desktop.browse(URI(authUrl))
                     }.onFailure {
-                        finishOnce(Outcome.failure(SessionDomainError.GoogleSignInUnavailable))
+                        finishAuth(Outcome.failure(SessionDomainError.GoogleSignInUnavailable))
+                        stopServer(created)
                     }
                 }
             } ?: Outcome.failure(SessionDomainError.GoogleSignInCancelled)
         }
 
-    private fun handleOAuthCallback(
-        exchange: HttpExchange,
-        expectedState: String,
-        codeVerifier: String,
-        redirectUri: String,
-        onFinish: (Outcome<SessionDomainError, String>) -> Unit,
-    ) {
+    private fun handleOAuthCallback(context: OAuthCallbackContext) {
         runCatching {
-            val rawQuery = exchange.requestURI.rawQuery.orEmpty()
+            val rawQuery = context.exchange.requestURI.rawQuery.orEmpty()
             val params = parseQueryParams(rawQuery)
             if (params[QUERY_KEY_ERROR] != null) {
-                respondHtml(exchange, OAUTH_HTML_CLOSE_BODY)
-                bringDesktopAppToForeground()
-                onFinish(Outcome.failure(SessionDomainError.GoogleSignInCancelled))
+                respondOAuthCallbackPage(
+                    context = context,
+                    page = OAuthCallbackPage.Cancel,
+                    outcome = Outcome.failure(SessionDomainError.GoogleSignInCancelled),
+                )
                 return@runCatching
             }
             val code = params[QUERY_KEY_CODE]
             val state = params[QUERY_KEY_STATE]
-            if (code.isNullOrBlank() || state != expectedState) {
-                respondHtml(exchange, OAUTH_HTML_ERROR_BODY)
-                bringDesktopAppToForeground()
-                onFinish(Outcome.failure(SessionDomainError.GoogleSignInUnavailable))
+            if (code.isNullOrBlank() || state != context.expectedState) {
+                respondOAuthCallbackPage(
+                    context = context,
+                    page = OAuthCallbackPage.Error,
+                    outcome = Outcome.failure(SessionDomainError.GoogleSignInUnavailable),
+                )
                 return@runCatching
             }
-            val tokenOutcome = exchangeCodeForIdToken(
+            when (val tokenOutcome = exchangeCodeForIdToken(
                 code = code,
-                codeVerifier = codeVerifier,
-                redirectUri = redirectUri,
-            )
-            if (tokenOutcome is Outcome.Success) {
-                respondHtml(exchange, OAUTH_HTML_SUCCESS_BODY)
-                bringDesktopAppToForeground()
-                onFinish(Outcome.success(tokenOutcome.value))
-            } else {
-                respondHtml(exchange, OAUTH_HTML_ERROR_BODY)
-                bringDesktopAppToForeground()
-                onFinish(tokenOutcome)
+                codeVerifier = context.codeVerifier,
+                redirectUri = context.redirectUri,
+            )) {
+                is Outcome.Success -> respondOAuthCallbackPage(
+                    context = context,
+                    page = OAuthCallbackPage.Success,
+                    outcome = Outcome.success(tokenOutcome.value),
+                )
+                is Outcome.Failure -> respondOAuthCallbackPage(
+                    context = context,
+                    page = OAuthCallbackPage.Error,
+                    outcome = tokenOutcome,
+                )
             }
         }.onFailure {
             runCatching {
-                respondHtml(exchange, OAUTH_HTML_ERROR_BODY)
+                respondOAuthCallbackPage(
+                    context = context,
+                    page = OAuthCallbackPage.Error,
+                    outcome = Outcome.failure(SessionDomainError.GoogleSignInUnavailable),
+                )
+            }.onFailure {
+                context.onFinish(Outcome.failure(SessionDomainError.GoogleSignInUnavailable))
+                context.onKeepServerAlive()
             }
-            bringDesktopAppToForeground()
-            onFinish(Outcome.failure(SessionDomainError.GoogleSignInUnavailable))
         }
+    }
+
+    private fun respondOAuthCallbackPage(
+        context: OAuthCallbackContext,
+        page: OAuthCallbackPage,
+        outcome: Outcome<SessionDomainError, String>,
+    ) {
+        respondHtml(
+            exchange = context.exchange,
+            body = buildOAuthCallbackHtml(
+                title = page.title,
+                subtitle = page.subtitle,
+                buttonLabel = OAUTH_HTML_OPEN_APP_LABEL,
+            ),
+        )
+        context.onFinish(outcome)
+        context.onKeepServerAlive()
     }
 
     private fun respondHtml(
@@ -257,38 +306,37 @@ class DesktopGoogleIdTokenAcquisition(
         val digest = MessageDigest.getInstance(DIGEST_SHA256).digest(verifier.toByteArray(StandardCharsets.US_ASCII))
         return Base64.getUrlEncoder().withoutPadding().encodeToString(digest)
     }
-
-    private fun bringDesktopAppToForeground() {
-        EventQueue.invokeLater {
-            runCatching {
-                val applicationClass = Class.forName("com.apple.eawt.Application")
-                val application = applicationClass.getMethod("getApplication").invoke(null)
-                applicationClass.getMethod("requestForeground", Boolean::class.javaPrimitiveType)
-                    .invoke(application, true)
-            }
-            for (frame in Frame.getFrames()) {
-                if (frame.isDisplayable && frame.isVisible) {
-                    if (frame.extendedState and Frame.ICONIFIED != 0) {
-                        frame.extendedState = Frame.NORMAL
-                    }
-                    frame.toFront()
-                    frame.requestFocus()
-                }
-            }
-        }
-    }
 }
+
+private enum class OAuthCallbackPage(
+    val title: String,
+    val subtitle: String,
+) {
+    Success(
+        title = OAUTH_HTML_SUCCESS_TITLE,
+        subtitle = OAUTH_HTML_SUCCESS_SUBTITLE,
+    ),
+    Error(
+        title = OAUTH_HTML_ERROR_TITLE,
+        subtitle = OAUTH_HTML_ERROR_SUBTITLE,
+    ),
+    Cancel(
+        title = OAUTH_HTML_CANCEL_TITLE,
+        subtitle = OAUTH_HTML_CANCEL_SUBTITLE,
+    ),
+}
+
+private data class OAuthCallbackContext(
+    val exchange: HttpExchange,
+    val expectedState: String,
+    val codeVerifier: String,
+    val redirectUri: String,
+    val onFinish: (Outcome<SessionDomainError, String>) -> Unit,
+    val onKeepServerAlive: () -> Unit,
+)
 
 private const val GOOGLE_WEB_CLIENT_ID: String =
     "658272377808-alf63nc9km4tjgv0dr6lltfqfo1jshqb.apps.googleusercontent.com"
-
-private const val LOOPBACK_HOST: String = "127.0.0.1"
-
-private const val OAUTH_REDIRECT_PORT: Int = 8405
-
-private const val OAUTH_REDIRECT_PATH: String = "/oauth2callback"
-
-private const val OAUTH_REDIRECT_URI: String = "http://127.0.0.1:8405/oauth2callback"
 
 private const val AUTH_ENDPOINT: String = "https://accounts.google.com/o/oauth2/v2/auth"
 
@@ -358,23 +406,27 @@ private const val CODE_VERIFIER_BYTE_LENGTH: Int = 32
 
 private const val SINGLE_CONNECTION_BACKLOG: Int = 1
 
-private const val SERVER_STOP_DELAY_SECONDS: Int = 0
-
 private const val OAUTH_WAIT_TIMEOUT_MILLIS: Long = 300_000L
+
+private const val SERVER_KEEP_ALIVE_MILLIS: Long = 120_000L
 
 private const val DIGEST_SHA256: String = "SHA-256"
 
-private const val OAUTH_HTML_DOC_PREFIX: String = "<!DOCTYPE html><html><body><p>"
+private const val OAUTH_HTML_SUCCESS_TITLE: String = "Sign-in complete"
 
-private const val OAUTH_HTML_DOC_SUFFIX: String = "</p></body></html>"
+private const val OAUTH_HTML_SUCCESS_SUBTITLE: String =
+    "Return to Headway to continue."
 
-private const val OAUTH_HTML_SUCCESS_BODY: String =
-    "${OAUTH_HTML_DOC_PREFIX}Sign-in complete. You can close this tab.$OAUTH_HTML_DOC_SUFFIX"
+private const val OAUTH_HTML_ERROR_TITLE: String = "Sign-in failed"
 
-private const val OAUTH_HTML_ERROR_BODY: String =
-    "${OAUTH_HTML_DOC_PREFIX}Sign-in failed. You can close this tab.$OAUTH_HTML_DOC_SUFFIX"
+private const val OAUTH_HTML_ERROR_SUBTITLE: String =
+    "Return to Headway and try again."
 
-private const val OAUTH_HTML_CLOSE_BODY: String =
-    "${OAUTH_HTML_DOC_PREFIX}You can close this tab.$OAUTH_HTML_DOC_SUFFIX"
+private const val OAUTH_HTML_CANCEL_TITLE: String = "Sign-in cancelled"
+
+private const val OAUTH_HTML_CANCEL_SUBTITLE: String =
+    "Return to Headway to try again."
+
+private const val OAUTH_HTML_OPEN_APP_LABEL: String = "Open Headway"
 
 private val headwayUtf8Charset: Charset = StandardCharsets.UTF_8

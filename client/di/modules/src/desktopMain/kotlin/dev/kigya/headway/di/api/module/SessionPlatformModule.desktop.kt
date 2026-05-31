@@ -6,6 +6,7 @@ import dev.kigya.headway.core.session.domain.HeadwaySessionGatewayPlatform
 import dev.kigya.headway.core.session.domain.SessionRuntimeIdentityContract
 import dev.kigya.headway.core.session.domain.contract.GoogleIdTokenAcquisitionContract
 import dev.kigya.headway.core.session.domain.usecase.DesktopGoogleIdTokenAcquisition
+import dev.kigya.headway.core.session.domain.usecase.registerDesktopSessionPlatformHooks
 import dev.kigya.headway.di.api.DispatcherKey
 import dev.kigya.headway.di.api.HeadwayGraphqlHttpUrl
 import org.koin.core.module.Module
@@ -17,17 +18,21 @@ import kotlin.io.path.createDirectories
 import kotlin.io.path.notExists
 import kotlin.random.Random
 
-actual fun sessionPlatformModule(): Module = module {
-    single { HeadwayGraphqlHttpUrl(DEV_GRAPHQL_URL) }
-    single<SecureSessionStorageContract> {
-        DesktopSecureSessionStorage(ioDispatcher = get(named(DispatcherKey.IO)))
-    }
-    single<SessionRuntimeIdentityContract> { DesktopSessionRuntimeIdentity() }
-    single<GoogleIdTokenAcquisitionContract> {
-        DesktopGoogleIdTokenAcquisition(
-            ioDispatcher = get(named(DispatcherKey.IO)),
-            googleOAuthClientSecret = System.getenv("HEADWAY_GOOGLE_OAUTH_CLIENT_SECRET"),
-        )
+actual fun sessionPlatformModule(): Module {
+    DesktopHeadwayEnv.warmUp()
+    registerDesktopSessionPlatformHooks()
+    return module {
+        single { HeadwayGraphqlHttpUrl(DEV_GRAPHQL_URL) }
+        single<SecureSessionStorageContract> {
+            DesktopSecureSessionStorage(ioDispatcher = get(named(DispatcherKey.IO)))
+        }
+        single<SessionRuntimeIdentityContract> { DesktopSessionRuntimeIdentity() }
+        single<GoogleIdTokenAcquisitionContract> {
+            DesktopGoogleIdTokenAcquisition(
+                ioDispatcher = get(named(DispatcherKey.IO)),
+                googleOAuthClientSecret = DesktopHeadwayEnv.get("HEADWAY_GOOGLE_OAUTH_CLIENT_SECRET"),
+            )
+        }
     }
 }
 
