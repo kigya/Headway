@@ -32,6 +32,7 @@ class DesktopGoogleIdTokenAcquisition(
 
     init {
         DesktopOAuthLoopbackServer.configureShutdownDispatcher(ioDispatcher)
+        DesktopOAuthAbandonmentMonitor.configureMonitorDispatcher(ioDispatcher)
     }
 
     override suspend fun obtainIdToken(): Outcome<SessionDomainError, String> =
@@ -50,6 +51,7 @@ class DesktopGoogleIdTokenAcquisition(
                         if (!authFinished.compareAndSet(false, true)) {
                             return
                         }
+                        DesktopOAuthAbandonmentMonitor.endMonitoring()
                         if (continuation.isActive) {
                             continuation.resumeWith(Result.success(outcome))
                         }
@@ -61,6 +63,7 @@ class DesktopGoogleIdTokenAcquisition(
                         )
                     }
                     continuation.invokeOnCancellation {
+                        DesktopOAuthAbandonmentMonitor.endMonitoring()
                         DesktopOAuthLoopbackServer.release()
                     }
                     DesktopOAuthLoopbackServer.release()
@@ -114,6 +117,11 @@ class DesktopGoogleIdTokenAcquisition(
                     }
                     runCatching {
                         desktop.browse(URI(authUrl))
+                    }.onSuccess {
+                        DesktopOAuthAbandonmentMonitor.beginMonitoring {
+                            finishAuth(Outcome.failure(SessionDomainError.GoogleSignInCancelled))
+                            stopServer(created)
+                        }
                     }.onFailure {
                         finishAuth(Outcome.failure(SessionDomainError.GoogleSignInUnavailable))
                         stopServer(created)

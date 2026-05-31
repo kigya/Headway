@@ -7,7 +7,6 @@ import com.arkivanov.mvikotlin.core.store.StoreFactory
 import com.arkivanov.mvikotlin.extensions.coroutines.coroutineBootstrapper
 import com.arkivanov.mvikotlin.extensions.coroutines.coroutineExecutorFactory
 import dev.kigya.headway.core.outcome.Outcome
-import dev.kigya.headway.core.outcome.getOrNull
 import dev.kigya.headway.core.session.domain.error.SessionDomainError
 import dev.kigya.headway.core.session.domain.usecase.LoginAsGuestUseCase
 import dev.kigya.headway.core.session.domain.usecase.LoginWithGoogleUseCase
@@ -63,35 +62,43 @@ class AuthStoreFactory(
                     launch {
                         dispatch(AuthReducerSetBusy(true))
                         dispatch(AuthReducerSetHasError(false))
-                        val tokenOutcome = obtainGoogleIdToken()
-                        val idToken = tokenOutcome.getOrNull()
-                        if (idToken == null) {
-                            dispatch(AuthReducerSetHasError(true))
-                            dispatch(AuthReducerSetBusy(false))
-                            return@launch
-                        }
-                        when (val signedIn = loginWithGoogle(idToken)) {
-                            is Outcome.Success ->
-                                navigator.navigate(
-                                    NavigationIntent.ReplaceTopBy(
-                                        screenNavigationKey = HomeScreenKey,
-                                        asyncRunner = { executorCoroutineScope.asNavigationAsyncRunner() },
-                                    ),
-                                )
-
-                            is Outcome.Failure ->
-                                when (signedIn.error) {
-                                    SessionDomainError.UserNotInvited -> {
-                                        navigator.navigate(
-                                            NavigationIntent.NavigateTo(AuthNoAccessScreenKey),
-                                        )
+                        when (val tokenOutcome = obtainGoogleIdToken()) {
+                            is Outcome.Failure -> {
+                                when (tokenOutcome.error) {
+                                    SessionDomainError.GoogleSignInCancelled ->
                                         dispatch(AuthReducerSetBusy(false))
-                                    }
 
                                     else -> {
                                         dispatch(AuthReducerSetHasError(true))
                                         dispatch(AuthReducerSetBusy(false))
                                     }
+                                }
+                            }
+
+                            is Outcome.Success ->
+                                when (val signedIn = loginWithGoogle(tokenOutcome.value)) {
+                                    is Outcome.Success ->
+                                        navigator.navigate(
+                                            NavigationIntent.ReplaceTopBy(
+                                                screenNavigationKey = HomeScreenKey,
+                                                asyncRunner = { executorCoroutineScope.asNavigationAsyncRunner() },
+                                            ),
+                                        )
+
+                                    is Outcome.Failure ->
+                                        when (signedIn.error) {
+                                            SessionDomainError.UserNotInvited -> {
+                                                navigator.navigate(
+                                                    NavigationIntent.NavigateTo(AuthNoAccessScreenKey),
+                                                )
+                                                dispatch(AuthReducerSetBusy(false))
+                                            }
+
+                                            else -> {
+                                                dispatch(AuthReducerSetHasError(true))
+                                                dispatch(AuthReducerSetBusy(false))
+                                            }
+                                        }
                                 }
                         }
                     }
