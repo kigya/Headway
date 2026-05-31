@@ -80,15 +80,20 @@ class AuthStoreFactory(
                                 )
 
                             is Outcome.Failure ->
-                                if (signedIn.error == SessionDomainError.UserNotInvited) {
-                                    navigator.navigate(
-                                        NavigationIntent.NavigateTo(AuthNoAccessScreenKey),
-                                    )
-                                } else {
-                                    dispatch(AuthReducerSetHasError(true))
+                                when (signedIn.error) {
+                                    SessionDomainError.UserNotInvited -> {
+                                        navigator.navigate(
+                                            NavigationIntent.NavigateTo(AuthNoAccessScreenKey),
+                                        )
+                                        dispatch(AuthReducerSetBusy(false))
+                                    }
+
+                                    else -> {
+                                        dispatch(AuthReducerSetHasError(true))
+                                        dispatch(AuthReducerSetBusy(false))
+                                    }
                                 }
                         }
-                        dispatch(AuthReducerSetBusy(false))
                     }
                 }
                 onIntent<Intent.ContinueAsGuest> {
@@ -104,10 +109,11 @@ class AuthStoreFactory(
                                     ),
                                 )
 
-                            is Outcome.Failure ->
+                            is Outcome.Failure -> {
                                 dispatch(AuthReducerSetHasError(true))
+                                dispatch(AuthReducerSetBusy(false))
+                            }
                         }
-                        dispatch(AuthReducerSetBusy(false))
                     }
                 }
             },

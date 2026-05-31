@@ -18,7 +18,7 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -56,7 +56,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 internal fun HomeScreen() {
     val viewModel = koinViewModel<HomeViewModel>()
-    val state = viewModel.uiState.collectAsStateWithLifecycle()
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
 
     HomeScreenContent(
         state = state,
@@ -68,7 +68,7 @@ internal fun HomeScreen() {
 
 @Composable
 private fun HomeScreenContent(
-    state: State<HomeStore.State>,
+    state: HomeStore.State,
     onRetryLoad: () -> Unit,
     onActionClick: (HomeActionSemanticType) -> Unit,
     onToggleWideNavigation: () -> Unit,
@@ -84,16 +84,16 @@ private fun HomeScreenContent(
                 .systemBarsPadding(),
         ) {
             FreudFallback(
-                isError = state.value.errorMessage != null,
+                isError = state.errorMessage != null,
                 onRetry = onRetryLoad,
             ) {
-                if (state.value.isLoading && state.value.summary == null) {
+                if (state.isLoading && state.summary == null) {
                     Box(modifier = Modifier.fillMaxSize())
                 } else {
-                    state.value.summary?.let { summary ->
+                    state.summary?.let { summary ->
                         HomeLoadedBody(
                             summary = summary,
-                            isWideNavigationVisible = state.value.isWideNavigationVisible,
+                            isWideNavigationVisible = state.isWideNavigationVisible,
                             onActionClick = onActionClick,
                             onToggleWideNavigation = onToggleWideNavigation,
                         )

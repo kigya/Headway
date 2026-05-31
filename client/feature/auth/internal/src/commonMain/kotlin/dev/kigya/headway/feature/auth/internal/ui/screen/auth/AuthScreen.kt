@@ -16,7 +16,7 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.windowsizeclass.ExperimentalMaterial3WindowSizeClassApi
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
@@ -32,6 +32,7 @@ import dev.kigya.headway.core.designSystem.component.FreudFallback
 import dev.kigya.headway.core.designSystem.component.FreudHorizontalButton
 import dev.kigya.headway.core.designSystem.component.FreudHorizontalButtonSize
 import dev.kigya.headway.core.designSystem.component.FreudIcon
+import dev.kigya.headway.core.designSystem.component.FreudLoadingOverlay
 import dev.kigya.headway.core.designSystem.component.FreudLottie
 import dev.kigya.headway.core.designSystem.component.FreudLottieSource
 import dev.kigya.headway.core.designSystem.component.FreudSpacer
@@ -72,7 +73,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 internal fun AuthScreen() {
     val viewModel = koinViewModel<AuthViewModel>()
-    val state = viewModel.uiState.collectAsStateWithLifecycle()
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
 
     AuthScreenContent(
         state = state,
@@ -85,7 +86,7 @@ internal fun AuthScreen() {
 @OptIn(ExperimentalMaterial3WindowSizeClassApi::class)
 @Composable
 private fun AuthScreenContent(
-    state: State<AuthStore.State>,
+    state: AuthStore.State,
     onSignInWithGoogle: () -> Unit,
     onContinueAsGuest: () -> Unit,
     onDismissError: () -> Unit,
@@ -107,25 +108,27 @@ private fun AuthScreenContent(
             lottieSideBudget = lottieSideBudget,
             textColumnHorizontalPadding = horizontalPaddingWide,
         )
-        FreudFallback(
-            isError = state.value.hasError,
-            onRetry = onDismissError,
-        ) {
-            if (useSideBySide) {
-                AuthScreenWideContent(
-                    lottieColumnWidth = lottieSideBudget,
-                    isBusy = state.value.isBusy,
-                    onSignInWithGoogle = onSignInWithGoogle,
-                    onContinueAsGuest = onContinueAsGuest,
-                )
-            } else {
-                AuthScreenStackedContent(
-                    containerWidth = maxWidth,
-                    containerHeight = maxHeight,
-                    isBusy = state.value.isBusy,
-                    onSignInWithGoogle = onSignInWithGoogle,
-                    onContinueAsGuest = onContinueAsGuest,
-                )
+        FreudLoadingOverlay(isLoading = state.isBusy) {
+            FreudFallback(
+                isError = state.hasError,
+                onRetry = onDismissError,
+            ) {
+                if (useSideBySide) {
+                    AuthScreenWideContent(
+                        lottieColumnWidth = lottieSideBudget,
+                        isBusy = state.isBusy,
+                        onSignInWithGoogle = onSignInWithGoogle,
+                        onContinueAsGuest = onContinueAsGuest,
+                    )
+                } else {
+                    AuthScreenStackedContent(
+                        containerWidth = maxWidth,
+                        containerHeight = maxHeight,
+                        isBusy = state.isBusy,
+                        onSignInWithGoogle = onSignInWithGoogle,
+                        onContinueAsGuest = onContinueAsGuest,
+                    )
+                }
             }
         }
     }

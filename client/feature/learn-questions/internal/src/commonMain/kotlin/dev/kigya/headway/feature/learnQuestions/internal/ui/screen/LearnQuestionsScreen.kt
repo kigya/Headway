@@ -7,7 +7,7 @@ import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -28,7 +28,7 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 internal fun LearnQuestionsScreen() {
     val viewModel = koinViewModel<LearnQuestionsViewModel>()
-    val state = viewModel.uiState.collectAsStateWithLifecycle()
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
 
     LearnQuestionsScreenContent(
         state = state,
@@ -39,13 +39,13 @@ internal fun LearnQuestionsScreen() {
 
 @Composable
 private fun LearnQuestionsScreenContent(
-    state: State<LearnQuestionsStore.State>,
+    state: LearnQuestionsStore.State,
     onGuestSignOut: () -> Unit,
     onRetryLoad: () -> Unit,
 ) {
     val content: @Composable BoxScope.() -> Unit = {
         FreudFallback(
-            isError = state.value.errorMessage != null,
+            isError = state.errorMessage != null,
             onRetry = onRetryLoad,
         ) {
             Column(
@@ -56,13 +56,13 @@ private fun LearnQuestionsScreenContent(
                 horizontalAlignment = Alignment.CenterHorizontally,
             ) {
                 FreudText(
-                    value = FreudTextValue.text(state.value.title),
+                    value = FreudTextValue.text(state.title),
                     color = LearnQuestionsTheme.colorScheme.learnPrimaryText,
                     typography = LearnQuestionsTheme.typography.headingSmExtraBold,
                 )
                 FreudSpacer(size = LearnQuestionsTheme.dimension.dp12)
                 FreudText(
-                    value = FreudTextValue.text(state.value.detail),
+                    value = FreudTextValue.text(state.detail),
                     color = LearnQuestionsTheme.colorScheme.learnPrimaryText,
                     typography = LearnQuestionsTheme.typography.paragraphLg,
                 )

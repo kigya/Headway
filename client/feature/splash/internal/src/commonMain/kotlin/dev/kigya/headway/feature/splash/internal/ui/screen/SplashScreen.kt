@@ -11,7 +11,7 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.size
 import androidx.compose.runtime.Composable
-import androidx.compose.runtime.State
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
@@ -31,13 +31,13 @@ import org.koin.compose.viewmodel.koinViewModel
 @Composable
 internal fun SplashScreen() {
     val viewModel = koinViewModel<SplashViewModel>()
-    val state = viewModel.uiState.collectAsStateWithLifecycle()
+    val state by viewModel.uiState.collectAsStateWithLifecycle()
 
-    SplashScreenContent(state)
+    SplashScreenContent(state = state)
 }
 
 @Composable
-private fun SplashScreenContent(state: State<SplashStore.State>) {
+private fun SplashScreenContent(state: SplashStore.State) {
     val content: @Composable BoxScope.() -> Unit = {
         Column(
             modifier = Modifier
@@ -52,7 +52,7 @@ private fun SplashScreenContent(state: State<SplashStore.State>) {
                 modifier = Modifier.size(SplashTheme.dimension.dp72.value),
             )
             AnimatedVisibility(
-                visible = state.value.shouldDisplayText,
+                visible = state.shouldDisplayText,
                 enter = fadeIn(tween()) + expandVertically(tween()),
             ) {
                 FreudSpacer(size = SplashTheme.dimension.dp16)

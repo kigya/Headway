@@ -5,6 +5,7 @@
     <string name="freud_fallback_network_title">You're offline</string>
     <string name="freud_fallback_network_body">Connect to the internet to load the data, then try again.</string>
     <string name="freud_fallback_retry_button">Try Again</string>
+    <string name="freud_loading_content_description">Loading</string>
     <string name="freud_preview_top_bar_title_resource">Preview title (resource)</string>
     <string name="freud_preview_button_label_resource">Preview label</string>
     <string name="freud_preview_icon_content_description">Preview icon</string>
